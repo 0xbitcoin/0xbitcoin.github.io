@@ -29617,6 +29617,7 @@ const $ = __webpack_require__(23);
 class DashboardRenderer {
 
   renderContractData(renderData) {
+
     var app = new __WEBPACK_IMPORTED_MODULE_0_vue__["a" /* default */]({
       el: '#dashboard',
       data: renderData
@@ -29699,7 +29700,7 @@ class EthHelper {
       difficulty: difficulty,
       challenge_number: challenge_number,
       amountMined: parseInt(amountMined),
-      totalSupply: totalSupply,
+      totalSupply: parseInt(totalSupply),
       lastRewardTo: lastRewardTo,
       lastRewardAmount: lastRewardAmount,
       lastRewardEthBlockNumber: lastRewardEthBlockNumber
@@ -29708,7 +29709,7 @@ class EthHelper {
 
     dashboardRenderer.renderContractData(renderData);
 
-    return data;
+    return renderData;
   }
 
   getWeb3ContractInstance(web3, contract_address, contract_abi) {
