@@ -6525,3 +6525,7 @@ html {
 
 .navbar-item {
   padding: 2px; }
+
+@media only screen and (max-width: 768px) {
+  .has-small-text-mobile {
+    font-size: 10px; } }
