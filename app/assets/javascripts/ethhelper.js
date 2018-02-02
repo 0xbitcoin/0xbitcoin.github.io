@@ -77,7 +77,7 @@ export default class EthHelper {
        dashboardRenderer.renderContractData(renderData);
 
 
-       return data;
+       return renderData;
 
     }
 
