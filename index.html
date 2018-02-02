@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+    <title>0xBitcoin</title>
+  <link href="main.css" rel="stylesheet"></head>
+  <body>
+
+      <div id="navbar">
+        <img :src="brandImageUrl" height="28" width="28" />
+      </div>
+
+
+      <div id="app">
+        {{ message }}
+      </div>
+
+      <div id="dashboard">
+      Total Supply:  {{ totalSupply }}
+      Amount Mined:  {{ amountMined }}
+      Mining Difficulty:  {{ difficulty }}
+      Mining Challenge:  {{ challenge_number }}
+
+      Last Reward To:  {{ lastRewardTo }}
+      Last Reward Amount:  {{ lastRewardAmount }}
+      Last Reward EthBlock#:  {{ lastRewardEthBlockNumber }}
+      </div>
+
+  <script type="text/javascript" src="bundle.js"></script></body>
+</html>
