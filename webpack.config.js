@@ -1,15 +1,22 @@
 var path = require('path');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
-
+var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 var environment = process.env.NODE_ENV || 'development';
+
+
+var htmlPlugin = new HtmlWebpackPlugin({
+      title: '0xBitcoin',
+     filename: 'index.html',
+      template: 'app/index.html',
+});
 
 var extractPlugin = new ExtractTextPlugin({
    filename: 'main.css'
 });
 
 module.exports = {
-    entry: ['./assets/javascripts/index', './assets/stylesheets/application.scss' ],
+    entry: ['./app/assets/javascripts/index', './app/assets/stylesheets/application.scss' ],
     output: {
         path: path.resolve(__dirname, 'public'),
         filename: 'bundle.js',
@@ -45,7 +52,7 @@ module.exports = {
                   }
                 }
               ]
-            } 
+            }
         ]
     },
     resolve: {
@@ -54,6 +61,7 @@ module.exports = {
       }
     },
     plugins: [
-        extractPlugin
+        extractPlugin,
+        htmlPlugin
     ]
 };

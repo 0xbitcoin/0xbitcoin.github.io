@@ -4,7 +4,7 @@ import logo from '../images/0xbitcoin.png'
 import Vue from 'vue'
 
 
-var web3 = this.connectWeb3();
+//var web3 = this.connectWeb3();
 
 
 var navbar = new Vue({
@@ -22,7 +22,7 @@ var app = new Vue({
   }
 })
 
-
+/*
 connectWeb3(){
   if (typeof web3 !== 'undefined') {
 
@@ -40,3 +40,4 @@ connectWeb3(){
 
   }
 }
+*/
