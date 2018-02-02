@@ -24,7 +24,7 @@ html
 .button-orange
 {
   color: white;
- 
+
    background: linear-gradient(#ff7209, #ff6206);
 }
 
@@ -39,4 +39,12 @@ html
 .navbar-item
 {
   padding: 2px;
+}
+
+@media only screen and (max-width: 768px) {
+
+  .has-small-text-mobile
+  {
+    font-size: 8px;
+  }
 }
