@@ -61,14 +61,14 @@ export default class EthHelper {
       var lastRewardTo = 0;
       var lastRewardAmount = 0;
       var lastRewardEthBlockNumber = 0;
-
+      var decimals = Math.pow(10,8);
        var renderData = {
          difficulty: difficulty,
          challenge_number: challenge_number,
-         amountMined: (parseInt(amountMined) / 10^8),
-         totalSupply: (parseInt(totalSupply) / 10^8),
+         amountMined: (parseInt(amountMined) / decimals),
+         totalSupply: (parseInt(totalSupply) / decimals),
          lastRewardTo: lastRewardTo,
-         lastRewardAmount: (parseInt(lastRewardAmount) / 8),
+         lastRewardAmount: (parseInt(lastRewardAmount) / decimals),
          lastRewardEthBlockNumber: lastRewardEthBlockNumber
 
 
