@@ -1,5 +1,5 @@
-import cursor from '../images/cucumbercurve.png'
-import logo from '../images/dtlogo.png'
+
+import logo from '../images/0xbitcoin.png'
 
 import Vue from 'vue'
 

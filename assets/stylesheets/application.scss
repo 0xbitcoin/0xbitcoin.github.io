@@ -2,23 +2,23 @@
 @import 'bulma';
 html
 {
-  color: white;
-  background-color: pink;
+  //color: white;
+  //background-color: pink;
   font-family: "Arial, Helvetica, sans-serif";
 
-  cursor: url('../images/cucumbercurve.png'), auto;
-}
-
-.font-awful
-{
-
-     font-family: 'Rammetto One', cursive;
 
 }
 
-.color-white
+.font-primary-title
 {
-  color:white ;
+
+    font-family: 'Anton', sans-serif;
+
+}
+
+.color-orange
+{
+  color: #ff7209  ;
 }
 
 .navbar-item
