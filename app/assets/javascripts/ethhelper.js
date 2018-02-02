@@ -65,8 +65,8 @@ export default class EthHelper {
        var renderData = {
          difficulty: difficulty,
          challenge_number: challenge_number,
-         amountMined: (parseInt(amountMined) / 8),
-         totalSupply: (parseInt(totalSupply) / 8),
+         amountMined: (parseInt(amountMined) / 10^8),
+         totalSupply: (parseInt(totalSupply) / 10^8),
          lastRewardTo: lastRewardTo,
          lastRewardAmount: (parseInt(lastRewardAmount) / 8),
          lastRewardEthBlockNumber: lastRewardEthBlockNumber
