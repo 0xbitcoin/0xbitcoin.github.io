@@ -18,7 +18,22 @@ html
 
 .color-orange
 {
-  color: #ff7209  ;
+  color: #ff7209;
+}
+
+.button-orange
+{
+  color: white;
+ 
+   background: linear-gradient(#ff7209, #ff6206);
+}
+
+.button-bubble
+{
+  padding:8px;
+  border: 1px solid black;
+  border-radius: 3px;
+  display: inline-block;
 }
 
 .navbar-item
