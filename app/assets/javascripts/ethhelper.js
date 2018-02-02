@@ -3,13 +3,16 @@ var INFURA_ROPSTEN_URL = 'https://ropsten.infura.io/gmXEVo5luMPUGPqg6mhy';
 var deployedContractInfo = require('../contracts/DeployedContractInfo.json');
 var _0xBitcoinContract = require('../contracts/_0xBitcoinToken.json');
 
+var embeddedWeb3 = require('web3')
 
 export default class EthHelper {
 
 
-    init(web3,alertRenderer){
+    init( alertRenderer ){
         this.alertRenderer = alertRenderer;
-        return this.connectWeb3(web3);
+
+
+        return this.connectWeb3(new embeddedWeb3());
     }
 
     connectWeb3(web3){
@@ -51,7 +54,7 @@ export default class EthHelper {
        }
 
        dashboardRenderer.renderContractData(data);
- 
+
 
        return data;
 
