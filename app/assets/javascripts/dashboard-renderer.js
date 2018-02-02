@@ -6,13 +6,11 @@ export default class DashboardRenderer {
 
 
 
-     renderContractData(data)
+     renderContractData(renderData)
     {
       var app = new Vue({
         el: '#dashboard',
-        data: {
-          difficulty: data.difficulty
-        }
+        data: renderData
       });
 
         this.show();

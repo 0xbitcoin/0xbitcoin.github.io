@@ -44,16 +44,37 @@ export default class EthHelper {
 
        console.log(tokenContract)
 
-       var diff = await tokenContract.getMiningDifficulty().toNumber() ;
+       var difficulty = await tokenContract.getMiningDifficulty().toNumber() ;
 
-       var chall = await tokenContract.getChallengeNumber()  ;
+       var challenge_number = await tokenContract.getChallengeNumber()  ;
 
-       var data = {
-         difficulty: diff,
-         challenge_number: chall
+       var amountMined = await tokenContract.tokensMinted()
+
+       var totalSupply = await tokenContract._totalSupply()
+
+      // var lastRewardTo = await tokenContract.lastRewardTo()
+
+       //var lastRewardAmount = await tokenContract.lastRewardAmount()
+
+      // var lastRewardEthBlockNumber = await tokenContract.lastRewardEthBlockNumber()
+
+      var lastRewardTo = 0;
+      var lastRewardAmount = 0;
+      var lastRewardEthBlockNumber = 0;
+
+       var renderData = {
+         difficulty: difficulty,
+         challenge_number: challenge_number,
+         amountMined: parseInt(amountMined),
+         totalSupply: parseInt(totalSupply),
+         lastRewardTo: lastRewardTo,
+         lastRewardAmount: lastRewardAmount,
+         lastRewardEthBlockNumber: lastRewardEthBlockNumber
+
+
        }
 
-       dashboardRenderer.renderContractData(data);
+       dashboardRenderer.renderContractData(renderData);
 
 
        return data;
