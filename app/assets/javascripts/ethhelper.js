@@ -52,15 +52,14 @@ export default class EthHelper {
 
        var totalSupply = await tokenContract._totalSupply()
 
-      // var lastRewardTo = await tokenContract.lastRewardTo()
 
-       //var lastRewardAmount = await tokenContract.lastRewardAmount()
+       var lastRewardAmount = await tokenContract.lastRewardAmount()
 
-      // var lastRewardEthBlockNumber = await tokenContract.lastRewardEthBlockNumber()
 
-      var lastRewardTo = 0;
-      var lastRewardAmount = 0;
-      var lastRewardEthBlockNumber = 0;
+        var lastRewardTo = await tokenContract.lastRewardTo()
+
+       var lastRewardEthBlockNumber = await tokenContract.lastRewardEthBlockNumber()
+
       var decimals = Math.pow(10,8);
        var renderData = {
          difficulty: difficulty,
