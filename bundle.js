@@ -29728,7 +29728,7 @@ class EthHelper {
 /* 40 */
 /***/ (function(module, exports) {
 
-module.exports = {"network-name":"Ropsten","contracts":{"_0xbitcointoken":{"name":"0xBitcoinToken","blockchain_address":"0x2c867a7ecffd08c82a04b2f16ccc062977caeb21"}}}
+module.exports = {"network-name":"Ropsten","contracts":{"_0xbitcointoken":{"name":"0xBitcoinToken","blockchain_address":"0x0975a2f867b6183fe85d6ac24f586fa703c9d4c2"}}}
 
 /***/ }),
 /* 41 */
