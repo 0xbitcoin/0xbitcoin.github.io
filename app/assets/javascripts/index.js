@@ -40,7 +40,7 @@ $(document).ready(function(){
 
     setInterval( function(){
       console.log("updating contract data")
-      
+
       var contractData = ethHelper.connectToContract( web3 , dashboardRenderer );
 
     },30000);
