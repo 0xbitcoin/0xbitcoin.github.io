@@ -8,10 +8,7 @@ export default class DashboardRenderer {
 
      renderContractData(renderData)
     {
-
-
-         
-
+ 
       var app = new Vue({
         el: '#dashboard',
         data: renderData

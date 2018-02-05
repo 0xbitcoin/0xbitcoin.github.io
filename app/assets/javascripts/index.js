@@ -34,9 +34,16 @@ $(document).ready(function(){
     var app = new Vue({
       el: '#app',
       data: {
-       
+
       }
     })
+
+    setInterval( function(){
+      console.log("updating contract data")
+      
+      var contractData = ethHelper.connectToContract( web3 , dashboardRenderer );
+
+    },30000);
 
     var contractData = ethHelper.connectToContract( web3 , dashboardRenderer );
 
