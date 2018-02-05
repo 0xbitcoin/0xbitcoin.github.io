@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 32);
+/******/ 	return __webpack_require__(__webpack_require__.s = 31);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -2255,7 +2255,7 @@ module.exports = {
 var BigNumber = __webpack_require__(12);
 var utils = __webpack_require__(1);
 var c = __webpack_require__(13);
-var SolidityParam = __webpack_require__(27);
+var SolidityParam = __webpack_require__(26);
 
 /**
  * Formats input value to byte representation of int
@@ -2484,7 +2484,7 @@ module.exports = {
 /***/ (function(module, exports, __webpack_require__) {
 
 var f = __webpack_require__(3);
-var SolidityParam = __webpack_require__(27);
+var SolidityParam = __webpack_require__(26);
 
 /**
  * SolidityType prototype is used to encode/decode solidity params of certain type
@@ -6923,7 +6923,7 @@ module.exports = Property;
  */
 
 var CryptoJS = __webpack_require__(58);
-var sha3 = __webpack_require__(31);
+var sha3 = __webpack_require__(30);
 
 module.exports = function (value, options) {
     if (options && options.encoding === 'hex') {
@@ -18050,7 +18050,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(process, global, setImmediate) {/*!
+/* WEBPACK VAR INJECTION */(function(global, setImmediate) {/*!
  * Vue.js v2.5.13
  * (c) 2014-2017 Evan You
  * Released under the MIT License.
@@ -18386,12 +18386,12 @@ var config = {
   /**
    * Show production mode tip message on boot?
    */
-  productionTip: process.env.NODE_ENV !== 'production',
+  productionTip: "production" !== 'production',
 
   /**
    * Whether to enable devtools
    */
-  devtools: process.env.NODE_ENV !== 'production',
+  devtools: "production" !== 'production',
 
   /**
    * Whether to record perf
@@ -18594,7 +18594,7 @@ var tip = noop;
 var generateComponentTrace = noop; // work around flow check
 var formatComponentName = noop;
 
-if (process.env.NODE_ENV !== 'production') {
+if (false) {
   var hasConsole = typeof console !== 'undefined';
   var classifyRE = /(?:^|[-_])(\w)/g;
   var classify = function (str) {
@@ -18988,7 +18988,7 @@ function defineReactive(obj, key, val, customSetter, shallow) {
         return;
       }
       /* eslint-enable no-self-compare */
-      if (process.env.NODE_ENV !== 'production' && customSetter) {
+      if (false) {
         customSetter();
       }
       if (setter) {
@@ -19019,7 +19019,7 @@ function set(target, key, val) {
   }
   var ob = target.__ob__;
   if (target._isVue || ob && ob.vmCount) {
-    process.env.NODE_ENV !== 'production' && warn('Avoid adding reactive properties to a Vue instance or its root $data ' + 'at runtime - declare it upfront in the data option.');
+    "production" !== 'production' && warn('Avoid adding reactive properties to a Vue instance or its root $data ' + 'at runtime - declare it upfront in the data option.');
     return val;
   }
   if (!ob) {
@@ -19041,7 +19041,7 @@ function del(target, key) {
   }
   var ob = target.__ob__;
   if (target._isVue || ob && ob.vmCount) {
-    process.env.NODE_ENV !== 'production' && warn('Avoid deleting properties on a Vue instance or its root $data ' + '- just set it to null.');
+    "production" !== 'production' && warn('Avoid deleting properties on a Vue instance or its root $data ' + '- just set it to null.');
     return;
   }
   if (!hasOwn(target, key)) {
@@ -19080,7 +19080,7 @@ var strats = config.optionMergeStrategies;
 /**
  * Options with restrictions
  */
-if (process.env.NODE_ENV !== 'production') {
+if (false) {
   strats.el = strats.propsData = function (parent, child, vm, key) {
     if (!vm) {
       warn("option \"" + key + "\" can only be used during instance " + 'creation with the `new` keyword.');
@@ -19148,7 +19148,7 @@ function mergeDataOrFn(parentVal, childVal, vm) {
 strats.data = function (parentVal, childVal, vm) {
   if (!vm) {
     if (childVal && typeof childVal !== 'function') {
-      process.env.NODE_ENV !== 'production' && warn('The "data" option should be a function ' + 'that returns a per-instance value in component ' + 'definitions.', vm);
+      "production" !== 'production' && warn('The "data" option should be a function ' + 'that returns a per-instance value in component ' + 'definitions.', vm);
 
       return parentVal;
     }
@@ -19179,7 +19179,7 @@ LIFECYCLE_HOOKS.forEach(function (hook) {
 function mergeAssets(parentVal, childVal, vm, key) {
   var res = Object.create(parentVal || null);
   if (childVal) {
-    process.env.NODE_ENV !== 'production' && assertObjectType(key, childVal, vm);
+    "production" !== 'production' && assertObjectType(key, childVal, vm);
     return extend(res, childVal);
   } else {
     return res;
@@ -19208,7 +19208,7 @@ strats.watch = function (parentVal, childVal, vm, key) {
   if (!childVal) {
     return Object.create(parentVal || null);
   }
-  if (process.env.NODE_ENV !== 'production') {
+  if (false) {
     assertObjectType(key, childVal, vm);
   }
   if (!parentVal) {
@@ -19231,7 +19231,7 @@ strats.watch = function (parentVal, childVal, vm, key) {
  * Other object hashes.
  */
 strats.props = strats.methods = strats.inject = strats.computed = function (parentVal, childVal, vm, key) {
-  if (childVal && process.env.NODE_ENV !== 'production') {
+  if (childVal && "production" !== 'production') {
     assertObjectType(key, childVal, vm);
   }
   if (!parentVal) {
@@ -19289,7 +19289,7 @@ function normalizeProps(options, vm) {
       if (typeof val === 'string') {
         name = camelize(val);
         res[name] = { type: null };
-      } else if (process.env.NODE_ENV !== 'production') {
+      } else if (false) {
         warn('props must be strings when using array syntax.');
       }
     }
@@ -19299,7 +19299,7 @@ function normalizeProps(options, vm) {
       name = camelize(key);
       res[name] = isPlainObject(val) ? val : { type: val };
     }
-  } else if (process.env.NODE_ENV !== 'production') {
+  } else if (false) {
     warn("Invalid value for option \"props\": expected an Array or an Object, " + "but got " + toRawType(props) + ".", vm);
   }
   options.props = res;
@@ -19323,7 +19323,7 @@ function normalizeInject(options, vm) {
       var val = inject[key];
       normalized[key] = isPlainObject(val) ? extend({ from: key }, val) : { from: val };
     }
-  } else if (process.env.NODE_ENV !== 'production') {
+  } else if (false) {
     warn("Invalid value for option \"inject\": expected an Array or an Object, " + "but got " + toRawType(inject) + ".", vm);
   }
 }
@@ -19354,7 +19354,7 @@ function assertObjectType(name, value, vm) {
  * Core utility used in both instantiation and inheritance.
  */
 function mergeOptions(parent, child, vm) {
-  if (process.env.NODE_ENV !== 'production') {
+  if (false) {
     checkComponents(child);
   }
 
@@ -19416,7 +19416,7 @@ function resolveAsset(options, type, id, warnMissing) {
   }
   // fallback to prototype chain
   var res = assets[id] || assets[camelizedId] || assets[PascalCaseId];
-  if (process.env.NODE_ENV !== 'production' && warnMissing && !res) {
+  if (false) {
     warn('Failed to resolve ' + type.slice(0, -1) + ': ' + id, options);
   }
   return res;
@@ -19446,9 +19446,7 @@ function validateProp(key, propOptions, propsData, vm) {
     observe(value);
     observerState.shouldConvert = prevShouldConvert;
   }
-  if (process.env.NODE_ENV !== 'production' &&
-  // skip validation for weex recycle-list child component props
-  !(false && isObject(value) && '@binding' in value)) {
+  if (false) {
     assertProp(prop, key, value, vm, absent);
   }
   return value;
@@ -19464,7 +19462,7 @@ function getPropDefaultValue(vm, prop, key) {
   }
   var def = prop.default;
   // warn against non-factory defaults for Object & Array
-  if (process.env.NODE_ENV !== 'production' && isObject(def)) {
+  if (false) {
     warn('Invalid default value for prop "' + key + '": ' + 'Props with type Object/Array must use a factory function ' + 'to return the default value.', vm);
   }
   // the raw prop value was also undefined from previous render,
@@ -19597,7 +19595,7 @@ function globalHandleError(err, vm, info) {
 }
 
 function logError(err, vm, info) {
-  if (process.env.NODE_ENV !== 'production') {
+  if (false) {
     warn("Error in " + info + ": \"" + err.toString() + "\"", vm);
   }
   /* istanbul ignore else */
@@ -19727,7 +19725,7 @@ function nextTick(cb, ctx) {
 var mark;
 var measure;
 
-if (process.env.NODE_ENV !== 'production') {
+if (false) {
   var perf = inBrowser && window.performance;
   /* istanbul ignore if */
   if (perf && perf.mark && perf.measure && perf.clearMarks && perf.clearMeasures) {
@@ -19747,7 +19745,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 var initProxy;
 
-if (process.env.NODE_ENV !== 'production') {
+if (false) {
   var allowedGlobals = makeMap('Infinity,undefined,NaN,isFinite,isNaN,' + 'parseFloat,parseInt,decodeURI,decodeURIComponent,encodeURI,encodeURIComponent,' + 'Math,Number,Date,Array,Object,Boolean,String,RegExp,Map,Set,JSON,Intl,' + 'require' // for Webpack/Browserify
   );
 
@@ -19889,7 +19887,7 @@ function updateListeners(on, oldOn, add, remove$$1, vm) {
     event = normalizeEvent(name);
     /* istanbul ignore if */
     if (isUndef(cur)) {
-      process.env.NODE_ENV !== 'production' && warn("Invalid handler for event \"" + event.name + "\": got " + String(cur), vm);
+      "production" !== 'production' && warn("Invalid handler for event \"" + event.name + "\": got " + String(cur), vm);
     } else if (isUndef(old)) {
       if (isUndef(cur.fns)) {
         cur = on[name] = createFnInvoker(cur);
@@ -19959,7 +19957,7 @@ function extractPropsFromVNodeData(data, Ctor, tag) {
   if (isDef(attrs) || isDef(props)) {
     for (var key in propOptions) {
       var altKey = hyphenate(key);
-      if (process.env.NODE_ENV !== 'production') {
+      if (false) {
         var keyInLowerCase = key.toLowerCase();
         if (key !== keyInLowerCase && attrs && hasOwn(attrs, keyInLowerCase)) {
           tip("Prop \"" + keyInLowerCase + "\" is passed to component " + formatComponentName(tag || Ctor) + ", but the declared prop name is" + " \"" + key + "\". " + "Note that HTML attributes are case-insensitive and camelCased " + "props need to use their kebab-case equivalents when using in-DOM " + "templates. You should probably use \"" + altKey + "\" instead of \"" + key + "\".");
@@ -20125,7 +20123,7 @@ function resolveAsyncComponent(factory, baseCtor, context) {
     });
 
     var reject = once(function (reason) {
-      process.env.NODE_ENV !== 'production' && warn("Failed to resolve async component: " + String(factory) + (reason ? "\nReason: " + reason : ''));
+      "production" !== 'production' && warn("Failed to resolve async component: " + String(factory) + (reason ? "\nReason: " + reason : ''));
       if (isDef(factory.errorComp)) {
         factory.error = true;
         forceRender();
@@ -20164,7 +20162,7 @@ function resolveAsyncComponent(factory, baseCtor, context) {
         if (isDef(res.timeout)) {
           setTimeout(function () {
             if (isUndef(factory.resolved)) {
-              reject(process.env.NODE_ENV !== 'production' ? "timeout (" + res.timeout + "ms)" : null);
+              reject( false ? "timeout (" + res.timeout + "ms)" : null);
             }
           }, res.timeout);
         }
@@ -20304,7 +20302,7 @@ function eventsMixin(Vue) {
 
   Vue.prototype.$emit = function (event) {
     var vm = this;
-    if (process.env.NODE_ENV !== 'production') {
+    if (false) {
       var lowerCaseEvent = event.toLowerCase();
       if (lowerCaseEvent !== event && vm._events[lowerCaseEvent]) {
         tip("Event \"" + lowerCaseEvent + "\" is emitted in component " + formatComponentName(vm) + " but the handler is registered for \"" + event + "\". " + "Note that HTML attributes are case-insensitive and you cannot use " + "v-on to listen to camelCase events when using in-DOM templates. " + "You should probably use \"" + hyphenate(event) + "\" instead of \"" + event + "\".");
@@ -20509,7 +20507,7 @@ function mountComponent(vm, el, hydrating) {
   vm.$el = el;
   if (!vm.$options.render) {
     vm.$options.render = createEmptyVNode;
-    if (process.env.NODE_ENV !== 'production') {
+    if (false) {
       /* istanbul ignore if */
       if (vm.$options.template && vm.$options.template.charAt(0) !== '#' || vm.$options.el || el) {
         warn('You are using the runtime-only build of Vue where the template ' + 'compiler is not available. Either pre-compile the templates into ' + 'render functions, or use the compiler-included build.', vm);
@@ -20522,7 +20520,7 @@ function mountComponent(vm, el, hydrating) {
 
   var updateComponent;
   /* istanbul ignore if */
-  if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
+  if (false) {
     updateComponent = function () {
       var name = vm._name;
       var id = vm._uid;
@@ -20561,7 +20559,7 @@ function mountComponent(vm, el, hydrating) {
 }
 
 function updateChildComponent(vm, propsData, listeners, parentVnode, renderChildren) {
-  if (process.env.NODE_ENV !== 'production') {
+  if (false) {
     isUpdatingChildComponent = true;
   }
 
@@ -20614,7 +20612,7 @@ function updateChildComponent(vm, propsData, listeners, parentVnode, renderChild
     vm.$forceUpdate();
   }
 
-  if (process.env.NODE_ENV !== 'production') {
+  if (false) {
     isUpdatingChildComponent = false;
   }
 }
@@ -20696,7 +20694,7 @@ var index = 0;
 function resetSchedulerState() {
   index = queue.length = activatedChildren.length = 0;
   has = {};
-  if (process.env.NODE_ENV !== 'production') {
+  if (false) {
     circular = {};
   }
   waiting = flushing = false;
@@ -20729,7 +20727,7 @@ function flushSchedulerQueue() {
     has[id] = null;
     watcher.run();
     // in dev build, check and stop circular updates.
-    if (process.env.NODE_ENV !== 'production' && has[id] != null) {
+    if (false) {
       circular[id] = (circular[id] || 0) + 1;
       if (circular[id] > MAX_UPDATE_COUNT) {
         warn('You may have an infinite update loop ' + (watcher.user ? "in watcher with expression \"" + watcher.expression + "\"" : "in a component render function."), watcher.vm);
@@ -20844,7 +20842,7 @@ var Watcher = function Watcher(vm, expOrFn, cb, options, isRenderWatcher) {
   this.newDeps = [];
   this.depIds = new _Set();
   this.newDepIds = new _Set();
-  this.expression = process.env.NODE_ENV !== 'production' ? expOrFn.toString() : '';
+  this.expression =  false ? expOrFn.toString() : '';
   // parse expression for getter
   if (typeof expOrFn === 'function') {
     this.getter = expOrFn;
@@ -20852,7 +20850,7 @@ var Watcher = function Watcher(vm, expOrFn, cb, options, isRenderWatcher) {
     this.getter = parsePath(expOrFn);
     if (!this.getter) {
       this.getter = function () {};
-      process.env.NODE_ENV !== 'production' && warn("Failed watching path: \"" + expOrFn + "\" " + 'Watcher only accepts simple dot-delimited paths. ' + 'For full control, use a function instead.', vm);
+      "production" !== 'production' && warn("Failed watching path: \"" + expOrFn + "\" " + 'Watcher only accepts simple dot-delimited paths. ' + 'For full control, use a function instead.', vm);
     }
   }
   this.value = this.lazy ? undefined : this.get();
@@ -21061,7 +21059,7 @@ function initProps(vm, propsOptions) {
     keys.push(key);
     var value = validateProp(key, propsOptions, propsData, vm);
     /* istanbul ignore else */
-    if (process.env.NODE_ENV !== 'production') {
+    if (false) {
       var hyphenatedKey = hyphenate(key);
       if (isReservedAttribute(hyphenatedKey) || config.isReservedAttr(hyphenatedKey)) {
         warn("\"" + hyphenatedKey + "\" is a reserved attribute and cannot be used as component prop.", vm);
@@ -21091,7 +21089,7 @@ function initData(vm) {
   data = vm._data = typeof data === 'function' ? getData(data, vm) : data || {};
   if (!isPlainObject(data)) {
     data = {};
-    process.env.NODE_ENV !== 'production' && warn('data functions should return an object:\n' + 'https://vuejs.org/v2/guide/components.html#data-Must-Be-a-Function', vm);
+    "production" !== 'production' && warn('data functions should return an object:\n' + 'https://vuejs.org/v2/guide/components.html#data-Must-Be-a-Function', vm);
   }
   // proxy data on instance
   var keys = Object.keys(data);
@@ -21100,13 +21098,13 @@ function initData(vm) {
   var i = keys.length;
   while (i--) {
     var key = keys[i];
-    if (process.env.NODE_ENV !== 'production') {
+    if (false) {
       if (methods && hasOwn(methods, key)) {
         warn("Method \"" + key + "\" has already been defined as a data property.", vm);
       }
     }
     if (props && hasOwn(props, key)) {
-      process.env.NODE_ENV !== 'production' && warn("The data property \"" + key + "\" is already declared as a prop. " + "Use prop default value instead.", vm);
+      "production" !== 'production' && warn("The data property \"" + key + "\" is already declared as a prop. " + "Use prop default value instead.", vm);
     } else if (!isReserved(key)) {
       proxy(vm, "_data", key);
     }
@@ -21135,7 +21133,7 @@ function initComputed(vm, computed) {
   for (var key in computed) {
     var userDef = computed[key];
     var getter = typeof userDef === 'function' ? userDef : userDef.get;
-    if (process.env.NODE_ENV !== 'production' && getter == null) {
+    if (false) {
       warn("Getter is missing for computed property \"" + key + "\".", vm);
     }
 
@@ -21149,7 +21147,7 @@ function initComputed(vm, computed) {
     // at instantiation here.
     if (!(key in vm)) {
       defineComputed(vm, key, userDef);
-    } else if (process.env.NODE_ENV !== 'production') {
+    } else if (false) {
       if (key in vm.$data) {
         warn("The computed property \"" + key + "\" is already defined in data.", vm);
       } else if (vm.$options.props && key in vm.$options.props) {
@@ -21168,7 +21166,7 @@ function defineComputed(target, key, userDef) {
     sharedPropertyDefinition.get = userDef.get ? shouldCache && userDef.cache !== false ? createComputedGetter(key) : userDef.get : noop;
     sharedPropertyDefinition.set = userDef.set ? userDef.set : noop;
   }
-  if (process.env.NODE_ENV !== 'production' && sharedPropertyDefinition.set === noop) {
+  if (false) {
     sharedPropertyDefinition.set = function () {
       warn("Computed property \"" + key + "\" was assigned to but it has no setter.", this);
     };
@@ -21194,7 +21192,7 @@ function createComputedGetter(key) {
 function initMethods(vm, methods) {
   var props = vm.$options.props;
   for (var key in methods) {
-    if (process.env.NODE_ENV !== 'production') {
+    if (false) {
       if (methods[key] == null) {
         warn("Method \"" + key + "\" has an undefined value in the component definition. " + "Did you reference the function correctly?", vm);
       }
@@ -21245,7 +21243,7 @@ function stateMixin(Vue) {
   propsDef.get = function () {
     return this._props;
   };
-  if (process.env.NODE_ENV !== 'production') {
+  if (false) {
     dataDef.set = function (newData) {
       warn('Avoid replacing instance root $data. ' + 'Use nested data properties instead.', this);
     };
@@ -21291,7 +21289,7 @@ function initInjections(vm) {
     observerState.shouldConvert = false;
     Object.keys(result).forEach(function (key) {
       /* istanbul ignore else */
-      if (process.env.NODE_ENV !== 'production') {
+      if (false) {
         defineReactive(vm, key, result[key], function () {
           warn("Avoid mutating an injected value directly since the changes will be " + "overwritten whenever the provided component re-renders. " + "injection being mutated: \"" + key + "\"", vm);
         });
@@ -21327,7 +21325,7 @@ function resolveInject(inject, vm) {
         if ('default' in inject[key]) {
           var provideDefault = inject[key].default;
           result[key] = typeof provideDefault === 'function' ? provideDefault.call(vm) : provideDefault;
-        } else if (process.env.NODE_ENV !== 'production') {
+        } else if (false) {
           warn("Injection \"" + key + "\" not found", vm);
         }
       }
@@ -21379,7 +21377,7 @@ function renderSlot(name, fallback, props, bindObject) {
     // scoped slot
     props = props || {};
     if (bindObject) {
-      if (process.env.NODE_ENV !== 'production' && !isObject(bindObject)) {
+      if (false) {
         warn('slot v-bind without argument expects an Object', this);
       }
       props = extend(extend({}, bindObject), props);
@@ -21389,7 +21387,7 @@ function renderSlot(name, fallback, props, bindObject) {
     var slotNodes = this.$slots[name];
     // warn duplicate slot usage
     if (slotNodes) {
-      if (process.env.NODE_ENV !== 'production' && slotNodes._rendered) {
+      if (false) {
         warn("Duplicate presence of slot \"" + name + "\" found in the same render tree " + "- this will likely cause render errors.", this);
       }
       slotNodes._rendered = true;
@@ -21442,7 +21440,7 @@ function checkKeyCodes(eventKeyCode, key, builtInAlias, eventKeyName) {
 function bindObjectProps(data, tag, value, asProp, isSync) {
   if (value) {
     if (!isObject(value)) {
-      process.env.NODE_ENV !== 'production' && warn('v-bind without argument expects an Object or Array value', this);
+      "production" !== 'production' && warn('v-bind without argument expects an Object or Array value', this);
     } else {
       if (Array.isArray(value)) {
         value = toObject(value);
@@ -21525,7 +21523,7 @@ function markStaticNode(node, key, isOnce) {
 function bindObjectListeners(data, value) {
   if (value) {
     if (!isPlainObject(value)) {
-      process.env.NODE_ENV !== 'production' && warn('v-on without argument expects an Object value', this);
+      "production" !== 'production' && warn('v-on without argument expects an Object value', this);
     } else {
       var on = data.on = data.on ? extend({}, data.on) : {};
       for (var key in value) {
@@ -21734,7 +21732,7 @@ function createComponent(Ctor, data, context, children, tag) {
   // if at this stage it's not a constructor or an async component factory,
   // reject.
   if (typeof Ctor !== 'function') {
-    if (process.env.NODE_ENV !== 'production') {
+    if (false) {
       warn("Invalid Component definition: " + String(Ctor), context);
     }
     return;
@@ -21877,7 +21875,7 @@ function createElement(context, tag, data, children, normalizationType, alwaysNo
 
 function _createElement(context, tag, data, children, normalizationType) {
   if (isDef(data) && isDef(data.__ob__)) {
-    process.env.NODE_ENV !== 'production' && warn("Avoid using observed data object as vnode data: " + JSON.stringify(data) + "\n" + 'Always create fresh vnode data objects in each render!', context);
+    "production" !== 'production' && warn("Avoid using observed data object as vnode data: " + JSON.stringify(data) + "\n" + 'Always create fresh vnode data objects in each render!', context);
     return createEmptyVNode();
   }
   // object syntax in v-bind
@@ -21889,7 +21887,7 @@ function _createElement(context, tag, data, children, normalizationType) {
     return createEmptyVNode();
   }
   // warn against non-primitive key
-  if (process.env.NODE_ENV !== 'production' && isDef(data) && isDef(data.key) && !isPrimitive(data.key)) {
+  if (false) {
     {
       warn('Avoid using non-primitive value as key, ' + 'use string/number value instead.', context);
     }
@@ -21980,7 +21978,7 @@ function initRender(vm) {
   var parentData = parentVnode && parentVnode.data;
 
   /* istanbul ignore else */
-  if (process.env.NODE_ENV !== 'production') {
+  if (false) {
     defineReactive(vm, '$attrs', parentData && parentData.attrs || emptyObject, function () {
       !isUpdatingChildComponent && warn("$attrs is readonly.", vm);
     }, true);
@@ -22034,7 +22032,7 @@ function renderMixin(Vue) {
       // return error render result,
       // or previous vnode to prevent render error causing blank component
       /* istanbul ignore else */
-      if (process.env.NODE_ENV !== 'production') {
+      if (false) {
         if (vm.$options.renderError) {
           try {
             vnode = vm.$options.renderError.call(vm._renderProxy, vm.$createElement, e);
@@ -22051,7 +22049,7 @@ function renderMixin(Vue) {
     }
     // return empty vnode in case the render function errored out
     if (!(vnode instanceof VNode)) {
-      if (process.env.NODE_ENV !== 'production' && Array.isArray(vnode)) {
+      if (false) {
         warn('Multiple root nodes returned from render function. Render function ' + 'should return a single root node.', vm);
       }
       vnode = createEmptyVNode();
@@ -22074,7 +22072,7 @@ function initMixin(Vue) {
 
     var startTag, endTag;
     /* istanbul ignore if */
-    if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
+    if (false) {
       startTag = "vue-perf-start:" + vm._uid;
       endTag = "vue-perf-end:" + vm._uid;
       mark(startTag);
@@ -22092,7 +22090,7 @@ function initMixin(Vue) {
       vm.$options = mergeOptions(resolveConstructorOptions(vm.constructor), options || {}, vm);
     }
     /* istanbul ignore else */
-    if (process.env.NODE_ENV !== 'production') {
+    if (false) {
       initProxy(vm);
     } else {
       vm._renderProxy = vm;
@@ -22109,7 +22107,7 @@ function initMixin(Vue) {
     callHook(vm, 'created');
 
     /* istanbul ignore if */
-    if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
+    if (false) {
       vm._name = formatComponentName(vm, false);
       mark(endTag);
       measure("vue " + vm._name + " init", startTag, endTag);
@@ -22202,7 +22200,7 @@ function dedupe(latest, extended, sealed) {
 }
 
 function Vue$3(options) {
-  if (process.env.NODE_ENV !== 'production' && !(this instanceof Vue$3)) {
+  if (false) {
     warn('Vue is a constructor and should be called with the `new` keyword');
   }
   this._init(options);
@@ -22269,7 +22267,7 @@ function initExtend(Vue) {
     }
 
     var name = extendOptions.name || Super.options.name;
-    if (process.env.NODE_ENV !== 'production' && name) {
+    if (false) {
       validateComponentName(name);
     }
 
@@ -22346,7 +22344,7 @@ function initAssetRegisters(Vue) {
         return this.options[type + 's'][id];
       } else {
         /* istanbul ignore if */
-        if (process.env.NODE_ENV !== 'production' && type === 'component') {
+        if (false) {
           validateComponentName(id);
         }
         if (type === 'component' && isPlainObject(definition)) {
@@ -22500,7 +22498,7 @@ function initGlobalAPI(Vue) {
   configDef.get = function () {
     return config;
   };
-  if (process.env.NODE_ENV !== 'production') {
+  if (false) {
     configDef.set = function () {
       warn('Do not replace the Vue.config object, set individual fields instead.');
     };
@@ -22729,7 +22727,7 @@ function query(el) {
   if (typeof el === 'string') {
     var selected = document.querySelector(el);
     if (!selected) {
-      process.env.NODE_ENV !== 'production' && warn('Cannot find element: ' + el);
+      "production" !== 'production' && warn('Cannot find element: ' + el);
       return document.createElement('div');
     }
     return selected;
@@ -22954,7 +22952,7 @@ function createPatchFunction(backend) {
     var children = vnode.children;
     var tag = vnode.tag;
     if (isDef(tag)) {
-      if (process.env.NODE_ENV !== 'production') {
+      if (false) {
         if (data && data.pre) {
           creatingElmInVPre++;
         }
@@ -22974,7 +22972,7 @@ function createPatchFunction(backend) {
         insert(parentElm, vnode.elm, refElm);
       }
 
-      if (process.env.NODE_ENV !== 'production' && data && data.pre) {
+      if (false) {
         creatingElmInVPre--;
       }
     } else if (isTrue(vnode.isComment)) {
@@ -23061,7 +23059,7 @@ function createPatchFunction(backend) {
 
   function createChildren(vnode, children, insertedVnodeQueue) {
     if (Array.isArray(children)) {
-      if (process.env.NODE_ENV !== 'production') {
+      if (false) {
         checkDuplicateKeys(children);
       }
       for (var i = 0; i < children.length; ++i) {
@@ -23200,7 +23198,7 @@ function createPatchFunction(backend) {
     // during leaving transitions
     var canMove = !removeOnly;
 
-    if (process.env.NODE_ENV !== 'production') {
+    if (false) {
       checkDuplicateKeys(newCh);
     }
 
@@ -23382,7 +23380,7 @@ function createPatchFunction(backend) {
       return true;
     }
     // assert node match
-    if (process.env.NODE_ENV !== 'production') {
+    if (false) {
       if (!assertNodeMatch(elm, vnode, inVPre)) {
         return false;
       }
@@ -23407,7 +23405,7 @@ function createPatchFunction(backend) {
           if (isDef(i = data) && isDef(i = i.domProps) && isDef(i = i.innerHTML)) {
             if (i !== elm.innerHTML) {
               /* istanbul ignore if */
-              if (process.env.NODE_ENV !== 'production' && typeof console !== 'undefined' && !hydrationBailed) {
+              if (false) {
                 hydrationBailed = true;
                 console.warn('Parent: ', elm);
                 console.warn('server innerHTML: ', i);
@@ -23430,7 +23428,7 @@ function createPatchFunction(backend) {
             // longer than the virtual children list.
             if (!childrenMatch || childNode) {
               /* istanbul ignore if */
-              if (process.env.NODE_ENV !== 'production' && typeof console !== 'undefined' && !hydrationBailed) {
+              if (false) {
                 hydrationBailed = true;
                 console.warn('Parent: ', elm);
                 console.warn('Mismatching childNodes vs. VNodes: ', elm.childNodes, children);
@@ -23501,7 +23499,7 @@ function createPatchFunction(backend) {
             if (hydrate(oldVnode, vnode, insertedVnodeQueue)) {
               invokeInsertHook(vnode, insertedVnodeQueue, true);
               return oldVnode;
-            } else if (process.env.NODE_ENV !== 'production') {
+            } else if (false) {
               warn('The client-side rendered virtual DOM tree is not matching ' + 'server-rendered content. This is likely caused by incorrect ' + 'HTML markup, for example nesting block-level elements inside ' + '<p>, or missing <tbody>. Bailing hydration and performing ' + 'full client-side render.');
             }
           }
@@ -23953,7 +23951,7 @@ function addHandler(el, name, value, modifiers, important, warn) {
   modifiers = modifiers || emptyObject;
   // warn prevent and passive modifier
   /* istanbul ignore if */
-  if (process.env.NODE_ENV !== 'production' && warn && modifiers.prevent && modifiers.passive) {
+  if (false) {
     warn('passive and prevent can\'t be used together. ' + 'Passive handler can\'t prevent default event.');
   }
 
@@ -24201,7 +24199,7 @@ function model(el, dir, _warn) {
   var tag = el.tag;
   var type = el.attrsMap.type;
 
-  if (process.env.NODE_ENV !== 'production') {
+  if (false) {
     // inputs with type="file" are read only and setting the input's
     // value will throw an error.
     if (tag === 'input' && type === 'file') {
@@ -24225,7 +24223,7 @@ function model(el, dir, _warn) {
     genComponentModel(el, value, modifiers);
     // component v-model doesn't need extra runtime
     return false;
-  } else if (process.env.NODE_ENV !== 'production') {
+  } else if (false) {
     warn$1("<" + el.tag + " v-model=\"" + value + "\">: " + "v-model is not supported on this element type. " + 'If you are working with contenteditable, it\'s recommended to ' + 'wrap a library dedicated for that purpose inside a custom component.');
   }
 
@@ -24264,7 +24262,7 @@ function genDefaultModel(el, value, modifiers) {
   var type = el.attrsMap.type;
 
   // warn if v-bind:value conflicts with v-model
-  if (process.env.NODE_ENV !== 'production') {
+  if (false) {
     var value$1 = el.attrsMap['v-bind:value'] || el.attrsMap[':value'];
     if (value$1) {
       var binding = el.attrsMap['v-bind:value'] ? 'v-bind:value' : ':value';
@@ -24906,7 +24904,7 @@ function enter(vnode, toggleDisplay) {
 
   var explicitEnterDuration = toNumber(isObject(duration) ? duration.enter : duration);
 
-  if (process.env.NODE_ENV !== 'production' && explicitEnterDuration != null) {
+  if (false) {
     checkDuration(explicitEnterDuration, 'enter', vnode);
   }
 
@@ -25005,7 +25003,7 @@ function leave(vnode, rm) {
 
   var explicitLeaveDuration = toNumber(isObject(duration) ? duration.leave : duration);
 
-  if (process.env.NODE_ENV !== 'production' && isDef(explicitLeaveDuration)) {
+  if (false) {
     checkDuration(explicitLeaveDuration, 'leave', vnode);
   }
 
@@ -25215,7 +25213,7 @@ function actuallySetSelected(el, binding, vm) {
   var value = binding.value;
   var isMultiple = el.multiple;
   if (isMultiple && !Array.isArray(value)) {
-    process.env.NODE_ENV !== 'production' && warn("<select multiple v-model=\"" + binding.expression + "\"> " + "expects an Array value for its binding, but got " + Object.prototype.toString.call(value).slice(8, -1), vm);
+    "production" !== 'production' && warn("<select multiple v-model=\"" + binding.expression + "\"> " + "expects an Array value for its binding, but got " + Object.prototype.toString.call(value).slice(8, -1), vm);
     return;
   }
   var selected, option;
@@ -25424,14 +25422,14 @@ var Transition = {
     }
 
     // warn multiple elements
-    if (process.env.NODE_ENV !== 'production' && children.length > 1) {
+    if (false) {
       warn('<transition> can only be used on a single element. Use ' + '<transition-group> for lists.', this.$parent);
     }
 
     var mode = this.mode;
 
     // warn invalid mode
-    if (process.env.NODE_ENV !== 'production' && mode && mode !== 'in-out' && mode !== 'out-in') {
+    if (false) {
       warn('invalid <transition> mode: ' + mode, this.$parent);
     }
 
@@ -25545,7 +25543,7 @@ var TransitionGroup = {
         if (c.key != null && String(c.key).indexOf('__vlist') !== 0) {
           children.push(c);
           map[c.key] = c;(c.data || (c.data = {})).transition = transitionData;
-        } else if (process.env.NODE_ENV !== 'production') {
+        } else if (false) {
           var opts = c.componentOptions;
           var name = opts ? opts.Ctor.options.name || opts.tag || '' : c.tag;
           warn("<transition-group> children must be keyed: <" + name + ">");
@@ -25708,11 +25706,11 @@ Vue$3.nextTick(function () {
   if (config.devtools) {
     if (devtools) {
       devtools.emit('init', Vue$3);
-    } else if (process.env.NODE_ENV !== 'production' && isChrome) {
+    } else if (false) {
       console[console.info ? 'info' : 'log']('Download the Vue Devtools extension for a better development experience:\n' + 'https://github.com/vuejs/vue-devtools');
     }
   }
-  if (process.env.NODE_ENV !== 'production' && config.productionTip !== false && inBrowser && typeof console !== 'undefined') {
+  if (false) {
     console[console.info ? 'info' : 'log']("You are running Vue in development mode.\n" + "Make sure to turn on production mode when deploying for production.\n" + "See more tips at https://vuejs.org/guide/deployment.html");
   }
 }, 0);
@@ -25765,7 +25763,7 @@ function parseText(text, delimiters) {
 function transformNode(el, options) {
   var warn = options.warn || baseWarn;
   var staticClass = getAndRemoveAttr(el, 'class');
-  if (process.env.NODE_ENV !== 'production' && staticClass) {
+  if (false) {
     var res = parseText(staticClass, options.delimiters);
     if (res) {
       warn("class=\"" + staticClass + "\": " + 'Interpolation inside attributes has been removed. ' + 'Use v-bind or the colon shorthand instead. For example, ' + 'instead of <div class="{{ val }}">, use <div :class="val">.');
@@ -25804,7 +25802,7 @@ function transformNode$1(el, options) {
   var staticStyle = getAndRemoveAttr(el, 'style');
   if (staticStyle) {
     /* istanbul ignore if */
-    if (process.env.NODE_ENV !== 'production') {
+    if (false) {
       var res = parseText(staticStyle, options.delimiters);
       if (res) {
         warn("style=\"" + staticStyle + "\": " + 'Interpolation inside attributes has been removed. ' + 'Use v-bind or the colon shorthand instead. For example, ' + 'instead of <div style="{{ val }}">, use <div :style="val">.');
@@ -26030,7 +26028,7 @@ function parseHTML(html, options) {
 
     if (html === last) {
       options.chars && options.chars(html);
-      if (process.env.NODE_ENV !== 'production' && !stack.length && options.warn) {
+      if (false) {
         options.warn("Mal-formatted tag at end of template: \"" + html + "\"");
       }
       break;
@@ -26145,7 +26143,7 @@ function parseHTML(html, options) {
     if (pos >= 0) {
       // Close all the open elements, up the stack
       for (var i = stack.length - 1; i >= pos; i--) {
-        if (process.env.NODE_ENV !== 'production' && (i > pos || !tagName) && options.warn) {
+        if (false) {
           options.warn("tag <" + stack[i].tag + "> has no matching end tag.");
         }
         if (options.end) {
@@ -26277,7 +26275,7 @@ function parse(template, options) {
 
       if (isForbiddenTag(element) && !isServerRendering()) {
         element.forbidden = true;
-        process.env.NODE_ENV !== 'production' && warn$2('Templates should only be responsible for mapping the state to the ' + 'UI. Avoid placing tags with side-effects in your templates, such as ' + "<" + tag + ">" + ', as they will not be parsed.');
+        "production" !== 'production' && warn$2('Templates should only be responsible for mapping the state to the ' + 'UI. Avoid placing tags with side-effects in your templates, such as ' + "<" + tag + ">" + ', as they will not be parsed.');
       }
 
       // apply pre-transforms
@@ -26306,7 +26304,7 @@ function parse(template, options) {
       }
 
       function checkRootConstraints(el) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (false) {
           if (el.tag === 'slot' || el.tag === 'template') {
             warnOnce("Cannot use <" + el.tag + "> as component root element because it may " + 'contain multiple nodes.');
           }
@@ -26328,7 +26326,7 @@ function parse(template, options) {
             exp: element.elseif,
             block: element
           });
-        } else if (process.env.NODE_ENV !== 'production') {
+        } else if (false) {
           warnOnce("Component template should contain exactly one root element. " + "If you are using v-if on multiple elements, " + "use v-else-if to chain them instead.");
         }
       }
@@ -26367,7 +26365,7 @@ function parse(template, options) {
 
     chars: function chars(text) {
       if (!currentParent) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (false) {
           if (text === template) {
             warnOnce('Component template requires a root element, rather than just text.');
           } else if (text = text.trim()) {
@@ -26454,7 +26452,7 @@ function processElement(element, options) {
 function processKey(el) {
   var exp = getBindingAttr(el, 'key');
   if (exp) {
-    if (process.env.NODE_ENV !== 'production' && el.tag === 'template') {
+    if (false) {
       warn$2("<template> cannot be keyed. Place the key on real elements instead.");
     }
     el.key = exp;
@@ -26475,7 +26473,7 @@ function processFor(el) {
     var res = parseFor(exp);
     if (res) {
       extend(el, res);
-    } else if (process.env.NODE_ENV !== 'production') {
+    } else if (false) {
       warn$2("Invalid v-for expression: " + exp);
     }
   }
@@ -26528,7 +26526,7 @@ function processIfConditions(el, parent) {
       exp: el.elseif,
       block: el
     });
-  } else if (process.env.NODE_ENV !== 'production') {
+  } else if (false) {
     warn$2("v-" + (el.elseif ? 'else-if="' + el.elseif + '"' : 'else') + " " + "used on element <" + el.tag + "> without corresponding v-if.");
   }
 }
@@ -26539,7 +26537,7 @@ function findPrevElement(children) {
     if (children[i].type === 1) {
       return children[i];
     } else {
-      if (process.env.NODE_ENV !== 'production' && children[i].text !== ' ') {
+      if (false) {
         warn$2("text \"" + children[i].text.trim() + "\" between v-if and v-else(-if) " + "will be ignored.");
       }
       children.pop();
@@ -26564,7 +26562,7 @@ function processOnce(el) {
 function processSlot(el) {
   if (el.tag === 'slot') {
     el.slotName = getBindingAttr(el, 'name');
-    if (process.env.NODE_ENV !== 'production' && el.key) {
+    if (false) {
       warn$2("`key` does not work on <slot> because slots are abstract outlets " + "and can possibly expand into multiple elements. " + "Use the key on a wrapping element instead.");
     }
   } else {
@@ -26572,13 +26570,13 @@ function processSlot(el) {
     if (el.tag === 'template') {
       slotScope = getAndRemoveAttr(el, 'scope');
       /* istanbul ignore if */
-      if (process.env.NODE_ENV !== 'production' && slotScope) {
+      if (false) {
         warn$2("the \"scope\" attribute for scoped slots have been deprecated and " + "replaced by \"slot-scope\" since 2.5. The new \"slot-scope\" attribute " + "can also be used on plain elements in addition to <template> to " + "denote scoped slots.", true);
       }
       el.slotScope = slotScope || getAndRemoveAttr(el, 'slot-scope');
     } else if (slotScope = getAndRemoveAttr(el, 'slot-scope')) {
       /* istanbul ignore if */
-      if (process.env.NODE_ENV !== 'production' && el.attrsMap['v-for']) {
+      if (false) {
         warn$2("Ambiguous combined usage of slot-scope and v-for on <" + el.tag + "> " + "(v-for takes higher priority). Use a wrapper <template> for the " + "scoped slot to make it clearer.", true);
       }
       el.slotScope = slotScope;
@@ -26658,13 +26656,13 @@ function processAttrs(el) {
           name = name.slice(0, -(arg.length + 1));
         }
         addDirective(el, name, rawName, value, arg, modifiers);
-        if (process.env.NODE_ENV !== 'production' && name === 'model') {
+        if (false) {
           checkForAliasModel(el, value);
         }
       }
     } else {
       // literal attribute
-      if (process.env.NODE_ENV !== 'production') {
+      if (false) {
         var res = parseText(value, delimiters);
         if (res) {
           warn$2(name + "=\"" + value + "\": " + 'Interpolation inside attributes has been removed. ' + 'Use v-bind or the colon shorthand instead. For example, ' + 'instead of <div id="{{ val }}">, use <div :id="val">.');
@@ -26705,7 +26703,7 @@ function parseModifiers(name) {
 function makeAttrsMap(attrs) {
   var map = {};
   for (var i = 0, l = attrs.length; i < l; i++) {
-    if (process.env.NODE_ENV !== 'production' && map[attrs[i].name] && !isIE && !isEdge) {
+    if (false) {
       warn$2('duplicate attribute: ' + attrs[i].name);
     }
     map[attrs[i].name] = attrs[i].value;
@@ -27093,7 +27091,7 @@ function genFilterCode(key) {
 /*  */
 
 function on(el, dir) {
-  if (process.env.NODE_ENV !== 'production' && dir.modifiers) {
+  if (false) {
     warn("v-on without argument does not support modifiers.");
   }
   el.wrapListeners = function (code) {
@@ -27197,7 +27195,7 @@ function genOnce(el, state) {
       parent = parent.parent;
     }
     if (!key) {
-      process.env.NODE_ENV !== 'production' && state.warn("v-once can only be used inside v-for that is keyed. ");
+      "production" !== 'production' && state.warn("v-once can only be used inside v-for that is keyed. ");
       return genElement(el, state);
     }
     return "_o(" + genElement(el, state) + "," + state.onceId++ + "," + key + ")";
@@ -27235,7 +27233,7 @@ function genFor(el, state, altGen, altHelper) {
   var iterator1 = el.iterator1 ? "," + el.iterator1 : '';
   var iterator2 = el.iterator2 ? "," + el.iterator2 : '';
 
-  if (process.env.NODE_ENV !== 'production' && state.maybeComponent(el) && el.tag !== 'slot' && el.tag !== 'template' && !el.key) {
+  if (false) {
     state.warn("<" + el.tag + " v-for=\"" + alias + " in " + exp + "\">: component lists rendered with " + "v-for should have explicit keys. " + "See https://vuejs.org/guide/list.html#key for more info.", true /* tip */
     );
   }
@@ -27353,7 +27351,7 @@ function genDirectives(el, state) {
 
 function genInlineTemplate(el, state) {
   var ast = el.children[0];
-  if (process.env.NODE_ENV !== 'production' && (el.children.length !== 1 || ast.type !== 1)) {
+  if (false) {
     state.warn('Inline-template components must have exactly one child element.');
   }
   if (ast.type === 1) {
@@ -27601,7 +27599,7 @@ function createCompileToFunctionFn(compile) {
     delete options.warn;
 
     /* istanbul ignore if */
-    if (process.env.NODE_ENV !== 'production') {
+    if (false) {
       // detect possible CSP restriction
       try {
         new Function('return 1');
@@ -27622,7 +27620,7 @@ function createCompileToFunctionFn(compile) {
     var compiled = compile(template, options);
 
     // check compilation errors/tips
-    if (process.env.NODE_ENV !== 'production') {
+    if (false) {
       if (compiled.errors && compiled.errors.length) {
         warn$$1("Error compiling template:\n\n" + template + "\n\n" + compiled.errors.map(function (e) {
           return "- " + e;
@@ -27647,7 +27645,7 @@ function createCompileToFunctionFn(compile) {
     // this should only happen if there is a bug in the compiler itself.
     // mostly for codegen development use
     /* istanbul ignore if */
-    if (process.env.NODE_ENV !== 'production') {
+    if (false) {
       if ((!compiled.errors || !compiled.errors.length) && fnGenErrors.length) {
         warn$$1("Failed to generate render function:\n\n" + fnGenErrors.map(function (ref) {
           var err = ref.err;
@@ -27692,7 +27690,7 @@ function createCompilerCreator(baseCompile) {
       }
 
       var compiled = baseCompile(template, finalOptions);
-      if (process.env.NODE_ENV !== 'production') {
+      if (false) {
         errors.push.apply(errors, detectErrors(compiled.ast));
       }
       compiled.errors = errors;
@@ -27758,7 +27756,7 @@ Vue$3.prototype.$mount = function (el, hydrating) {
 
   /* istanbul ignore if */
   if (el === document.body || el === document.documentElement) {
-    process.env.NODE_ENV !== 'production' && warn("Do not mount Vue to <html> or <body> - mount to normal elements instead.");
+    "production" !== 'production' && warn("Do not mount Vue to <html> or <body> - mount to normal elements instead.");
     return this;
   }
 
@@ -27771,14 +27769,14 @@ Vue$3.prototype.$mount = function (el, hydrating) {
         if (template.charAt(0) === '#') {
           template = idToTemplate(template);
           /* istanbul ignore if */
-          if (process.env.NODE_ENV !== 'production' && !template) {
+          if (false) {
             warn("Template element not found or is empty: " + options.template, this);
           }
         }
       } else if (template.nodeType) {
         template = template.innerHTML;
       } else {
-        if (process.env.NODE_ENV !== 'production') {
+        if (false) {
           warn('invalid template option:' + template, this);
         }
         return this;
@@ -27788,7 +27786,7 @@ Vue$3.prototype.$mount = function (el, hydrating) {
     }
     if (template) {
       /* istanbul ignore if */
-      if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
+      if (false) {
         mark('compile');
       }
 
@@ -27804,7 +27802,7 @@ Vue$3.prototype.$mount = function (el, hydrating) {
       options.staticRenderFns = staticRenderFns;
 
       /* istanbul ignore if */
-      if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
+      if (false) {
         mark('compile end');
         measure("vue " + this._name + " compile", 'compile', 'compile end');
       }
@@ -27830,200 +27828,10 @@ function getOuterHTML(el) {
 Vue$3.compile = compileToFunctions;
 
 /* harmony default export */ __webpack_exports__["a"] = (Vue$3);
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(25), __webpack_require__(11), __webpack_require__(35).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(11), __webpack_require__(34).setImmediate))
 
 /***/ }),
 /* 25 */
-/***/ (function(module, exports) {
-
-// shim for using process in browser
-var process = module.exports = {};
-
-// cached from whatever global is present so that test runners that stub it
-// don't break things.  But we need to wrap it in a try catch in case it is
-// wrapped in strict mode code which doesn't define any globals.  It's inside a
-// function because try/catches deoptimize in certain engines.
-
-var cachedSetTimeout;
-var cachedClearTimeout;
-
-function defaultSetTimout() {
-    throw new Error('setTimeout has not been defined');
-}
-function defaultClearTimeout() {
-    throw new Error('clearTimeout has not been defined');
-}
-(function () {
-    try {
-        if (typeof setTimeout === 'function') {
-            cachedSetTimeout = setTimeout;
-        } else {
-            cachedSetTimeout = defaultSetTimout;
-        }
-    } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
-    }
-    try {
-        if (typeof clearTimeout === 'function') {
-            cachedClearTimeout = clearTimeout;
-        } else {
-            cachedClearTimeout = defaultClearTimeout;
-        }
-    } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
-    }
-})();
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    // if setTimeout wasn't available but was latter defined
-    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-        cachedSetTimeout = setTimeout;
-        return setTimeout(fun, 0);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
-    } catch (e) {
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch (e) {
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
-}
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    // if clearTimeout wasn't available but was latter defined
-    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-        cachedClearTimeout = clearTimeout;
-        return clearTimeout(marker);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
-    } catch (e) {
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e) {
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
-}
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = runTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while (len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    runClearTimeout(timeout);
-}
-
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-    }
-};
-
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-process.prependListener = noop;
-process.prependOnceListener = noop;
-
-process.listeners = function (name) {
-    return [];
-};
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () {
-    return '/';
-};
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function () {
-    return 0;
-};
-
-/***/ }),
-/* 26 */
 /***/ (function(module, exports) {
 
 /*
@@ -28113,7 +27921,7 @@ Jsonrpc.prototype.toBatchPayload = function (messages) {
 module.exports = Jsonrpc;
 
 /***/ }),
-/* 27 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -28267,7 +28075,7 @@ SolidityParam.encodeList = function (params) {
 module.exports = SolidityParam;
 
 /***/ }),
-/* 28 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -28480,7 +28288,7 @@ SolidityEvent.prototype.attachToContract = function (contract) {
 module.exports = SolidityEvent;
 
 /***/ }),
-/* 29 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory) {
@@ -28676,7 +28484,7 @@ module.exports = SolidityEvent;
 });
 
 /***/ }),
-/* 30 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
@@ -28954,7 +28762,7 @@ module.exports = SolidityEvent;
 });
 
 /***/ }),
-/* 31 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
@@ -29268,20 +29076,20 @@ module.exports = SolidityEvent;
 });
 
 /***/ }),
-/* 32 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(33);
+__webpack_require__(32);
 module.exports = __webpack_require__(99);
 
 
 /***/ }),
-/* 33 */
+/* 32 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__images_0xbitcoin_png__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__images_0xbitcoin_png__ = __webpack_require__(33);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__images_0xbitcoin_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__images_0xbitcoin_png__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vue__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__alert_renderer__ = __webpack_require__(37);
@@ -29322,17 +29130,23 @@ $(document).ready(function () {
     data: {}
   });
 
+  setInterval(function () {
+    console.log("updating contract data");
+
+    var contractData = ethHelper.connectToContract(web3, dashboardRenderer);
+  }, 30000);
+
   var contractData = ethHelper.connectToContract(web3, dashboardRenderer);
 });
 
 /***/ }),
-/* 34 */
+/* 33 */
 /***/ (function(module, exports) {
 
 module.exports = "app/assets/images/0xbitcoin.png";
 
 /***/ }),
-/* 35 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var apply = Function.prototype.apply;
@@ -29383,7 +29197,7 @@ exports._unrefActive = exports.active = function (item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(36);
+__webpack_require__(35);
 // On some exotic environments, it's not clear which object `setimmeidate` was
 // able to install onto.  Search each possibility in the same order as the
 // `setimmediate` library.
@@ -29392,7 +29206,7 @@ exports.clearImmediate = typeof self !== "undefined" && self.clearImmediate || t
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
 
 /***/ }),
-/* 36 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -29577,7 +29391,197 @@ exports.clearImmediate = typeof self !== "undefined" && self.clearImmediate || t
     attachTo.setImmediate = setImmediate;
     attachTo.clearImmediate = clearImmediate;
 })(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11), __webpack_require__(25)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11), __webpack_require__(36)))
+
+/***/ }),
+/* 36 */
+/***/ (function(module, exports) {
+
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout() {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+})();
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch (e) {
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch (e) {
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e) {
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e) {
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while (len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) {
+    return [];
+};
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () {
+    return '/';
+};
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function () {
+    return 0;
+};
 
 /***/ }),
 /* 37 */
@@ -29728,7 +29732,7 @@ class EthHelper {
 /* 40 */
 /***/ (function(module, exports) {
 
-module.exports = {"network-name":"Ropsten","contracts":{"_0xbitcointoken":{"name":"0xBitcoinToken","blockchain_address":"0xF9aA5FED427BE07C126cDed943bCC022A5B9f364"}}}
+module.exports = {"network-name":"Ropsten","contracts":{"_0xbitcointoken":{"name":"0xBitcoinToken","blockchain_address":"0x96a76c7e89c3b884deaec05fb808035a9ca3248f"}}}
 
 /***/ }),
 /* 41 */
@@ -29914,7 +29918,7 @@ module.exports = Web3;
  * @date 2014
  */
 
-var Jsonrpc = __webpack_require__(26);
+var Jsonrpc = __webpack_require__(25);
 var utils = __webpack_require__(1);
 var c = __webpack_require__(13);
 var errors = __webpack_require__(9);
@@ -30755,7 +30759,7 @@ module.exports = Eth;
 
 var utils = __webpack_require__(1);
 var coder = __webpack_require__(20);
-var SolidityEvent = __webpack_require__(28);
+var SolidityEvent = __webpack_require__(27);
 var SolidityFunction = __webpack_require__(81);
 var AllEvents = __webpack_require__(82);
 
@@ -31336,7 +31340,7 @@ module.exports = SolidityTypeBytes;
 ;(function (root, factory, undef) {
 	if (true) {
 		// CommonJS
-		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(17), __webpack_require__(59), __webpack_require__(60), __webpack_require__(6), __webpack_require__(7), __webpack_require__(21), __webpack_require__(29), __webpack_require__(61), __webpack_require__(30), __webpack_require__(62), __webpack_require__(31), __webpack_require__(63), __webpack_require__(22), __webpack_require__(64), __webpack_require__(8), __webpack_require__(2), __webpack_require__(65), __webpack_require__(66), __webpack_require__(67), __webpack_require__(68), __webpack_require__(69), __webpack_require__(70), __webpack_require__(71), __webpack_require__(72), __webpack_require__(73), __webpack_require__(74), __webpack_require__(75), __webpack_require__(76), __webpack_require__(77), __webpack_require__(78), __webpack_require__(79), __webpack_require__(80));
+		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(17), __webpack_require__(59), __webpack_require__(60), __webpack_require__(6), __webpack_require__(7), __webpack_require__(21), __webpack_require__(28), __webpack_require__(61), __webpack_require__(29), __webpack_require__(62), __webpack_require__(30), __webpack_require__(63), __webpack_require__(22), __webpack_require__(64), __webpack_require__(8), __webpack_require__(2), __webpack_require__(65), __webpack_require__(66), __webpack_require__(67), __webpack_require__(68), __webpack_require__(69), __webpack_require__(70), __webpack_require__(71), __webpack_require__(72), __webpack_require__(73), __webpack_require__(74), __webpack_require__(75), __webpack_require__(76), __webpack_require__(77), __webpack_require__(78), __webpack_require__(79), __webpack_require__(80));
 	} else if (typeof define === "function" && define.amd) {
 		// AMD
 		define(["./core", "./x64-core", "./lib-typedarrays", "./enc-utf16", "./enc-base64", "./md5", "./sha1", "./sha256", "./sha224", "./sha512", "./sha384", "./sha3", "./ripemd160", "./hmac", "./pbkdf2", "./evpkdf", "./cipher-core", "./mode-cfb", "./mode-ctr", "./mode-ctr-gladman", "./mode-ofb", "./mode-ecb", "./pad-ansix923", "./pad-iso10126", "./pad-iso97971", "./pad-zeropadding", "./pad-nopadding", "./format-hex", "./aes", "./tripledes", "./rc4", "./rabbit", "./rabbit-legacy"], factory);
@@ -31574,7 +31578,7 @@ module.exports = SolidityTypeBytes;
 ;(function (root, factory, undef) {
 	if (true) {
 		// CommonJS
-		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(29));
+		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(28));
 	} else if (typeof define === "function" && define.amd) {
 		// AMD
 		define(["./core", "./sha256"], factory);
@@ -31652,7 +31656,7 @@ module.exports = SolidityTypeBytes;
 ;(function (root, factory, undef) {
 	if (true) {
 		// CommonJS
-		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(17), __webpack_require__(30));
+		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(17), __webpack_require__(29));
 	} else if (typeof define === "function" && define.amd) {
 		// AMD
 		define(["./core", "./x64-core", "./sha512"], factory);
@@ -34463,7 +34467,7 @@ module.exports = SolidityFunction;
  */
 
 var sha3 = __webpack_require__(16);
-var SolidityEvent = __webpack_require__(28);
+var SolidityEvent = __webpack_require__(27);
 var formatters = __webpack_require__(5);
 var utils = __webpack_require__(1);
 var Filter = __webpack_require__(18);
@@ -35080,7 +35084,7 @@ module.exports = extend;
  * @date 2015
  */
 
-var Jsonrpc = __webpack_require__(26);
+var Jsonrpc = __webpack_require__(25);
 var errors = __webpack_require__(9);
 
 var Batch = function (web3) {
