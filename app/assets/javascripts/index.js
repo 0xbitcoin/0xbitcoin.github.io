@@ -2,6 +2,7 @@
 const $ = require('jquery');
 
 import logo from '../images/0xbitcoin.png'
+import githubLogo from '../images/GitHub-Mark-64px.png'
 
 import Vue from 'vue'
 
@@ -20,7 +21,8 @@ var ethHelper = new EthHelper();
 var navbar = new Vue({
   el: '#navbar',
   data: {
-    brandImageUrl: logo
+    brandImageUrl: logo,
+    githubLogo: githubLogo
   }
 })
 
