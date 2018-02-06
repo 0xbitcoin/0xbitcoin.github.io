@@ -29617,17 +29617,18 @@ class AlertRenderer {
 const $ = __webpack_require__(23);
 
 
-var app;
+var dashboardData;
 
 class DashboardRenderer {
 
   init(renderData) {
 
     console.log('rd1', renderData);
+    dashboardData = renderData;
 
-    app = new __WEBPACK_IMPORTED_MODULE_0_vue__["a" /* default */]({
+    var app = new __WEBPACK_IMPORTED_MODULE_0_vue__["a" /* default */]({
       el: '#dashboard',
-      data: renderData
+      data: dashboardData
     });
 
     this.show();
@@ -29635,8 +29636,8 @@ class DashboardRenderer {
 
   update(renderData) {
     console.log('rd2', renderData);
-
-    app.data = renderData;
+    dashboardData = renderData;
+    //  app.data =   renderData;
 
     //vm.$forceUpdate();
 
