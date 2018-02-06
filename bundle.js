@@ -29695,6 +29695,8 @@ class EthHelper {
 
     console.log(tokenContract);
 
+    var contractAddress = this.getContractAddress();
+
     var difficulty = await tokenContract.getMiningDifficulty().toNumber();
 
     var challenge_number = await tokenContract.getChallengeNumber();
@@ -29711,6 +29713,7 @@ class EthHelper {
 
     var decimals = Math.pow(10, 8);
     var renderData = {
+      contractAddress: contractAddress,
       difficulty: difficulty,
       challenge_number: challenge_number,
       amountMined: parseInt(amountMined) / decimals,
