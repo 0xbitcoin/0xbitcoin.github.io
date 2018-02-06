@@ -1,4 +1,5 @@
 var INFURA_ROPSTEN_URL = 'https://ropsten.infura.io/gmXEVo5luMPUGPqg6mhy';
+var INFURA_MAINNET_URL = 'https://mainnet.infura.io/gmXEVo5luMPUGPqg6mhy';
 
 var deployedContractInfo = require('../contracts/DeployedContractInfo.json');
 var _0xBitcoinContract = require('../contracts/_0xBitcoinToken.json');
@@ -18,7 +19,7 @@ export default class EthHelper {
     connectWeb3(web3){
       if (typeof web3 !== 'undefined') {
 
-            window.web3 = new Web3(new Web3.providers.HttpProvider(INFURA_ROPSTEN_URL));
+            window.web3 = new Web3(new Web3.providers.HttpProvider(INFURA_MAINNET_URL));
             console.log('connected to web3!')
             return window.web3;
 
