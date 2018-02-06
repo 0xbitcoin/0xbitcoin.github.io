@@ -29130,7 +29130,7 @@ $(document).ready(function () {
 
       dashboardRenderer.update(contractData);
     });
-  }, 30000);
+  }, 3000);
 
   ethHelper.connectToContract(web3, dashboardRenderer, function (contractData) {
 
@@ -29617,6 +29617,7 @@ class AlertRenderer {
 const $ = __webpack_require__(23);
 
 
+var app;
 var dashboardData;
 
 class DashboardRenderer {
@@ -29626,7 +29627,7 @@ class DashboardRenderer {
     console.log('rd1', renderData);
     dashboardData = renderData;
 
-    var app = new __WEBPACK_IMPORTED_MODULE_0_vue__["a" /* default */]({
+    app = new __WEBPACK_IMPORTED_MODULE_0_vue__["a" /* default */]({
       el: '#dashboard',
       data: dashboardData
     });
@@ -29637,6 +29638,7 @@ class DashboardRenderer {
   update(renderData) {
     console.log('rd2', renderData);
     dashboardData = renderData;
+
     //  app.data =   renderData;
 
     //vm.$forceUpdate();
@@ -29662,6 +29664,7 @@ class DashboardRenderer {
 
 "use strict";
 var INFURA_ROPSTEN_URL = 'https://ropsten.infura.io/gmXEVo5luMPUGPqg6mhy';
+var INFURA_MAINNET_URL = 'https://mainnet.infura.io/gmXEVo5luMPUGPqg6mhy';
 
 var deployedContractInfo = __webpack_require__(40);
 var _0xBitcoinContract = __webpack_require__(41);
@@ -29679,7 +29682,7 @@ class EthHelper {
   connectWeb3(web3) {
     if (typeof web3 !== 'undefined') {
 
-      window.web3 = new Web3(new Web3.providers.HttpProvider(INFURA_ROPSTEN_URL));
+      window.web3 = new Web3(new Web3.providers.HttpProvider(INFURA_MAINNET_URL));
       console.log('connected to web3!');
       return window.web3;
     } else {
@@ -29750,7 +29753,7 @@ class EthHelper {
 /* 40 */
 /***/ (function(module, exports) {
 
-module.exports = {"network-name":"Ropsten","contracts":{"_0xbitcointoken":{"name":"0xBitcoinToken","blockchain_address":"0x96a76c7e89c3b884deaec05fb808035a9ca3248f"}}}
+module.exports = {"network-name":"MainNet","contracts":{"_0xbitcointoken":{"name":"0xBitcoinToken","blockchain_address":"0xb6ed7644c69416d67b522e20bc294a9a9b405b31"}}}
 
 /***/ }),
 /* 41 */
