@@ -42,7 +42,7 @@ $(document).ready(function(){
 
 
 
-    },30000);
+    },3000);
 
       ethHelper.connectToContract( web3 , dashboardRenderer, function(contractData){
 

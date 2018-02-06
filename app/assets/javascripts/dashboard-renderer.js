@@ -1,7 +1,8 @@
 
 const $ = require('jquery');
-import Vue from 'vue'
+import Vue from 'vue';
 
+var app;
 var dashboardData;
 
 export default class DashboardRenderer {
@@ -12,7 +13,7 @@ export default class DashboardRenderer {
       console.log('rd1',renderData)
       dashboardData = renderData;
 
-      var  app = new Vue({
+         app = new Vue({
         el: '#dashboard',
         data: dashboardData
       });
@@ -25,6 +26,7 @@ export default class DashboardRenderer {
     {
       console.log('rd2',renderData)
       dashboardData = renderData;
+
       //  app.data =   renderData;
 
         //vm.$forceUpdate();
