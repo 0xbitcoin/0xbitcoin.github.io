@@ -34,7 +34,7 @@ export default class EthHelper {
 
 
 
-    async connectToContract(web3, dashboardRenderer)
+    async connectToContract(web3, dashboardRenderer, callback)
     {
       var tokenContract = this.getWeb3ContractInstance(
         web3,
@@ -73,10 +73,10 @@ export default class EthHelper {
 
        }
 
-       dashboardRenderer.renderContractData(renderData);
+       //dashboardRenderer.renderContractData(renderData);
 
 
-       return renderData;
+       callback(renderData);
 
     }
 

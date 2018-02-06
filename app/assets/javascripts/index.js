@@ -29,22 +29,29 @@ $(document).ready(function(){
 
     var web3 = ethHelper.init( alertRenderer);
 
-    dashboardRenderer.hide();
 
-    var app = new Vue({
-      el: '#app',
-      data: {
-
-      }
-    })
 
     setInterval( function(){
       console.log("updating contract data")
 
-      var contractData = ethHelper.connectToContract( web3 , dashboardRenderer );
+       ethHelper.connectToContract( web3 , dashboardRenderer, function(contractData){
+
+         dashboardRenderer.update(contractData);
+
+       } );
+
+
 
     },30000);
 
-    var contractData = ethHelper.connectToContract( web3 , dashboardRenderer );
+      ethHelper.connectToContract( web3 , dashboardRenderer, function(contractData){
+
+        dashboardRenderer.init(contractData);
+
+      } );
+
 
 });
+
+
+dashboardRenderer.hide();
