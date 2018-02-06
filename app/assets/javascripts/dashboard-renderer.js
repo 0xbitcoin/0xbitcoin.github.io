@@ -10,6 +10,7 @@ export default class DashboardRenderer {
     {
 
       console.log('rd1',renderData)
+      dashboardData = renderData;
 
       var  app = new Vue({
         el: '#dashboard',
