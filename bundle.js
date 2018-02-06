@@ -29123,21 +29123,22 @@ $(document).ready(function () {
 
   var web3 = ethHelper.init(alertRenderer);
 
-  dashboardRenderer.hide();
-
-  var app = new __WEBPACK_IMPORTED_MODULE_1_vue__["a" /* default */]({
-    el: '#app',
-    data: {}
-  });
-
   setInterval(function () {
     console.log("updating contract data");
 
-    var contractData = ethHelper.connectToContract(web3, dashboardRenderer);
+    ethHelper.connectToContract(web3, dashboardRenderer, function (contractData) {
+
+      dashboardRenderer.update(contractData);
+    });
   }, 30000);
 
-  var contractData = ethHelper.connectToContract(web3, dashboardRenderer);
+  ethHelper.connectToContract(web3, dashboardRenderer, function (contractData) {
+
+    dashboardRenderer.init(contractData);
+  });
 });
+
+dashboardRenderer.hide();
 
 /***/ }),
 /* 33 */
@@ -29616,14 +29617,28 @@ class AlertRenderer {
 const $ = __webpack_require__(23);
 
 
+var app;
+
 class DashboardRenderer {
 
-  renderContractData(renderData) {
+  init(renderData) {
 
-    var app = new __WEBPACK_IMPORTED_MODULE_0_vue__["a" /* default */]({
+    console.log('rd1', renderData);
+
+    app = new __WEBPACK_IMPORTED_MODULE_0_vue__["a" /* default */]({
       el: '#dashboard',
       data: renderData
     });
+
+    this.show();
+  }
+
+  update(renderData) {
+    console.log('rd2', renderData);
+
+    app.data = renderData;
+
+    //vm.$forceUpdate();
 
     this.show();
   }
@@ -29675,7 +29690,7 @@ class EthHelper {
     }
   }
 
-  async connectToContract(web3, dashboardRenderer) {
+  async connectToContract(web3, dashboardRenderer, callback) {
     var tokenContract = this.getWeb3ContractInstance(web3, this.getContractAddress(), this.getContractABI());
 
     console.log(tokenContract);
@@ -29704,11 +29719,10 @@ class EthHelper {
       lastRewardAmount: parseInt(lastRewardAmount) / decimals,
       lastRewardEthBlockNumber: lastRewardEthBlockNumber
 
-    };
+      //dashboardRenderer.renderContractData(renderData);
 
-    dashboardRenderer.renderContractData(renderData);
 
-    return renderData;
+    };callback(renderData);
   }
 
   getWeb3ContractInstance(web3, contract_address, contract_abi) {
