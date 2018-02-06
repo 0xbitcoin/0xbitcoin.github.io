@@ -32,7 +32,7 @@
         <div class="navbar-menu">
           <div class="navbar-end" style="padding:5px;">
             <a href="https://github.com/0xbitcoin/" target="_blank">
-              <i class="fa fa-github"><i> G
+              <img :src="githubLogo" height="28" width="28" target="_blank"/>
             </a>
           </div>
         </div>
@@ -74,7 +74,7 @@
 
         <tbody>
           <tr> <td> Network: MAINNET </td> </tr>
-          <tr> <td> Address: {{ contractAddress }}   </td> </tr>
+          <tr> <td> Address: <a :href='contractUrl' target="_blank"> {{ contractAddress }} </a>  </td> </tr>
           <tr> <td> Total Supply:  {{ totalSupply }} </td> </tr>
           <tr> <td> Amount Mined:  {{ amountMined }}</td></tr>
         <tr> <td> Mining Difficulty:  {{ difficulty }}</td></tr>
