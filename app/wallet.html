@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+    <title><%= htmlWebpackPlugin.options.title %></title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  </head>
+  <body>
+
+
+
+      <nav id="navbar" class="navbar" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand" style="padding-left:10px;">
+          <a class="navbar-item" href=" ">
+            <img :src="brandImageUrl" height="28" width="28" />
+          </a>
+
+          <!-- <button class="button navbar-burger">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button> -->
+
+
+
+        </div>
+
+        <div class="navbar-menu">
+          <div class="navbar-end" style="padding:5px;">
+            <a href="https://github.com/0xbitcoin/" target="_blank">
+              <i class="fa fa-github"><i> G
+            </a>
+          </div>
+        </div>
+      </nav>
+
+
+<div class="page-container">
+
+      <section class="hero">
+        <div class="hero-body">
+          <div class="container has-text-centered">
+            <h1 class="title font-primary-title color-orange">
+              0xBitcoin
+            </h1>
+            <h2 class="subtitle">
+              Mineable ERC20 Token
+            </h2>
+          </div>
+        </div>
+      </section>
+
+
+      <div id="app">
+
+      </div>
+
+      <div id="guide" class="box has-text-centered">
+        <div class='title'> Start Mining 0xBitcoin </div>
+        <div class='subtitle '> Download the CPU Miner from Github </div>
+
+        <a href="https://github.com/0xbitcoin/0xbitcoin-miner" target="_blank">
+          <div class='button-bubble button-orange'>Download the 0xBTC Miner</div>
+        </a>
+      </div>
+
+      <div id="dashboard" class="box has-small-text-mobile" style="overflow-x:auto;">
+        <div class='subtitle'>System Stats</div>
+        <table class='table'>
+
+        <tbody>
+          <tr> <td> Network: MAINNET </td> </tr>
+          <tr> <td> Address: {{ contractAddress }}   </td> </tr>
+          <tr> <td> Total Supply:  {{ totalSupply }} </td> </tr>
+          <tr> <td> Amount Mined:  {{ amountMined }}</td></tr>
+        <tr> <td> Mining Difficulty:  {{ difficulty }}</td></tr>
+        <tr> <td> Mining Challenge:  {{ challenge_number }}</td></tr>
+
+        <tr> <td> Last Reward To:  {{ lastRewardTo }}</td></tr>
+        <tr> <td> Last Reward Amount:  {{ lastRewardAmount }}</td></tr>
+        <tr> <td> Last Reward EthBlock#:  {{ lastRewardEthBlockNumber }}</td></tr>
+       </tbody>
+        </table>
+
+      </div>
+
+      <div id="about" class="box has-text-centered">
+
+        <div class='title'> Mineable ERC20 Token </div>
+        <div class='subtitle '> 0xBitcoin is an Ethereum token distributed using Proof of Work </div>
+
+        <div class="">
+          <p> 0xBitcoin is interopertable with the following services: </p>
+          <ul>
+            <li> Metamask </li>
+            <li> Etherdelta </li>
+            <li> Radar Relay </li>
+            <li> 0x Protocol </li>
+          </ul>
+
+        </div>
+      </div>
+
+
+  </div>
+
+
+      <footer class="footer">
+         <div class="container">
+           <div class="content has-text-centered">
+             <p>
+               <strong>0xBitcoin</strong> Mineable ERC20 Token.
+
+                <br>
+                The source code is licensed
+               <a href="http://opensource.org/licenses/mit-license.php">MIT</a>. The website content
+               is licensed <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY NC SA 4.0</a>.
+             </p>
+           </div>
+         </div>
+       </footer>
+
+
+  </body>
+</html>

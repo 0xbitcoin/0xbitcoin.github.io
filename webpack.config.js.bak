@@ -3,7 +3,6 @@ var path = require('path');
 
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
-var HtmlWebpackIncludeAssetsPlugin = require('html-webpack-include-assets-plugin');
 
 var environment = process.env.NODE_ENV || 'development';
 
@@ -15,7 +14,7 @@ var htmlPlugin = new HtmlWebpackPlugin({
 });
 */
 var extractPlugin = new ExtractTextPlugin({
-   filename: 'assets/main.css'
+   filename: 'main.css'
 });
 
 
@@ -39,11 +38,10 @@ const routesData = {
 
 
 routesData.routes.forEach(function(element){
-
   var htmlPlugin = new HtmlWebpackPlugin({
         title: element.title,
         filename: element.filename,
-        template: element.template
+        template: element.template,
   });
 
  webpackPlugins.push(htmlPlugin)
@@ -57,7 +55,7 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, 'public'),
         filename: 'bundle.js',
-        publicPath: '/'
+        publicPath: ''
     },
     module: {
         rules: [
