@@ -6,6 +6,8 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+      <link rel="icon" type="image/png" href="app/assets/images/0xbitcoin.png" />
+
   </head>
   <body>
 
@@ -29,8 +31,8 @@
 
         <div class="navbar-menu">
           <div class="navbar-end" style="padding:5px;">
-            <a href="https://github.com/0xbitcoin/" target="_blank">
-              <i class="fa fa-github"><i> G
+            <a href="https://github.com/0xbitcoin/0xbitcoin-token" target="_blank">
+              <img :src="githubLogo" height="28" width="28" target="_blank"/>
             </a>
           </div>
         </div>
@@ -48,6 +50,10 @@
             <h2 class="subtitle">
               Mineable ERC20 Token
             </h2>
+
+            <p style="max-width:60%;margin: 0 auto;">
+              The implementation of Bitcoin Core on the Ethereum network as a smart contract.  Mined using Proof of Work.  <a href="https://github.com/0xbitcoin/0xbitcoin-token" target="_blank"> Read the code. </a>
+            </p>
           </div>
         </div>
       </section>
@@ -72,7 +78,7 @@
 
         <tbody>
           <tr> <td> Network: MAINNET </td> </tr>
-          <tr> <td> Address: {{ contractAddress }}   </td> </tr>
+          <tr> <td> Address: <a :href='contractUrl' target="_blank"> {{ contractAddress }} </a>  </td> </tr>
           <tr> <td> Total Supply:  {{ totalSupply }} </td> </tr>
           <tr> <td> Amount Mined:  {{ amountMined }}</td></tr>
         <tr> <td> Mining Difficulty:  {{ difficulty }}</td></tr>
@@ -92,13 +98,19 @@
         <div class='subtitle '> 0xBitcoin is an Ethereum token distributed using Proof of Work </div>
 
         <div class="">
-          <p> 0xBitcoin is interopertable with the following services: </p>
+          <p> 0xBitcoin is compatible with the following services: </p>
           <ul>
             <li> Metamask </li>
             <li> Etherdelta </li>
             <li> Radar Relay </li>
             <li> 0x Protocol </li>
           </ul>
+
+        </div>
+
+        <div class="">
+          <p> Read more on <a href="https://github.com/0xbitcoin/0xbitcoin-token" target="_blank"> Github </a> </p>
+
 
         </div>
       </div>

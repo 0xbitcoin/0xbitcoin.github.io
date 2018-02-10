@@ -65,6 +65,7 @@ export default class EthHelper {
 
       var decimals = Math.pow(10,8);
        var renderData = {
+         contractUrl: 'https://etherscan.io/address/'+contractAddress,
          contractAddress : contractAddress,
          difficulty: difficulty,
          challenge_number: challenge_number,
