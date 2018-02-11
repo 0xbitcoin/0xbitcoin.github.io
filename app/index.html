@@ -6,37 +6,14 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-      <link rel="icon" type="image/png" href="app/assets/images/0xbitcoin.png" />
+      <link rel="icon" type="image/png" href="/app/assets/images/0xbitcoin.png" />
 
   </head>
   <body>
 
 
 
-      <nav id="navbar" class="navbar" role="navigation" aria-label="main navigation">
-        <div class="navbar-brand" style="padding-left:10px;">
-          <a class="navbar-item" href=" ">
-            <img :src="brandImageUrl" height="28" width="28" />
-          </a>
-
-          <!-- <button class="button navbar-burger">
-            <span></span>
-            <span></span>
-            <span></span>
-          </button> -->
-
-
-
-        </div>
-
-        <div class="navbar-menu">
-          <div class="navbar-end" style="padding:5px;">
-            <a href="https://github.com/0xbitcoin/0xbitcoin-token" target="_blank">
-              <img :src="githubLogo" height="28" width="28" target="_blank"/>
-            </a>
-          </div>
-        </div>
-      </nav>
+        <%= require('html-loader!./assets/html/navbar.html') %>
 
 
 <div class="page-container">
@@ -52,8 +29,15 @@
             </h2>
 
             <p style="max-width:60%;margin: 0 auto;">
-              The implementation of Bitcoin Core on the Ethereum network as a smart contract.  Mined using Proof of Work.  <a href="https://github.com/0xbitcoin/0xbitcoin-token" target="_blank"> Read the code. </a>
-            </p>
+              The implementation of Bitcoin Core on the Ethereum network as a smart contract.  Mined using Proof of Work.
+             </p>
+
+
+             <div class="whitespace-sm"></div>
+
+             <a href="/wallet" target="_blank">
+               <div class='button-bubble button-white'>Open the 0xBTC Wallet</div>
+             </a>
           </div>
         </div>
       </section>
@@ -72,7 +56,7 @@
         </a>
       </div>
 
-      <div id="dashboard" class="box has-small-text-mobile" style="overflow-x:auto;">
+      <div id="dashboard" class="box has-small-text-mobile" style="overflow-x:auto; min-height:480px;">
         <div class='subtitle'>System Stats</div>
         <table class='table'>
 
@@ -97,6 +81,9 @@
         <div class='title'> Mineable ERC20 Token </div>
         <div class='subtitle '> 0xBitcoin is an Ethereum token distributed using Proof of Work </div>
 
+
+
+
         <div class="">
           <p> 0xBitcoin is compatible with the following services: </p>
           <ul>
@@ -119,20 +106,10 @@
   </div>
 
 
-      <footer class="footer">
-         <div class="container">
-           <div class="content has-text-centered">
-             <p>
-               <strong>0xBitcoin</strong> Mineable ERC20 Token.
 
-                <br>
-                The source code is licensed
-               <a href="http://opensource.org/licenses/mit-license.php">MIT</a>. The website content
-               is licensed <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY NC SA 4.0</a>.
-             </p>
-           </div>
-         </div>
-       </footer>
+      <%= require('html-loader!./assets/html/footer.html') %>
+
+
 
 
   </body>

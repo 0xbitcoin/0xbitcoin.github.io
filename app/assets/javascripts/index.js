@@ -56,4 +56,4 @@ $(document).ready(function(){
 });
 
 
-dashboardRenderer.hide();
+//dashboardRenderer.hide();
