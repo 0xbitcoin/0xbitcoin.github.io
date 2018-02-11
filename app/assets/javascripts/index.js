@@ -10,13 +10,16 @@ import AlertRenderer from './alert-renderer'
 import DashboardRenderer from './dashboard-renderer'
 
 import EthHelper from './ethhelper'
+
+import HomeDashboard from './home-dashboard'
+import WalletDashboard from './wallet-dashboard'
 //var web3 = this.connectWeb3();
 
 var dashboardRenderer = new DashboardRenderer();
 var alertRenderer = new AlertRenderer();
 var ethHelper = new EthHelper();
-
-
+var home = new HomeDashboard();
+var wallet = new WalletDashboard();
 
 var navbar = new Vue({
   el: '#navbar',
@@ -29,28 +32,22 @@ var navbar = new Vue({
 
 $(document).ready(function(){
 
-    var web3 = ethHelper.init( alertRenderer);
 
 
 
-    setInterval( function(){
-      console.log("updating contract data")
+    if($("#home").length > 0){
+      var web3 = ethHelper.init( alertRenderer);
 
-       ethHelper.connectToContract( web3 , dashboardRenderer, function(contractData){
-
-         dashboardRenderer.update(contractData);
-
-       } );
+      home.init(ethHelper,web3,dashboardRenderer);
+    }
 
 
+    if($("#wallet").length > 0){
 
-    },3000);
+      wallet.init(alertRenderer,ethHelper);
+    }
 
-      ethHelper.connectToContract( web3 , dashboardRenderer, function(contractData){
 
-        dashboardRenderer.init(contractData);
-
-      } );
 
 
 });

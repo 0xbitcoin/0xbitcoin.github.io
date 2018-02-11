@@ -10,7 +10,6 @@ export default class DashboardRenderer {
     init(renderData)
     {
 
-      console.log('rd1',renderData)
       dashboardData = renderData;
 
          app = new Vue({
@@ -24,8 +23,16 @@ export default class DashboardRenderer {
 
      update(renderData)
     {
-      console.log('rd2',renderData)
-      dashboardData = renderData;
+     
+
+      dashboardData.contractAddress = renderData.contractAddress;
+      dashboardData.totalSupply = renderData.totalSupply;
+      dashboardData.amountMined = renderData.amountMined;
+      dashboardData.difficulty = renderData.difficulty;
+      dashboardData.challenge_number = renderData.challenge_number;
+      dashboardData.lastRewardTo = renderData.lastRewardTo;
+      dashboardData.lastRewardAmount = renderData.lastRewardAmount;
+      dashboardData.lastRewardEthBlockNumber = renderData.lastRewardEthBlockNumber;
 
       //  app.data =   renderData;
 
