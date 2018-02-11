@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html class="orange-theme">
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+    <title>Wallet</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="icon" type="image/png" href="/app/assets/images/0xbitcoin.png" />
+
+
+  <link href="/assets/main.css" rel="stylesheet"></head>
+  <body>
+
+
+    <nav id="navbar" class="navbar" role="navigation" aria-label="main navigation">
+       <div class="navbar-brand" style="padding-left:10px;">
+         <a class="navbar-item" href="/">
+           <img :src="brandImageUrl" height="28" width="28" />
+         </a>
+
+
+
+       </div>
+
+       <div class="navbar-menu">
+         <div class="navbar-end" style="padding:5px;">
+           <a href="https://github.com/0xbitcoin/0xbitcoin-token" target="_blank">
+             <img :src="githubLogo" height="28" width="28" target="_blank"/>
+           </a>
+         </div>
+       </div>
+</nav>
+
+
+
+<div class="page-container" id="wallet">
+
+      <section class="hero" id="wallet-titlebar">
+        <div class="hero-body">
+          <div class="container has-text-centered">
+            <h1 class="title font-primary-title color-primary">
+              0xBitcoin Wallet
+            </h1>
+
+            <div class="whitespace-sm"></div>
+
+            <h2 class="subtitle color-primary">
+              {{ balance }}
+            </h2>
+
+            <div class="whitespace-sm"></div>
+
+            <h2 class="subtitle color-primary">
+              {{ errorMessage }}
+            </h2>
+
+            <div class="whitespace-sm"></div>
+
+            <h2 class="smalltitle color-primary">
+              {{ account }}
+            </h2>
+          </div>
+        </div>
+      </section>
+
+      <div class="whitespace-md"></div>
+
+
+      <div id="transfer-form" class="box has-text-centered">
+        <div class='title'> Transfer 0xBitcoin </div>
+        <div class='subtitle requires-metamask'> Requires <a href="https://metamask.io" target="_blank"> Metamask </a> </div>
+
+        <div class="transfer-form-fields">
+          <input class="" v-model="amount" placeholder="amount">
+          <p>Amount: {{ amount }}</p>
+
+          <div class="whitespace-sm"></div>
+
+          <input class="" v-model="recipient_address" placeholder="Recipient address">
+          <p>Recipient: {{ recipient_address }}</p>
+
+          <div class="whitespace-sm"></div>
+
+
+          <div class="button-bubble button-primary start-transfer-button acts-as-link"> Transfer </div>
+        </div>
+      </div>
+
+
+            <div class="whitespace-md"></div>
+
+      <div id="about" class="box has-text-centered">
+
+        <div class='title'> Buy/Sell 0xBitcoin </div>
+        <!-- <div class='subtitle '> Serviced by Etherdelta </div> -->
+
+        <a href="https://etherdelta.com/#0xb6ed7644c69416d67b522e20bc294a9a9b405b31-ETH" target="_blank">
+          <div class='button-bubble button-primary'>0xBTC on Etherdelta</div>
+        </a>
+
+
+      </div>
+
+
+  </div>
+
+        <div class="whitespace-lg"></div>
+
+  <footer class="footer">
+   <div class="container">
+     <div class="content has-text-centered">
+       <p>
+         <strong>0xBitcoin</strong> Mineable ERC20 Token.
+
+          <br>
+          The source code is licensed
+         <a href="http://opensource.org/licenses/mit-license.php">MIT</a>. The website content
+         is licensed <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY NC SA 4.0</a>.
+       </p>
+     </div>
+   </div>
+ </footer>
+
+
+
+
+  <script type="text/javascript" src="/bundle.js"></script></body>
+</html>

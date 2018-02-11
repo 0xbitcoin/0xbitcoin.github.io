@@ -57,10 +57,10 @@
 /******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
 /******/
 /******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
+/******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 32);
+/******/ 	return __webpack_require__(__webpack_require__.s = 31);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -861,8 +861,8 @@
  * @constructor
  */
 
-var BigNumber = __webpack_require__(12);
-var utf8 = __webpack_require__(45);
+var BigNumber = __webpack_require__(13);
+var utf8 = __webpack_require__(46);
 
 var unitMap = {
     'wei': '1',
@@ -2252,10 +2252,10 @@ module.exports = {
  * @date 2015
  */
 
-var BigNumber = __webpack_require__(12);
+var BigNumber = __webpack_require__(13);
 var utils = __webpack_require__(1);
-var c = __webpack_require__(13);
-var SolidityParam = __webpack_require__(27);
+var c = __webpack_require__(14);
+var SolidityParam = __webpack_require__(26);
 
 /**
  * Formats input value to byte representation of int
@@ -2484,7 +2484,7 @@ module.exports = {
 /***/ (function(module, exports, __webpack_require__) {
 
 var f = __webpack_require__(3);
-var SolidityParam = __webpack_require__(27);
+var SolidityParam = __webpack_require__(26);
 
 /**
  * SolidityType prototype is used to encode/decode solidity params of certain type
@@ -2754,8 +2754,8 @@ module.exports = SolidityType;
  */
 
 var utils = __webpack_require__(1);
-var config = __webpack_require__(13);
-var Iban = __webpack_require__(14);
+var config = __webpack_require__(14);
+var Iban = __webpack_require__(15);
 
 /**
  * Should the format output to a big number
@@ -3418,7 +3418,7 @@ module.exports = {
 ;(function (root, factory, undef) {
 	if (true) {
 		// CommonJS
-		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(21), __webpack_require__(22));
+		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(23), __webpack_require__(24));
 	} else if (typeof define === "function" && define.amd) {
 		// AMD
 		define(["./core", "./sha1", "./hmac"], factory);
@@ -3757,4373 +3757,6 @@ module.exports = Method;
 
 /***/ }),
 /* 11 */
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = function () {
-	return this;
-}();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1, eval)("this");
-} catch (e) {
-	// This works if the window reference is available
-	if (typeof window === "object") g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_RESULT__;/*! bignumber.js v2.0.7 https://github.com/MikeMcl/bignumber.js/LICENCE */
-
-;(function (global) {
-    'use strict';
-
-    /*
-      bignumber.js v2.0.7
-      A JavaScript library for arbitrary-precision arithmetic.
-      https://github.com/MikeMcl/bignumber.js
-      Copyright (c) 2015 Michael Mclaughlin <M8ch88l@gmail.com>
-      MIT Expat Licence
-    */
-
-    var BigNumber,
-        crypto,
-        parseNumeric,
-        isNumeric = /^-?(\d+(\.\d*)?|\.\d+)(e[+-]?\d+)?$/i,
-        mathceil = Math.ceil,
-        mathfloor = Math.floor,
-        notBool = ' not a boolean or binary digit',
-        roundingMode = 'rounding mode',
-        tooManyDigits = 'number type has more than 15 significant digits',
-        ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$_',
-        BASE = 1e14,
-        LOG_BASE = 14,
-        MAX_SAFE_INTEGER = 0x1fffffffffffff,
-        // 2^53 - 1
-    // MAX_INT32 = 0x7fffffff,                   // 2^31 - 1
-    POWS_TEN = [1, 10, 100, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9, 1e10, 1e11, 1e12, 1e13],
-        SQRT_BASE = 1e7,
-
-
-    /*
-     * The limit on the value of DECIMAL_PLACES, TO_EXP_NEG, TO_EXP_POS, MIN_EXP, MAX_EXP, and
-     * the arguments to toExponential, toFixed, toFormat, and toPrecision, beyond which an
-     * exception is thrown (if ERRORS is true).
-     */
-    MAX = 1E9; // 0 to MAX_INT32
-
-
-    /*
-     * Create and return a BigNumber constructor.
-     */
-    function another(configObj) {
-        var div,
-
-
-        // id tracks the caller function, so its name can be included in error messages.
-        id = 0,
-            P = BigNumber.prototype,
-            ONE = new BigNumber(1),
-
-
-        /********************************* EDITABLE DEFAULTS **********************************/
-
-        /*
-         * The default values below must be integers within the inclusive ranges stated.
-         * The values can also be changed at run-time using BigNumber.config.
-         */
-
-        // The maximum number of decimal places for operations involving division.
-        DECIMAL_PLACES = 20,
-            // 0 to MAX
-
-        /*
-         * The rounding mode used when rounding to the above decimal places, and when using
-         * toExponential, toFixed, toFormat and toPrecision, and round (default value).
-         * UP         0 Away from zero.
-         * DOWN       1 Towards zero.
-         * CEIL       2 Towards +Infinity.
-         * FLOOR      3 Towards -Infinity.
-         * HALF_UP    4 Towards nearest neighbour. If equidistant, up.
-         * HALF_DOWN  5 Towards nearest neighbour. If equidistant, down.
-         * HALF_EVEN  6 Towards nearest neighbour. If equidistant, towards even neighbour.
-         * HALF_CEIL  7 Towards nearest neighbour. If equidistant, towards +Infinity.
-         * HALF_FLOOR 8 Towards nearest neighbour. If equidistant, towards -Infinity.
-         */
-        ROUNDING_MODE = 4,
-            // 0 to 8
-
-        // EXPONENTIAL_AT : [TO_EXP_NEG , TO_EXP_POS]
-
-        // The exponent value at and beneath which toString returns exponential notation.
-        // Number type: -7
-        TO_EXP_NEG = -7,
-            // 0 to -MAX
-
-        // The exponent value at and above which toString returns exponential notation.
-        // Number type: 21
-        TO_EXP_POS = 21,
-            // 0 to MAX
-
-        // RANGE : [MIN_EXP, MAX_EXP]
-
-        // The minimum exponent value, beneath which underflow to zero occurs.
-        // Number type: -324  (5e-324)
-        MIN_EXP = -1e7,
-            // -1 to -MAX
-
-        // The maximum exponent value, above which overflow to Infinity occurs.
-        // Number type:  308  (1.7976931348623157e+308)
-        // For MAX_EXP > 1e7, e.g. new BigNumber('1e100000000').plus(1) may be slow.
-        MAX_EXP = 1e7,
-            // 1 to MAX
-
-        // Whether BigNumber Errors are ever thrown.
-        ERRORS = true,
-            // true or false
-
-        // Change to intValidatorNoErrors if ERRORS is false.
-        isValidInt = intValidatorWithErrors,
-            // intValidatorWithErrors/intValidatorNoErrors
-
-        // Whether to use cryptographically-secure random number generation, if available.
-        CRYPTO = false,
-            // true or false
-
-        /*
-         * The modulo mode used when calculating the modulus: a mod n.
-         * The quotient (q = a / n) is calculated according to the corresponding rounding mode.
-         * The remainder (r) is calculated as: r = a - n * q.
-         *
-         * UP        0 The remainder is positive if the dividend is negative, else is negative.
-         * DOWN      1 The remainder has the same sign as the dividend.
-         *             This modulo mode is commonly known as 'truncated division' and is
-         *             equivalent to (a % n) in JavaScript.
-         * FLOOR     3 The remainder has the same sign as the divisor (Python %).
-         * HALF_EVEN 6 This modulo mode implements the IEEE 754 remainder function.
-         * EUCLID    9 Euclidian division. q = sign(n) * floor(a / abs(n)).
-         *             The remainder is always positive.
-         *
-         * The truncated division, floored division, Euclidian division and IEEE 754 remainder
-         * modes are commonly used for the modulus operation.
-         * Although the other rounding modes can also be used, they may not give useful results.
-         */
-        MODULO_MODE = 1,
-            // 0 to 9
-
-        // The maximum number of significant digits of the result of the toPower operation.
-        // If POW_PRECISION is 0, there will be unlimited significant digits.
-        POW_PRECISION = 100,
-            // 0 to MAX
-
-        // The format specification used by the BigNumber.prototype.toFormat method.
-        FORMAT = {
-            decimalSeparator: '.',
-            groupSeparator: ',',
-            groupSize: 3,
-            secondaryGroupSize: 0,
-            fractionGroupSeparator: '\xA0', // non-breaking space
-            fractionGroupSize: 0
-        };
-
-        /******************************************************************************************/
-
-        // CONSTRUCTOR
-
-
-        /*
-         * The BigNumber constructor and exported function.
-         * Create and return a new instance of a BigNumber object.
-         *
-         * n {number|string|BigNumber} A numeric value.
-         * [b] {number} The base of n. Integer, 2 to 64 inclusive.
-         */
-        function BigNumber(n, b) {
-            var c,
-                e,
-                i,
-                num,
-                len,
-                str,
-                x = this;
-
-            // Enable constructor usage without new.
-            if (!(x instanceof BigNumber)) {
-
-                // 'BigNumber() constructor call without new: {n}'
-                if (ERRORS) raise(26, 'constructor call without new', n);
-                return new BigNumber(n, b);
-            }
-
-            // 'new BigNumber() base not an integer: {b}'
-            // 'new BigNumber() base out of range: {b}'
-            if (b == null || !isValidInt(b, 2, 64, id, 'base')) {
-
-                // Duplicate.
-                if (n instanceof BigNumber) {
-                    x.s = n.s;
-                    x.e = n.e;
-                    x.c = (n = n.c) ? n.slice() : n;
-                    id = 0;
-                    return;
-                }
-
-                if ((num = typeof n == 'number') && n * 0 == 0) {
-                    x.s = 1 / n < 0 ? (n = -n, -1) : 1;
-
-                    // Fast path for integers.
-                    if (n === ~~n) {
-                        for (e = 0, i = n; i >= 10; i /= 10, e++);
-                        x.e = e;
-                        x.c = [n];
-                        id = 0;
-                        return;
-                    }
-
-                    str = n + '';
-                } else {
-                    if (!isNumeric.test(str = n + '')) return parseNumeric(x, str, num);
-                    x.s = str.charCodeAt(0) === 45 ? (str = str.slice(1), -1) : 1;
-                }
-            } else {
-                b = b | 0;
-                str = n + '';
-
-                // Ensure return value is rounded to DECIMAL_PLACES as with other bases.
-                // Allow exponential notation to be used with base 10 argument.
-                if (b == 10) {
-                    x = new BigNumber(n instanceof BigNumber ? n : str);
-                    return round(x, DECIMAL_PLACES + x.e + 1, ROUNDING_MODE);
-                }
-
-                // Avoid potential interpretation of Infinity and NaN as base 44+ values.
-                // Any number in exponential form will fail due to the [Ee][+-].
-                if ((num = typeof n == 'number') && n * 0 != 0 || !new RegExp('^-?' + (c = '[' + ALPHABET.slice(0, b) + ']+') + '(?:\\.' + c + ')?$', b < 37 ? 'i' : '').test(str)) {
-                    return parseNumeric(x, str, num, b);
-                }
-
-                if (num) {
-                    x.s = 1 / n < 0 ? (str = str.slice(1), -1) : 1;
-
-                    if (ERRORS && str.replace(/^0\.0*|\./, '').length > 15) {
-
-                        // 'new BigNumber() number type has more than 15 significant digits: {n}'
-                        raise(id, tooManyDigits, n);
-                    }
-
-                    // Prevent later check for length on converted number.
-                    num = false;
-                } else {
-                    x.s = str.charCodeAt(0) === 45 ? (str = str.slice(1), -1) : 1;
-                }
-
-                str = convertBase(str, 10, b, x.s);
-            }
-
-            // Decimal point?
-            if ((e = str.indexOf('.')) > -1) str = str.replace('.', '');
-
-            // Exponential form?
-            if ((i = str.search(/e/i)) > 0) {
-
-                // Determine exponent.
-                if (e < 0) e = i;
-                e += +str.slice(i + 1);
-                str = str.substring(0, i);
-            } else if (e < 0) {
-
-                // Integer.
-                e = str.length;
-            }
-
-            // Determine leading zeros.
-            for (i = 0; str.charCodeAt(i) === 48; i++);
-
-            // Determine trailing zeros.
-            for (len = str.length; str.charCodeAt(--len) === 48;);
-            str = str.slice(i, len + 1);
-
-            if (str) {
-                len = str.length;
-
-                // Disallow numbers with over 15 significant digits if number type.
-                // 'new BigNumber() number type has more than 15 significant digits: {n}'
-                if (num && ERRORS && len > 15) raise(id, tooManyDigits, x.s * n);
-
-                e = e - i - 1;
-
-                // Overflow?
-                if (e > MAX_EXP) {
-
-                    // Infinity.
-                    x.c = x.e = null;
-
-                    // Underflow?
-                } else if (e < MIN_EXP) {
-
-                    // Zero.
-                    x.c = [x.e = 0];
-                } else {
-                    x.e = e;
-                    x.c = [];
-
-                    // Transform base
-
-                    // e is the base 10 exponent.
-                    // i is where to slice str to get the first element of the coefficient array.
-                    i = (e + 1) % LOG_BASE;
-                    if (e < 0) i += LOG_BASE;
-
-                    if (i < len) {
-                        if (i) x.c.push(+str.slice(0, i));
-
-                        for (len -= LOG_BASE; i < len;) {
-                            x.c.push(+str.slice(i, i += LOG_BASE));
-                        }
-
-                        str = str.slice(i);
-                        i = LOG_BASE - str.length;
-                    } else {
-                        i -= len;
-                    }
-
-                    for (; i--; str += '0');
-                    x.c.push(+str);
-                }
-            } else {
-
-                // Zero.
-                x.c = [x.e = 0];
-            }
-
-            id = 0;
-        }
-
-        // CONSTRUCTOR PROPERTIES
-
-
-        BigNumber.another = another;
-
-        BigNumber.ROUND_UP = 0;
-        BigNumber.ROUND_DOWN = 1;
-        BigNumber.ROUND_CEIL = 2;
-        BigNumber.ROUND_FLOOR = 3;
-        BigNumber.ROUND_HALF_UP = 4;
-        BigNumber.ROUND_HALF_DOWN = 5;
-        BigNumber.ROUND_HALF_EVEN = 6;
-        BigNumber.ROUND_HALF_CEIL = 7;
-        BigNumber.ROUND_HALF_FLOOR = 8;
-        BigNumber.EUCLID = 9;
-
-        /*
-         * Configure infrequently-changing library-wide settings.
-         *
-         * Accept an object or an argument list, with one or many of the following properties or
-         * parameters respectively:
-         *
-         *   DECIMAL_PLACES  {number}  Integer, 0 to MAX inclusive
-         *   ROUNDING_MODE   {number}  Integer, 0 to 8 inclusive
-         *   EXPONENTIAL_AT  {number|number[]}  Integer, -MAX to MAX inclusive or
-         *                                      [integer -MAX to 0 incl., 0 to MAX incl.]
-         *   RANGE           {number|number[]}  Non-zero integer, -MAX to MAX inclusive or
-         *                                      [integer -MAX to -1 incl., integer 1 to MAX incl.]
-         *   ERRORS          {boolean|number}   true, false, 1 or 0
-         *   CRYPTO          {boolean|number}   true, false, 1 or 0
-         *   MODULO_MODE     {number}           0 to 9 inclusive
-         *   POW_PRECISION   {number}           0 to MAX inclusive
-         *   FORMAT          {object}           See BigNumber.prototype.toFormat
-         *      decimalSeparator       {string}
-         *      groupSeparator         {string}
-         *      groupSize              {number}
-         *      secondaryGroupSize     {number}
-         *      fractionGroupSeparator {string}
-         *      fractionGroupSize      {number}
-         *
-         * (The values assigned to the above FORMAT object properties are not checked for validity.)
-         *
-         * E.g.
-         * BigNumber.config(20, 4) is equivalent to
-         * BigNumber.config({ DECIMAL_PLACES : 20, ROUNDING_MODE : 4 })
-         *
-         * Ignore properties/parameters set to null or undefined.
-         * Return an object with the properties current values.
-         */
-        BigNumber.config = function () {
-            var v,
-                p,
-                i = 0,
-                r = {},
-                a = arguments,
-                o = a[0],
-                has = o && typeof o == 'object' ? function () {
-                if (o.hasOwnProperty(p)) return (v = o[p]) != null;
-            } : function () {
-                if (a.length > i) return (v = a[i++]) != null;
-            };
-
-            // DECIMAL_PLACES {number} Integer, 0 to MAX inclusive.
-            // 'config() DECIMAL_PLACES not an integer: {v}'
-            // 'config() DECIMAL_PLACES out of range: {v}'
-            if (has(p = 'DECIMAL_PLACES') && isValidInt(v, 0, MAX, 2, p)) {
-                DECIMAL_PLACES = v | 0;
-            }
-            r[p] = DECIMAL_PLACES;
-
-            // ROUNDING_MODE {number} Integer, 0 to 8 inclusive.
-            // 'config() ROUNDING_MODE not an integer: {v}'
-            // 'config() ROUNDING_MODE out of range: {v}'
-            if (has(p = 'ROUNDING_MODE') && isValidInt(v, 0, 8, 2, p)) {
-                ROUNDING_MODE = v | 0;
-            }
-            r[p] = ROUNDING_MODE;
-
-            // EXPONENTIAL_AT {number|number[]}
-            // Integer, -MAX to MAX inclusive or [integer -MAX to 0 inclusive, 0 to MAX inclusive].
-            // 'config() EXPONENTIAL_AT not an integer: {v}'
-            // 'config() EXPONENTIAL_AT out of range: {v}'
-            if (has(p = 'EXPONENTIAL_AT')) {
-
-                if (isArray(v)) {
-                    if (isValidInt(v[0], -MAX, 0, 2, p) && isValidInt(v[1], 0, MAX, 2, p)) {
-                        TO_EXP_NEG = v[0] | 0;
-                        TO_EXP_POS = v[1] | 0;
-                    }
-                } else if (isValidInt(v, -MAX, MAX, 2, p)) {
-                    TO_EXP_NEG = -(TO_EXP_POS = (v < 0 ? -v : v) | 0);
-                }
-            }
-            r[p] = [TO_EXP_NEG, TO_EXP_POS];
-
-            // RANGE {number|number[]} Non-zero integer, -MAX to MAX inclusive or
-            // [integer -MAX to -1 inclusive, integer 1 to MAX inclusive].
-            // 'config() RANGE not an integer: {v}'
-            // 'config() RANGE cannot be zero: {v}'
-            // 'config() RANGE out of range: {v}'
-            if (has(p = 'RANGE')) {
-
-                if (isArray(v)) {
-                    if (isValidInt(v[0], -MAX, -1, 2, p) && isValidInt(v[1], 1, MAX, 2, p)) {
-                        MIN_EXP = v[0] | 0;
-                        MAX_EXP = v[1] | 0;
-                    }
-                } else if (isValidInt(v, -MAX, MAX, 2, p)) {
-                    if (v | 0) MIN_EXP = -(MAX_EXP = (v < 0 ? -v : v) | 0);else if (ERRORS) raise(2, p + ' cannot be zero', v);
-                }
-            }
-            r[p] = [MIN_EXP, MAX_EXP];
-
-            // ERRORS {boolean|number} true, false, 1 or 0.
-            // 'config() ERRORS not a boolean or binary digit: {v}'
-            if (has(p = 'ERRORS')) {
-
-                if (v === !!v || v === 1 || v === 0) {
-                    id = 0;
-                    isValidInt = (ERRORS = !!v) ? intValidatorWithErrors : intValidatorNoErrors;
-                } else if (ERRORS) {
-                    raise(2, p + notBool, v);
-                }
-            }
-            r[p] = ERRORS;
-
-            // CRYPTO {boolean|number} true, false, 1 or 0.
-            // 'config() CRYPTO not a boolean or binary digit: {v}'
-            // 'config() crypto unavailable: {crypto}'
-            if (has(p = 'CRYPTO')) {
-
-                if (v === !!v || v === 1 || v === 0) {
-                    CRYPTO = !!(v && crypto && typeof crypto == 'object');
-                    if (v && !CRYPTO && ERRORS) raise(2, 'crypto unavailable', crypto);
-                } else if (ERRORS) {
-                    raise(2, p + notBool, v);
-                }
-            }
-            r[p] = CRYPTO;
-
-            // MODULO_MODE {number} Integer, 0 to 9 inclusive.
-            // 'config() MODULO_MODE not an integer: {v}'
-            // 'config() MODULO_MODE out of range: {v}'
-            if (has(p = 'MODULO_MODE') && isValidInt(v, 0, 9, 2, p)) {
-                MODULO_MODE = v | 0;
-            }
-            r[p] = MODULO_MODE;
-
-            // POW_PRECISION {number} Integer, 0 to MAX inclusive.
-            // 'config() POW_PRECISION not an integer: {v}'
-            // 'config() POW_PRECISION out of range: {v}'
-            if (has(p = 'POW_PRECISION') && isValidInt(v, 0, MAX, 2, p)) {
-                POW_PRECISION = v | 0;
-            }
-            r[p] = POW_PRECISION;
-
-            // FORMAT {object}
-            // 'config() FORMAT not an object: {v}'
-            if (has(p = 'FORMAT')) {
-
-                if (typeof v == 'object') {
-                    FORMAT = v;
-                } else if (ERRORS) {
-                    raise(2, p + ' not an object', v);
-                }
-            }
-            r[p] = FORMAT;
-
-            return r;
-        };
-
-        /*
-         * Return a new BigNumber whose value is the maximum of the arguments.
-         *
-         * arguments {number|string|BigNumber}
-         */
-        BigNumber.max = function () {
-            return maxOrMin(arguments, P.lt);
-        };
-
-        /*
-         * Return a new BigNumber whose value is the minimum of the arguments.
-         *
-         * arguments {number|string|BigNumber}
-         */
-        BigNumber.min = function () {
-            return maxOrMin(arguments, P.gt);
-        };
-
-        /*
-         * Return a new BigNumber with a random value equal to or greater than 0 and less than 1,
-         * and with dp, or DECIMAL_PLACES if dp is omitted, decimal places (or less if trailing
-         * zeros are produced).
-         *
-         * [dp] {number} Decimal places. Integer, 0 to MAX inclusive.
-         *
-         * 'random() decimal places not an integer: {dp}'
-         * 'random() decimal places out of range: {dp}'
-         * 'random() crypto unavailable: {crypto}'
-         */
-        BigNumber.random = function () {
-            var pow2_53 = 0x20000000000000;
-
-            // Return a 53 bit integer n, where 0 <= n < 9007199254740992.
-            // Check if Math.random() produces more than 32 bits of randomness.
-            // If it does, assume at least 53 bits are produced, otherwise assume at least 30 bits.
-            // 0x40000000 is 2^30, 0x800000 is 2^23, 0x1fffff is 2^21 - 1.
-            var random53bitInt = Math.random() * pow2_53 & 0x1fffff ? function () {
-                return mathfloor(Math.random() * pow2_53);
-            } : function () {
-                return (Math.random() * 0x40000000 | 0) * 0x800000 + (Math.random() * 0x800000 | 0);
-            };
-
-            return function (dp) {
-                var a,
-                    b,
-                    e,
-                    k,
-                    v,
-                    i = 0,
-                    c = [],
-                    rand = new BigNumber(ONE);
-
-                dp = dp == null || !isValidInt(dp, 0, MAX, 14) ? DECIMAL_PLACES : dp | 0;
-                k = mathceil(dp / LOG_BASE);
-
-                if (CRYPTO) {
-
-                    // Browsers supporting crypto.getRandomValues.
-                    if (crypto && crypto.getRandomValues) {
-
-                        a = crypto.getRandomValues(new Uint32Array(k *= 2));
-
-                        for (; i < k;) {
-
-                            // 53 bits:
-                            // ((Math.pow(2, 32) - 1) * Math.pow(2, 21)).toString(2)
-                            // 11111 11111111 11111111 11111111 11100000 00000000 00000000
-                            // ((Math.pow(2, 32) - 1) >>> 11).toString(2)
-                            //                                     11111 11111111 11111111
-                            // 0x20000 is 2^21.
-                            v = a[i] * 0x20000 + (a[i + 1] >>> 11);
-
-                            // Rejection sampling:
-                            // 0 <= v < 9007199254740992
-                            // Probability that v >= 9e15, is
-                            // 7199254740992 / 9007199254740992 ~= 0.0008, i.e. 1 in 1251
-                            if (v >= 9e15) {
-                                b = crypto.getRandomValues(new Uint32Array(2));
-                                a[i] = b[0];
-                                a[i + 1] = b[1];
-                            } else {
-
-                                // 0 <= v <= 8999999999999999
-                                // 0 <= (v % 1e14) <= 99999999999999
-                                c.push(v % 1e14);
-                                i += 2;
-                            }
-                        }
-                        i = k / 2;
-
-                        // Node.js supporting crypto.randomBytes.
-                    } else if (crypto && crypto.randomBytes) {
-
-                        // buffer
-                        a = crypto.randomBytes(k *= 7);
-
-                        for (; i < k;) {
-
-                            // 0x1000000000000 is 2^48, 0x10000000000 is 2^40
-                            // 0x100000000 is 2^32, 0x1000000 is 2^24
-                            // 11111 11111111 11111111 11111111 11111111 11111111 11111111
-                            // 0 <= v < 9007199254740992
-                            v = (a[i] & 31) * 0x1000000000000 + a[i + 1] * 0x10000000000 + a[i + 2] * 0x100000000 + a[i + 3] * 0x1000000 + (a[i + 4] << 16) + (a[i + 5] << 8) + a[i + 6];
-
-                            if (v >= 9e15) {
-                                crypto.randomBytes(7).copy(a, i);
-                            } else {
-
-                                // 0 <= (v % 1e14) <= 99999999999999
-                                c.push(v % 1e14);
-                                i += 7;
-                            }
-                        }
-                        i = k / 7;
-                    } else if (ERRORS) {
-                        raise(14, 'crypto unavailable', crypto);
-                    }
-                }
-
-                // Use Math.random: CRYPTO is false or crypto is unavailable and ERRORS is false.
-                if (!i) {
-
-                    for (; i < k;) {
-                        v = random53bitInt();
-                        if (v < 9e15) c[i++] = v % 1e14;
-                    }
-                }
-
-                k = c[--i];
-                dp %= LOG_BASE;
-
-                // Convert trailing digits to zeros according to dp.
-                if (k && dp) {
-                    v = POWS_TEN[LOG_BASE - dp];
-                    c[i] = mathfloor(k / v) * v;
-                }
-
-                // Remove trailing elements which are zero.
-                for (; c[i] === 0; c.pop(), i--);
-
-                // Zero?
-                if (i < 0) {
-                    c = [e = 0];
-                } else {
-
-                    // Remove leading elements which are zero and adjust exponent accordingly.
-                    for (e = -1; c[0] === 0; c.shift(), e -= LOG_BASE);
-
-                    // Count the digits of the first element of c to determine leading zeros, and...
-                    for (i = 1, v = c[0]; v >= 10; v /= 10, i++);
-
-                    // adjust the exponent accordingly.
-                    if (i < LOG_BASE) e -= LOG_BASE - i;
-                }
-
-                rand.e = e;
-                rand.c = c;
-                return rand;
-            };
-        }();
-
-        // PRIVATE FUNCTIONS
-
-
-        // Convert a numeric string of baseIn to a numeric string of baseOut.
-        function convertBase(str, baseOut, baseIn, sign) {
-            var d,
-                e,
-                k,
-                r,
-                x,
-                xc,
-                y,
-                i = str.indexOf('.'),
-                dp = DECIMAL_PLACES,
-                rm = ROUNDING_MODE;
-
-            if (baseIn < 37) str = str.toLowerCase();
-
-            // Non-integer.
-            if (i >= 0) {
-                k = POW_PRECISION;
-
-                // Unlimited precision.
-                POW_PRECISION = 0;
-                str = str.replace('.', '');
-                y = new BigNumber(baseIn);
-                x = y.pow(str.length - i);
-                POW_PRECISION = k;
-
-                // Convert str as if an integer, then restore the fraction part by dividing the
-                // result by its base raised to a power.
-                y.c = toBaseOut(toFixedPoint(coeffToString(x.c), x.e), 10, baseOut);
-                y.e = y.c.length;
-            }
-
-            // Convert the number as integer.
-            xc = toBaseOut(str, baseIn, baseOut);
-            e = k = xc.length;
-
-            // Remove trailing zeros.
-            for (; xc[--k] == 0; xc.pop());
-            if (!xc[0]) return '0';
-
-            if (i < 0) {
-                --e;
-            } else {
-                x.c = xc;
-                x.e = e;
-
-                // sign is needed for correct rounding.
-                x.s = sign;
-                x = div(x, y, dp, rm, baseOut);
-                xc = x.c;
-                r = x.r;
-                e = x.e;
-            }
-
-            d = e + dp + 1;
-
-            // The rounding digit, i.e. the digit to the right of the digit that may be rounded up.
-            i = xc[d];
-            k = baseOut / 2;
-            r = r || d < 0 || xc[d + 1] != null;
-
-            r = rm < 4 ? (i != null || r) && (rm == 0 || rm == (x.s < 0 ? 3 : 2)) : i > k || i == k && (rm == 4 || r || rm == 6 && xc[d - 1] & 1 || rm == (x.s < 0 ? 8 : 7));
-
-            if (d < 1 || !xc[0]) {
-
-                // 1^-dp or 0.
-                str = r ? toFixedPoint('1', -dp) : '0';
-            } else {
-                xc.length = d;
-
-                if (r) {
-
-                    // Rounding up may mean the previous digit has to be rounded up and so on.
-                    for (--baseOut; ++xc[--d] > baseOut;) {
-                        xc[d] = 0;
-
-                        if (!d) {
-                            ++e;
-                            xc.unshift(1);
-                        }
-                    }
-                }
-
-                // Determine trailing zeros.
-                for (k = xc.length; !xc[--k];);
-
-                // E.g. [4, 11, 15] becomes 4bf.
-                for (i = 0, str = ''; i <= k; str += ALPHABET.charAt(xc[i++]));
-                str = toFixedPoint(str, e);
-            }
-
-            // The caller will add the sign.
-            return str;
-        }
-
-        // Perform division in the specified base. Called by div and convertBase.
-        div = function () {
-
-            // Assume non-zero x and k.
-            function multiply(x, k, base) {
-                var m,
-                    temp,
-                    xlo,
-                    xhi,
-                    carry = 0,
-                    i = x.length,
-                    klo = k % SQRT_BASE,
-                    khi = k / SQRT_BASE | 0;
-
-                for (x = x.slice(); i--;) {
-                    xlo = x[i] % SQRT_BASE;
-                    xhi = x[i] / SQRT_BASE | 0;
-                    m = khi * xlo + xhi * klo;
-                    temp = klo * xlo + m % SQRT_BASE * SQRT_BASE + carry;
-                    carry = (temp / base | 0) + (m / SQRT_BASE | 0) + khi * xhi;
-                    x[i] = temp % base;
-                }
-
-                if (carry) x.unshift(carry);
-
-                return x;
-            }
-
-            function compare(a, b, aL, bL) {
-                var i, cmp;
-
-                if (aL != bL) {
-                    cmp = aL > bL ? 1 : -1;
-                } else {
-
-                    for (i = cmp = 0; i < aL; i++) {
-
-                        if (a[i] != b[i]) {
-                            cmp = a[i] > b[i] ? 1 : -1;
-                            break;
-                        }
-                    }
-                }
-                return cmp;
-            }
-
-            function subtract(a, b, aL, base) {
-                var i = 0;
-
-                // Subtract b from a.
-                for (; aL--;) {
-                    a[aL] -= i;
-                    i = a[aL] < b[aL] ? 1 : 0;
-                    a[aL] = i * base + a[aL] - b[aL];
-                }
-
-                // Remove leading zeros.
-                for (; !a[0] && a.length > 1; a.shift());
-            }
-
-            // x: dividend, y: divisor.
-            return function (x, y, dp, rm, base) {
-                var cmp,
-                    e,
-                    i,
-                    more,
-                    n,
-                    prod,
-                    prodL,
-                    q,
-                    qc,
-                    rem,
-                    remL,
-                    rem0,
-                    xi,
-                    xL,
-                    yc0,
-                    yL,
-                    yz,
-                    s = x.s == y.s ? 1 : -1,
-                    xc = x.c,
-                    yc = y.c;
-
-                // Either NaN, Infinity or 0?
-                if (!xc || !xc[0] || !yc || !yc[0]) {
-
-                    return new BigNumber(
-
-                    // Return NaN if either NaN, or both Infinity or 0.
-                    !x.s || !y.s || (xc ? yc && xc[0] == yc[0] : !yc) ? NaN :
-
-                    // Return ±0 if x is ±0 or y is ±Infinity, or return ±Infinity as y is ±0.
-                    xc && xc[0] == 0 || !yc ? s * 0 : s / 0);
-                }
-
-                q = new BigNumber(s);
-                qc = q.c = [];
-                e = x.e - y.e;
-                s = dp + e + 1;
-
-                if (!base) {
-                    base = BASE;
-                    e = bitFloor(x.e / LOG_BASE) - bitFloor(y.e / LOG_BASE);
-                    s = s / LOG_BASE | 0;
-                }
-
-                // Result exponent may be one less then the current value of e.
-                // The coefficients of the BigNumbers from convertBase may have trailing zeros.
-                for (i = 0; yc[i] == (xc[i] || 0); i++);
-                if (yc[i] > (xc[i] || 0)) e--;
-
-                if (s < 0) {
-                    qc.push(1);
-                    more = true;
-                } else {
-                    xL = xc.length;
-                    yL = yc.length;
-                    i = 0;
-                    s += 2;
-
-                    // Normalise xc and yc so highest order digit of yc is >= base / 2.
-
-                    n = mathfloor(base / (yc[0] + 1));
-
-                    // Not necessary, but to handle odd bases where yc[0] == ( base / 2 ) - 1.
-                    // if ( n > 1 || n++ == 1 && yc[0] < base / 2 ) {
-                    if (n > 1) {
-                        yc = multiply(yc, n, base);
-                        xc = multiply(xc, n, base);
-                        yL = yc.length;
-                        xL = xc.length;
-                    }
-
-                    xi = yL;
-                    rem = xc.slice(0, yL);
-                    remL = rem.length;
-
-                    // Add zeros to make remainder as long as divisor.
-                    for (; remL < yL; rem[remL++] = 0);
-                    yz = yc.slice();
-                    yz.unshift(0);
-                    yc0 = yc[0];
-                    if (yc[1] >= base / 2) yc0++;
-                    // Not necessary, but to prevent trial digit n > base, when using base 3.
-                    // else if ( base == 3 && yc0 == 1 ) yc0 = 1 + 1e-15;
-
-                    do {
-                        n = 0;
-
-                        // Compare divisor and remainder.
-                        cmp = compare(yc, rem, yL, remL);
-
-                        // If divisor < remainder.
-                        if (cmp < 0) {
-
-                            // Calculate trial digit, n.
-
-                            rem0 = rem[0];
-                            if (yL != remL) rem0 = rem0 * base + (rem[1] || 0);
-
-                            // n is how many times the divisor goes into the current remainder.
-                            n = mathfloor(rem0 / yc0);
-
-                            //  Algorithm:
-                            //  1. product = divisor * trial digit (n)
-                            //  2. if product > remainder: product -= divisor, n--
-                            //  3. remainder -= product
-                            //  4. if product was < remainder at 2:
-                            //    5. compare new remainder and divisor
-                            //    6. If remainder > divisor: remainder -= divisor, n++
-
-                            if (n > 1) {
-
-                                // n may be > base only when base is 3.
-                                if (n >= base) n = base - 1;
-
-                                // product = divisor * trial digit.
-                                prod = multiply(yc, n, base);
-                                prodL = prod.length;
-                                remL = rem.length;
-
-                                // Compare product and remainder.
-                                // If product > remainder.
-                                // Trial digit n too high.
-                                // n is 1 too high about 5% of the time, and is not known to have
-                                // ever been more than 1 too high.
-                                while (compare(prod, rem, prodL, remL) == 1) {
-                                    n--;
-
-                                    // Subtract divisor from product.
-                                    subtract(prod, yL < prodL ? yz : yc, prodL, base);
-                                    prodL = prod.length;
-                                    cmp = 1;
-                                }
-                            } else {
-
-                                // n is 0 or 1, cmp is -1.
-                                // If n is 0, there is no need to compare yc and rem again below,
-                                // so change cmp to 1 to avoid it.
-                                // If n is 1, leave cmp as -1, so yc and rem are compared again.
-                                if (n == 0) {
-
-                                    // divisor < remainder, so n must be at least 1.
-                                    cmp = n = 1;
-                                }
-
-                                // product = divisor
-                                prod = yc.slice();
-                                prodL = prod.length;
-                            }
-
-                            if (prodL < remL) prod.unshift(0);
-
-                            // Subtract product from remainder.
-                            subtract(rem, prod, remL, base);
-                            remL = rem.length;
-
-                            // If product was < remainder.
-                            if (cmp == -1) {
-
-                                // Compare divisor and new remainder.
-                                // If divisor < new remainder, subtract divisor from remainder.
-                                // Trial digit n too low.
-                                // n is 1 too low about 5% of the time, and very rarely 2 too low.
-                                while (compare(yc, rem, yL, remL) < 1) {
-                                    n++;
-
-                                    // Subtract divisor from remainder.
-                                    subtract(rem, yL < remL ? yz : yc, remL, base);
-                                    remL = rem.length;
-                                }
-                            }
-                        } else if (cmp === 0) {
-                            n++;
-                            rem = [0];
-                        } // else cmp === 1 and n will be 0
-
-                        // Add the next digit, n, to the result array.
-                        qc[i++] = n;
-
-                        // Update the remainder.
-                        if (rem[0]) {
-                            rem.push(xc[xi] || 0);
-                            remL = remL + 1;
-                        } else {
-                            rem = [xc[xi]];
-                            remL = 1;
-                        }
-                    } while ((xi++ < xL || rem[0] != null) && s--);
-
-                    more = rem[0] != null;
-
-                    // Leading zero?
-                    if (!qc[0]) qc.shift();
-                }
-
-                if (base == BASE) {
-
-                    // To calculate q.e, first get the number of digits of qc[0].
-                    for (i = 1, s = qc[0]; s >= 10; s /= 10, i++);
-                    round(q, dp + (q.e = i + e * LOG_BASE - 1) + 1, rm, more);
-
-                    // Caller is convertBase.
-                } else {
-                    q.e = e;
-                    q.r = +more;
-                }
-
-                return q;
-            };
-        }();
-
-        /*
-         * Return a string representing the value of BigNumber n in fixed-point or exponential
-         * notation rounded to the specified decimal places or significant digits.
-         *
-         * n is a BigNumber.
-         * i is the index of the last digit required (i.e. the digit that may be rounded up).
-         * rm is the rounding mode.
-         * caller is caller id: toExponential 19, toFixed 20, toFormat 21, toPrecision 24.
-         */
-        function format(n, i, rm, caller) {
-            var c0, e, ne, len, str;
-
-            rm = rm != null && isValidInt(rm, 0, 8, caller, roundingMode) ? rm | 0 : ROUNDING_MODE;
-
-            if (!n.c) return n.toString();
-            c0 = n.c[0];
-            ne = n.e;
-
-            if (i == null) {
-                str = coeffToString(n.c);
-                str = caller == 19 || caller == 24 && ne <= TO_EXP_NEG ? toExponential(str, ne) : toFixedPoint(str, ne);
-            } else {
-                n = round(new BigNumber(n), i, rm);
-
-                // n.e may have changed if the value was rounded up.
-                e = n.e;
-
-                str = coeffToString(n.c);
-                len = str.length;
-
-                // toPrecision returns exponential notation if the number of significant digits
-                // specified is less than the number of digits necessary to represent the integer
-                // part of the value in fixed-point notation.
-
-                // Exponential notation.
-                if (caller == 19 || caller == 24 && (i <= e || e <= TO_EXP_NEG)) {
-
-                    // Append zeros?
-                    for (; len < i; str += '0', len++);
-                    str = toExponential(str, e);
-
-                    // Fixed-point notation.
-                } else {
-                    i -= ne;
-                    str = toFixedPoint(str, e);
-
-                    // Append zeros?
-                    if (e + 1 > len) {
-                        if (--i > 0) for (str += '.'; i--; str += '0');
-                    } else {
-                        i += e - len;
-                        if (i > 0) {
-                            if (e + 1 == len) str += '.';
-                            for (; i--; str += '0');
-                        }
-                    }
-                }
-            }
-
-            return n.s < 0 && c0 ? '-' + str : str;
-        }
-
-        // Handle BigNumber.max and BigNumber.min.
-        function maxOrMin(args, method) {
-            var m,
-                n,
-                i = 0;
-
-            if (isArray(args[0])) args = args[0];
-            m = new BigNumber(args[0]);
-
-            for (; ++i < args.length;) {
-                n = new BigNumber(args[i]);
-
-                // If any number is NaN, return NaN.
-                if (!n.s) {
-                    m = n;
-                    break;
-                } else if (method.call(m, n)) {
-                    m = n;
-                }
-            }
-
-            return m;
-        }
-
-        /*
-         * Return true if n is an integer in range, otherwise throw.
-         * Use for argument validation when ERRORS is true.
-         */
-        function intValidatorWithErrors(n, min, max, caller, name) {
-            if (n < min || n > max || n != truncate(n)) {
-                raise(caller, (name || 'decimal places') + (n < min || n > max ? ' out of range' : ' not an integer'), n);
-            }
-
-            return true;
-        }
-
-        /*
-         * Strip trailing zeros, calculate base 10 exponent and check against MIN_EXP and MAX_EXP.
-         * Called by minus, plus and times.
-         */
-        function normalise(n, c, e) {
-            var i = 1,
-                j = c.length;
-
-            // Remove trailing zeros.
-            for (; !c[--j]; c.pop());
-
-            // Calculate the base 10 exponent. First get the number of digits of c[0].
-            for (j = c[0]; j >= 10; j /= 10, i++);
-
-            // Overflow?
-            if ((e = i + e * LOG_BASE - 1) > MAX_EXP) {
-
-                // Infinity.
-                n.c = n.e = null;
-
-                // Underflow?
-            } else if (e < MIN_EXP) {
-
-                // Zero.
-                n.c = [n.e = 0];
-            } else {
-                n.e = e;
-                n.c = c;
-            }
-
-            return n;
-        }
-
-        // Handle values that fail the validity test in BigNumber.
-        parseNumeric = function () {
-            var basePrefix = /^(-?)0([xbo])/i,
-                dotAfter = /^([^.]+)\.$/,
-                dotBefore = /^\.([^.]+)$/,
-                isInfinityOrNaN = /^-?(Infinity|NaN)$/,
-                whitespaceOrPlus = /^\s*\+|^\s+|\s+$/g;
-
-            return function (x, str, num, b) {
-                var base,
-                    s = num ? str : str.replace(whitespaceOrPlus, '');
-
-                // No exception on ±Infinity or NaN.
-                if (isInfinityOrNaN.test(s)) {
-                    x.s = isNaN(s) ? null : s < 0 ? -1 : 1;
-                } else {
-                    if (!num) {
-
-                        // basePrefix = /^(-?)0([xbo])(?=\w[\w.]*$)/i
-                        s = s.replace(basePrefix, function (m, p1, p2) {
-                            base = (p2 = p2.toLowerCase()) == 'x' ? 16 : p2 == 'b' ? 2 : 8;
-                            return !b || b == base ? p1 : m;
-                        });
-
-                        if (b) {
-                            base = b;
-
-                            // E.g. '1.' to '1', '.1' to '0.1'
-                            s = s.replace(dotAfter, '$1').replace(dotBefore, '0.$1');
-                        }
-
-                        if (str != s) return new BigNumber(s, base);
-                    }
-
-                    // 'new BigNumber() not a number: {n}'
-                    // 'new BigNumber() not a base {b} number: {n}'
-                    if (ERRORS) raise(id, 'not a' + (b ? ' base ' + b : '') + ' number', str);
-                    x.s = null;
-                }
-
-                x.c = x.e = null;
-                id = 0;
-            };
-        }();
-
-        // Throw a BigNumber Error.
-        function raise(caller, msg, val) {
-            var error = new Error(['new BigNumber', // 0
-            'cmp', // 1
-            'config', // 2
-            'div', // 3
-            'divToInt', // 4
-            'eq', // 5
-            'gt', // 6
-            'gte', // 7
-            'lt', // 8
-            'lte', // 9
-            'minus', // 10
-            'mod', // 11
-            'plus', // 12
-            'precision', // 13
-            'random', // 14
-            'round', // 15
-            'shift', // 16
-            'times', // 17
-            'toDigits', // 18
-            'toExponential', // 19
-            'toFixed', // 20
-            'toFormat', // 21
-            'toFraction', // 22
-            'pow', // 23
-            'toPrecision', // 24
-            'toString', // 25
-            'BigNumber' // 26
-            ][caller] + '() ' + msg + ': ' + val);
-
-            error.name = 'BigNumber Error';
-            id = 0;
-            throw error;
-        }
-
-        /*
-         * Round x to sd significant digits using rounding mode rm. Check for over/under-flow.
-         * If r is truthy, it is known that there are more digits after the rounding digit.
-         */
-        function round(x, sd, rm, r) {
-            var d,
-                i,
-                j,
-                k,
-                n,
-                ni,
-                rd,
-                xc = x.c,
-                pows10 = POWS_TEN;
-
-            // if x is not Infinity or NaN...
-            if (xc) {
-
-                // rd is the rounding digit, i.e. the digit after the digit that may be rounded up.
-                // n is a base 1e14 number, the value of the element of array x.c containing rd.
-                // ni is the index of n within x.c.
-                // d is the number of digits of n.
-                // i is the index of rd within n including leading zeros.
-                // j is the actual index of rd within n (if < 0, rd is a leading zero).
-                out: {
-
-                    // Get the number of digits of the first element of xc.
-                    for (d = 1, k = xc[0]; k >= 10; k /= 10, d++);
-                    i = sd - d;
-
-                    // If the rounding digit is in the first element of xc...
-                    if (i < 0) {
-                        i += LOG_BASE;
-                        j = sd;
-                        n = xc[ni = 0];
-
-                        // Get the rounding digit at index j of n.
-                        rd = n / pows10[d - j - 1] % 10 | 0;
-                    } else {
-                        ni = mathceil((i + 1) / LOG_BASE);
-
-                        if (ni >= xc.length) {
-
-                            if (r) {
-
-                                // Needed by sqrt.
-                                for (; xc.length <= ni; xc.push(0));
-                                n = rd = 0;
-                                d = 1;
-                                i %= LOG_BASE;
-                                j = i - LOG_BASE + 1;
-                            } else {
-                                break out;
-                            }
-                        } else {
-                            n = k = xc[ni];
-
-                            // Get the number of digits of n.
-                            for (d = 1; k >= 10; k /= 10, d++);
-
-                            // Get the index of rd within n.
-                            i %= LOG_BASE;
-
-                            // Get the index of rd within n, adjusted for leading zeros.
-                            // The number of leading zeros of n is given by LOG_BASE - d.
-                            j = i - LOG_BASE + d;
-
-                            // Get the rounding digit at index j of n.
-                            rd = j < 0 ? 0 : n / pows10[d - j - 1] % 10 | 0;
-                        }
-                    }
-
-                    r = r || sd < 0 ||
-
-                    // Are there any non-zero digits after the rounding digit?
-                    // The expression  n % pows10[ d - j - 1 ]  returns all digits of n to the right
-                    // of the digit at j, e.g. if n is 908714 and j is 2, the expression gives 714.
-                    xc[ni + 1] != null || (j < 0 ? n : n % pows10[d - j - 1]);
-
-                    r = rm < 4 ? (rd || r) && (rm == 0 || rm == (x.s < 0 ? 3 : 2)) : rd > 5 || rd == 5 && (rm == 4 || r || rm == 6 &&
-
-                    // Check whether the digit to the left of the rounding digit is odd.
-                    (i > 0 ? j > 0 ? n / pows10[d - j] : 0 : xc[ni - 1]) % 10 & 1 || rm == (x.s < 0 ? 8 : 7));
-
-                    if (sd < 1 || !xc[0]) {
-                        xc.length = 0;
-
-                        if (r) {
-
-                            // Convert sd to decimal places.
-                            sd -= x.e + 1;
-
-                            // 1, 0.1, 0.01, 0.001, 0.0001 etc.
-                            xc[0] = pows10[sd % LOG_BASE];
-                            x.e = -sd || 0;
-                        } else {
-
-                            // Zero.
-                            xc[0] = x.e = 0;
-                        }
-
-                        return x;
-                    }
-
-                    // Remove excess digits.
-                    if (i == 0) {
-                        xc.length = ni;
-                        k = 1;
-                        ni--;
-                    } else {
-                        xc.length = ni + 1;
-                        k = pows10[LOG_BASE - i];
-
-                        // E.g. 56700 becomes 56000 if 7 is the rounding digit.
-                        // j > 0 means i > number of leading zeros of n.
-                        xc[ni] = j > 0 ? mathfloor(n / pows10[d - j] % pows10[j]) * k : 0;
-                    }
-
-                    // Round up?
-                    if (r) {
-
-                        for (;;) {
-
-                            // If the digit to be rounded up is in the first element of xc...
-                            if (ni == 0) {
-
-                                // i will be the length of xc[0] before k is added.
-                                for (i = 1, j = xc[0]; j >= 10; j /= 10, i++);
-                                j = xc[0] += k;
-                                for (k = 1; j >= 10; j /= 10, k++);
-
-                                // if i != k the length has increased.
-                                if (i != k) {
-                                    x.e++;
-                                    if (xc[0] == BASE) xc[0] = 1;
-                                }
-
-                                break;
-                            } else {
-                                xc[ni] += k;
-                                if (xc[ni] != BASE) break;
-                                xc[ni--] = 0;
-                                k = 1;
-                            }
-                        }
-                    }
-
-                    // Remove trailing zeros.
-                    for (i = xc.length; xc[--i] === 0; xc.pop());
-                }
-
-                // Overflow? Infinity.
-                if (x.e > MAX_EXP) {
-                    x.c = x.e = null;
-
-                    // Underflow? Zero.
-                } else if (x.e < MIN_EXP) {
-                    x.c = [x.e = 0];
-                }
-            }
-
-            return x;
-        }
-
-        // PROTOTYPE/INSTANCE METHODS
-
-
-        /*
-         * Return a new BigNumber whose value is the absolute value of this BigNumber.
-         */
-        P.absoluteValue = P.abs = function () {
-            var x = new BigNumber(this);
-            if (x.s < 0) x.s = 1;
-            return x;
-        };
-
-        /*
-         * Return a new BigNumber whose value is the value of this BigNumber rounded to a whole
-         * number in the direction of Infinity.
-         */
-        P.ceil = function () {
-            return round(new BigNumber(this), this.e + 1, 2);
-        };
-
-        /*
-         * Return
-         * 1 if the value of this BigNumber is greater than the value of BigNumber(y, b),
-         * -1 if the value of this BigNumber is less than the value of BigNumber(y, b),
-         * 0 if they have the same value,
-         * or null if the value of either is NaN.
-         */
-        P.comparedTo = P.cmp = function (y, b) {
-            id = 1;
-            return compare(this, new BigNumber(y, b));
-        };
-
-        /*
-         * Return the number of decimal places of the value of this BigNumber, or null if the value
-         * of this BigNumber is ±Infinity or NaN.
-         */
-        P.decimalPlaces = P.dp = function () {
-            var n,
-                v,
-                c = this.c;
-
-            if (!c) return null;
-            n = ((v = c.length - 1) - bitFloor(this.e / LOG_BASE)) * LOG_BASE;
-
-            // Subtract the number of trailing zeros of the last number.
-            if (v = c[v]) for (; v % 10 == 0; v /= 10, n--);
-            if (n < 0) n = 0;
-
-            return n;
-        };
-
-        /*
-         *  n / 0 = I
-         *  n / N = N
-         *  n / I = 0
-         *  0 / n = 0
-         *  0 / 0 = N
-         *  0 / N = N
-         *  0 / I = 0
-         *  N / n = N
-         *  N / 0 = N
-         *  N / N = N
-         *  N / I = N
-         *  I / n = I
-         *  I / 0 = I
-         *  I / N = N
-         *  I / I = N
-         *
-         * Return a new BigNumber whose value is the value of this BigNumber divided by the value of
-         * BigNumber(y, b), rounded according to DECIMAL_PLACES and ROUNDING_MODE.
-         */
-        P.dividedBy = P.div = function (y, b) {
-            id = 3;
-            return div(this, new BigNumber(y, b), DECIMAL_PLACES, ROUNDING_MODE);
-        };
-
-        /*
-         * Return a new BigNumber whose value is the integer part of dividing the value of this
-         * BigNumber by the value of BigNumber(y, b).
-         */
-        P.dividedToIntegerBy = P.divToInt = function (y, b) {
-            id = 4;
-            return div(this, new BigNumber(y, b), 0, 1);
-        };
-
-        /*
-         * Return true if the value of this BigNumber is equal to the value of BigNumber(y, b),
-         * otherwise returns false.
-         */
-        P.equals = P.eq = function (y, b) {
-            id = 5;
-            return compare(this, new BigNumber(y, b)) === 0;
-        };
-
-        /*
-         * Return a new BigNumber whose value is the value of this BigNumber rounded to a whole
-         * number in the direction of -Infinity.
-         */
-        P.floor = function () {
-            return round(new BigNumber(this), this.e + 1, 3);
-        };
-
-        /*
-         * Return true if the value of this BigNumber is greater than the value of BigNumber(y, b),
-         * otherwise returns false.
-         */
-        P.greaterThan = P.gt = function (y, b) {
-            id = 6;
-            return compare(this, new BigNumber(y, b)) > 0;
-        };
-
-        /*
-         * Return true if the value of this BigNumber is greater than or equal to the value of
-         * BigNumber(y, b), otherwise returns false.
-         */
-        P.greaterThanOrEqualTo = P.gte = function (y, b) {
-            id = 7;
-            return (b = compare(this, new BigNumber(y, b))) === 1 || b === 0;
-        };
-
-        /*
-         * Return true if the value of this BigNumber is a finite number, otherwise returns false.
-         */
-        P.isFinite = function () {
-            return !!this.c;
-        };
-
-        /*
-         * Return true if the value of this BigNumber is an integer, otherwise return false.
-         */
-        P.isInteger = P.isInt = function () {
-            return !!this.c && bitFloor(this.e / LOG_BASE) > this.c.length - 2;
-        };
-
-        /*
-         * Return true if the value of this BigNumber is NaN, otherwise returns false.
-         */
-        P.isNaN = function () {
-            return !this.s;
-        };
-
-        /*
-         * Return true if the value of this BigNumber is negative, otherwise returns false.
-         */
-        P.isNegative = P.isNeg = function () {
-            return this.s < 0;
-        };
-
-        /*
-         * Return true if the value of this BigNumber is 0 or -0, otherwise returns false.
-         */
-        P.isZero = function () {
-            return !!this.c && this.c[0] == 0;
-        };
-
-        /*
-         * Return true if the value of this BigNumber is less than the value of BigNumber(y, b),
-         * otherwise returns false.
-         */
-        P.lessThan = P.lt = function (y, b) {
-            id = 8;
-            return compare(this, new BigNumber(y, b)) < 0;
-        };
-
-        /*
-         * Return true if the value of this BigNumber is less than or equal to the value of
-         * BigNumber(y, b), otherwise returns false.
-         */
-        P.lessThanOrEqualTo = P.lte = function (y, b) {
-            id = 9;
-            return (b = compare(this, new BigNumber(y, b))) === -1 || b === 0;
-        };
-
-        /*
-         *  n - 0 = n
-         *  n - N = N
-         *  n - I = -I
-         *  0 - n = -n
-         *  0 - 0 = 0
-         *  0 - N = N
-         *  0 - I = -I
-         *  N - n = N
-         *  N - 0 = N
-         *  N - N = N
-         *  N - I = N
-         *  I - n = I
-         *  I - 0 = I
-         *  I - N = N
-         *  I - I = N
-         *
-         * Return a new BigNumber whose value is the value of this BigNumber minus the value of
-         * BigNumber(y, b).
-         */
-        P.minus = P.sub = function (y, b) {
-            var i,
-                j,
-                t,
-                xLTy,
-                x = this,
-                a = x.s;
-
-            id = 10;
-            y = new BigNumber(y, b);
-            b = y.s;
-
-            // Either NaN?
-            if (!a || !b) return new BigNumber(NaN);
-
-            // Signs differ?
-            if (a != b) {
-                y.s = -b;
-                return x.plus(y);
-            }
-
-            var xe = x.e / LOG_BASE,
-                ye = y.e / LOG_BASE,
-                xc = x.c,
-                yc = y.c;
-
-            if (!xe || !ye) {
-
-                // Either Infinity?
-                if (!xc || !yc) return xc ? (y.s = -b, y) : new BigNumber(yc ? x : NaN);
-
-                // Either zero?
-                if (!xc[0] || !yc[0]) {
-
-                    // Return y if y is non-zero, x if x is non-zero, or zero if both are zero.
-                    return yc[0] ? (y.s = -b, y) : new BigNumber(xc[0] ? x :
-
-                    // IEEE 754 (2008) 6.3: n - n = -0 when rounding to -Infinity
-                    ROUNDING_MODE == 3 ? -0 : 0);
-                }
-            }
-
-            xe = bitFloor(xe);
-            ye = bitFloor(ye);
-            xc = xc.slice();
-
-            // Determine which is the bigger number.
-            if (a = xe - ye) {
-
-                if (xLTy = a < 0) {
-                    a = -a;
-                    t = xc;
-                } else {
-                    ye = xe;
-                    t = yc;
-                }
-
-                t.reverse();
-
-                // Prepend zeros to equalise exponents.
-                for (b = a; b--; t.push(0));
-                t.reverse();
-            } else {
-
-                // Exponents equal. Check digit by digit.
-                j = (xLTy = (a = xc.length) < (b = yc.length)) ? a : b;
-
-                for (a = b = 0; b < j; b++) {
-
-                    if (xc[b] != yc[b]) {
-                        xLTy = xc[b] < yc[b];
-                        break;
-                    }
-                }
-            }
-
-            // x < y? Point xc to the array of the bigger number.
-            if (xLTy) t = xc, xc = yc, yc = t, y.s = -y.s;
-
-            b = (j = yc.length) - (i = xc.length);
-
-            // Append zeros to xc if shorter.
-            // No need to add zeros to yc if shorter as subtract only needs to start at yc.length.
-            if (b > 0) for (; b--; xc[i++] = 0);
-            b = BASE - 1;
-
-            // Subtract yc from xc.
-            for (; j > a;) {
-
-                if (xc[--j] < yc[j]) {
-                    for (i = j; i && !xc[--i]; xc[i] = b);
-                    --xc[i];
-                    xc[j] += BASE;
-                }
-
-                xc[j] -= yc[j];
-            }
-
-            // Remove leading zeros and adjust exponent accordingly.
-            for (; xc[0] == 0; xc.shift(), --ye);
-
-            // Zero?
-            if (!xc[0]) {
-
-                // Following IEEE 754 (2008) 6.3,
-                // n - n = +0  but  n - n = -0  when rounding towards -Infinity.
-                y.s = ROUNDING_MODE == 3 ? -1 : 1;
-                y.c = [y.e = 0];
-                return y;
-            }
-
-            // No need to check for Infinity as +x - +y != Infinity && -x - -y != Infinity
-            // for finite x and y.
-            return normalise(y, xc, ye);
-        };
-
-        /*
-         *   n % 0 =  N
-         *   n % N =  N
-         *   n % I =  n
-         *   0 % n =  0
-         *  -0 % n = -0
-         *   0 % 0 =  N
-         *   0 % N =  N
-         *   0 % I =  0
-         *   N % n =  N
-         *   N % 0 =  N
-         *   N % N =  N
-         *   N % I =  N
-         *   I % n =  N
-         *   I % 0 =  N
-         *   I % N =  N
-         *   I % I =  N
-         *
-         * Return a new BigNumber whose value is the value of this BigNumber modulo the value of
-         * BigNumber(y, b). The result depends on the value of MODULO_MODE.
-         */
-        P.modulo = P.mod = function (y, b) {
-            var q,
-                s,
-                x = this;
-
-            id = 11;
-            y = new BigNumber(y, b);
-
-            // Return NaN if x is Infinity or NaN, or y is NaN or zero.
-            if (!x.c || !y.s || y.c && !y.c[0]) {
-                return new BigNumber(NaN);
-
-                // Return x if y is Infinity or x is zero.
-            } else if (!y.c || x.c && !x.c[0]) {
-                return new BigNumber(x);
-            }
-
-            if (MODULO_MODE == 9) {
-
-                // Euclidian division: q = sign(y) * floor(x / abs(y))
-                // r = x - qy    where  0 <= r < abs(y)
-                s = y.s;
-                y.s = 1;
-                q = div(x, y, 0, 3);
-                y.s = s;
-                q.s *= s;
-            } else {
-                q = div(x, y, 0, MODULO_MODE);
-            }
-
-            return x.minus(q.times(y));
-        };
-
-        /*
-         * Return a new BigNumber whose value is the value of this BigNumber negated,
-         * i.e. multiplied by -1.
-         */
-        P.negated = P.neg = function () {
-            var x = new BigNumber(this);
-            x.s = -x.s || null;
-            return x;
-        };
-
-        /*
-         *  n + 0 = n
-         *  n + N = N
-         *  n + I = I
-         *  0 + n = n
-         *  0 + 0 = 0
-         *  0 + N = N
-         *  0 + I = I
-         *  N + n = N
-         *  N + 0 = N
-         *  N + N = N
-         *  N + I = N
-         *  I + n = I
-         *  I + 0 = I
-         *  I + N = N
-         *  I + I = I
-         *
-         * Return a new BigNumber whose value is the value of this BigNumber plus the value of
-         * BigNumber(y, b).
-         */
-        P.plus = P.add = function (y, b) {
-            var t,
-                x = this,
-                a = x.s;
-
-            id = 12;
-            y = new BigNumber(y, b);
-            b = y.s;
-
-            // Either NaN?
-            if (!a || !b) return new BigNumber(NaN);
-
-            // Signs differ?
-            if (a != b) {
-                y.s = -b;
-                return x.minus(y);
-            }
-
-            var xe = x.e / LOG_BASE,
-                ye = y.e / LOG_BASE,
-                xc = x.c,
-                yc = y.c;
-
-            if (!xe || !ye) {
-
-                // Return ±Infinity if either ±Infinity.
-                if (!xc || !yc) return new BigNumber(a / 0);
-
-                // Either zero?
-                // Return y if y is non-zero, x if x is non-zero, or zero if both are zero.
-                if (!xc[0] || !yc[0]) return yc[0] ? y : new BigNumber(xc[0] ? x : a * 0);
-            }
-
-            xe = bitFloor(xe);
-            ye = bitFloor(ye);
-            xc = xc.slice();
-
-            // Prepend zeros to equalise exponents. Faster to use reverse then do unshifts.
-            if (a = xe - ye) {
-                if (a > 0) {
-                    ye = xe;
-                    t = yc;
-                } else {
-                    a = -a;
-                    t = xc;
-                }
-
-                t.reverse();
-                for (; a--; t.push(0));
-                t.reverse();
-            }
-
-            a = xc.length;
-            b = yc.length;
-
-            // Point xc to the longer array, and b to the shorter length.
-            if (a - b < 0) t = yc, yc = xc, xc = t, b = a;
-
-            // Only start adding at yc.length - 1 as the further digits of xc can be ignored.
-            for (a = 0; b;) {
-                a = (xc[--b] = xc[b] + yc[b] + a) / BASE | 0;
-                xc[b] %= BASE;
-            }
-
-            if (a) {
-                xc.unshift(a);
-                ++ye;
-            }
-
-            // No need to check for zero, as +x + +y != 0 && -x + -y != 0
-            // ye = MAX_EXP + 1 possible
-            return normalise(y, xc, ye);
-        };
-
-        /*
-         * Return the number of significant digits of the value of this BigNumber.
-         *
-         * [z] {boolean|number} Whether to count integer-part trailing zeros: true, false, 1 or 0.
-         */
-        P.precision = P.sd = function (z) {
-            var n,
-                v,
-                x = this,
-                c = x.c;
-
-            // 'precision() argument not a boolean or binary digit: {z}'
-            if (z != null && z !== !!z && z !== 1 && z !== 0) {
-                if (ERRORS) raise(13, 'argument' + notBool, z);
-                if (z != !!z) z = null;
-            }
-
-            if (!c) return null;
-            v = c.length - 1;
-            n = v * LOG_BASE + 1;
-
-            if (v = c[v]) {
-
-                // Subtract the number of trailing zeros of the last element.
-                for (; v % 10 == 0; v /= 10, n--);
-
-                // Add the number of digits of the first element.
-                for (v = c[0]; v >= 10; v /= 10, n++);
-            }
-
-            if (z && x.e + 1 > n) n = x.e + 1;
-
-            return n;
-        };
-
-        /*
-         * Return a new BigNumber whose value is the value of this BigNumber rounded to a maximum of
-         * dp decimal places using rounding mode rm, or to 0 and ROUNDING_MODE respectively if
-         * omitted.
-         *
-         * [dp] {number} Decimal places. Integer, 0 to MAX inclusive.
-         * [rm] {number} Rounding mode. Integer, 0 to 8 inclusive.
-         *
-         * 'round() decimal places out of range: {dp}'
-         * 'round() decimal places not an integer: {dp}'
-         * 'round() rounding mode not an integer: {rm}'
-         * 'round() rounding mode out of range: {rm}'
-         */
-        P.round = function (dp, rm) {
-            var n = new BigNumber(this);
-
-            if (dp == null || isValidInt(dp, 0, MAX, 15)) {
-                round(n, ~~dp + this.e + 1, rm == null || !isValidInt(rm, 0, 8, 15, roundingMode) ? ROUNDING_MODE : rm | 0);
-            }
-
-            return n;
-        };
-
-        /*
-         * Return a new BigNumber whose value is the value of this BigNumber shifted by k places
-         * (powers of 10). Shift to the right if n > 0, and to the left if n < 0.
-         *
-         * k {number} Integer, -MAX_SAFE_INTEGER to MAX_SAFE_INTEGER inclusive.
-         *
-         * If k is out of range and ERRORS is false, the result will be ±0 if k < 0, or ±Infinity
-         * otherwise.
-         *
-         * 'shift() argument not an integer: {k}'
-         * 'shift() argument out of range: {k}'
-         */
-        P.shift = function (k) {
-            var n = this;
-            return isValidInt(k, -MAX_SAFE_INTEGER, MAX_SAFE_INTEGER, 16, 'argument')
-
-            // k < 1e+21, or truncate(k) will produce exponential notation.
-            ? n.times('1e' + truncate(k)) : new BigNumber(n.c && n.c[0] && (k < -MAX_SAFE_INTEGER || k > MAX_SAFE_INTEGER) ? n.s * (k < 0 ? 0 : 1 / 0) : n);
-        };
-
-        /*
-         *  sqrt(-n) =  N
-         *  sqrt( N) =  N
-         *  sqrt(-I) =  N
-         *  sqrt( I) =  I
-         *  sqrt( 0) =  0
-         *  sqrt(-0) = -0
-         *
-         * Return a new BigNumber whose value is the square root of the value of this BigNumber,
-         * rounded according to DECIMAL_PLACES and ROUNDING_MODE.
-         */
-        P.squareRoot = P.sqrt = function () {
-            var m,
-                n,
-                r,
-                rep,
-                t,
-                x = this,
-                c = x.c,
-                s = x.s,
-                e = x.e,
-                dp = DECIMAL_PLACES + 4,
-                half = new BigNumber('0.5');
-
-            // Negative/NaN/Infinity/zero?
-            if (s !== 1 || !c || !c[0]) {
-                return new BigNumber(!s || s < 0 && (!c || c[0]) ? NaN : c ? x : 1 / 0);
-            }
-
-            // Initial estimate.
-            s = Math.sqrt(+x);
-
-            // Math.sqrt underflow/overflow?
-            // Pass x to Math.sqrt as integer, then adjust the exponent of the result.
-            if (s == 0 || s == 1 / 0) {
-                n = coeffToString(c);
-                if ((n.length + e) % 2 == 0) n += '0';
-                s = Math.sqrt(n);
-                e = bitFloor((e + 1) / 2) - (e < 0 || e % 2);
-
-                if (s == 1 / 0) {
-                    n = '1e' + e;
-                } else {
-                    n = s.toExponential();
-                    n = n.slice(0, n.indexOf('e') + 1) + e;
-                }
-
-                r = new BigNumber(n);
-            } else {
-                r = new BigNumber(s + '');
-            }
-
-            // Check for zero.
-            // r could be zero if MIN_EXP is changed after the this value was created.
-            // This would cause a division by zero (x/t) and hence Infinity below, which would cause
-            // coeffToString to throw.
-            if (r.c[0]) {
-                e = r.e;
-                s = e + dp;
-                if (s < 3) s = 0;
-
-                // Newton-Raphson iteration.
-                for (;;) {
-                    t = r;
-                    r = half.times(t.plus(div(x, t, dp, 1)));
-
-                    if (coeffToString(t.c).slice(0, s) === (n = coeffToString(r.c)).slice(0, s)) {
-
-                        // The exponent of r may here be one less than the final result exponent,
-                        // e.g 0.0009999 (e-4) --> 0.001 (e-3), so adjust s so the rounding digits
-                        // are indexed correctly.
-                        if (r.e < e) --s;
-                        n = n.slice(s - 3, s + 1);
-
-                        // The 4th rounding digit may be in error by -1 so if the 4 rounding digits
-                        // are 9999 or 4999 (i.e. approaching a rounding boundary) continue the
-                        // iteration.
-                        if (n == '9999' || !rep && n == '4999') {
-
-                            // On the first iteration only, check to see if rounding up gives the
-                            // exact result as the nines may infinitely repeat.
-                            if (!rep) {
-                                round(t, t.e + DECIMAL_PLACES + 2, 0);
-
-                                if (t.times(t).eq(x)) {
-                                    r = t;
-                                    break;
-                                }
-                            }
-
-                            dp += 4;
-                            s += 4;
-                            rep = 1;
-                        } else {
-
-                            // If rounding digits are null, 0{0,4} or 50{0,3}, check for exact
-                            // result. If not, then there are further digits and m will be truthy.
-                            if (!+n || !+n.slice(1) && n.charAt(0) == '5') {
-
-                                // Truncate to the first rounding digit.
-                                round(r, r.e + DECIMAL_PLACES + 2, 1);
-                                m = !r.times(r).eq(x);
-                            }
-
-                            break;
-                        }
-                    }
-                }
-            }
-
-            return round(r, r.e + DECIMAL_PLACES + 1, ROUNDING_MODE, m);
-        };
-
-        /*
-         *  n * 0 = 0
-         *  n * N = N
-         *  n * I = I
-         *  0 * n = 0
-         *  0 * 0 = 0
-         *  0 * N = N
-         *  0 * I = N
-         *  N * n = N
-         *  N * 0 = N
-         *  N * N = N
-         *  N * I = N
-         *  I * n = I
-         *  I * 0 = N
-         *  I * N = N
-         *  I * I = I
-         *
-         * Return a new BigNumber whose value is the value of this BigNumber times the value of
-         * BigNumber(y, b).
-         */
-        P.times = P.mul = function (y, b) {
-            var c,
-                e,
-                i,
-                j,
-                k,
-                m,
-                xcL,
-                xlo,
-                xhi,
-                ycL,
-                ylo,
-                yhi,
-                zc,
-                base,
-                sqrtBase,
-                x = this,
-                xc = x.c,
-                yc = (id = 17, y = new BigNumber(y, b)).c;
-
-            // Either NaN, ±Infinity or ±0?
-            if (!xc || !yc || !xc[0] || !yc[0]) {
-
-                // Return NaN if either is NaN, or one is 0 and the other is Infinity.
-                if (!x.s || !y.s || xc && !xc[0] && !yc || yc && !yc[0] && !xc) {
-                    y.c = y.e = y.s = null;
-                } else {
-                    y.s *= x.s;
-
-                    // Return ±Infinity if either is ±Infinity.
-                    if (!xc || !yc) {
-                        y.c = y.e = null;
-
-                        // Return ±0 if either is ±0.
-                    } else {
-                        y.c = [0];
-                        y.e = 0;
-                    }
-                }
-
-                return y;
-            }
-
-            e = bitFloor(x.e / LOG_BASE) + bitFloor(y.e / LOG_BASE);
-            y.s *= x.s;
-            xcL = xc.length;
-            ycL = yc.length;
-
-            // Ensure xc points to longer array and xcL to its length.
-            if (xcL < ycL) zc = xc, xc = yc, yc = zc, i = xcL, xcL = ycL, ycL = i;
-
-            // Initialise the result array with zeros.
-            for (i = xcL + ycL, zc = []; i--; zc.push(0));
-
-            base = BASE;
-            sqrtBase = SQRT_BASE;
-
-            for (i = ycL; --i >= 0;) {
-                c = 0;
-                ylo = yc[i] % sqrtBase;
-                yhi = yc[i] / sqrtBase | 0;
-
-                for (k = xcL, j = i + k; j > i;) {
-                    xlo = xc[--k] % sqrtBase;
-                    xhi = xc[k] / sqrtBase | 0;
-                    m = yhi * xlo + xhi * ylo;
-                    xlo = ylo * xlo + m % sqrtBase * sqrtBase + zc[j] + c;
-                    c = (xlo / base | 0) + (m / sqrtBase | 0) + yhi * xhi;
-                    zc[j--] = xlo % base;
-                }
-
-                zc[j] = c;
-            }
-
-            if (c) {
-                ++e;
-            } else {
-                zc.shift();
-            }
-
-            return normalise(y, zc, e);
-        };
-
-        /*
-         * Return a new BigNumber whose value is the value of this BigNumber rounded to a maximum of
-         * sd significant digits using rounding mode rm, or ROUNDING_MODE if rm is omitted.
-         *
-         * [sd] {number} Significant digits. Integer, 1 to MAX inclusive.
-         * [rm] {number} Rounding mode. Integer, 0 to 8 inclusive.
-         *
-         * 'toDigits() precision out of range: {sd}'
-         * 'toDigits() precision not an integer: {sd}'
-         * 'toDigits() rounding mode not an integer: {rm}'
-         * 'toDigits() rounding mode out of range: {rm}'
-         */
-        P.toDigits = function (sd, rm) {
-            var n = new BigNumber(this);
-            sd = sd == null || !isValidInt(sd, 1, MAX, 18, 'precision') ? null : sd | 0;
-            rm = rm == null || !isValidInt(rm, 0, 8, 18, roundingMode) ? ROUNDING_MODE : rm | 0;
-            return sd ? round(n, sd, rm) : n;
-        };
-
-        /*
-         * Return a string representing the value of this BigNumber in exponential notation and
-         * rounded using ROUNDING_MODE to dp fixed decimal places.
-         *
-         * [dp] {number} Decimal places. Integer, 0 to MAX inclusive.
-         * [rm] {number} Rounding mode. Integer, 0 to 8 inclusive.
-         *
-         * 'toExponential() decimal places not an integer: {dp}'
-         * 'toExponential() decimal places out of range: {dp}'
-         * 'toExponential() rounding mode not an integer: {rm}'
-         * 'toExponential() rounding mode out of range: {rm}'
-         */
-        P.toExponential = function (dp, rm) {
-            return format(this, dp != null && isValidInt(dp, 0, MAX, 19) ? ~~dp + 1 : null, rm, 19);
-        };
-
-        /*
-         * Return a string representing the value of this BigNumber in fixed-point notation rounding
-         * to dp fixed decimal places using rounding mode rm, or ROUNDING_MODE if rm is omitted.
-         *
-         * Note: as with JavaScript's number type, (-0).toFixed(0) is '0',
-         * but e.g. (-0.00001).toFixed(0) is '-0'.
-         *
-         * [dp] {number} Decimal places. Integer, 0 to MAX inclusive.
-         * [rm] {number} Rounding mode. Integer, 0 to 8 inclusive.
-         *
-         * 'toFixed() decimal places not an integer: {dp}'
-         * 'toFixed() decimal places out of range: {dp}'
-         * 'toFixed() rounding mode not an integer: {rm}'
-         * 'toFixed() rounding mode out of range: {rm}'
-         */
-        P.toFixed = function (dp, rm) {
-            return format(this, dp != null && isValidInt(dp, 0, MAX, 20) ? ~~dp + this.e + 1 : null, rm, 20);
-        };
-
-        /*
-         * Return a string representing the value of this BigNumber in fixed-point notation rounded
-         * using rm or ROUNDING_MODE to dp decimal places, and formatted according to the properties
-         * of the FORMAT object (see BigNumber.config).
-         *
-         * FORMAT = {
-         *      decimalSeparator : '.',
-         *      groupSeparator : ',',
-         *      groupSize : 3,
-         *      secondaryGroupSize : 0,
-         *      fractionGroupSeparator : '\xA0',    // non-breaking space
-         *      fractionGroupSize : 0
-         * };
-         *
-         * [dp] {number} Decimal places. Integer, 0 to MAX inclusive.
-         * [rm] {number} Rounding mode. Integer, 0 to 8 inclusive.
-         *
-         * 'toFormat() decimal places not an integer: {dp}'
-         * 'toFormat() decimal places out of range: {dp}'
-         * 'toFormat() rounding mode not an integer: {rm}'
-         * 'toFormat() rounding mode out of range: {rm}'
-         */
-        P.toFormat = function (dp, rm) {
-            var str = format(this, dp != null && isValidInt(dp, 0, MAX, 21) ? ~~dp + this.e + 1 : null, rm, 21);
-
-            if (this.c) {
-                var i,
-                    arr = str.split('.'),
-                    g1 = +FORMAT.groupSize,
-                    g2 = +FORMAT.secondaryGroupSize,
-                    groupSeparator = FORMAT.groupSeparator,
-                    intPart = arr[0],
-                    fractionPart = arr[1],
-                    isNeg = this.s < 0,
-                    intDigits = isNeg ? intPart.slice(1) : intPart,
-                    len = intDigits.length;
-
-                if (g2) i = g1, g1 = g2, g2 = i, len -= i;
-
-                if (g1 > 0 && len > 0) {
-                    i = len % g1 || g1;
-                    intPart = intDigits.substr(0, i);
-
-                    for (; i < len; i += g1) {
-                        intPart += groupSeparator + intDigits.substr(i, g1);
-                    }
-
-                    if (g2 > 0) intPart += groupSeparator + intDigits.slice(i);
-                    if (isNeg) intPart = '-' + intPart;
-                }
-
-                str = fractionPart ? intPart + FORMAT.decimalSeparator + ((g2 = +FORMAT.fractionGroupSize) ? fractionPart.replace(new RegExp('\\d{' + g2 + '}\\B', 'g'), '$&' + FORMAT.fractionGroupSeparator) : fractionPart) : intPart;
-            }
-
-            return str;
-        };
-
-        /*
-         * Return a string array representing the value of this BigNumber as a simple fraction with
-         * an integer numerator and an integer denominator. The denominator will be a positive
-         * non-zero value less than or equal to the specified maximum denominator. If a maximum
-         * denominator is not specified, the denominator will be the lowest value necessary to
-         * represent the number exactly.
-         *
-         * [md] {number|string|BigNumber} Integer >= 1 and < Infinity. The maximum denominator.
-         *
-         * 'toFraction() max denominator not an integer: {md}'
-         * 'toFraction() max denominator out of range: {md}'
-         */
-        P.toFraction = function (md) {
-            var arr,
-                d0,
-                d2,
-                e,
-                exp,
-                n,
-                n0,
-                q,
-                s,
-                k = ERRORS,
-                x = this,
-                xc = x.c,
-                d = new BigNumber(ONE),
-                n1 = d0 = new BigNumber(ONE),
-                d1 = n0 = new BigNumber(ONE);
-
-            if (md != null) {
-                ERRORS = false;
-                n = new BigNumber(md);
-                ERRORS = k;
-
-                if (!(k = n.isInt()) || n.lt(ONE)) {
-
-                    if (ERRORS) {
-                        raise(22, 'max denominator ' + (k ? 'out of range' : 'not an integer'), md);
-                    }
-
-                    // ERRORS is false:
-                    // If md is a finite non-integer >= 1, round it to an integer and use it.
-                    md = !k && n.c && round(n, n.e + 1, 1).gte(ONE) ? n : null;
-                }
-            }
-
-            if (!xc) return x.toString();
-            s = coeffToString(xc);
-
-            // Determine initial denominator.
-            // d is a power of 10 and the minimum max denominator that specifies the value exactly.
-            e = d.e = s.length - x.e - 1;
-            d.c[0] = POWS_TEN[(exp = e % LOG_BASE) < 0 ? LOG_BASE + exp : exp];
-            md = !md || n.cmp(d) > 0 ? e > 0 ? d : n1 : n;
-
-            exp = MAX_EXP;
-            MAX_EXP = 1 / 0;
-            n = new BigNumber(s);
-
-            // n0 = d1 = 0
-            n0.c[0] = 0;
-
-            for (;;) {
-                q = div(n, d, 0, 1);
-                d2 = d0.plus(q.times(d1));
-                if (d2.cmp(md) == 1) break;
-                d0 = d1;
-                d1 = d2;
-                n1 = n0.plus(q.times(d2 = n1));
-                n0 = d2;
-                d = n.minus(q.times(d2 = d));
-                n = d2;
-            }
-
-            d2 = div(md.minus(d0), d1, 0, 1);
-            n0 = n0.plus(d2.times(n1));
-            d0 = d0.plus(d2.times(d1));
-            n0.s = n1.s = x.s;
-            e *= 2;
-
-            // Determine which fraction is closer to x, n0/d0 or n1/d1
-            arr = div(n1, d1, e, ROUNDING_MODE).minus(x).abs().cmp(div(n0, d0, e, ROUNDING_MODE).minus(x).abs()) < 1 ? [n1.toString(), d1.toString()] : [n0.toString(), d0.toString()];
-
-            MAX_EXP = exp;
-            return arr;
-        };
-
-        /*
-         * Return the value of this BigNumber converted to a number primitive.
-         */
-        P.toNumber = function () {
-            var x = this;
-
-            // Ensure zero has correct sign.
-            return +x || (x.s ? x.s * 0 : NaN);
-        };
-
-        /*
-         * Return a BigNumber whose value is the value of this BigNumber raised to the power n.
-         * If n is negative round according to DECIMAL_PLACES and ROUNDING_MODE.
-         * If POW_PRECISION is not 0, round to POW_PRECISION using ROUNDING_MODE.
-         *
-         * n {number} Integer, -9007199254740992 to 9007199254740992 inclusive.
-         * (Performs 54 loop iterations for n of 9007199254740992.)
-         *
-         * 'pow() exponent not an integer: {n}'
-         * 'pow() exponent out of range: {n}'
-         */
-        P.toPower = P.pow = function (n) {
-            var k,
-                y,
-                i = mathfloor(n < 0 ? -n : +n),
-                x = this;
-
-            // Pass ±Infinity to Math.pow if exponent is out of range.
-            if (!isValidInt(n, -MAX_SAFE_INTEGER, MAX_SAFE_INTEGER, 23, 'exponent') && (!isFinite(n) || i > MAX_SAFE_INTEGER && (n /= 0) || parseFloat(n) != n && !(n = NaN))) {
-                return new BigNumber(Math.pow(+x, n));
-            }
-
-            // Truncating each coefficient array to a length of k after each multiplication equates
-            // to truncating significant digits to POW_PRECISION + [28, 41], i.e. there will be a
-            // minimum of 28 guard digits retained. (Using + 1.5 would give [9, 21] guard digits.)
-            k = POW_PRECISION ? mathceil(POW_PRECISION / LOG_BASE + 2) : 0;
-            y = new BigNumber(ONE);
-
-            for (;;) {
-
-                if (i % 2) {
-                    y = y.times(x);
-                    if (!y.c) break;
-                    if (k && y.c.length > k) y.c.length = k;
-                }
-
-                i = mathfloor(i / 2);
-                if (!i) break;
-
-                x = x.times(x);
-                if (k && x.c && x.c.length > k) x.c.length = k;
-            }
-
-            if (n < 0) y = ONE.div(y);
-            return k ? round(y, POW_PRECISION, ROUNDING_MODE) : y;
-        };
-
-        /*
-         * Return a string representing the value of this BigNumber rounded to sd significant digits
-         * using rounding mode rm or ROUNDING_MODE. If sd is less than the number of digits
-         * necessary to represent the integer part of the value in fixed-point notation, then use
-         * exponential notation.
-         *
-         * [sd] {number} Significant digits. Integer, 1 to MAX inclusive.
-         * [rm] {number} Rounding mode. Integer, 0 to 8 inclusive.
-         *
-         * 'toPrecision() precision not an integer: {sd}'
-         * 'toPrecision() precision out of range: {sd}'
-         * 'toPrecision() rounding mode not an integer: {rm}'
-         * 'toPrecision() rounding mode out of range: {rm}'
-         */
-        P.toPrecision = function (sd, rm) {
-            return format(this, sd != null && isValidInt(sd, 1, MAX, 24, 'precision') ? sd | 0 : null, rm, 24);
-        };
-
-        /*
-         * Return a string representing the value of this BigNumber in base b, or base 10 if b is
-         * omitted. If a base is specified, including base 10, round according to DECIMAL_PLACES and
-         * ROUNDING_MODE. If a base is not specified, and this BigNumber has a positive exponent
-         * that is equal to or greater than TO_EXP_POS, or a negative exponent equal to or less than
-         * TO_EXP_NEG, return exponential notation.
-         *
-         * [b] {number} Integer, 2 to 64 inclusive.
-         *
-         * 'toString() base not an integer: {b}'
-         * 'toString() base out of range: {b}'
-         */
-        P.toString = function (b) {
-            var str,
-                n = this,
-                s = n.s,
-                e = n.e;
-
-            // Infinity or NaN?
-            if (e === null) {
-
-                if (s) {
-                    str = 'Infinity';
-                    if (s < 0) str = '-' + str;
-                } else {
-                    str = 'NaN';
-                }
-            } else {
-                str = coeffToString(n.c);
-
-                if (b == null || !isValidInt(b, 2, 64, 25, 'base')) {
-                    str = e <= TO_EXP_NEG || e >= TO_EXP_POS ? toExponential(str, e) : toFixedPoint(str, e);
-                } else {
-                    str = convertBase(toFixedPoint(str, e), b | 0, 10, s);
-                }
-
-                if (s < 0 && n.c[0]) str = '-' + str;
-            }
-
-            return str;
-        };
-
-        /*
-         * Return a new BigNumber whose value is the value of this BigNumber truncated to a whole
-         * number.
-         */
-        P.truncated = P.trunc = function () {
-            return round(new BigNumber(this), this.e + 1, 1);
-        };
-
-        /*
-         * Return as toString, but do not accept a base argument.
-         */
-        P.valueOf = P.toJSON = function () {
-            return this.toString();
-        };
-
-        // Aliases for BigDecimal methods.
-        //P.add = P.plus;         // P.add included above
-        //P.subtract = P.minus;   // P.sub included above
-        //P.multiply = P.times;   // P.mul included above
-        //P.divide = P.div;
-        //P.remainder = P.mod;
-        //P.compareTo = P.cmp;
-        //P.negate = P.neg;
-
-
-        if (configObj != null) BigNumber.config(configObj);
-
-        return BigNumber;
-    }
-
-    // PRIVATE HELPER FUNCTIONS
-
-
-    function bitFloor(n) {
-        var i = n | 0;
-        return n > 0 || n === i ? i : i - 1;
-    }
-
-    // Return a coefficient array as a string of base 10 digits.
-    function coeffToString(a) {
-        var s,
-            z,
-            i = 1,
-            j = a.length,
-            r = a[0] + '';
-
-        for (; i < j;) {
-            s = a[i++] + '';
-            z = LOG_BASE - s.length;
-            for (; z--; s = '0' + s);
-            r += s;
-        }
-
-        // Determine trailing zeros.
-        for (j = r.length; r.charCodeAt(--j) === 48;);
-        return r.slice(0, j + 1 || 1);
-    }
-
-    // Compare the value of BigNumbers x and y.
-    function compare(x, y) {
-        var a,
-            b,
-            xc = x.c,
-            yc = y.c,
-            i = x.s,
-            j = y.s,
-            k = x.e,
-            l = y.e;
-
-        // Either NaN?
-        if (!i || !j) return null;
-
-        a = xc && !xc[0];
-        b = yc && !yc[0];
-
-        // Either zero?
-        if (a || b) return a ? b ? 0 : -j : i;
-
-        // Signs differ?
-        if (i != j) return i;
-
-        a = i < 0;
-        b = k == l;
-
-        // Either Infinity?
-        if (!xc || !yc) return b ? 0 : !xc ^ a ? 1 : -1;
-
-        // Compare exponents.
-        if (!b) return k > l ^ a ? 1 : -1;
-
-        j = (k = xc.length) < (l = yc.length) ? k : l;
-
-        // Compare digit by digit.
-        for (i = 0; i < j; i++) if (xc[i] != yc[i]) return xc[i] > yc[i] ^ a ? 1 : -1;
-
-        // Compare lengths.
-        return k == l ? 0 : k > l ^ a ? 1 : -1;
-    }
-
-    /*
-     * Return true if n is a valid number in range, otherwise false.
-     * Use for argument validation when ERRORS is false.
-     * Note: parseInt('1e+1') == 1 but parseFloat('1e+1') == 10.
-     */
-    function intValidatorNoErrors(n, min, max) {
-        return (n = truncate(n)) >= min && n <= max;
-    }
-
-    function isArray(obj) {
-        return Object.prototype.toString.call(obj) == '[object Array]';
-    }
-
-    /*
-     * Convert string of baseIn to an array of numbers of baseOut.
-     * Eg. convertBase('255', 10, 16) returns [15, 15].
-     * Eg. convertBase('ff', 16, 10) returns [2, 5, 5].
-     */
-    function toBaseOut(str, baseIn, baseOut) {
-        var j,
-            arr = [0],
-            arrL,
-            i = 0,
-            len = str.length;
-
-        for (; i < len;) {
-            for (arrL = arr.length; arrL--; arr[arrL] *= baseIn);
-            arr[j = 0] += ALPHABET.indexOf(str.charAt(i++));
-
-            for (; j < arr.length; j++) {
-
-                if (arr[j] > baseOut - 1) {
-                    if (arr[j + 1] == null) arr[j + 1] = 0;
-                    arr[j + 1] += arr[j] / baseOut | 0;
-                    arr[j] %= baseOut;
-                }
-            }
-        }
-
-        return arr.reverse();
-    }
-
-    function toExponential(str, e) {
-        return (str.length > 1 ? str.charAt(0) + '.' + str.slice(1) : str) + (e < 0 ? 'e' : 'e+') + e;
-    }
-
-    function toFixedPoint(str, e) {
-        var len, z;
-
-        // Negative exponent?
-        if (e < 0) {
-
-            // Prepend zeros.
-            for (z = '0.'; ++e; z += '0');
-            str = z + str;
-
-            // Positive exponent
-        } else {
-            len = str.length;
-
-            // Append zeros.
-            if (++e > len) {
-                for (z = '0', e -= len; --e; z += '0');
-                str += z;
-            } else if (e < len) {
-                str = str.slice(0, e) + '.' + str.slice(e);
-            }
-        }
-
-        return str;
-    }
-
-    function truncate(n) {
-        n = parseFloat(n);
-        return n < 0 ? mathceil(n) : mathfloor(n);
-    }
-
-    // EXPORT
-
-
-    BigNumber = another();
-
-    // AMD.
-    if (true) {
-        !(__WEBPACK_AMD_DEFINE_RESULT__ = (function () {
-            return BigNumber;
-        }).call(exports, __webpack_require__, exports, module),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-        // Node and other environments that support module.exports.
-    } else if (typeof module != 'undefined' && module.exports) {
-        module.exports = BigNumber;
-        if (!crypto) try {
-            crypto = require('crypto');
-        } catch (e) {}
-
-        // Browser.
-    } else {
-        global.BigNumber = BigNumber;
-    }
-})(this);
-
-/***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/*
-    This file is part of web3.js.
-
-    web3.js is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    web3.js is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public License
-    along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
-*/
-/** @file config.js
- * @authors:
- *   Marek Kotewicz <marek@ethdev.com>
- * @date 2015
- */
-
-/**
- * Utils
- * 
- * @module utils
- */
-
-/**
- * Utility functions
- * 
- * @class [utils] config
- * @constructor
- */
-
-/// required to define ETH_BIGNUMBER_ROUNDING_MODE
-var BigNumber = __webpack_require__(12);
-
-var ETH_UNITS = ['wei', 'kwei', 'Mwei', 'Gwei', 'szabo', 'finney', 'femtoether', 'picoether', 'nanoether', 'microether', 'milliether', 'nano', 'micro', 'milli', 'ether', 'grand', 'Mether', 'Gether', 'Tether', 'Pether', 'Eether', 'Zether', 'Yether', 'Nether', 'Dether', 'Vether', 'Uether'];
-
-module.exports = {
-    ETH_PADDING: 32,
-    ETH_SIGNATURE_LENGTH: 4,
-    ETH_UNITS: ETH_UNITS,
-    ETH_BIGNUMBER_ROUNDING_MODE: { ROUNDING_MODE: BigNumber.ROUND_DOWN },
-    ETH_POLLING_TIMEOUT: 1000 / 2,
-    defaultBlock: 'latest',
-    defaultAccount: undefined
-};
-
-/***/ }),
-/* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/*
-    This file is part of web3.js.
-
-    web3.js is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    web3.js is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public License
-    along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
-*/
-/** 
- * @file iban.js
- * @author Marek Kotewicz <marek@ethdev.com>
- * @date 2015
- */
-
-var BigNumber = __webpack_require__(12);
-
-var padLeft = function (string, bytes) {
-    var result = string;
-    while (result.length < bytes * 2) {
-        result = '00' + result;
-    }
-    return result;
-};
-
-/**
- * Prepare an IBAN for mod 97 computation by moving the first 4 chars to the end and transforming the letters to
- * numbers (A = 10, B = 11, ..., Z = 35), as specified in ISO13616.
- *
- * @method iso13616Prepare
- * @param {String} iban the IBAN
- * @returns {String} the prepared IBAN
- */
-var iso13616Prepare = function (iban) {
-    var A = 'A'.charCodeAt(0);
-    var Z = 'Z'.charCodeAt(0);
-
-    iban = iban.toUpperCase();
-    iban = iban.substr(4) + iban.substr(0, 4);
-
-    return iban.split('').map(function (n) {
-        var code = n.charCodeAt(0);
-        if (code >= A && code <= Z) {
-            // A = 10, B = 11, ... Z = 35
-            return code - A + 10;
-        } else {
-            return n;
-        }
-    }).join('');
-};
-
-/**
- * Calculates the MOD 97 10 of the passed IBAN as specified in ISO7064.
- *
- * @method mod9710
- * @param {String} iban
- * @returns {Number}
- */
-var mod9710 = function (iban) {
-    var remainder = iban,
-        block;
-
-    while (remainder.length > 2) {
-        block = remainder.slice(0, 9);
-        remainder = parseInt(block, 10) % 97 + remainder.slice(block.length);
-    }
-
-    return parseInt(remainder, 10) % 97;
-};
-
-/**
- * This prototype should be used to create iban object from iban correct string
- *
- * @param {String} iban
- */
-var Iban = function (iban) {
-    this._iban = iban;
-};
-
-/**
- * This method should be used to create iban object from ethereum address
- *
- * @method fromAddress
- * @param {String} address
- * @return {Iban} the IBAN object
- */
-Iban.fromAddress = function (address) {
-    var asBn = new BigNumber(address, 16);
-    var base36 = asBn.toString(36);
-    var padded = padLeft(base36, 15);
-    return Iban.fromBban(padded.toUpperCase());
-};
-
-/**
- * Convert the passed BBAN to an IBAN for this country specification.
- * Please note that <i>"generation of the IBAN shall be the exclusive responsibility of the bank/branch servicing the account"</i>.
- * This method implements the preferred algorithm described in http://en.wikipedia.org/wiki/International_Bank_Account_Number#Generating_IBAN_check_digits
- *
- * @method fromBban
- * @param {String} bban the BBAN to convert to IBAN
- * @returns {Iban} the IBAN object
- */
-Iban.fromBban = function (bban) {
-    var countryCode = 'XE';
-
-    var remainder = mod9710(iso13616Prepare(countryCode + '00' + bban));
-    var checkDigit = ('0' + (98 - remainder)).slice(-2);
-
-    return new Iban(countryCode + checkDigit + bban);
-};
-
-/**
- * Should be used to create IBAN object for given institution and identifier
- *
- * @method createIndirect
- * @param {Object} options, required options are "institution" and "identifier"
- * @return {Iban} the IBAN object
- */
-Iban.createIndirect = function (options) {
-    return Iban.fromBban('ETH' + options.institution + options.identifier);
-};
-
-/**
- * Thos method should be used to check if given string is valid iban object
- *
- * @method isValid
- * @param {String} iban string
- * @return {Boolean} true if it is valid IBAN
- */
-Iban.isValid = function (iban) {
-    var i = new Iban(iban);
-    return i.isValid();
-};
-
-/**
- * Should be called to check if iban is correct
- *
- * @method isValid
- * @returns {Boolean} true if it is, otherwise false
- */
-Iban.prototype.isValid = function () {
-    return (/^XE[0-9]{2}(ETH[0-9A-Z]{13}|[0-9A-Z]{30,31})$/.test(this._iban) && mod9710(iso13616Prepare(this._iban)) === 1
-    );
-};
-
-/**
- * Should be called to check if iban number is direct
- *
- * @method isDirect
- * @returns {Boolean} true if it is, otherwise false
- */
-Iban.prototype.isDirect = function () {
-    return this._iban.length === 34 || this._iban.length === 35;
-};
-
-/**
- * Should be called to check if iban number if indirect
- *
- * @method isIndirect
- * @returns {Boolean} true if it is, otherwise false
- */
-Iban.prototype.isIndirect = function () {
-    return this._iban.length === 20;
-};
-
-/**
- * Should be called to get iban checksum
- * Uses the mod-97-10 checksumming protocol (ISO/IEC 7064:2003)
- *
- * @method checksum
- * @returns {String} checksum
- */
-Iban.prototype.checksum = function () {
-    return this._iban.substr(2, 2);
-};
-
-/**
- * Should be called to get institution identifier
- * eg. XREG
- *
- * @method institution
- * @returns {String} institution identifier
- */
-Iban.prototype.institution = function () {
-    return this.isIndirect() ? this._iban.substr(7, 4) : '';
-};
-
-/**
- * Should be called to get client identifier within institution
- * eg. GAVOFYORK
- *
- * @method client
- * @returns {String} client identifier
- */
-Iban.prototype.client = function () {
-    return this.isIndirect() ? this._iban.substr(11) : '';
-};
-
-/**
- * Should be called to get client direct address
- *
- * @method address
- * @returns {String} client direct address
- */
-Iban.prototype.address = function () {
-    if (this.isDirect()) {
-        var base36 = this._iban.substr(4);
-        var asBn = new BigNumber(base36, 36);
-        return padLeft(asBn.toString(16), 20);
-    }
-
-    return '';
-};
-
-Iban.prototype.toString = function () {
-    return this._iban;
-};
-
-module.exports = Iban;
-
-/***/ }),
-/* 15 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/*
-    This file is part of web3.js.
-
-    web3.js is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    web3.js is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public License
-    along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
-*/
-/**
- * @file property.js
- * @author Fabian Vogelsteller <fabian@frozeman.de>
- * @author Marek Kotewicz <marek@ethdev.com>
- * @date 2015
- */
-
-var utils = __webpack_require__(1);
-
-var Property = function (options) {
-    this.name = options.name;
-    this.getter = options.getter;
-    this.setter = options.setter;
-    this.outputFormatter = options.outputFormatter;
-    this.inputFormatter = options.inputFormatter;
-    this.requestManager = null;
-};
-
-Property.prototype.setRequestManager = function (rm) {
-    this.requestManager = rm;
-};
-
-/**
- * Should be called to format input args of method
- * 
- * @method formatInput
- * @param {Array}
- * @return {Array}
- */
-Property.prototype.formatInput = function (arg) {
-    return this.inputFormatter ? this.inputFormatter(arg) : arg;
-};
-
-/**
- * Should be called to format output(result) of method
- *
- * @method formatOutput
- * @param {Object}
- * @return {Object}
- */
-Property.prototype.formatOutput = function (result) {
-    return this.outputFormatter && result !== null ? this.outputFormatter(result) : result;
-};
-
-/**
- * Should be used to extract callback from array of arguments. Modifies input param
- *
- * @method extractCallback
- * @param {Array} arguments
- * @return {Function|Null} callback, if exists
- */
-Property.prototype.extractCallback = function (args) {
-    if (utils.isFunction(args[args.length - 1])) {
-        return args.pop(); // modify the args array!
-    }
-};
-
-/**
- * Should attach function to method
- * 
- * @method attachToObject
- * @param {Object}
- * @param {Function}
- */
-Property.prototype.attachToObject = function (obj) {
-    var proto = {
-        get: this.buildGet()
-    };
-
-    var names = this.name.split('.');
-    var name = names[0];
-    if (names.length > 1) {
-        obj[names[0]] = obj[names[0]] || {};
-        obj = obj[names[0]];
-        name = names[1];
-    }
-
-    Object.defineProperty(obj, name, proto);
-    obj[asyncGetterName(name)] = this.buildAsyncGet();
-};
-
-var asyncGetterName = function (name) {
-    return 'get' + name.charAt(0).toUpperCase() + name.slice(1);
-};
-
-Property.prototype.buildGet = function () {
-    var property = this;
-    return function get() {
-        return property.formatOutput(property.requestManager.send({
-            method: property.getter
-        }));
-    };
-};
-
-Property.prototype.buildAsyncGet = function () {
-    var property = this;
-    var get = function (callback) {
-        property.requestManager.sendAsync({
-            method: property.getter
-        }, function (err, result) {
-            callback(err, property.formatOutput(result));
-        });
-    };
-    get.request = this.request.bind(this);
-    return get;
-};
-
-/**
- * Should be called to create pure JSONRPC request which can be used in batch request
- *
- * @method request
- * @param {...} params
- * @return {Object} jsonrpc request
- */
-Property.prototype.request = function () {
-    var payload = {
-        method: this.getter,
-        params: [],
-        callback: this.extractCallback(Array.prototype.slice.call(arguments))
-    };
-    payload.format = this.formatOutput.bind(this);
-    return payload;
-};
-
-module.exports = Property;
-
-/***/ }),
-/* 16 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/*
-    This file is part of web3.js.
-
-    web3.js is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    web3.js is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public License
-    along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
-*/
-/** 
- * @file sha3.js
- * @author Marek Kotewicz <marek@ethdev.com>
- * @date 2015
- */
-
-var CryptoJS = __webpack_require__(58);
-var sha3 = __webpack_require__(31);
-
-module.exports = function (value, options) {
-    if (options && options.encoding === 'hex') {
-        if (value.length > 2 && value.substr(0, 2) === '0x') {
-            value = value.substr(2);
-        }
-        value = CryptoJS.enc.Hex.parse(value);
-    }
-
-    return sha3(value, {
-        outputLength: 256
-    }).toString();
-};
-
-/***/ }),
-/* 17 */
-/***/ (function(module, exports, __webpack_require__) {
-
-;(function (root, factory) {
-	if (true) {
-		// CommonJS
-		module.exports = exports = factory(__webpack_require__(0));
-	} else if (typeof define === "function" && define.amd) {
-		// AMD
-		define(["./core"], factory);
-	} else {
-		// Global (browser)
-		factory(root.CryptoJS);
-	}
-})(this, function (CryptoJS) {
-
-	(function (undefined) {
-		// Shortcuts
-		var C = CryptoJS;
-		var C_lib = C.lib;
-		var Base = C_lib.Base;
-		var X32WordArray = C_lib.WordArray;
-
-		/**
-   * x64 namespace.
-   */
-		var C_x64 = C.x64 = {};
-
-		/**
-   * A 64-bit word.
-   */
-		var X64Word = C_x64.Word = Base.extend({
-			/**
-    * Initializes a newly created 64-bit word.
-    *
-    * @param {number} high The high 32 bits.
-    * @param {number} low The low 32 bits.
-    *
-    * @example
-    *
-    *     var x64Word = CryptoJS.x64.Word.create(0x00010203, 0x04050607);
-    */
-			init: function (high, low) {
-				this.high = high;
-				this.low = low;
-			}
-
-			/**
-    * Bitwise NOTs this word.
-    *
-    * @return {X64Word} A new x64-Word object after negating.
-    *
-    * @example
-    *
-    *     var negated = x64Word.not();
-    */
-			// not: function () {
-			// var high = ~this.high;
-			// var low = ~this.low;
-
-			// return X64Word.create(high, low);
-			// },
-
-			/**
-    * Bitwise ANDs this word with the passed word.
-    *
-    * @param {X64Word} word The x64-Word to AND with this word.
-    *
-    * @return {X64Word} A new x64-Word object after ANDing.
-    *
-    * @example
-    *
-    *     var anded = x64Word.and(anotherX64Word);
-    */
-			// and: function (word) {
-			// var high = this.high & word.high;
-			// var low = this.low & word.low;
-
-			// return X64Word.create(high, low);
-			// },
-
-			/**
-    * Bitwise ORs this word with the passed word.
-    *
-    * @param {X64Word} word The x64-Word to OR with this word.
-    *
-    * @return {X64Word} A new x64-Word object after ORing.
-    *
-    * @example
-    *
-    *     var ored = x64Word.or(anotherX64Word);
-    */
-			// or: function (word) {
-			// var high = this.high | word.high;
-			// var low = this.low | word.low;
-
-			// return X64Word.create(high, low);
-			// },
-
-			/**
-    * Bitwise XORs this word with the passed word.
-    *
-    * @param {X64Word} word The x64-Word to XOR with this word.
-    *
-    * @return {X64Word} A new x64-Word object after XORing.
-    *
-    * @example
-    *
-    *     var xored = x64Word.xor(anotherX64Word);
-    */
-			// xor: function (word) {
-			// var high = this.high ^ word.high;
-			// var low = this.low ^ word.low;
-
-			// return X64Word.create(high, low);
-			// },
-
-			/**
-    * Shifts this word n bits to the left.
-    *
-    * @param {number} n The number of bits to shift.
-    *
-    * @return {X64Word} A new x64-Word object after shifting.
-    *
-    * @example
-    *
-    *     var shifted = x64Word.shiftL(25);
-    */
-			// shiftL: function (n) {
-			// if (n < 32) {
-			// var high = (this.high << n) | (this.low >>> (32 - n));
-			// var low = this.low << n;
-			// } else {
-			// var high = this.low << (n - 32);
-			// var low = 0;
-			// }
-
-			// return X64Word.create(high, low);
-			// },
-
-			/**
-    * Shifts this word n bits to the right.
-    *
-    * @param {number} n The number of bits to shift.
-    *
-    * @return {X64Word} A new x64-Word object after shifting.
-    *
-    * @example
-    *
-    *     var shifted = x64Word.shiftR(7);
-    */
-			// shiftR: function (n) {
-			// if (n < 32) {
-			// var low = (this.low >>> n) | (this.high << (32 - n));
-			// var high = this.high >>> n;
-			// } else {
-			// var low = this.high >>> (n - 32);
-			// var high = 0;
-			// }
-
-			// return X64Word.create(high, low);
-			// },
-
-			/**
-    * Rotates this word n bits to the left.
-    *
-    * @param {number} n The number of bits to rotate.
-    *
-    * @return {X64Word} A new x64-Word object after rotating.
-    *
-    * @example
-    *
-    *     var rotated = x64Word.rotL(25);
-    */
-			// rotL: function (n) {
-			// return this.shiftL(n).or(this.shiftR(64 - n));
-			// },
-
-			/**
-    * Rotates this word n bits to the right.
-    *
-    * @param {number} n The number of bits to rotate.
-    *
-    * @return {X64Word} A new x64-Word object after rotating.
-    *
-    * @example
-    *
-    *     var rotated = x64Word.rotR(7);
-    */
-			// rotR: function (n) {
-			// return this.shiftR(n).or(this.shiftL(64 - n));
-			// },
-
-			/**
-    * Adds this word with the passed word.
-    *
-    * @param {X64Word} word The x64-Word to add with this word.
-    *
-    * @return {X64Word} A new x64-Word object after adding.
-    *
-    * @example
-    *
-    *     var added = x64Word.add(anotherX64Word);
-    */
-			// add: function (word) {
-			// var low = (this.low + word.low) | 0;
-			// var carry = (low >>> 0) < (this.low >>> 0) ? 1 : 0;
-			// var high = (this.high + word.high + carry) | 0;
-
-			// return X64Word.create(high, low);
-			// }
-		});
-
-		/**
-   * An array of 64-bit words.
-   *
-   * @property {Array} words The array of CryptoJS.x64.Word objects.
-   * @property {number} sigBytes The number of significant bytes in this word array.
-   */
-		var X64WordArray = C_x64.WordArray = Base.extend({
-			/**
-    * Initializes a newly created word array.
-    *
-    * @param {Array} words (Optional) An array of CryptoJS.x64.Word objects.
-    * @param {number} sigBytes (Optional) The number of significant bytes in the words.
-    *
-    * @example
-    *
-    *     var wordArray = CryptoJS.x64.WordArray.create();
-    *
-    *     var wordArray = CryptoJS.x64.WordArray.create([
-    *         CryptoJS.x64.Word.create(0x00010203, 0x04050607),
-    *         CryptoJS.x64.Word.create(0x18191a1b, 0x1c1d1e1f)
-    *     ]);
-    *
-    *     var wordArray = CryptoJS.x64.WordArray.create([
-    *         CryptoJS.x64.Word.create(0x00010203, 0x04050607),
-    *         CryptoJS.x64.Word.create(0x18191a1b, 0x1c1d1e1f)
-    *     ], 10);
-    */
-			init: function (words, sigBytes) {
-				words = this.words = words || [];
-
-				if (sigBytes != undefined) {
-					this.sigBytes = sigBytes;
-				} else {
-					this.sigBytes = words.length * 8;
-				}
-			},
-
-			/**
-    * Converts this 64-bit word array to a 32-bit word array.
-    *
-    * @return {CryptoJS.lib.WordArray} This word array's data as a 32-bit word array.
-    *
-    * @example
-    *
-    *     var x32WordArray = x64WordArray.toX32();
-    */
-			toX32: function () {
-				// Shortcuts
-				var x64Words = this.words;
-				var x64WordsLength = x64Words.length;
-
-				// Convert
-				var x32Words = [];
-				for (var i = 0; i < x64WordsLength; i++) {
-					var x64Word = x64Words[i];
-					x32Words.push(x64Word.high);
-					x32Words.push(x64Word.low);
-				}
-
-				return X32WordArray.create(x32Words, this.sigBytes);
-			},
-
-			/**
-    * Creates a copy of this word array.
-    *
-    * @return {X64WordArray} The clone.
-    *
-    * @example
-    *
-    *     var clone = x64WordArray.clone();
-    */
-			clone: function () {
-				var clone = Base.clone.call(this);
-
-				// Clone "words" array
-				var words = clone.words = this.words.slice(0);
-
-				// Clone each X64Word object
-				var wordsLength = words.length;
-				for (var i = 0; i < wordsLength; i++) {
-					words[i] = words[i].clone();
-				}
-
-				return clone;
-			}
-		});
-	})();
-
-	return CryptoJS;
-});
-
-/***/ }),
-/* 18 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/*
-    This file is part of web3.js.
-
-    web3.js is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    web3.js is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public License
-    along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
-*/
-/** @file filter.js
- * @authors:
- *   Jeffrey Wilcke <jeff@ethdev.com>
- *   Marek Kotewicz <marek@ethdev.com>
- *   Marian Oancea <marian@ethdev.com>
- *   Fabian Vogelsteller <fabian@ethdev.com>
- *   Gav Wood <g@ethdev.com>
- * @date 2014
- */
-
-var formatters = __webpack_require__(5);
-var utils = __webpack_require__(1);
-
-/**
-* Converts a given topic to a hex string, but also allows null values.
-*
-* @param {Mixed} value
-* @return {String}
-*/
-var toTopic = function (value) {
-
-    if (value === null || typeof value === 'undefined') return null;
-
-    value = String(value);
-
-    if (value.indexOf('0x') === 0) return value;else return utils.fromUtf8(value);
-};
-
-/// This method should be called on options object, to verify deprecated properties && lazy load dynamic ones
-/// @param should be string or object
-/// @returns options string or object
-var getOptions = function (options) {
-
-    if (utils.isString(options)) {
-        return options;
-    }
-
-    options = options || {};
-
-    // make sure topics, get converted to hex
-    options.topics = options.topics || [];
-    options.topics = options.topics.map(function (topic) {
-        return utils.isArray(topic) ? topic.map(toTopic) : toTopic(topic);
-    });
-
-    // lazy load
-    return {
-        topics: options.topics,
-        to: options.to,
-        address: options.address,
-        fromBlock: formatters.inputBlockNumberFormatter(options.fromBlock),
-        toBlock: formatters.inputBlockNumberFormatter(options.toBlock)
-    };
-};
-
-/**
-Adds the callback and sets up the methods, to iterate over the results.
-
-@method getLogsAtStart
-@param {Object} self
-@param {funciton} 
-*/
-var getLogsAtStart = function (self, callback) {
-    // call getFilterLogs for the first watch callback start
-    if (!utils.isString(self.options)) {
-        self.get(function (err, messages) {
-            // don't send all the responses to all the watches again... just to self one
-            if (err) {
-                callback(err);
-            }
-
-            if (utils.isArray(messages)) {
-                messages.forEach(function (message) {
-                    callback(null, message);
-                });
-            }
-        });
-    }
-};
-
-/**
-Adds the callback and sets up the methods, to iterate over the results.
-
-@method pollFilter
-@param {Object} self
-*/
-var pollFilter = function (self) {
-
-    var onMessage = function (error, messages) {
-        if (error) {
-            return self.callbacks.forEach(function (callback) {
-                callback(error);
-            });
-        }
-
-        if (utils.isArray(messages)) {
-            messages.forEach(function (message) {
-                message = self.formatter ? self.formatter(message) : message;
-                self.callbacks.forEach(function (callback) {
-                    callback(null, message);
-                });
-            });
-        }
-    };
-
-    self.requestManager.startPolling({
-        method: self.implementation.poll.call,
-        params: [self.filterId]
-    }, self.filterId, onMessage, self.stopWatching.bind(self));
-};
-
-var Filter = function (web3, options, methods, formatter, callback) {
-    var self = this;
-    var implementation = {};
-    methods.forEach(function (method) {
-        method.setRequestManager(web3._requestManager);
-        method.attachToObject(implementation);
-    });
-    this.requestManager = web3._requestManager;
-    this.options = getOptions(options);
-    this.implementation = implementation;
-    this.filterId = null;
-    this.callbacks = [];
-    this.getLogsCallbacks = [];
-    this.pollFilters = [];
-    this.formatter = formatter;
-    this.implementation.newFilter(this.options, function (error, id) {
-        if (error) {
-            self.callbacks.forEach(function (cb) {
-                cb(error);
-            });
-        } else {
-            self.filterId = id;
-
-            // check if there are get pending callbacks as a consequence
-            // of calling get() with filterId unassigned.
-            self.getLogsCallbacks.forEach(function (cb) {
-                self.get(cb);
-            });
-            self.getLogsCallbacks = [];
-
-            // get filter logs for the already existing watch calls
-            self.callbacks.forEach(function (cb) {
-                getLogsAtStart(self, cb);
-            });
-            if (self.callbacks.length > 0) pollFilter(self);
-
-            // start to watch immediately
-            if (callback) {
-                return self.watch(callback);
-            }
-        }
-    });
-
-    return this;
-};
-
-Filter.prototype.watch = function (callback) {
-    this.callbacks.push(callback);
-
-    if (this.filterId) {
-        getLogsAtStart(this, callback);
-        pollFilter(this);
-    }
-
-    return this;
-};
-
-Filter.prototype.stopWatching = function () {
-    this.requestManager.stopPolling(this.filterId);
-    // remove filter async
-    this.implementation.uninstallFilter(this.filterId, function () {});
-    this.callbacks = [];
-};
-
-Filter.prototype.get = function (callback) {
-    var self = this;
-    if (utils.isFunction(callback)) {
-        if (this.filterId === null) {
-            // If filterId is not set yet, call it back
-            // when newFilter() assigns it.
-            this.getLogsCallbacks.push(callback);
-        } else {
-            this.implementation.getLogs(this.filterId, function (err, res) {
-                if (err) {
-                    callback(err);
-                } else {
-                    callback(null, res.map(function (log) {
-                        return self.formatter ? self.formatter(log) : log;
-                    }));
-                }
-            });
-        }
-    } else {
-        if (this.filterId === null) {
-            throw new Error('Filter ID Error: filter().get() can\'t be chained synchronous, please provide a callback for the get() method.');
-        }
-        var logs = this.implementation.getLogs(this.filterId);
-        return logs.map(function (log) {
-            return self.formatter ? self.formatter(log) : log;
-        });
-    }
-
-    return this;
-};
-
-module.exports = Filter;
-
-/***/ }),
-/* 19 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/*
-    This file is part of web3.js.
-
-    web3.js is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    web3.js is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public License
-    along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
-*/
-/** @file watches.js
- * @authors:
- *   Marek Kotewicz <marek@ethdev.com>
- * @date 2015
- */
-
-var Method = __webpack_require__(10);
-
-/// @returns an array of objects describing web3.eth.filter api methods
-var eth = function () {
-    var newFilterCall = function (args) {
-        var type = args[0];
-
-        switch (type) {
-            case 'latest':
-                args.shift();
-                this.params = 0;
-                return 'eth_newBlockFilter';
-            case 'pending':
-                args.shift();
-                this.params = 0;
-                return 'eth_newPendingTransactionFilter';
-            default:
-                return 'eth_newFilter';
-        }
-    };
-
-    var newFilter = new Method({
-        name: 'newFilter',
-        call: newFilterCall,
-        params: 1
-    });
-
-    var uninstallFilter = new Method({
-        name: 'uninstallFilter',
-        call: 'eth_uninstallFilter',
-        params: 1
-    });
-
-    var getLogs = new Method({
-        name: 'getLogs',
-        call: 'eth_getFilterLogs',
-        params: 1
-    });
-
-    var poll = new Method({
-        name: 'poll',
-        call: 'eth_getFilterChanges',
-        params: 1
-    });
-
-    return [newFilter, uninstallFilter, getLogs, poll];
-};
-
-/// @returns an array of objects describing web3.shh.watch api methods
-var shh = function () {
-    var newFilter = new Method({
-        name: 'newFilter',
-        call: 'shh_newFilter',
-        params: 1
-    });
-
-    var uninstallFilter = new Method({
-        name: 'uninstallFilter',
-        call: 'shh_uninstallFilter',
-        params: 1
-    });
-
-    var getLogs = new Method({
-        name: 'getLogs',
-        call: 'shh_getMessages',
-        params: 1
-    });
-
-    var poll = new Method({
-        name: 'poll',
-        call: 'shh_getFilterChanges',
-        params: 1
-    });
-
-    return [newFilter, uninstallFilter, getLogs, poll];
-};
-
-module.exports = {
-    eth: eth,
-    shh: shh
-};
-
-/***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/*
-    This file is part of web3.js.
-
-    web3.js is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    web3.js is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public License
-    along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
-*/
-/** 
- * @file coder.js
- * @author Marek Kotewicz <marek@ethdev.com>
- * @date 2015
- */
-
-var f = __webpack_require__(3);
-
-var SolidityTypeAddress = __webpack_require__(49);
-var SolidityTypeBool = __webpack_require__(50);
-var SolidityTypeInt = __webpack_require__(51);
-var SolidityTypeUInt = __webpack_require__(52);
-var SolidityTypeDynamicBytes = __webpack_require__(53);
-var SolidityTypeString = __webpack_require__(54);
-var SolidityTypeReal = __webpack_require__(55);
-var SolidityTypeUReal = __webpack_require__(56);
-var SolidityTypeBytes = __webpack_require__(57);
-
-/**
- * SolidityCoder prototype should be used to encode/decode solidity params of any type
- */
-var SolidityCoder = function (types) {
-    this._types = types;
-};
-
-/**
- * This method should be used to transform type to SolidityType
- *
- * @method _requireType
- * @param {String} type
- * @returns {SolidityType} 
- * @throws {Error} throws if no matching type is found
- */
-SolidityCoder.prototype._requireType = function (type) {
-    var solidityType = this._types.filter(function (t) {
-        return t.isType(type);
-    })[0];
-
-    if (!solidityType) {
-        throw Error('invalid solidity type!: ' + type);
-    }
-
-    return solidityType;
-};
-
-/**
- * Should be used to encode plain param
- *
- * @method encodeParam
- * @param {String} type
- * @param {Object} plain param
- * @return {String} encoded plain param
- */
-SolidityCoder.prototype.encodeParam = function (type, param) {
-    return this.encodeParams([type], [param]);
-};
-
-/**
- * Should be used to encode list of params
- *
- * @method encodeParams
- * @param {Array} types
- * @param {Array} params
- * @return {String} encoded list of params
- */
-SolidityCoder.prototype.encodeParams = function (types, params) {
-    var solidityTypes = this.getSolidityTypes(types);
-
-    var encodeds = solidityTypes.map(function (solidityType, index) {
-        return solidityType.encode(params[index], types[index]);
-    });
-
-    var dynamicOffset = solidityTypes.reduce(function (acc, solidityType, index) {
-        var staticPartLength = solidityType.staticPartLength(types[index]);
-        var roundedStaticPartLength = Math.floor((staticPartLength + 31) / 32) * 32;
-        return acc + roundedStaticPartLength;
-    }, 0);
-
-    var result = this.encodeMultiWithOffset(types, solidityTypes, encodeds, dynamicOffset);
-
-    return result;
-};
-
-SolidityCoder.prototype.encodeMultiWithOffset = function (types, solidityTypes, encodeds, dynamicOffset) {
-    var result = "";
-    var self = this;
-
-    var isDynamic = function (i) {
-        return solidityTypes[i].isDynamicArray(types[i]) || solidityTypes[i].isDynamicType(types[i]);
-    };
-
-    types.forEach(function (type, i) {
-        if (isDynamic(i)) {
-            result += f.formatInputInt(dynamicOffset).encode();
-            var e = self.encodeWithOffset(types[i], solidityTypes[i], encodeds[i], dynamicOffset);
-            dynamicOffset += e.length / 2;
-        } else {
-            // don't add length to dynamicOffset. it's already counted
-            result += self.encodeWithOffset(types[i], solidityTypes[i], encodeds[i], dynamicOffset);
-        }
-
-        // TODO: figure out nested arrays
-    });
-
-    types.forEach(function (type, i) {
-        if (isDynamic(i)) {
-            var e = self.encodeWithOffset(types[i], solidityTypes[i], encodeds[i], dynamicOffset);
-            dynamicOffset += e.length / 2;
-            result += e;
-        }
-    });
-    return result;
-};
-
-// TODO: refactor whole encoding!
-SolidityCoder.prototype.encodeWithOffset = function (type, solidityType, encoded, offset) {
-    var self = this;
-    if (solidityType.isDynamicArray(type)) {
-        return function () {
-            // offset was already set
-            var nestedName = solidityType.nestedName(type);
-            var nestedStaticPartLength = solidityType.staticPartLength(nestedName);
-            var result = encoded[0];
-
-            (function () {
-                var previousLength = 2; // in int
-                if (solidityType.isDynamicArray(nestedName)) {
-                    for (var i = 1; i < encoded.length; i++) {
-                        previousLength += +encoded[i - 1][0] || 0;
-                        result += f.formatInputInt(offset + i * nestedStaticPartLength + previousLength * 32).encode();
-                    }
-                }
-            })();
-
-            // first element is length, skip it
-            (function () {
-                for (var i = 0; i < encoded.length - 1; i++) {
-                    var additionalOffset = result / 2;
-                    result += self.encodeWithOffset(nestedName, solidityType, encoded[i + 1], offset + additionalOffset);
-                }
-            })();
-
-            return result;
-        }();
-    } else if (solidityType.isStaticArray(type)) {
-        return function () {
-            var nestedName = solidityType.nestedName(type);
-            var nestedStaticPartLength = solidityType.staticPartLength(nestedName);
-            var result = "";
-
-            if (solidityType.isDynamicArray(nestedName)) {
-                (function () {
-                    var previousLength = 0; // in int
-                    for (var i = 0; i < encoded.length; i++) {
-                        // calculate length of previous item
-                        previousLength += +(encoded[i - 1] || [])[0] || 0;
-                        result += f.formatInputInt(offset + i * nestedStaticPartLength + previousLength * 32).encode();
-                    }
-                })();
-            }
-
-            (function () {
-                for (var i = 0; i < encoded.length; i++) {
-                    var additionalOffset = result / 2;
-                    result += self.encodeWithOffset(nestedName, solidityType, encoded[i], offset + additionalOffset);
-                }
-            })();
-
-            return result;
-        }();
-    }
-
-    return encoded;
-};
-
-/**
- * Should be used to decode bytes to plain param
- *
- * @method decodeParam
- * @param {String} type
- * @param {String} bytes
- * @return {Object} plain param
- */
-SolidityCoder.prototype.decodeParam = function (type, bytes) {
-    return this.decodeParams([type], bytes)[0];
-};
-
-/**
- * Should be used to decode list of params
- *
- * @method decodeParam
- * @param {Array} types
- * @param {String} bytes
- * @return {Array} array of plain params
- */
-SolidityCoder.prototype.decodeParams = function (types, bytes) {
-    var solidityTypes = this.getSolidityTypes(types);
-    var offsets = this.getOffsets(types, solidityTypes);
-
-    return solidityTypes.map(function (solidityType, index) {
-        return solidityType.decode(bytes, offsets[index], types[index], index);
-    });
-};
-
-SolidityCoder.prototype.getOffsets = function (types, solidityTypes) {
-    var lengths = solidityTypes.map(function (solidityType, index) {
-        return solidityType.staticPartLength(types[index]);
-    });
-
-    for (var i = 1; i < lengths.length; i++) {
-        // sum with length of previous element
-        lengths[i] += lengths[i - 1];
-    }
-
-    return lengths.map(function (length, index) {
-        // remove the current length, so the length is sum of previous elements
-        var staticPartLength = solidityTypes[index].staticPartLength(types[index]);
-        return length - staticPartLength;
-    });
-};
-
-SolidityCoder.prototype.getSolidityTypes = function (types) {
-    var self = this;
-    return types.map(function (type) {
-        return self._requireType(type);
-    });
-};
-
-var coder = new SolidityCoder([new SolidityTypeAddress(), new SolidityTypeBool(), new SolidityTypeInt(), new SolidityTypeUInt(), new SolidityTypeDynamicBytes(), new SolidityTypeBytes(), new SolidityTypeString(), new SolidityTypeReal(), new SolidityTypeUReal()]);
-
-module.exports = coder;
-
-/***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-;(function (root, factory) {
-	if (true) {
-		// CommonJS
-		module.exports = exports = factory(__webpack_require__(0));
-	} else if (typeof define === "function" && define.amd) {
-		// AMD
-		define(["./core"], factory);
-	} else {
-		// Global (browser)
-		factory(root.CryptoJS);
-	}
-})(this, function (CryptoJS) {
-
-	(function () {
-		// Shortcuts
-		var C = CryptoJS;
-		var C_lib = C.lib;
-		var WordArray = C_lib.WordArray;
-		var Hasher = C_lib.Hasher;
-		var C_algo = C.algo;
-
-		// Reusable object
-		var W = [];
-
-		/**
-   * SHA-1 hash algorithm.
-   */
-		var SHA1 = C_algo.SHA1 = Hasher.extend({
-			_doReset: function () {
-				this._hash = new WordArray.init([0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0]);
-			},
-
-			_doProcessBlock: function (M, offset) {
-				// Shortcut
-				var H = this._hash.words;
-
-				// Working variables
-				var a = H[0];
-				var b = H[1];
-				var c = H[2];
-				var d = H[3];
-				var e = H[4];
-
-				// Computation
-				for (var i = 0; i < 80; i++) {
-					if (i < 16) {
-						W[i] = M[offset + i] | 0;
-					} else {
-						var n = W[i - 3] ^ W[i - 8] ^ W[i - 14] ^ W[i - 16];
-						W[i] = n << 1 | n >>> 31;
-					}
-
-					var t = (a << 5 | a >>> 27) + e + W[i];
-					if (i < 20) {
-						t += (b & c | ~b & d) + 0x5a827999;
-					} else if (i < 40) {
-						t += (b ^ c ^ d) + 0x6ed9eba1;
-					} else if (i < 60) {
-						t += (b & c | b & d | c & d) - 0x70e44324;
-					} else /* if (i < 80) */{
-							t += (b ^ c ^ d) - 0x359d3e2a;
-						}
-
-					e = d;
-					d = c;
-					c = b << 30 | b >>> 2;
-					b = a;
-					a = t;
-				}
-
-				// Intermediate hash value
-				H[0] = H[0] + a | 0;
-				H[1] = H[1] + b | 0;
-				H[2] = H[2] + c | 0;
-				H[3] = H[3] + d | 0;
-				H[4] = H[4] + e | 0;
-			},
-
-			_doFinalize: function () {
-				// Shortcuts
-				var data = this._data;
-				var dataWords = data.words;
-
-				var nBitsTotal = this._nDataBytes * 8;
-				var nBitsLeft = data.sigBytes * 8;
-
-				// Add padding
-				dataWords[nBitsLeft >>> 5] |= 0x80 << 24 - nBitsLeft % 32;
-				dataWords[(nBitsLeft + 64 >>> 9 << 4) + 14] = Math.floor(nBitsTotal / 0x100000000);
-				dataWords[(nBitsLeft + 64 >>> 9 << 4) + 15] = nBitsTotal;
-				data.sigBytes = dataWords.length * 4;
-
-				// Hash final blocks
-				this._process();
-
-				// Return final computed hash
-				return this._hash;
-			},
-
-			clone: function () {
-				var clone = Hasher.clone.call(this);
-				clone._hash = this._hash.clone();
-
-				return clone;
-			}
-		});
-
-		/**
-   * Shortcut function to the hasher's object interface.
-   *
-   * @param {WordArray|string} message The message to hash.
-   *
-   * @return {WordArray} The hash.
-   *
-   * @static
-   *
-   * @example
-   *
-   *     var hash = CryptoJS.SHA1('message');
-   *     var hash = CryptoJS.SHA1(wordArray);
-   */
-		C.SHA1 = Hasher._createHelper(SHA1);
-
-		/**
-   * Shortcut function to the HMAC's object interface.
-   *
-   * @param {WordArray|string} message The message to hash.
-   * @param {WordArray|string} key The secret key.
-   *
-   * @return {WordArray} The HMAC.
-   *
-   * @static
-   *
-   * @example
-   *
-   *     var hmac = CryptoJS.HmacSHA1(message, key);
-   */
-		C.HmacSHA1 = Hasher._createHmacHelper(SHA1);
-	})();
-
-	return CryptoJS.SHA1;
-});
-
-/***/ }),
-/* 22 */
-/***/ (function(module, exports, __webpack_require__) {
-
-;(function (root, factory) {
-	if (true) {
-		// CommonJS
-		module.exports = exports = factory(__webpack_require__(0));
-	} else if (typeof define === "function" && define.amd) {
-		// AMD
-		define(["./core"], factory);
-	} else {
-		// Global (browser)
-		factory(root.CryptoJS);
-	}
-})(this, function (CryptoJS) {
-
-	(function () {
-		// Shortcuts
-		var C = CryptoJS;
-		var C_lib = C.lib;
-		var Base = C_lib.Base;
-		var C_enc = C.enc;
-		var Utf8 = C_enc.Utf8;
-		var C_algo = C.algo;
-
-		/**
-   * HMAC algorithm.
-   */
-		var HMAC = C_algo.HMAC = Base.extend({
-			/**
-    * Initializes a newly created HMAC.
-    *
-    * @param {Hasher} hasher The hash algorithm to use.
-    * @param {WordArray|string} key The secret key.
-    *
-    * @example
-    *
-    *     var hmacHasher = CryptoJS.algo.HMAC.create(CryptoJS.algo.SHA256, key);
-    */
-			init: function (hasher, key) {
-				// Init hasher
-				hasher = this._hasher = new hasher.init();
-
-				// Convert string to WordArray, else assume WordArray already
-				if (typeof key == 'string') {
-					key = Utf8.parse(key);
-				}
-
-				// Shortcuts
-				var hasherBlockSize = hasher.blockSize;
-				var hasherBlockSizeBytes = hasherBlockSize * 4;
-
-				// Allow arbitrary length keys
-				if (key.sigBytes > hasherBlockSizeBytes) {
-					key = hasher.finalize(key);
-				}
-
-				// Clamp excess bits
-				key.clamp();
-
-				// Clone key for inner and outer pads
-				var oKey = this._oKey = key.clone();
-				var iKey = this._iKey = key.clone();
-
-				// Shortcuts
-				var oKeyWords = oKey.words;
-				var iKeyWords = iKey.words;
-
-				// XOR keys with pad constants
-				for (var i = 0; i < hasherBlockSize; i++) {
-					oKeyWords[i] ^= 0x5c5c5c5c;
-					iKeyWords[i] ^= 0x36363636;
-				}
-				oKey.sigBytes = iKey.sigBytes = hasherBlockSizeBytes;
-
-				// Set initial values
-				this.reset();
-			},
-
-			/**
-    * Resets this HMAC to its initial state.
-    *
-    * @example
-    *
-    *     hmacHasher.reset();
-    */
-			reset: function () {
-				// Shortcut
-				var hasher = this._hasher;
-
-				// Reset
-				hasher.reset();
-				hasher.update(this._iKey);
-			},
-
-			/**
-    * Updates this HMAC with a message.
-    *
-    * @param {WordArray|string} messageUpdate The message to append.
-    *
-    * @return {HMAC} This HMAC instance.
-    *
-    * @example
-    *
-    *     hmacHasher.update('message');
-    *     hmacHasher.update(wordArray);
-    */
-			update: function (messageUpdate) {
-				this._hasher.update(messageUpdate);
-
-				// Chainable
-				return this;
-			},
-
-			/**
-    * Finalizes the HMAC computation.
-    * Note that the finalize operation is effectively a destructive, read-once operation.
-    *
-    * @param {WordArray|string} messageUpdate (Optional) A final message update.
-    *
-    * @return {WordArray} The HMAC.
-    *
-    * @example
-    *
-    *     var hmac = hmacHasher.finalize();
-    *     var hmac = hmacHasher.finalize('message');
-    *     var hmac = hmacHasher.finalize(wordArray);
-    */
-			finalize: function (messageUpdate) {
-				// Shortcut
-				var hasher = this._hasher;
-
-				// Compute HMAC
-				var innerHash = hasher.finalize(messageUpdate);
-				hasher.reset();
-				var hmac = hasher.finalize(this._oKey.clone().concat(innerHash));
-
-				return hmac;
-			}
-		});
-	})();
-});
-
-/***/ }),
-/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -18046,11 +13679,3835 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 });
 
 /***/ }),
-/* 24 */
+/* 12 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = function () {
+	return this;
+}();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1, eval)("this");
+} catch (e) {
+	// This works if the window reference is available
+	if (typeof window === "object") g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_RESULT__;/*! bignumber.js v2.0.7 https://github.com/MikeMcl/bignumber.js/LICENCE */
+
+;(function (global) {
+    'use strict';
+
+    /*
+      bignumber.js v2.0.7
+      A JavaScript library for arbitrary-precision arithmetic.
+      https://github.com/MikeMcl/bignumber.js
+      Copyright (c) 2015 Michael Mclaughlin <M8ch88l@gmail.com>
+      MIT Expat Licence
+    */
+
+    var BigNumber,
+        crypto,
+        parseNumeric,
+        isNumeric = /^-?(\d+(\.\d*)?|\.\d+)(e[+-]?\d+)?$/i,
+        mathceil = Math.ceil,
+        mathfloor = Math.floor,
+        notBool = ' not a boolean or binary digit',
+        roundingMode = 'rounding mode',
+        tooManyDigits = 'number type has more than 15 significant digits',
+        ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$_',
+        BASE = 1e14,
+        LOG_BASE = 14,
+        MAX_SAFE_INTEGER = 0x1fffffffffffff,
+        // 2^53 - 1
+    // MAX_INT32 = 0x7fffffff,                   // 2^31 - 1
+    POWS_TEN = [1, 10, 100, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9, 1e10, 1e11, 1e12, 1e13],
+        SQRT_BASE = 1e7,
+
+
+    /*
+     * The limit on the value of DECIMAL_PLACES, TO_EXP_NEG, TO_EXP_POS, MIN_EXP, MAX_EXP, and
+     * the arguments to toExponential, toFixed, toFormat, and toPrecision, beyond which an
+     * exception is thrown (if ERRORS is true).
+     */
+    MAX = 1E9; // 0 to MAX_INT32
+
+
+    /*
+     * Create and return a BigNumber constructor.
+     */
+    function another(configObj) {
+        var div,
+
+
+        // id tracks the caller function, so its name can be included in error messages.
+        id = 0,
+            P = BigNumber.prototype,
+            ONE = new BigNumber(1),
+
+
+        /********************************* EDITABLE DEFAULTS **********************************/
+
+        /*
+         * The default values below must be integers within the inclusive ranges stated.
+         * The values can also be changed at run-time using BigNumber.config.
+         */
+
+        // The maximum number of decimal places for operations involving division.
+        DECIMAL_PLACES = 20,
+            // 0 to MAX
+
+        /*
+         * The rounding mode used when rounding to the above decimal places, and when using
+         * toExponential, toFixed, toFormat and toPrecision, and round (default value).
+         * UP         0 Away from zero.
+         * DOWN       1 Towards zero.
+         * CEIL       2 Towards +Infinity.
+         * FLOOR      3 Towards -Infinity.
+         * HALF_UP    4 Towards nearest neighbour. If equidistant, up.
+         * HALF_DOWN  5 Towards nearest neighbour. If equidistant, down.
+         * HALF_EVEN  6 Towards nearest neighbour. If equidistant, towards even neighbour.
+         * HALF_CEIL  7 Towards nearest neighbour. If equidistant, towards +Infinity.
+         * HALF_FLOOR 8 Towards nearest neighbour. If equidistant, towards -Infinity.
+         */
+        ROUNDING_MODE = 4,
+            // 0 to 8
+
+        // EXPONENTIAL_AT : [TO_EXP_NEG , TO_EXP_POS]
+
+        // The exponent value at and beneath which toString returns exponential notation.
+        // Number type: -7
+        TO_EXP_NEG = -7,
+            // 0 to -MAX
+
+        // The exponent value at and above which toString returns exponential notation.
+        // Number type: 21
+        TO_EXP_POS = 21,
+            // 0 to MAX
+
+        // RANGE : [MIN_EXP, MAX_EXP]
+
+        // The minimum exponent value, beneath which underflow to zero occurs.
+        // Number type: -324  (5e-324)
+        MIN_EXP = -1e7,
+            // -1 to -MAX
+
+        // The maximum exponent value, above which overflow to Infinity occurs.
+        // Number type:  308  (1.7976931348623157e+308)
+        // For MAX_EXP > 1e7, e.g. new BigNumber('1e100000000').plus(1) may be slow.
+        MAX_EXP = 1e7,
+            // 1 to MAX
+
+        // Whether BigNumber Errors are ever thrown.
+        ERRORS = true,
+            // true or false
+
+        // Change to intValidatorNoErrors if ERRORS is false.
+        isValidInt = intValidatorWithErrors,
+            // intValidatorWithErrors/intValidatorNoErrors
+
+        // Whether to use cryptographically-secure random number generation, if available.
+        CRYPTO = false,
+            // true or false
+
+        /*
+         * The modulo mode used when calculating the modulus: a mod n.
+         * The quotient (q = a / n) is calculated according to the corresponding rounding mode.
+         * The remainder (r) is calculated as: r = a - n * q.
+         *
+         * UP        0 The remainder is positive if the dividend is negative, else is negative.
+         * DOWN      1 The remainder has the same sign as the dividend.
+         *             This modulo mode is commonly known as 'truncated division' and is
+         *             equivalent to (a % n) in JavaScript.
+         * FLOOR     3 The remainder has the same sign as the divisor (Python %).
+         * HALF_EVEN 6 This modulo mode implements the IEEE 754 remainder function.
+         * EUCLID    9 Euclidian division. q = sign(n) * floor(a / abs(n)).
+         *             The remainder is always positive.
+         *
+         * The truncated division, floored division, Euclidian division and IEEE 754 remainder
+         * modes are commonly used for the modulus operation.
+         * Although the other rounding modes can also be used, they may not give useful results.
+         */
+        MODULO_MODE = 1,
+            // 0 to 9
+
+        // The maximum number of significant digits of the result of the toPower operation.
+        // If POW_PRECISION is 0, there will be unlimited significant digits.
+        POW_PRECISION = 100,
+            // 0 to MAX
+
+        // The format specification used by the BigNumber.prototype.toFormat method.
+        FORMAT = {
+            decimalSeparator: '.',
+            groupSeparator: ',',
+            groupSize: 3,
+            secondaryGroupSize: 0,
+            fractionGroupSeparator: '\xA0', // non-breaking space
+            fractionGroupSize: 0
+        };
+
+        /******************************************************************************************/
+
+        // CONSTRUCTOR
+
+
+        /*
+         * The BigNumber constructor and exported function.
+         * Create and return a new instance of a BigNumber object.
+         *
+         * n {number|string|BigNumber} A numeric value.
+         * [b] {number} The base of n. Integer, 2 to 64 inclusive.
+         */
+        function BigNumber(n, b) {
+            var c,
+                e,
+                i,
+                num,
+                len,
+                str,
+                x = this;
+
+            // Enable constructor usage without new.
+            if (!(x instanceof BigNumber)) {
+
+                // 'BigNumber() constructor call without new: {n}'
+                if (ERRORS) raise(26, 'constructor call without new', n);
+                return new BigNumber(n, b);
+            }
+
+            // 'new BigNumber() base not an integer: {b}'
+            // 'new BigNumber() base out of range: {b}'
+            if (b == null || !isValidInt(b, 2, 64, id, 'base')) {
+
+                // Duplicate.
+                if (n instanceof BigNumber) {
+                    x.s = n.s;
+                    x.e = n.e;
+                    x.c = (n = n.c) ? n.slice() : n;
+                    id = 0;
+                    return;
+                }
+
+                if ((num = typeof n == 'number') && n * 0 == 0) {
+                    x.s = 1 / n < 0 ? (n = -n, -1) : 1;
+
+                    // Fast path for integers.
+                    if (n === ~~n) {
+                        for (e = 0, i = n; i >= 10; i /= 10, e++);
+                        x.e = e;
+                        x.c = [n];
+                        id = 0;
+                        return;
+                    }
+
+                    str = n + '';
+                } else {
+                    if (!isNumeric.test(str = n + '')) return parseNumeric(x, str, num);
+                    x.s = str.charCodeAt(0) === 45 ? (str = str.slice(1), -1) : 1;
+                }
+            } else {
+                b = b | 0;
+                str = n + '';
+
+                // Ensure return value is rounded to DECIMAL_PLACES as with other bases.
+                // Allow exponential notation to be used with base 10 argument.
+                if (b == 10) {
+                    x = new BigNumber(n instanceof BigNumber ? n : str);
+                    return round(x, DECIMAL_PLACES + x.e + 1, ROUNDING_MODE);
+                }
+
+                // Avoid potential interpretation of Infinity and NaN as base 44+ values.
+                // Any number in exponential form will fail due to the [Ee][+-].
+                if ((num = typeof n == 'number') && n * 0 != 0 || !new RegExp('^-?' + (c = '[' + ALPHABET.slice(0, b) + ']+') + '(?:\\.' + c + ')?$', b < 37 ? 'i' : '').test(str)) {
+                    return parseNumeric(x, str, num, b);
+                }
+
+                if (num) {
+                    x.s = 1 / n < 0 ? (str = str.slice(1), -1) : 1;
+
+                    if (ERRORS && str.replace(/^0\.0*|\./, '').length > 15) {
+
+                        // 'new BigNumber() number type has more than 15 significant digits: {n}'
+                        raise(id, tooManyDigits, n);
+                    }
+
+                    // Prevent later check for length on converted number.
+                    num = false;
+                } else {
+                    x.s = str.charCodeAt(0) === 45 ? (str = str.slice(1), -1) : 1;
+                }
+
+                str = convertBase(str, 10, b, x.s);
+            }
+
+            // Decimal point?
+            if ((e = str.indexOf('.')) > -1) str = str.replace('.', '');
+
+            // Exponential form?
+            if ((i = str.search(/e/i)) > 0) {
+
+                // Determine exponent.
+                if (e < 0) e = i;
+                e += +str.slice(i + 1);
+                str = str.substring(0, i);
+            } else if (e < 0) {
+
+                // Integer.
+                e = str.length;
+            }
+
+            // Determine leading zeros.
+            for (i = 0; str.charCodeAt(i) === 48; i++);
+
+            // Determine trailing zeros.
+            for (len = str.length; str.charCodeAt(--len) === 48;);
+            str = str.slice(i, len + 1);
+
+            if (str) {
+                len = str.length;
+
+                // Disallow numbers with over 15 significant digits if number type.
+                // 'new BigNumber() number type has more than 15 significant digits: {n}'
+                if (num && ERRORS && len > 15) raise(id, tooManyDigits, x.s * n);
+
+                e = e - i - 1;
+
+                // Overflow?
+                if (e > MAX_EXP) {
+
+                    // Infinity.
+                    x.c = x.e = null;
+
+                    // Underflow?
+                } else if (e < MIN_EXP) {
+
+                    // Zero.
+                    x.c = [x.e = 0];
+                } else {
+                    x.e = e;
+                    x.c = [];
+
+                    // Transform base
+
+                    // e is the base 10 exponent.
+                    // i is where to slice str to get the first element of the coefficient array.
+                    i = (e + 1) % LOG_BASE;
+                    if (e < 0) i += LOG_BASE;
+
+                    if (i < len) {
+                        if (i) x.c.push(+str.slice(0, i));
+
+                        for (len -= LOG_BASE; i < len;) {
+                            x.c.push(+str.slice(i, i += LOG_BASE));
+                        }
+
+                        str = str.slice(i);
+                        i = LOG_BASE - str.length;
+                    } else {
+                        i -= len;
+                    }
+
+                    for (; i--; str += '0');
+                    x.c.push(+str);
+                }
+            } else {
+
+                // Zero.
+                x.c = [x.e = 0];
+            }
+
+            id = 0;
+        }
+
+        // CONSTRUCTOR PROPERTIES
+
+
+        BigNumber.another = another;
+
+        BigNumber.ROUND_UP = 0;
+        BigNumber.ROUND_DOWN = 1;
+        BigNumber.ROUND_CEIL = 2;
+        BigNumber.ROUND_FLOOR = 3;
+        BigNumber.ROUND_HALF_UP = 4;
+        BigNumber.ROUND_HALF_DOWN = 5;
+        BigNumber.ROUND_HALF_EVEN = 6;
+        BigNumber.ROUND_HALF_CEIL = 7;
+        BigNumber.ROUND_HALF_FLOOR = 8;
+        BigNumber.EUCLID = 9;
+
+        /*
+         * Configure infrequently-changing library-wide settings.
+         *
+         * Accept an object or an argument list, with one or many of the following properties or
+         * parameters respectively:
+         *
+         *   DECIMAL_PLACES  {number}  Integer, 0 to MAX inclusive
+         *   ROUNDING_MODE   {number}  Integer, 0 to 8 inclusive
+         *   EXPONENTIAL_AT  {number|number[]}  Integer, -MAX to MAX inclusive or
+         *                                      [integer -MAX to 0 incl., 0 to MAX incl.]
+         *   RANGE           {number|number[]}  Non-zero integer, -MAX to MAX inclusive or
+         *                                      [integer -MAX to -1 incl., integer 1 to MAX incl.]
+         *   ERRORS          {boolean|number}   true, false, 1 or 0
+         *   CRYPTO          {boolean|number}   true, false, 1 or 0
+         *   MODULO_MODE     {number}           0 to 9 inclusive
+         *   POW_PRECISION   {number}           0 to MAX inclusive
+         *   FORMAT          {object}           See BigNumber.prototype.toFormat
+         *      decimalSeparator       {string}
+         *      groupSeparator         {string}
+         *      groupSize              {number}
+         *      secondaryGroupSize     {number}
+         *      fractionGroupSeparator {string}
+         *      fractionGroupSize      {number}
+         *
+         * (The values assigned to the above FORMAT object properties are not checked for validity.)
+         *
+         * E.g.
+         * BigNumber.config(20, 4) is equivalent to
+         * BigNumber.config({ DECIMAL_PLACES : 20, ROUNDING_MODE : 4 })
+         *
+         * Ignore properties/parameters set to null or undefined.
+         * Return an object with the properties current values.
+         */
+        BigNumber.config = function () {
+            var v,
+                p,
+                i = 0,
+                r = {},
+                a = arguments,
+                o = a[0],
+                has = o && typeof o == 'object' ? function () {
+                if (o.hasOwnProperty(p)) return (v = o[p]) != null;
+            } : function () {
+                if (a.length > i) return (v = a[i++]) != null;
+            };
+
+            // DECIMAL_PLACES {number} Integer, 0 to MAX inclusive.
+            // 'config() DECIMAL_PLACES not an integer: {v}'
+            // 'config() DECIMAL_PLACES out of range: {v}'
+            if (has(p = 'DECIMAL_PLACES') && isValidInt(v, 0, MAX, 2, p)) {
+                DECIMAL_PLACES = v | 0;
+            }
+            r[p] = DECIMAL_PLACES;
+
+            // ROUNDING_MODE {number} Integer, 0 to 8 inclusive.
+            // 'config() ROUNDING_MODE not an integer: {v}'
+            // 'config() ROUNDING_MODE out of range: {v}'
+            if (has(p = 'ROUNDING_MODE') && isValidInt(v, 0, 8, 2, p)) {
+                ROUNDING_MODE = v | 0;
+            }
+            r[p] = ROUNDING_MODE;
+
+            // EXPONENTIAL_AT {number|number[]}
+            // Integer, -MAX to MAX inclusive or [integer -MAX to 0 inclusive, 0 to MAX inclusive].
+            // 'config() EXPONENTIAL_AT not an integer: {v}'
+            // 'config() EXPONENTIAL_AT out of range: {v}'
+            if (has(p = 'EXPONENTIAL_AT')) {
+
+                if (isArray(v)) {
+                    if (isValidInt(v[0], -MAX, 0, 2, p) && isValidInt(v[1], 0, MAX, 2, p)) {
+                        TO_EXP_NEG = v[0] | 0;
+                        TO_EXP_POS = v[1] | 0;
+                    }
+                } else if (isValidInt(v, -MAX, MAX, 2, p)) {
+                    TO_EXP_NEG = -(TO_EXP_POS = (v < 0 ? -v : v) | 0);
+                }
+            }
+            r[p] = [TO_EXP_NEG, TO_EXP_POS];
+
+            // RANGE {number|number[]} Non-zero integer, -MAX to MAX inclusive or
+            // [integer -MAX to -1 inclusive, integer 1 to MAX inclusive].
+            // 'config() RANGE not an integer: {v}'
+            // 'config() RANGE cannot be zero: {v}'
+            // 'config() RANGE out of range: {v}'
+            if (has(p = 'RANGE')) {
+
+                if (isArray(v)) {
+                    if (isValidInt(v[0], -MAX, -1, 2, p) && isValidInt(v[1], 1, MAX, 2, p)) {
+                        MIN_EXP = v[0] | 0;
+                        MAX_EXP = v[1] | 0;
+                    }
+                } else if (isValidInt(v, -MAX, MAX, 2, p)) {
+                    if (v | 0) MIN_EXP = -(MAX_EXP = (v < 0 ? -v : v) | 0);else if (ERRORS) raise(2, p + ' cannot be zero', v);
+                }
+            }
+            r[p] = [MIN_EXP, MAX_EXP];
+
+            // ERRORS {boolean|number} true, false, 1 or 0.
+            // 'config() ERRORS not a boolean or binary digit: {v}'
+            if (has(p = 'ERRORS')) {
+
+                if (v === !!v || v === 1 || v === 0) {
+                    id = 0;
+                    isValidInt = (ERRORS = !!v) ? intValidatorWithErrors : intValidatorNoErrors;
+                } else if (ERRORS) {
+                    raise(2, p + notBool, v);
+                }
+            }
+            r[p] = ERRORS;
+
+            // CRYPTO {boolean|number} true, false, 1 or 0.
+            // 'config() CRYPTO not a boolean or binary digit: {v}'
+            // 'config() crypto unavailable: {crypto}'
+            if (has(p = 'CRYPTO')) {
+
+                if (v === !!v || v === 1 || v === 0) {
+                    CRYPTO = !!(v && crypto && typeof crypto == 'object');
+                    if (v && !CRYPTO && ERRORS) raise(2, 'crypto unavailable', crypto);
+                } else if (ERRORS) {
+                    raise(2, p + notBool, v);
+                }
+            }
+            r[p] = CRYPTO;
+
+            // MODULO_MODE {number} Integer, 0 to 9 inclusive.
+            // 'config() MODULO_MODE not an integer: {v}'
+            // 'config() MODULO_MODE out of range: {v}'
+            if (has(p = 'MODULO_MODE') && isValidInt(v, 0, 9, 2, p)) {
+                MODULO_MODE = v | 0;
+            }
+            r[p] = MODULO_MODE;
+
+            // POW_PRECISION {number} Integer, 0 to MAX inclusive.
+            // 'config() POW_PRECISION not an integer: {v}'
+            // 'config() POW_PRECISION out of range: {v}'
+            if (has(p = 'POW_PRECISION') && isValidInt(v, 0, MAX, 2, p)) {
+                POW_PRECISION = v | 0;
+            }
+            r[p] = POW_PRECISION;
+
+            // FORMAT {object}
+            // 'config() FORMAT not an object: {v}'
+            if (has(p = 'FORMAT')) {
+
+                if (typeof v == 'object') {
+                    FORMAT = v;
+                } else if (ERRORS) {
+                    raise(2, p + ' not an object', v);
+                }
+            }
+            r[p] = FORMAT;
+
+            return r;
+        };
+
+        /*
+         * Return a new BigNumber whose value is the maximum of the arguments.
+         *
+         * arguments {number|string|BigNumber}
+         */
+        BigNumber.max = function () {
+            return maxOrMin(arguments, P.lt);
+        };
+
+        /*
+         * Return a new BigNumber whose value is the minimum of the arguments.
+         *
+         * arguments {number|string|BigNumber}
+         */
+        BigNumber.min = function () {
+            return maxOrMin(arguments, P.gt);
+        };
+
+        /*
+         * Return a new BigNumber with a random value equal to or greater than 0 and less than 1,
+         * and with dp, or DECIMAL_PLACES if dp is omitted, decimal places (or less if trailing
+         * zeros are produced).
+         *
+         * [dp] {number} Decimal places. Integer, 0 to MAX inclusive.
+         *
+         * 'random() decimal places not an integer: {dp}'
+         * 'random() decimal places out of range: {dp}'
+         * 'random() crypto unavailable: {crypto}'
+         */
+        BigNumber.random = function () {
+            var pow2_53 = 0x20000000000000;
+
+            // Return a 53 bit integer n, where 0 <= n < 9007199254740992.
+            // Check if Math.random() produces more than 32 bits of randomness.
+            // If it does, assume at least 53 bits are produced, otherwise assume at least 30 bits.
+            // 0x40000000 is 2^30, 0x800000 is 2^23, 0x1fffff is 2^21 - 1.
+            var random53bitInt = Math.random() * pow2_53 & 0x1fffff ? function () {
+                return mathfloor(Math.random() * pow2_53);
+            } : function () {
+                return (Math.random() * 0x40000000 | 0) * 0x800000 + (Math.random() * 0x800000 | 0);
+            };
+
+            return function (dp) {
+                var a,
+                    b,
+                    e,
+                    k,
+                    v,
+                    i = 0,
+                    c = [],
+                    rand = new BigNumber(ONE);
+
+                dp = dp == null || !isValidInt(dp, 0, MAX, 14) ? DECIMAL_PLACES : dp | 0;
+                k = mathceil(dp / LOG_BASE);
+
+                if (CRYPTO) {
+
+                    // Browsers supporting crypto.getRandomValues.
+                    if (crypto && crypto.getRandomValues) {
+
+                        a = crypto.getRandomValues(new Uint32Array(k *= 2));
+
+                        for (; i < k;) {
+
+                            // 53 bits:
+                            // ((Math.pow(2, 32) - 1) * Math.pow(2, 21)).toString(2)
+                            // 11111 11111111 11111111 11111111 11100000 00000000 00000000
+                            // ((Math.pow(2, 32) - 1) >>> 11).toString(2)
+                            //                                     11111 11111111 11111111
+                            // 0x20000 is 2^21.
+                            v = a[i] * 0x20000 + (a[i + 1] >>> 11);
+
+                            // Rejection sampling:
+                            // 0 <= v < 9007199254740992
+                            // Probability that v >= 9e15, is
+                            // 7199254740992 / 9007199254740992 ~= 0.0008, i.e. 1 in 1251
+                            if (v >= 9e15) {
+                                b = crypto.getRandomValues(new Uint32Array(2));
+                                a[i] = b[0];
+                                a[i + 1] = b[1];
+                            } else {
+
+                                // 0 <= v <= 8999999999999999
+                                // 0 <= (v % 1e14) <= 99999999999999
+                                c.push(v % 1e14);
+                                i += 2;
+                            }
+                        }
+                        i = k / 2;
+
+                        // Node.js supporting crypto.randomBytes.
+                    } else if (crypto && crypto.randomBytes) {
+
+                        // buffer
+                        a = crypto.randomBytes(k *= 7);
+
+                        for (; i < k;) {
+
+                            // 0x1000000000000 is 2^48, 0x10000000000 is 2^40
+                            // 0x100000000 is 2^32, 0x1000000 is 2^24
+                            // 11111 11111111 11111111 11111111 11111111 11111111 11111111
+                            // 0 <= v < 9007199254740992
+                            v = (a[i] & 31) * 0x1000000000000 + a[i + 1] * 0x10000000000 + a[i + 2] * 0x100000000 + a[i + 3] * 0x1000000 + (a[i + 4] << 16) + (a[i + 5] << 8) + a[i + 6];
+
+                            if (v >= 9e15) {
+                                crypto.randomBytes(7).copy(a, i);
+                            } else {
+
+                                // 0 <= (v % 1e14) <= 99999999999999
+                                c.push(v % 1e14);
+                                i += 7;
+                            }
+                        }
+                        i = k / 7;
+                    } else if (ERRORS) {
+                        raise(14, 'crypto unavailable', crypto);
+                    }
+                }
+
+                // Use Math.random: CRYPTO is false or crypto is unavailable and ERRORS is false.
+                if (!i) {
+
+                    for (; i < k;) {
+                        v = random53bitInt();
+                        if (v < 9e15) c[i++] = v % 1e14;
+                    }
+                }
+
+                k = c[--i];
+                dp %= LOG_BASE;
+
+                // Convert trailing digits to zeros according to dp.
+                if (k && dp) {
+                    v = POWS_TEN[LOG_BASE - dp];
+                    c[i] = mathfloor(k / v) * v;
+                }
+
+                // Remove trailing elements which are zero.
+                for (; c[i] === 0; c.pop(), i--);
+
+                // Zero?
+                if (i < 0) {
+                    c = [e = 0];
+                } else {
+
+                    // Remove leading elements which are zero and adjust exponent accordingly.
+                    for (e = -1; c[0] === 0; c.shift(), e -= LOG_BASE);
+
+                    // Count the digits of the first element of c to determine leading zeros, and...
+                    for (i = 1, v = c[0]; v >= 10; v /= 10, i++);
+
+                    // adjust the exponent accordingly.
+                    if (i < LOG_BASE) e -= LOG_BASE - i;
+                }
+
+                rand.e = e;
+                rand.c = c;
+                return rand;
+            };
+        }();
+
+        // PRIVATE FUNCTIONS
+
+
+        // Convert a numeric string of baseIn to a numeric string of baseOut.
+        function convertBase(str, baseOut, baseIn, sign) {
+            var d,
+                e,
+                k,
+                r,
+                x,
+                xc,
+                y,
+                i = str.indexOf('.'),
+                dp = DECIMAL_PLACES,
+                rm = ROUNDING_MODE;
+
+            if (baseIn < 37) str = str.toLowerCase();
+
+            // Non-integer.
+            if (i >= 0) {
+                k = POW_PRECISION;
+
+                // Unlimited precision.
+                POW_PRECISION = 0;
+                str = str.replace('.', '');
+                y = new BigNumber(baseIn);
+                x = y.pow(str.length - i);
+                POW_PRECISION = k;
+
+                // Convert str as if an integer, then restore the fraction part by dividing the
+                // result by its base raised to a power.
+                y.c = toBaseOut(toFixedPoint(coeffToString(x.c), x.e), 10, baseOut);
+                y.e = y.c.length;
+            }
+
+            // Convert the number as integer.
+            xc = toBaseOut(str, baseIn, baseOut);
+            e = k = xc.length;
+
+            // Remove trailing zeros.
+            for (; xc[--k] == 0; xc.pop());
+            if (!xc[0]) return '0';
+
+            if (i < 0) {
+                --e;
+            } else {
+                x.c = xc;
+                x.e = e;
+
+                // sign is needed for correct rounding.
+                x.s = sign;
+                x = div(x, y, dp, rm, baseOut);
+                xc = x.c;
+                r = x.r;
+                e = x.e;
+            }
+
+            d = e + dp + 1;
+
+            // The rounding digit, i.e. the digit to the right of the digit that may be rounded up.
+            i = xc[d];
+            k = baseOut / 2;
+            r = r || d < 0 || xc[d + 1] != null;
+
+            r = rm < 4 ? (i != null || r) && (rm == 0 || rm == (x.s < 0 ? 3 : 2)) : i > k || i == k && (rm == 4 || r || rm == 6 && xc[d - 1] & 1 || rm == (x.s < 0 ? 8 : 7));
+
+            if (d < 1 || !xc[0]) {
+
+                // 1^-dp or 0.
+                str = r ? toFixedPoint('1', -dp) : '0';
+            } else {
+                xc.length = d;
+
+                if (r) {
+
+                    // Rounding up may mean the previous digit has to be rounded up and so on.
+                    for (--baseOut; ++xc[--d] > baseOut;) {
+                        xc[d] = 0;
+
+                        if (!d) {
+                            ++e;
+                            xc.unshift(1);
+                        }
+                    }
+                }
+
+                // Determine trailing zeros.
+                for (k = xc.length; !xc[--k];);
+
+                // E.g. [4, 11, 15] becomes 4bf.
+                for (i = 0, str = ''; i <= k; str += ALPHABET.charAt(xc[i++]));
+                str = toFixedPoint(str, e);
+            }
+
+            // The caller will add the sign.
+            return str;
+        }
+
+        // Perform division in the specified base. Called by div and convertBase.
+        div = function () {
+
+            // Assume non-zero x and k.
+            function multiply(x, k, base) {
+                var m,
+                    temp,
+                    xlo,
+                    xhi,
+                    carry = 0,
+                    i = x.length,
+                    klo = k % SQRT_BASE,
+                    khi = k / SQRT_BASE | 0;
+
+                for (x = x.slice(); i--;) {
+                    xlo = x[i] % SQRT_BASE;
+                    xhi = x[i] / SQRT_BASE | 0;
+                    m = khi * xlo + xhi * klo;
+                    temp = klo * xlo + m % SQRT_BASE * SQRT_BASE + carry;
+                    carry = (temp / base | 0) + (m / SQRT_BASE | 0) + khi * xhi;
+                    x[i] = temp % base;
+                }
+
+                if (carry) x.unshift(carry);
+
+                return x;
+            }
+
+            function compare(a, b, aL, bL) {
+                var i, cmp;
+
+                if (aL != bL) {
+                    cmp = aL > bL ? 1 : -1;
+                } else {
+
+                    for (i = cmp = 0; i < aL; i++) {
+
+                        if (a[i] != b[i]) {
+                            cmp = a[i] > b[i] ? 1 : -1;
+                            break;
+                        }
+                    }
+                }
+                return cmp;
+            }
+
+            function subtract(a, b, aL, base) {
+                var i = 0;
+
+                // Subtract b from a.
+                for (; aL--;) {
+                    a[aL] -= i;
+                    i = a[aL] < b[aL] ? 1 : 0;
+                    a[aL] = i * base + a[aL] - b[aL];
+                }
+
+                // Remove leading zeros.
+                for (; !a[0] && a.length > 1; a.shift());
+            }
+
+            // x: dividend, y: divisor.
+            return function (x, y, dp, rm, base) {
+                var cmp,
+                    e,
+                    i,
+                    more,
+                    n,
+                    prod,
+                    prodL,
+                    q,
+                    qc,
+                    rem,
+                    remL,
+                    rem0,
+                    xi,
+                    xL,
+                    yc0,
+                    yL,
+                    yz,
+                    s = x.s == y.s ? 1 : -1,
+                    xc = x.c,
+                    yc = y.c;
+
+                // Either NaN, Infinity or 0?
+                if (!xc || !xc[0] || !yc || !yc[0]) {
+
+                    return new BigNumber(
+
+                    // Return NaN if either NaN, or both Infinity or 0.
+                    !x.s || !y.s || (xc ? yc && xc[0] == yc[0] : !yc) ? NaN :
+
+                    // Return ±0 if x is ±0 or y is ±Infinity, or return ±Infinity as y is ±0.
+                    xc && xc[0] == 0 || !yc ? s * 0 : s / 0);
+                }
+
+                q = new BigNumber(s);
+                qc = q.c = [];
+                e = x.e - y.e;
+                s = dp + e + 1;
+
+                if (!base) {
+                    base = BASE;
+                    e = bitFloor(x.e / LOG_BASE) - bitFloor(y.e / LOG_BASE);
+                    s = s / LOG_BASE | 0;
+                }
+
+                // Result exponent may be one less then the current value of e.
+                // The coefficients of the BigNumbers from convertBase may have trailing zeros.
+                for (i = 0; yc[i] == (xc[i] || 0); i++);
+                if (yc[i] > (xc[i] || 0)) e--;
+
+                if (s < 0) {
+                    qc.push(1);
+                    more = true;
+                } else {
+                    xL = xc.length;
+                    yL = yc.length;
+                    i = 0;
+                    s += 2;
+
+                    // Normalise xc and yc so highest order digit of yc is >= base / 2.
+
+                    n = mathfloor(base / (yc[0] + 1));
+
+                    // Not necessary, but to handle odd bases where yc[0] == ( base / 2 ) - 1.
+                    // if ( n > 1 || n++ == 1 && yc[0] < base / 2 ) {
+                    if (n > 1) {
+                        yc = multiply(yc, n, base);
+                        xc = multiply(xc, n, base);
+                        yL = yc.length;
+                        xL = xc.length;
+                    }
+
+                    xi = yL;
+                    rem = xc.slice(0, yL);
+                    remL = rem.length;
+
+                    // Add zeros to make remainder as long as divisor.
+                    for (; remL < yL; rem[remL++] = 0);
+                    yz = yc.slice();
+                    yz.unshift(0);
+                    yc0 = yc[0];
+                    if (yc[1] >= base / 2) yc0++;
+                    // Not necessary, but to prevent trial digit n > base, when using base 3.
+                    // else if ( base == 3 && yc0 == 1 ) yc0 = 1 + 1e-15;
+
+                    do {
+                        n = 0;
+
+                        // Compare divisor and remainder.
+                        cmp = compare(yc, rem, yL, remL);
+
+                        // If divisor < remainder.
+                        if (cmp < 0) {
+
+                            // Calculate trial digit, n.
+
+                            rem0 = rem[0];
+                            if (yL != remL) rem0 = rem0 * base + (rem[1] || 0);
+
+                            // n is how many times the divisor goes into the current remainder.
+                            n = mathfloor(rem0 / yc0);
+
+                            //  Algorithm:
+                            //  1. product = divisor * trial digit (n)
+                            //  2. if product > remainder: product -= divisor, n--
+                            //  3. remainder -= product
+                            //  4. if product was < remainder at 2:
+                            //    5. compare new remainder and divisor
+                            //    6. If remainder > divisor: remainder -= divisor, n++
+
+                            if (n > 1) {
+
+                                // n may be > base only when base is 3.
+                                if (n >= base) n = base - 1;
+
+                                // product = divisor * trial digit.
+                                prod = multiply(yc, n, base);
+                                prodL = prod.length;
+                                remL = rem.length;
+
+                                // Compare product and remainder.
+                                // If product > remainder.
+                                // Trial digit n too high.
+                                // n is 1 too high about 5% of the time, and is not known to have
+                                // ever been more than 1 too high.
+                                while (compare(prod, rem, prodL, remL) == 1) {
+                                    n--;
+
+                                    // Subtract divisor from product.
+                                    subtract(prod, yL < prodL ? yz : yc, prodL, base);
+                                    prodL = prod.length;
+                                    cmp = 1;
+                                }
+                            } else {
+
+                                // n is 0 or 1, cmp is -1.
+                                // If n is 0, there is no need to compare yc and rem again below,
+                                // so change cmp to 1 to avoid it.
+                                // If n is 1, leave cmp as -1, so yc and rem are compared again.
+                                if (n == 0) {
+
+                                    // divisor < remainder, so n must be at least 1.
+                                    cmp = n = 1;
+                                }
+
+                                // product = divisor
+                                prod = yc.slice();
+                                prodL = prod.length;
+                            }
+
+                            if (prodL < remL) prod.unshift(0);
+
+                            // Subtract product from remainder.
+                            subtract(rem, prod, remL, base);
+                            remL = rem.length;
+
+                            // If product was < remainder.
+                            if (cmp == -1) {
+
+                                // Compare divisor and new remainder.
+                                // If divisor < new remainder, subtract divisor from remainder.
+                                // Trial digit n too low.
+                                // n is 1 too low about 5% of the time, and very rarely 2 too low.
+                                while (compare(yc, rem, yL, remL) < 1) {
+                                    n++;
+
+                                    // Subtract divisor from remainder.
+                                    subtract(rem, yL < remL ? yz : yc, remL, base);
+                                    remL = rem.length;
+                                }
+                            }
+                        } else if (cmp === 0) {
+                            n++;
+                            rem = [0];
+                        } // else cmp === 1 and n will be 0
+
+                        // Add the next digit, n, to the result array.
+                        qc[i++] = n;
+
+                        // Update the remainder.
+                        if (rem[0]) {
+                            rem.push(xc[xi] || 0);
+                            remL = remL + 1;
+                        } else {
+                            rem = [xc[xi]];
+                            remL = 1;
+                        }
+                    } while ((xi++ < xL || rem[0] != null) && s--);
+
+                    more = rem[0] != null;
+
+                    // Leading zero?
+                    if (!qc[0]) qc.shift();
+                }
+
+                if (base == BASE) {
+
+                    // To calculate q.e, first get the number of digits of qc[0].
+                    for (i = 1, s = qc[0]; s >= 10; s /= 10, i++);
+                    round(q, dp + (q.e = i + e * LOG_BASE - 1) + 1, rm, more);
+
+                    // Caller is convertBase.
+                } else {
+                    q.e = e;
+                    q.r = +more;
+                }
+
+                return q;
+            };
+        }();
+
+        /*
+         * Return a string representing the value of BigNumber n in fixed-point or exponential
+         * notation rounded to the specified decimal places or significant digits.
+         *
+         * n is a BigNumber.
+         * i is the index of the last digit required (i.e. the digit that may be rounded up).
+         * rm is the rounding mode.
+         * caller is caller id: toExponential 19, toFixed 20, toFormat 21, toPrecision 24.
+         */
+        function format(n, i, rm, caller) {
+            var c0, e, ne, len, str;
+
+            rm = rm != null && isValidInt(rm, 0, 8, caller, roundingMode) ? rm | 0 : ROUNDING_MODE;
+
+            if (!n.c) return n.toString();
+            c0 = n.c[0];
+            ne = n.e;
+
+            if (i == null) {
+                str = coeffToString(n.c);
+                str = caller == 19 || caller == 24 && ne <= TO_EXP_NEG ? toExponential(str, ne) : toFixedPoint(str, ne);
+            } else {
+                n = round(new BigNumber(n), i, rm);
+
+                // n.e may have changed if the value was rounded up.
+                e = n.e;
+
+                str = coeffToString(n.c);
+                len = str.length;
+
+                // toPrecision returns exponential notation if the number of significant digits
+                // specified is less than the number of digits necessary to represent the integer
+                // part of the value in fixed-point notation.
+
+                // Exponential notation.
+                if (caller == 19 || caller == 24 && (i <= e || e <= TO_EXP_NEG)) {
+
+                    // Append zeros?
+                    for (; len < i; str += '0', len++);
+                    str = toExponential(str, e);
+
+                    // Fixed-point notation.
+                } else {
+                    i -= ne;
+                    str = toFixedPoint(str, e);
+
+                    // Append zeros?
+                    if (e + 1 > len) {
+                        if (--i > 0) for (str += '.'; i--; str += '0');
+                    } else {
+                        i += e - len;
+                        if (i > 0) {
+                            if (e + 1 == len) str += '.';
+                            for (; i--; str += '0');
+                        }
+                    }
+                }
+            }
+
+            return n.s < 0 && c0 ? '-' + str : str;
+        }
+
+        // Handle BigNumber.max and BigNumber.min.
+        function maxOrMin(args, method) {
+            var m,
+                n,
+                i = 0;
+
+            if (isArray(args[0])) args = args[0];
+            m = new BigNumber(args[0]);
+
+            for (; ++i < args.length;) {
+                n = new BigNumber(args[i]);
+
+                // If any number is NaN, return NaN.
+                if (!n.s) {
+                    m = n;
+                    break;
+                } else if (method.call(m, n)) {
+                    m = n;
+                }
+            }
+
+            return m;
+        }
+
+        /*
+         * Return true if n is an integer in range, otherwise throw.
+         * Use for argument validation when ERRORS is true.
+         */
+        function intValidatorWithErrors(n, min, max, caller, name) {
+            if (n < min || n > max || n != truncate(n)) {
+                raise(caller, (name || 'decimal places') + (n < min || n > max ? ' out of range' : ' not an integer'), n);
+            }
+
+            return true;
+        }
+
+        /*
+         * Strip trailing zeros, calculate base 10 exponent and check against MIN_EXP and MAX_EXP.
+         * Called by minus, plus and times.
+         */
+        function normalise(n, c, e) {
+            var i = 1,
+                j = c.length;
+
+            // Remove trailing zeros.
+            for (; !c[--j]; c.pop());
+
+            // Calculate the base 10 exponent. First get the number of digits of c[0].
+            for (j = c[0]; j >= 10; j /= 10, i++);
+
+            // Overflow?
+            if ((e = i + e * LOG_BASE - 1) > MAX_EXP) {
+
+                // Infinity.
+                n.c = n.e = null;
+
+                // Underflow?
+            } else if (e < MIN_EXP) {
+
+                // Zero.
+                n.c = [n.e = 0];
+            } else {
+                n.e = e;
+                n.c = c;
+            }
+
+            return n;
+        }
+
+        // Handle values that fail the validity test in BigNumber.
+        parseNumeric = function () {
+            var basePrefix = /^(-?)0([xbo])/i,
+                dotAfter = /^([^.]+)\.$/,
+                dotBefore = /^\.([^.]+)$/,
+                isInfinityOrNaN = /^-?(Infinity|NaN)$/,
+                whitespaceOrPlus = /^\s*\+|^\s+|\s+$/g;
+
+            return function (x, str, num, b) {
+                var base,
+                    s = num ? str : str.replace(whitespaceOrPlus, '');
+
+                // No exception on ±Infinity or NaN.
+                if (isInfinityOrNaN.test(s)) {
+                    x.s = isNaN(s) ? null : s < 0 ? -1 : 1;
+                } else {
+                    if (!num) {
+
+                        // basePrefix = /^(-?)0([xbo])(?=\w[\w.]*$)/i
+                        s = s.replace(basePrefix, function (m, p1, p2) {
+                            base = (p2 = p2.toLowerCase()) == 'x' ? 16 : p2 == 'b' ? 2 : 8;
+                            return !b || b == base ? p1 : m;
+                        });
+
+                        if (b) {
+                            base = b;
+
+                            // E.g. '1.' to '1', '.1' to '0.1'
+                            s = s.replace(dotAfter, '$1').replace(dotBefore, '0.$1');
+                        }
+
+                        if (str != s) return new BigNumber(s, base);
+                    }
+
+                    // 'new BigNumber() not a number: {n}'
+                    // 'new BigNumber() not a base {b} number: {n}'
+                    if (ERRORS) raise(id, 'not a' + (b ? ' base ' + b : '') + ' number', str);
+                    x.s = null;
+                }
+
+                x.c = x.e = null;
+                id = 0;
+            };
+        }();
+
+        // Throw a BigNumber Error.
+        function raise(caller, msg, val) {
+            var error = new Error(['new BigNumber', // 0
+            'cmp', // 1
+            'config', // 2
+            'div', // 3
+            'divToInt', // 4
+            'eq', // 5
+            'gt', // 6
+            'gte', // 7
+            'lt', // 8
+            'lte', // 9
+            'minus', // 10
+            'mod', // 11
+            'plus', // 12
+            'precision', // 13
+            'random', // 14
+            'round', // 15
+            'shift', // 16
+            'times', // 17
+            'toDigits', // 18
+            'toExponential', // 19
+            'toFixed', // 20
+            'toFormat', // 21
+            'toFraction', // 22
+            'pow', // 23
+            'toPrecision', // 24
+            'toString', // 25
+            'BigNumber' // 26
+            ][caller] + '() ' + msg + ': ' + val);
+
+            error.name = 'BigNumber Error';
+            id = 0;
+            throw error;
+        }
+
+        /*
+         * Round x to sd significant digits using rounding mode rm. Check for over/under-flow.
+         * If r is truthy, it is known that there are more digits after the rounding digit.
+         */
+        function round(x, sd, rm, r) {
+            var d,
+                i,
+                j,
+                k,
+                n,
+                ni,
+                rd,
+                xc = x.c,
+                pows10 = POWS_TEN;
+
+            // if x is not Infinity or NaN...
+            if (xc) {
+
+                // rd is the rounding digit, i.e. the digit after the digit that may be rounded up.
+                // n is a base 1e14 number, the value of the element of array x.c containing rd.
+                // ni is the index of n within x.c.
+                // d is the number of digits of n.
+                // i is the index of rd within n including leading zeros.
+                // j is the actual index of rd within n (if < 0, rd is a leading zero).
+                out: {
+
+                    // Get the number of digits of the first element of xc.
+                    for (d = 1, k = xc[0]; k >= 10; k /= 10, d++);
+                    i = sd - d;
+
+                    // If the rounding digit is in the first element of xc...
+                    if (i < 0) {
+                        i += LOG_BASE;
+                        j = sd;
+                        n = xc[ni = 0];
+
+                        // Get the rounding digit at index j of n.
+                        rd = n / pows10[d - j - 1] % 10 | 0;
+                    } else {
+                        ni = mathceil((i + 1) / LOG_BASE);
+
+                        if (ni >= xc.length) {
+
+                            if (r) {
+
+                                // Needed by sqrt.
+                                for (; xc.length <= ni; xc.push(0));
+                                n = rd = 0;
+                                d = 1;
+                                i %= LOG_BASE;
+                                j = i - LOG_BASE + 1;
+                            } else {
+                                break out;
+                            }
+                        } else {
+                            n = k = xc[ni];
+
+                            // Get the number of digits of n.
+                            for (d = 1; k >= 10; k /= 10, d++);
+
+                            // Get the index of rd within n.
+                            i %= LOG_BASE;
+
+                            // Get the index of rd within n, adjusted for leading zeros.
+                            // The number of leading zeros of n is given by LOG_BASE - d.
+                            j = i - LOG_BASE + d;
+
+                            // Get the rounding digit at index j of n.
+                            rd = j < 0 ? 0 : n / pows10[d - j - 1] % 10 | 0;
+                        }
+                    }
+
+                    r = r || sd < 0 ||
+
+                    // Are there any non-zero digits after the rounding digit?
+                    // The expression  n % pows10[ d - j - 1 ]  returns all digits of n to the right
+                    // of the digit at j, e.g. if n is 908714 and j is 2, the expression gives 714.
+                    xc[ni + 1] != null || (j < 0 ? n : n % pows10[d - j - 1]);
+
+                    r = rm < 4 ? (rd || r) && (rm == 0 || rm == (x.s < 0 ? 3 : 2)) : rd > 5 || rd == 5 && (rm == 4 || r || rm == 6 &&
+
+                    // Check whether the digit to the left of the rounding digit is odd.
+                    (i > 0 ? j > 0 ? n / pows10[d - j] : 0 : xc[ni - 1]) % 10 & 1 || rm == (x.s < 0 ? 8 : 7));
+
+                    if (sd < 1 || !xc[0]) {
+                        xc.length = 0;
+
+                        if (r) {
+
+                            // Convert sd to decimal places.
+                            sd -= x.e + 1;
+
+                            // 1, 0.1, 0.01, 0.001, 0.0001 etc.
+                            xc[0] = pows10[sd % LOG_BASE];
+                            x.e = -sd || 0;
+                        } else {
+
+                            // Zero.
+                            xc[0] = x.e = 0;
+                        }
+
+                        return x;
+                    }
+
+                    // Remove excess digits.
+                    if (i == 0) {
+                        xc.length = ni;
+                        k = 1;
+                        ni--;
+                    } else {
+                        xc.length = ni + 1;
+                        k = pows10[LOG_BASE - i];
+
+                        // E.g. 56700 becomes 56000 if 7 is the rounding digit.
+                        // j > 0 means i > number of leading zeros of n.
+                        xc[ni] = j > 0 ? mathfloor(n / pows10[d - j] % pows10[j]) * k : 0;
+                    }
+
+                    // Round up?
+                    if (r) {
+
+                        for (;;) {
+
+                            // If the digit to be rounded up is in the first element of xc...
+                            if (ni == 0) {
+
+                                // i will be the length of xc[0] before k is added.
+                                for (i = 1, j = xc[0]; j >= 10; j /= 10, i++);
+                                j = xc[0] += k;
+                                for (k = 1; j >= 10; j /= 10, k++);
+
+                                // if i != k the length has increased.
+                                if (i != k) {
+                                    x.e++;
+                                    if (xc[0] == BASE) xc[0] = 1;
+                                }
+
+                                break;
+                            } else {
+                                xc[ni] += k;
+                                if (xc[ni] != BASE) break;
+                                xc[ni--] = 0;
+                                k = 1;
+                            }
+                        }
+                    }
+
+                    // Remove trailing zeros.
+                    for (i = xc.length; xc[--i] === 0; xc.pop());
+                }
+
+                // Overflow? Infinity.
+                if (x.e > MAX_EXP) {
+                    x.c = x.e = null;
+
+                    // Underflow? Zero.
+                } else if (x.e < MIN_EXP) {
+                    x.c = [x.e = 0];
+                }
+            }
+
+            return x;
+        }
+
+        // PROTOTYPE/INSTANCE METHODS
+
+
+        /*
+         * Return a new BigNumber whose value is the absolute value of this BigNumber.
+         */
+        P.absoluteValue = P.abs = function () {
+            var x = new BigNumber(this);
+            if (x.s < 0) x.s = 1;
+            return x;
+        };
+
+        /*
+         * Return a new BigNumber whose value is the value of this BigNumber rounded to a whole
+         * number in the direction of Infinity.
+         */
+        P.ceil = function () {
+            return round(new BigNumber(this), this.e + 1, 2);
+        };
+
+        /*
+         * Return
+         * 1 if the value of this BigNumber is greater than the value of BigNumber(y, b),
+         * -1 if the value of this BigNumber is less than the value of BigNumber(y, b),
+         * 0 if they have the same value,
+         * or null if the value of either is NaN.
+         */
+        P.comparedTo = P.cmp = function (y, b) {
+            id = 1;
+            return compare(this, new BigNumber(y, b));
+        };
+
+        /*
+         * Return the number of decimal places of the value of this BigNumber, or null if the value
+         * of this BigNumber is ±Infinity or NaN.
+         */
+        P.decimalPlaces = P.dp = function () {
+            var n,
+                v,
+                c = this.c;
+
+            if (!c) return null;
+            n = ((v = c.length - 1) - bitFloor(this.e / LOG_BASE)) * LOG_BASE;
+
+            // Subtract the number of trailing zeros of the last number.
+            if (v = c[v]) for (; v % 10 == 0; v /= 10, n--);
+            if (n < 0) n = 0;
+
+            return n;
+        };
+
+        /*
+         *  n / 0 = I
+         *  n / N = N
+         *  n / I = 0
+         *  0 / n = 0
+         *  0 / 0 = N
+         *  0 / N = N
+         *  0 / I = 0
+         *  N / n = N
+         *  N / 0 = N
+         *  N / N = N
+         *  N / I = N
+         *  I / n = I
+         *  I / 0 = I
+         *  I / N = N
+         *  I / I = N
+         *
+         * Return a new BigNumber whose value is the value of this BigNumber divided by the value of
+         * BigNumber(y, b), rounded according to DECIMAL_PLACES and ROUNDING_MODE.
+         */
+        P.dividedBy = P.div = function (y, b) {
+            id = 3;
+            return div(this, new BigNumber(y, b), DECIMAL_PLACES, ROUNDING_MODE);
+        };
+
+        /*
+         * Return a new BigNumber whose value is the integer part of dividing the value of this
+         * BigNumber by the value of BigNumber(y, b).
+         */
+        P.dividedToIntegerBy = P.divToInt = function (y, b) {
+            id = 4;
+            return div(this, new BigNumber(y, b), 0, 1);
+        };
+
+        /*
+         * Return true if the value of this BigNumber is equal to the value of BigNumber(y, b),
+         * otherwise returns false.
+         */
+        P.equals = P.eq = function (y, b) {
+            id = 5;
+            return compare(this, new BigNumber(y, b)) === 0;
+        };
+
+        /*
+         * Return a new BigNumber whose value is the value of this BigNumber rounded to a whole
+         * number in the direction of -Infinity.
+         */
+        P.floor = function () {
+            return round(new BigNumber(this), this.e + 1, 3);
+        };
+
+        /*
+         * Return true if the value of this BigNumber is greater than the value of BigNumber(y, b),
+         * otherwise returns false.
+         */
+        P.greaterThan = P.gt = function (y, b) {
+            id = 6;
+            return compare(this, new BigNumber(y, b)) > 0;
+        };
+
+        /*
+         * Return true if the value of this BigNumber is greater than or equal to the value of
+         * BigNumber(y, b), otherwise returns false.
+         */
+        P.greaterThanOrEqualTo = P.gte = function (y, b) {
+            id = 7;
+            return (b = compare(this, new BigNumber(y, b))) === 1 || b === 0;
+        };
+
+        /*
+         * Return true if the value of this BigNumber is a finite number, otherwise returns false.
+         */
+        P.isFinite = function () {
+            return !!this.c;
+        };
+
+        /*
+         * Return true if the value of this BigNumber is an integer, otherwise return false.
+         */
+        P.isInteger = P.isInt = function () {
+            return !!this.c && bitFloor(this.e / LOG_BASE) > this.c.length - 2;
+        };
+
+        /*
+         * Return true if the value of this BigNumber is NaN, otherwise returns false.
+         */
+        P.isNaN = function () {
+            return !this.s;
+        };
+
+        /*
+         * Return true if the value of this BigNumber is negative, otherwise returns false.
+         */
+        P.isNegative = P.isNeg = function () {
+            return this.s < 0;
+        };
+
+        /*
+         * Return true if the value of this BigNumber is 0 or -0, otherwise returns false.
+         */
+        P.isZero = function () {
+            return !!this.c && this.c[0] == 0;
+        };
+
+        /*
+         * Return true if the value of this BigNumber is less than the value of BigNumber(y, b),
+         * otherwise returns false.
+         */
+        P.lessThan = P.lt = function (y, b) {
+            id = 8;
+            return compare(this, new BigNumber(y, b)) < 0;
+        };
+
+        /*
+         * Return true if the value of this BigNumber is less than or equal to the value of
+         * BigNumber(y, b), otherwise returns false.
+         */
+        P.lessThanOrEqualTo = P.lte = function (y, b) {
+            id = 9;
+            return (b = compare(this, new BigNumber(y, b))) === -1 || b === 0;
+        };
+
+        /*
+         *  n - 0 = n
+         *  n - N = N
+         *  n - I = -I
+         *  0 - n = -n
+         *  0 - 0 = 0
+         *  0 - N = N
+         *  0 - I = -I
+         *  N - n = N
+         *  N - 0 = N
+         *  N - N = N
+         *  N - I = N
+         *  I - n = I
+         *  I - 0 = I
+         *  I - N = N
+         *  I - I = N
+         *
+         * Return a new BigNumber whose value is the value of this BigNumber minus the value of
+         * BigNumber(y, b).
+         */
+        P.minus = P.sub = function (y, b) {
+            var i,
+                j,
+                t,
+                xLTy,
+                x = this,
+                a = x.s;
+
+            id = 10;
+            y = new BigNumber(y, b);
+            b = y.s;
+
+            // Either NaN?
+            if (!a || !b) return new BigNumber(NaN);
+
+            // Signs differ?
+            if (a != b) {
+                y.s = -b;
+                return x.plus(y);
+            }
+
+            var xe = x.e / LOG_BASE,
+                ye = y.e / LOG_BASE,
+                xc = x.c,
+                yc = y.c;
+
+            if (!xe || !ye) {
+
+                // Either Infinity?
+                if (!xc || !yc) return xc ? (y.s = -b, y) : new BigNumber(yc ? x : NaN);
+
+                // Either zero?
+                if (!xc[0] || !yc[0]) {
+
+                    // Return y if y is non-zero, x if x is non-zero, or zero if both are zero.
+                    return yc[0] ? (y.s = -b, y) : new BigNumber(xc[0] ? x :
+
+                    // IEEE 754 (2008) 6.3: n - n = -0 when rounding to -Infinity
+                    ROUNDING_MODE == 3 ? -0 : 0);
+                }
+            }
+
+            xe = bitFloor(xe);
+            ye = bitFloor(ye);
+            xc = xc.slice();
+
+            // Determine which is the bigger number.
+            if (a = xe - ye) {
+
+                if (xLTy = a < 0) {
+                    a = -a;
+                    t = xc;
+                } else {
+                    ye = xe;
+                    t = yc;
+                }
+
+                t.reverse();
+
+                // Prepend zeros to equalise exponents.
+                for (b = a; b--; t.push(0));
+                t.reverse();
+            } else {
+
+                // Exponents equal. Check digit by digit.
+                j = (xLTy = (a = xc.length) < (b = yc.length)) ? a : b;
+
+                for (a = b = 0; b < j; b++) {
+
+                    if (xc[b] != yc[b]) {
+                        xLTy = xc[b] < yc[b];
+                        break;
+                    }
+                }
+            }
+
+            // x < y? Point xc to the array of the bigger number.
+            if (xLTy) t = xc, xc = yc, yc = t, y.s = -y.s;
+
+            b = (j = yc.length) - (i = xc.length);
+
+            // Append zeros to xc if shorter.
+            // No need to add zeros to yc if shorter as subtract only needs to start at yc.length.
+            if (b > 0) for (; b--; xc[i++] = 0);
+            b = BASE - 1;
+
+            // Subtract yc from xc.
+            for (; j > a;) {
+
+                if (xc[--j] < yc[j]) {
+                    for (i = j; i && !xc[--i]; xc[i] = b);
+                    --xc[i];
+                    xc[j] += BASE;
+                }
+
+                xc[j] -= yc[j];
+            }
+
+            // Remove leading zeros and adjust exponent accordingly.
+            for (; xc[0] == 0; xc.shift(), --ye);
+
+            // Zero?
+            if (!xc[0]) {
+
+                // Following IEEE 754 (2008) 6.3,
+                // n - n = +0  but  n - n = -0  when rounding towards -Infinity.
+                y.s = ROUNDING_MODE == 3 ? -1 : 1;
+                y.c = [y.e = 0];
+                return y;
+            }
+
+            // No need to check for Infinity as +x - +y != Infinity && -x - -y != Infinity
+            // for finite x and y.
+            return normalise(y, xc, ye);
+        };
+
+        /*
+         *   n % 0 =  N
+         *   n % N =  N
+         *   n % I =  n
+         *   0 % n =  0
+         *  -0 % n = -0
+         *   0 % 0 =  N
+         *   0 % N =  N
+         *   0 % I =  0
+         *   N % n =  N
+         *   N % 0 =  N
+         *   N % N =  N
+         *   N % I =  N
+         *   I % n =  N
+         *   I % 0 =  N
+         *   I % N =  N
+         *   I % I =  N
+         *
+         * Return a new BigNumber whose value is the value of this BigNumber modulo the value of
+         * BigNumber(y, b). The result depends on the value of MODULO_MODE.
+         */
+        P.modulo = P.mod = function (y, b) {
+            var q,
+                s,
+                x = this;
+
+            id = 11;
+            y = new BigNumber(y, b);
+
+            // Return NaN if x is Infinity or NaN, or y is NaN or zero.
+            if (!x.c || !y.s || y.c && !y.c[0]) {
+                return new BigNumber(NaN);
+
+                // Return x if y is Infinity or x is zero.
+            } else if (!y.c || x.c && !x.c[0]) {
+                return new BigNumber(x);
+            }
+
+            if (MODULO_MODE == 9) {
+
+                // Euclidian division: q = sign(y) * floor(x / abs(y))
+                // r = x - qy    where  0 <= r < abs(y)
+                s = y.s;
+                y.s = 1;
+                q = div(x, y, 0, 3);
+                y.s = s;
+                q.s *= s;
+            } else {
+                q = div(x, y, 0, MODULO_MODE);
+            }
+
+            return x.minus(q.times(y));
+        };
+
+        /*
+         * Return a new BigNumber whose value is the value of this BigNumber negated,
+         * i.e. multiplied by -1.
+         */
+        P.negated = P.neg = function () {
+            var x = new BigNumber(this);
+            x.s = -x.s || null;
+            return x;
+        };
+
+        /*
+         *  n + 0 = n
+         *  n + N = N
+         *  n + I = I
+         *  0 + n = n
+         *  0 + 0 = 0
+         *  0 + N = N
+         *  0 + I = I
+         *  N + n = N
+         *  N + 0 = N
+         *  N + N = N
+         *  N + I = N
+         *  I + n = I
+         *  I + 0 = I
+         *  I + N = N
+         *  I + I = I
+         *
+         * Return a new BigNumber whose value is the value of this BigNumber plus the value of
+         * BigNumber(y, b).
+         */
+        P.plus = P.add = function (y, b) {
+            var t,
+                x = this,
+                a = x.s;
+
+            id = 12;
+            y = new BigNumber(y, b);
+            b = y.s;
+
+            // Either NaN?
+            if (!a || !b) return new BigNumber(NaN);
+
+            // Signs differ?
+            if (a != b) {
+                y.s = -b;
+                return x.minus(y);
+            }
+
+            var xe = x.e / LOG_BASE,
+                ye = y.e / LOG_BASE,
+                xc = x.c,
+                yc = y.c;
+
+            if (!xe || !ye) {
+
+                // Return ±Infinity if either ±Infinity.
+                if (!xc || !yc) return new BigNumber(a / 0);
+
+                // Either zero?
+                // Return y if y is non-zero, x if x is non-zero, or zero if both are zero.
+                if (!xc[0] || !yc[0]) return yc[0] ? y : new BigNumber(xc[0] ? x : a * 0);
+            }
+
+            xe = bitFloor(xe);
+            ye = bitFloor(ye);
+            xc = xc.slice();
+
+            // Prepend zeros to equalise exponents. Faster to use reverse then do unshifts.
+            if (a = xe - ye) {
+                if (a > 0) {
+                    ye = xe;
+                    t = yc;
+                } else {
+                    a = -a;
+                    t = xc;
+                }
+
+                t.reverse();
+                for (; a--; t.push(0));
+                t.reverse();
+            }
+
+            a = xc.length;
+            b = yc.length;
+
+            // Point xc to the longer array, and b to the shorter length.
+            if (a - b < 0) t = yc, yc = xc, xc = t, b = a;
+
+            // Only start adding at yc.length - 1 as the further digits of xc can be ignored.
+            for (a = 0; b;) {
+                a = (xc[--b] = xc[b] + yc[b] + a) / BASE | 0;
+                xc[b] %= BASE;
+            }
+
+            if (a) {
+                xc.unshift(a);
+                ++ye;
+            }
+
+            // No need to check for zero, as +x + +y != 0 && -x + -y != 0
+            // ye = MAX_EXP + 1 possible
+            return normalise(y, xc, ye);
+        };
+
+        /*
+         * Return the number of significant digits of the value of this BigNumber.
+         *
+         * [z] {boolean|number} Whether to count integer-part trailing zeros: true, false, 1 or 0.
+         */
+        P.precision = P.sd = function (z) {
+            var n,
+                v,
+                x = this,
+                c = x.c;
+
+            // 'precision() argument not a boolean or binary digit: {z}'
+            if (z != null && z !== !!z && z !== 1 && z !== 0) {
+                if (ERRORS) raise(13, 'argument' + notBool, z);
+                if (z != !!z) z = null;
+            }
+
+            if (!c) return null;
+            v = c.length - 1;
+            n = v * LOG_BASE + 1;
+
+            if (v = c[v]) {
+
+                // Subtract the number of trailing zeros of the last element.
+                for (; v % 10 == 0; v /= 10, n--);
+
+                // Add the number of digits of the first element.
+                for (v = c[0]; v >= 10; v /= 10, n++);
+            }
+
+            if (z && x.e + 1 > n) n = x.e + 1;
+
+            return n;
+        };
+
+        /*
+         * Return a new BigNumber whose value is the value of this BigNumber rounded to a maximum of
+         * dp decimal places using rounding mode rm, or to 0 and ROUNDING_MODE respectively if
+         * omitted.
+         *
+         * [dp] {number} Decimal places. Integer, 0 to MAX inclusive.
+         * [rm] {number} Rounding mode. Integer, 0 to 8 inclusive.
+         *
+         * 'round() decimal places out of range: {dp}'
+         * 'round() decimal places not an integer: {dp}'
+         * 'round() rounding mode not an integer: {rm}'
+         * 'round() rounding mode out of range: {rm}'
+         */
+        P.round = function (dp, rm) {
+            var n = new BigNumber(this);
+
+            if (dp == null || isValidInt(dp, 0, MAX, 15)) {
+                round(n, ~~dp + this.e + 1, rm == null || !isValidInt(rm, 0, 8, 15, roundingMode) ? ROUNDING_MODE : rm | 0);
+            }
+
+            return n;
+        };
+
+        /*
+         * Return a new BigNumber whose value is the value of this BigNumber shifted by k places
+         * (powers of 10). Shift to the right if n > 0, and to the left if n < 0.
+         *
+         * k {number} Integer, -MAX_SAFE_INTEGER to MAX_SAFE_INTEGER inclusive.
+         *
+         * If k is out of range and ERRORS is false, the result will be ±0 if k < 0, or ±Infinity
+         * otherwise.
+         *
+         * 'shift() argument not an integer: {k}'
+         * 'shift() argument out of range: {k}'
+         */
+        P.shift = function (k) {
+            var n = this;
+            return isValidInt(k, -MAX_SAFE_INTEGER, MAX_SAFE_INTEGER, 16, 'argument')
+
+            // k < 1e+21, or truncate(k) will produce exponential notation.
+            ? n.times('1e' + truncate(k)) : new BigNumber(n.c && n.c[0] && (k < -MAX_SAFE_INTEGER || k > MAX_SAFE_INTEGER) ? n.s * (k < 0 ? 0 : 1 / 0) : n);
+        };
+
+        /*
+         *  sqrt(-n) =  N
+         *  sqrt( N) =  N
+         *  sqrt(-I) =  N
+         *  sqrt( I) =  I
+         *  sqrt( 0) =  0
+         *  sqrt(-0) = -0
+         *
+         * Return a new BigNumber whose value is the square root of the value of this BigNumber,
+         * rounded according to DECIMAL_PLACES and ROUNDING_MODE.
+         */
+        P.squareRoot = P.sqrt = function () {
+            var m,
+                n,
+                r,
+                rep,
+                t,
+                x = this,
+                c = x.c,
+                s = x.s,
+                e = x.e,
+                dp = DECIMAL_PLACES + 4,
+                half = new BigNumber('0.5');
+
+            // Negative/NaN/Infinity/zero?
+            if (s !== 1 || !c || !c[0]) {
+                return new BigNumber(!s || s < 0 && (!c || c[0]) ? NaN : c ? x : 1 / 0);
+            }
+
+            // Initial estimate.
+            s = Math.sqrt(+x);
+
+            // Math.sqrt underflow/overflow?
+            // Pass x to Math.sqrt as integer, then adjust the exponent of the result.
+            if (s == 0 || s == 1 / 0) {
+                n = coeffToString(c);
+                if ((n.length + e) % 2 == 0) n += '0';
+                s = Math.sqrt(n);
+                e = bitFloor((e + 1) / 2) - (e < 0 || e % 2);
+
+                if (s == 1 / 0) {
+                    n = '1e' + e;
+                } else {
+                    n = s.toExponential();
+                    n = n.slice(0, n.indexOf('e') + 1) + e;
+                }
+
+                r = new BigNumber(n);
+            } else {
+                r = new BigNumber(s + '');
+            }
+
+            // Check for zero.
+            // r could be zero if MIN_EXP is changed after the this value was created.
+            // This would cause a division by zero (x/t) and hence Infinity below, which would cause
+            // coeffToString to throw.
+            if (r.c[0]) {
+                e = r.e;
+                s = e + dp;
+                if (s < 3) s = 0;
+
+                // Newton-Raphson iteration.
+                for (;;) {
+                    t = r;
+                    r = half.times(t.plus(div(x, t, dp, 1)));
+
+                    if (coeffToString(t.c).slice(0, s) === (n = coeffToString(r.c)).slice(0, s)) {
+
+                        // The exponent of r may here be one less than the final result exponent,
+                        // e.g 0.0009999 (e-4) --> 0.001 (e-3), so adjust s so the rounding digits
+                        // are indexed correctly.
+                        if (r.e < e) --s;
+                        n = n.slice(s - 3, s + 1);
+
+                        // The 4th rounding digit may be in error by -1 so if the 4 rounding digits
+                        // are 9999 or 4999 (i.e. approaching a rounding boundary) continue the
+                        // iteration.
+                        if (n == '9999' || !rep && n == '4999') {
+
+                            // On the first iteration only, check to see if rounding up gives the
+                            // exact result as the nines may infinitely repeat.
+                            if (!rep) {
+                                round(t, t.e + DECIMAL_PLACES + 2, 0);
+
+                                if (t.times(t).eq(x)) {
+                                    r = t;
+                                    break;
+                                }
+                            }
+
+                            dp += 4;
+                            s += 4;
+                            rep = 1;
+                        } else {
+
+                            // If rounding digits are null, 0{0,4} or 50{0,3}, check for exact
+                            // result. If not, then there are further digits and m will be truthy.
+                            if (!+n || !+n.slice(1) && n.charAt(0) == '5') {
+
+                                // Truncate to the first rounding digit.
+                                round(r, r.e + DECIMAL_PLACES + 2, 1);
+                                m = !r.times(r).eq(x);
+                            }
+
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return round(r, r.e + DECIMAL_PLACES + 1, ROUNDING_MODE, m);
+        };
+
+        /*
+         *  n * 0 = 0
+         *  n * N = N
+         *  n * I = I
+         *  0 * n = 0
+         *  0 * 0 = 0
+         *  0 * N = N
+         *  0 * I = N
+         *  N * n = N
+         *  N * 0 = N
+         *  N * N = N
+         *  N * I = N
+         *  I * n = I
+         *  I * 0 = N
+         *  I * N = N
+         *  I * I = I
+         *
+         * Return a new BigNumber whose value is the value of this BigNumber times the value of
+         * BigNumber(y, b).
+         */
+        P.times = P.mul = function (y, b) {
+            var c,
+                e,
+                i,
+                j,
+                k,
+                m,
+                xcL,
+                xlo,
+                xhi,
+                ycL,
+                ylo,
+                yhi,
+                zc,
+                base,
+                sqrtBase,
+                x = this,
+                xc = x.c,
+                yc = (id = 17, y = new BigNumber(y, b)).c;
+
+            // Either NaN, ±Infinity or ±0?
+            if (!xc || !yc || !xc[0] || !yc[0]) {
+
+                // Return NaN if either is NaN, or one is 0 and the other is Infinity.
+                if (!x.s || !y.s || xc && !xc[0] && !yc || yc && !yc[0] && !xc) {
+                    y.c = y.e = y.s = null;
+                } else {
+                    y.s *= x.s;
+
+                    // Return ±Infinity if either is ±Infinity.
+                    if (!xc || !yc) {
+                        y.c = y.e = null;
+
+                        // Return ±0 if either is ±0.
+                    } else {
+                        y.c = [0];
+                        y.e = 0;
+                    }
+                }
+
+                return y;
+            }
+
+            e = bitFloor(x.e / LOG_BASE) + bitFloor(y.e / LOG_BASE);
+            y.s *= x.s;
+            xcL = xc.length;
+            ycL = yc.length;
+
+            // Ensure xc points to longer array and xcL to its length.
+            if (xcL < ycL) zc = xc, xc = yc, yc = zc, i = xcL, xcL = ycL, ycL = i;
+
+            // Initialise the result array with zeros.
+            for (i = xcL + ycL, zc = []; i--; zc.push(0));
+
+            base = BASE;
+            sqrtBase = SQRT_BASE;
+
+            for (i = ycL; --i >= 0;) {
+                c = 0;
+                ylo = yc[i] % sqrtBase;
+                yhi = yc[i] / sqrtBase | 0;
+
+                for (k = xcL, j = i + k; j > i;) {
+                    xlo = xc[--k] % sqrtBase;
+                    xhi = xc[k] / sqrtBase | 0;
+                    m = yhi * xlo + xhi * ylo;
+                    xlo = ylo * xlo + m % sqrtBase * sqrtBase + zc[j] + c;
+                    c = (xlo / base | 0) + (m / sqrtBase | 0) + yhi * xhi;
+                    zc[j--] = xlo % base;
+                }
+
+                zc[j] = c;
+            }
+
+            if (c) {
+                ++e;
+            } else {
+                zc.shift();
+            }
+
+            return normalise(y, zc, e);
+        };
+
+        /*
+         * Return a new BigNumber whose value is the value of this BigNumber rounded to a maximum of
+         * sd significant digits using rounding mode rm, or ROUNDING_MODE if rm is omitted.
+         *
+         * [sd] {number} Significant digits. Integer, 1 to MAX inclusive.
+         * [rm] {number} Rounding mode. Integer, 0 to 8 inclusive.
+         *
+         * 'toDigits() precision out of range: {sd}'
+         * 'toDigits() precision not an integer: {sd}'
+         * 'toDigits() rounding mode not an integer: {rm}'
+         * 'toDigits() rounding mode out of range: {rm}'
+         */
+        P.toDigits = function (sd, rm) {
+            var n = new BigNumber(this);
+            sd = sd == null || !isValidInt(sd, 1, MAX, 18, 'precision') ? null : sd | 0;
+            rm = rm == null || !isValidInt(rm, 0, 8, 18, roundingMode) ? ROUNDING_MODE : rm | 0;
+            return sd ? round(n, sd, rm) : n;
+        };
+
+        /*
+         * Return a string representing the value of this BigNumber in exponential notation and
+         * rounded using ROUNDING_MODE to dp fixed decimal places.
+         *
+         * [dp] {number} Decimal places. Integer, 0 to MAX inclusive.
+         * [rm] {number} Rounding mode. Integer, 0 to 8 inclusive.
+         *
+         * 'toExponential() decimal places not an integer: {dp}'
+         * 'toExponential() decimal places out of range: {dp}'
+         * 'toExponential() rounding mode not an integer: {rm}'
+         * 'toExponential() rounding mode out of range: {rm}'
+         */
+        P.toExponential = function (dp, rm) {
+            return format(this, dp != null && isValidInt(dp, 0, MAX, 19) ? ~~dp + 1 : null, rm, 19);
+        };
+
+        /*
+         * Return a string representing the value of this BigNumber in fixed-point notation rounding
+         * to dp fixed decimal places using rounding mode rm, or ROUNDING_MODE if rm is omitted.
+         *
+         * Note: as with JavaScript's number type, (-0).toFixed(0) is '0',
+         * but e.g. (-0.00001).toFixed(0) is '-0'.
+         *
+         * [dp] {number} Decimal places. Integer, 0 to MAX inclusive.
+         * [rm] {number} Rounding mode. Integer, 0 to 8 inclusive.
+         *
+         * 'toFixed() decimal places not an integer: {dp}'
+         * 'toFixed() decimal places out of range: {dp}'
+         * 'toFixed() rounding mode not an integer: {rm}'
+         * 'toFixed() rounding mode out of range: {rm}'
+         */
+        P.toFixed = function (dp, rm) {
+            return format(this, dp != null && isValidInt(dp, 0, MAX, 20) ? ~~dp + this.e + 1 : null, rm, 20);
+        };
+
+        /*
+         * Return a string representing the value of this BigNumber in fixed-point notation rounded
+         * using rm or ROUNDING_MODE to dp decimal places, and formatted according to the properties
+         * of the FORMAT object (see BigNumber.config).
+         *
+         * FORMAT = {
+         *      decimalSeparator : '.',
+         *      groupSeparator : ',',
+         *      groupSize : 3,
+         *      secondaryGroupSize : 0,
+         *      fractionGroupSeparator : '\xA0',    // non-breaking space
+         *      fractionGroupSize : 0
+         * };
+         *
+         * [dp] {number} Decimal places. Integer, 0 to MAX inclusive.
+         * [rm] {number} Rounding mode. Integer, 0 to 8 inclusive.
+         *
+         * 'toFormat() decimal places not an integer: {dp}'
+         * 'toFormat() decimal places out of range: {dp}'
+         * 'toFormat() rounding mode not an integer: {rm}'
+         * 'toFormat() rounding mode out of range: {rm}'
+         */
+        P.toFormat = function (dp, rm) {
+            var str = format(this, dp != null && isValidInt(dp, 0, MAX, 21) ? ~~dp + this.e + 1 : null, rm, 21);
+
+            if (this.c) {
+                var i,
+                    arr = str.split('.'),
+                    g1 = +FORMAT.groupSize,
+                    g2 = +FORMAT.secondaryGroupSize,
+                    groupSeparator = FORMAT.groupSeparator,
+                    intPart = arr[0],
+                    fractionPart = arr[1],
+                    isNeg = this.s < 0,
+                    intDigits = isNeg ? intPart.slice(1) : intPart,
+                    len = intDigits.length;
+
+                if (g2) i = g1, g1 = g2, g2 = i, len -= i;
+
+                if (g1 > 0 && len > 0) {
+                    i = len % g1 || g1;
+                    intPart = intDigits.substr(0, i);
+
+                    for (; i < len; i += g1) {
+                        intPart += groupSeparator + intDigits.substr(i, g1);
+                    }
+
+                    if (g2 > 0) intPart += groupSeparator + intDigits.slice(i);
+                    if (isNeg) intPart = '-' + intPart;
+                }
+
+                str = fractionPart ? intPart + FORMAT.decimalSeparator + ((g2 = +FORMAT.fractionGroupSize) ? fractionPart.replace(new RegExp('\\d{' + g2 + '}\\B', 'g'), '$&' + FORMAT.fractionGroupSeparator) : fractionPart) : intPart;
+            }
+
+            return str;
+        };
+
+        /*
+         * Return a string array representing the value of this BigNumber as a simple fraction with
+         * an integer numerator and an integer denominator. The denominator will be a positive
+         * non-zero value less than or equal to the specified maximum denominator. If a maximum
+         * denominator is not specified, the denominator will be the lowest value necessary to
+         * represent the number exactly.
+         *
+         * [md] {number|string|BigNumber} Integer >= 1 and < Infinity. The maximum denominator.
+         *
+         * 'toFraction() max denominator not an integer: {md}'
+         * 'toFraction() max denominator out of range: {md}'
+         */
+        P.toFraction = function (md) {
+            var arr,
+                d0,
+                d2,
+                e,
+                exp,
+                n,
+                n0,
+                q,
+                s,
+                k = ERRORS,
+                x = this,
+                xc = x.c,
+                d = new BigNumber(ONE),
+                n1 = d0 = new BigNumber(ONE),
+                d1 = n0 = new BigNumber(ONE);
+
+            if (md != null) {
+                ERRORS = false;
+                n = new BigNumber(md);
+                ERRORS = k;
+
+                if (!(k = n.isInt()) || n.lt(ONE)) {
+
+                    if (ERRORS) {
+                        raise(22, 'max denominator ' + (k ? 'out of range' : 'not an integer'), md);
+                    }
+
+                    // ERRORS is false:
+                    // If md is a finite non-integer >= 1, round it to an integer and use it.
+                    md = !k && n.c && round(n, n.e + 1, 1).gte(ONE) ? n : null;
+                }
+            }
+
+            if (!xc) return x.toString();
+            s = coeffToString(xc);
+
+            // Determine initial denominator.
+            // d is a power of 10 and the minimum max denominator that specifies the value exactly.
+            e = d.e = s.length - x.e - 1;
+            d.c[0] = POWS_TEN[(exp = e % LOG_BASE) < 0 ? LOG_BASE + exp : exp];
+            md = !md || n.cmp(d) > 0 ? e > 0 ? d : n1 : n;
+
+            exp = MAX_EXP;
+            MAX_EXP = 1 / 0;
+            n = new BigNumber(s);
+
+            // n0 = d1 = 0
+            n0.c[0] = 0;
+
+            for (;;) {
+                q = div(n, d, 0, 1);
+                d2 = d0.plus(q.times(d1));
+                if (d2.cmp(md) == 1) break;
+                d0 = d1;
+                d1 = d2;
+                n1 = n0.plus(q.times(d2 = n1));
+                n0 = d2;
+                d = n.minus(q.times(d2 = d));
+                n = d2;
+            }
+
+            d2 = div(md.minus(d0), d1, 0, 1);
+            n0 = n0.plus(d2.times(n1));
+            d0 = d0.plus(d2.times(d1));
+            n0.s = n1.s = x.s;
+            e *= 2;
+
+            // Determine which fraction is closer to x, n0/d0 or n1/d1
+            arr = div(n1, d1, e, ROUNDING_MODE).minus(x).abs().cmp(div(n0, d0, e, ROUNDING_MODE).minus(x).abs()) < 1 ? [n1.toString(), d1.toString()] : [n0.toString(), d0.toString()];
+
+            MAX_EXP = exp;
+            return arr;
+        };
+
+        /*
+         * Return the value of this BigNumber converted to a number primitive.
+         */
+        P.toNumber = function () {
+            var x = this;
+
+            // Ensure zero has correct sign.
+            return +x || (x.s ? x.s * 0 : NaN);
+        };
+
+        /*
+         * Return a BigNumber whose value is the value of this BigNumber raised to the power n.
+         * If n is negative round according to DECIMAL_PLACES and ROUNDING_MODE.
+         * If POW_PRECISION is not 0, round to POW_PRECISION using ROUNDING_MODE.
+         *
+         * n {number} Integer, -9007199254740992 to 9007199254740992 inclusive.
+         * (Performs 54 loop iterations for n of 9007199254740992.)
+         *
+         * 'pow() exponent not an integer: {n}'
+         * 'pow() exponent out of range: {n}'
+         */
+        P.toPower = P.pow = function (n) {
+            var k,
+                y,
+                i = mathfloor(n < 0 ? -n : +n),
+                x = this;
+
+            // Pass ±Infinity to Math.pow if exponent is out of range.
+            if (!isValidInt(n, -MAX_SAFE_INTEGER, MAX_SAFE_INTEGER, 23, 'exponent') && (!isFinite(n) || i > MAX_SAFE_INTEGER && (n /= 0) || parseFloat(n) != n && !(n = NaN))) {
+                return new BigNumber(Math.pow(+x, n));
+            }
+
+            // Truncating each coefficient array to a length of k after each multiplication equates
+            // to truncating significant digits to POW_PRECISION + [28, 41], i.e. there will be a
+            // minimum of 28 guard digits retained. (Using + 1.5 would give [9, 21] guard digits.)
+            k = POW_PRECISION ? mathceil(POW_PRECISION / LOG_BASE + 2) : 0;
+            y = new BigNumber(ONE);
+
+            for (;;) {
+
+                if (i % 2) {
+                    y = y.times(x);
+                    if (!y.c) break;
+                    if (k && y.c.length > k) y.c.length = k;
+                }
+
+                i = mathfloor(i / 2);
+                if (!i) break;
+
+                x = x.times(x);
+                if (k && x.c && x.c.length > k) x.c.length = k;
+            }
+
+            if (n < 0) y = ONE.div(y);
+            return k ? round(y, POW_PRECISION, ROUNDING_MODE) : y;
+        };
+
+        /*
+         * Return a string representing the value of this BigNumber rounded to sd significant digits
+         * using rounding mode rm or ROUNDING_MODE. If sd is less than the number of digits
+         * necessary to represent the integer part of the value in fixed-point notation, then use
+         * exponential notation.
+         *
+         * [sd] {number} Significant digits. Integer, 1 to MAX inclusive.
+         * [rm] {number} Rounding mode. Integer, 0 to 8 inclusive.
+         *
+         * 'toPrecision() precision not an integer: {sd}'
+         * 'toPrecision() precision out of range: {sd}'
+         * 'toPrecision() rounding mode not an integer: {rm}'
+         * 'toPrecision() rounding mode out of range: {rm}'
+         */
+        P.toPrecision = function (sd, rm) {
+            return format(this, sd != null && isValidInt(sd, 1, MAX, 24, 'precision') ? sd | 0 : null, rm, 24);
+        };
+
+        /*
+         * Return a string representing the value of this BigNumber in base b, or base 10 if b is
+         * omitted. If a base is specified, including base 10, round according to DECIMAL_PLACES and
+         * ROUNDING_MODE. If a base is not specified, and this BigNumber has a positive exponent
+         * that is equal to or greater than TO_EXP_POS, or a negative exponent equal to or less than
+         * TO_EXP_NEG, return exponential notation.
+         *
+         * [b] {number} Integer, 2 to 64 inclusive.
+         *
+         * 'toString() base not an integer: {b}'
+         * 'toString() base out of range: {b}'
+         */
+        P.toString = function (b) {
+            var str,
+                n = this,
+                s = n.s,
+                e = n.e;
+
+            // Infinity or NaN?
+            if (e === null) {
+
+                if (s) {
+                    str = 'Infinity';
+                    if (s < 0) str = '-' + str;
+                } else {
+                    str = 'NaN';
+                }
+            } else {
+                str = coeffToString(n.c);
+
+                if (b == null || !isValidInt(b, 2, 64, 25, 'base')) {
+                    str = e <= TO_EXP_NEG || e >= TO_EXP_POS ? toExponential(str, e) : toFixedPoint(str, e);
+                } else {
+                    str = convertBase(toFixedPoint(str, e), b | 0, 10, s);
+                }
+
+                if (s < 0 && n.c[0]) str = '-' + str;
+            }
+
+            return str;
+        };
+
+        /*
+         * Return a new BigNumber whose value is the value of this BigNumber truncated to a whole
+         * number.
+         */
+        P.truncated = P.trunc = function () {
+            return round(new BigNumber(this), this.e + 1, 1);
+        };
+
+        /*
+         * Return as toString, but do not accept a base argument.
+         */
+        P.valueOf = P.toJSON = function () {
+            return this.toString();
+        };
+
+        // Aliases for BigDecimal methods.
+        //P.add = P.plus;         // P.add included above
+        //P.subtract = P.minus;   // P.sub included above
+        //P.multiply = P.times;   // P.mul included above
+        //P.divide = P.div;
+        //P.remainder = P.mod;
+        //P.compareTo = P.cmp;
+        //P.negate = P.neg;
+
+
+        if (configObj != null) BigNumber.config(configObj);
+
+        return BigNumber;
+    }
+
+    // PRIVATE HELPER FUNCTIONS
+
+
+    function bitFloor(n) {
+        var i = n | 0;
+        return n > 0 || n === i ? i : i - 1;
+    }
+
+    // Return a coefficient array as a string of base 10 digits.
+    function coeffToString(a) {
+        var s,
+            z,
+            i = 1,
+            j = a.length,
+            r = a[0] + '';
+
+        for (; i < j;) {
+            s = a[i++] + '';
+            z = LOG_BASE - s.length;
+            for (; z--; s = '0' + s);
+            r += s;
+        }
+
+        // Determine trailing zeros.
+        for (j = r.length; r.charCodeAt(--j) === 48;);
+        return r.slice(0, j + 1 || 1);
+    }
+
+    // Compare the value of BigNumbers x and y.
+    function compare(x, y) {
+        var a,
+            b,
+            xc = x.c,
+            yc = y.c,
+            i = x.s,
+            j = y.s,
+            k = x.e,
+            l = y.e;
+
+        // Either NaN?
+        if (!i || !j) return null;
+
+        a = xc && !xc[0];
+        b = yc && !yc[0];
+
+        // Either zero?
+        if (a || b) return a ? b ? 0 : -j : i;
+
+        // Signs differ?
+        if (i != j) return i;
+
+        a = i < 0;
+        b = k == l;
+
+        // Either Infinity?
+        if (!xc || !yc) return b ? 0 : !xc ^ a ? 1 : -1;
+
+        // Compare exponents.
+        if (!b) return k > l ^ a ? 1 : -1;
+
+        j = (k = xc.length) < (l = yc.length) ? k : l;
+
+        // Compare digit by digit.
+        for (i = 0; i < j; i++) if (xc[i] != yc[i]) return xc[i] > yc[i] ^ a ? 1 : -1;
+
+        // Compare lengths.
+        return k == l ? 0 : k > l ^ a ? 1 : -1;
+    }
+
+    /*
+     * Return true if n is a valid number in range, otherwise false.
+     * Use for argument validation when ERRORS is false.
+     * Note: parseInt('1e+1') == 1 but parseFloat('1e+1') == 10.
+     */
+    function intValidatorNoErrors(n, min, max) {
+        return (n = truncate(n)) >= min && n <= max;
+    }
+
+    function isArray(obj) {
+        return Object.prototype.toString.call(obj) == '[object Array]';
+    }
+
+    /*
+     * Convert string of baseIn to an array of numbers of baseOut.
+     * Eg. convertBase('255', 10, 16) returns [15, 15].
+     * Eg. convertBase('ff', 16, 10) returns [2, 5, 5].
+     */
+    function toBaseOut(str, baseIn, baseOut) {
+        var j,
+            arr = [0],
+            arrL,
+            i = 0,
+            len = str.length;
+
+        for (; i < len;) {
+            for (arrL = arr.length; arrL--; arr[arrL] *= baseIn);
+            arr[j = 0] += ALPHABET.indexOf(str.charAt(i++));
+
+            for (; j < arr.length; j++) {
+
+                if (arr[j] > baseOut - 1) {
+                    if (arr[j + 1] == null) arr[j + 1] = 0;
+                    arr[j + 1] += arr[j] / baseOut | 0;
+                    arr[j] %= baseOut;
+                }
+            }
+        }
+
+        return arr.reverse();
+    }
+
+    function toExponential(str, e) {
+        return (str.length > 1 ? str.charAt(0) + '.' + str.slice(1) : str) + (e < 0 ? 'e' : 'e+') + e;
+    }
+
+    function toFixedPoint(str, e) {
+        var len, z;
+
+        // Negative exponent?
+        if (e < 0) {
+
+            // Prepend zeros.
+            for (z = '0.'; ++e; z += '0');
+            str = z + str;
+
+            // Positive exponent
+        } else {
+            len = str.length;
+
+            // Append zeros.
+            if (++e > len) {
+                for (z = '0', e -= len; --e; z += '0');
+                str += z;
+            } else if (e < len) {
+                str = str.slice(0, e) + '.' + str.slice(e);
+            }
+        }
+
+        return str;
+    }
+
+    function truncate(n) {
+        n = parseFloat(n);
+        return n < 0 ? mathceil(n) : mathfloor(n);
+    }
+
+    // EXPORT
+
+
+    BigNumber = another();
+
+    // AMD.
+    if (true) {
+        !(__WEBPACK_AMD_DEFINE_RESULT__ = (function () {
+            return BigNumber;
+        }).call(exports, __webpack_require__, exports, module),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+        // Node and other environments that support module.exports.
+    } else if (typeof module != 'undefined' && module.exports) {
+        module.exports = BigNumber;
+        if (!crypto) try {
+            crypto = require('crypto');
+        } catch (e) {}
+
+        // Browser.
+    } else {
+        global.BigNumber = BigNumber;
+    }
+})(this);
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+    This file is part of web3.js.
+
+    web3.js is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    web3.js is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/** @file config.js
+ * @authors:
+ *   Marek Kotewicz <marek@ethdev.com>
+ * @date 2015
+ */
+
+/**
+ * Utils
+ * 
+ * @module utils
+ */
+
+/**
+ * Utility functions
+ * 
+ * @class [utils] config
+ * @constructor
+ */
+
+/// required to define ETH_BIGNUMBER_ROUNDING_MODE
+var BigNumber = __webpack_require__(13);
+
+var ETH_UNITS = ['wei', 'kwei', 'Mwei', 'Gwei', 'szabo', 'finney', 'femtoether', 'picoether', 'nanoether', 'microether', 'milliether', 'nano', 'micro', 'milli', 'ether', 'grand', 'Mether', 'Gether', 'Tether', 'Pether', 'Eether', 'Zether', 'Yether', 'Nether', 'Dether', 'Vether', 'Uether'];
+
+module.exports = {
+    ETH_PADDING: 32,
+    ETH_SIGNATURE_LENGTH: 4,
+    ETH_UNITS: ETH_UNITS,
+    ETH_BIGNUMBER_ROUNDING_MODE: { ROUNDING_MODE: BigNumber.ROUND_DOWN },
+    ETH_POLLING_TIMEOUT: 1000 / 2,
+    defaultBlock: 'latest',
+    defaultAccount: undefined
+};
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+    This file is part of web3.js.
+
+    web3.js is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    web3.js is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/** 
+ * @file iban.js
+ * @author Marek Kotewicz <marek@ethdev.com>
+ * @date 2015
+ */
+
+var BigNumber = __webpack_require__(13);
+
+var padLeft = function (string, bytes) {
+    var result = string;
+    while (result.length < bytes * 2) {
+        result = '00' + result;
+    }
+    return result;
+};
+
+/**
+ * Prepare an IBAN for mod 97 computation by moving the first 4 chars to the end and transforming the letters to
+ * numbers (A = 10, B = 11, ..., Z = 35), as specified in ISO13616.
+ *
+ * @method iso13616Prepare
+ * @param {String} iban the IBAN
+ * @returns {String} the prepared IBAN
+ */
+var iso13616Prepare = function (iban) {
+    var A = 'A'.charCodeAt(0);
+    var Z = 'Z'.charCodeAt(0);
+
+    iban = iban.toUpperCase();
+    iban = iban.substr(4) + iban.substr(0, 4);
+
+    return iban.split('').map(function (n) {
+        var code = n.charCodeAt(0);
+        if (code >= A && code <= Z) {
+            // A = 10, B = 11, ... Z = 35
+            return code - A + 10;
+        } else {
+            return n;
+        }
+    }).join('');
+};
+
+/**
+ * Calculates the MOD 97 10 of the passed IBAN as specified in ISO7064.
+ *
+ * @method mod9710
+ * @param {String} iban
+ * @returns {Number}
+ */
+var mod9710 = function (iban) {
+    var remainder = iban,
+        block;
+
+    while (remainder.length > 2) {
+        block = remainder.slice(0, 9);
+        remainder = parseInt(block, 10) % 97 + remainder.slice(block.length);
+    }
+
+    return parseInt(remainder, 10) % 97;
+};
+
+/**
+ * This prototype should be used to create iban object from iban correct string
+ *
+ * @param {String} iban
+ */
+var Iban = function (iban) {
+    this._iban = iban;
+};
+
+/**
+ * This method should be used to create iban object from ethereum address
+ *
+ * @method fromAddress
+ * @param {String} address
+ * @return {Iban} the IBAN object
+ */
+Iban.fromAddress = function (address) {
+    var asBn = new BigNumber(address, 16);
+    var base36 = asBn.toString(36);
+    var padded = padLeft(base36, 15);
+    return Iban.fromBban(padded.toUpperCase());
+};
+
+/**
+ * Convert the passed BBAN to an IBAN for this country specification.
+ * Please note that <i>"generation of the IBAN shall be the exclusive responsibility of the bank/branch servicing the account"</i>.
+ * This method implements the preferred algorithm described in http://en.wikipedia.org/wiki/International_Bank_Account_Number#Generating_IBAN_check_digits
+ *
+ * @method fromBban
+ * @param {String} bban the BBAN to convert to IBAN
+ * @returns {Iban} the IBAN object
+ */
+Iban.fromBban = function (bban) {
+    var countryCode = 'XE';
+
+    var remainder = mod9710(iso13616Prepare(countryCode + '00' + bban));
+    var checkDigit = ('0' + (98 - remainder)).slice(-2);
+
+    return new Iban(countryCode + checkDigit + bban);
+};
+
+/**
+ * Should be used to create IBAN object for given institution and identifier
+ *
+ * @method createIndirect
+ * @param {Object} options, required options are "institution" and "identifier"
+ * @return {Iban} the IBAN object
+ */
+Iban.createIndirect = function (options) {
+    return Iban.fromBban('ETH' + options.institution + options.identifier);
+};
+
+/**
+ * Thos method should be used to check if given string is valid iban object
+ *
+ * @method isValid
+ * @param {String} iban string
+ * @return {Boolean} true if it is valid IBAN
+ */
+Iban.isValid = function (iban) {
+    var i = new Iban(iban);
+    return i.isValid();
+};
+
+/**
+ * Should be called to check if iban is correct
+ *
+ * @method isValid
+ * @returns {Boolean} true if it is, otherwise false
+ */
+Iban.prototype.isValid = function () {
+    return (/^XE[0-9]{2}(ETH[0-9A-Z]{13}|[0-9A-Z]{30,31})$/.test(this._iban) && mod9710(iso13616Prepare(this._iban)) === 1
+    );
+};
+
+/**
+ * Should be called to check if iban number is direct
+ *
+ * @method isDirect
+ * @returns {Boolean} true if it is, otherwise false
+ */
+Iban.prototype.isDirect = function () {
+    return this._iban.length === 34 || this._iban.length === 35;
+};
+
+/**
+ * Should be called to check if iban number if indirect
+ *
+ * @method isIndirect
+ * @returns {Boolean} true if it is, otherwise false
+ */
+Iban.prototype.isIndirect = function () {
+    return this._iban.length === 20;
+};
+
+/**
+ * Should be called to get iban checksum
+ * Uses the mod-97-10 checksumming protocol (ISO/IEC 7064:2003)
+ *
+ * @method checksum
+ * @returns {String} checksum
+ */
+Iban.prototype.checksum = function () {
+    return this._iban.substr(2, 2);
+};
+
+/**
+ * Should be called to get institution identifier
+ * eg. XREG
+ *
+ * @method institution
+ * @returns {String} institution identifier
+ */
+Iban.prototype.institution = function () {
+    return this.isIndirect() ? this._iban.substr(7, 4) : '';
+};
+
+/**
+ * Should be called to get client identifier within institution
+ * eg. GAVOFYORK
+ *
+ * @method client
+ * @returns {String} client identifier
+ */
+Iban.prototype.client = function () {
+    return this.isIndirect() ? this._iban.substr(11) : '';
+};
+
+/**
+ * Should be called to get client direct address
+ *
+ * @method address
+ * @returns {String} client direct address
+ */
+Iban.prototype.address = function () {
+    if (this.isDirect()) {
+        var base36 = this._iban.substr(4);
+        var asBn = new BigNumber(base36, 36);
+        return padLeft(asBn.toString(16), 20);
+    }
+
+    return '';
+};
+
+Iban.prototype.toString = function () {
+    return this._iban;
+};
+
+module.exports = Iban;
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+    This file is part of web3.js.
+
+    web3.js is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    web3.js is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/**
+ * @file property.js
+ * @author Fabian Vogelsteller <fabian@frozeman.de>
+ * @author Marek Kotewicz <marek@ethdev.com>
+ * @date 2015
+ */
+
+var utils = __webpack_require__(1);
+
+var Property = function (options) {
+    this.name = options.name;
+    this.getter = options.getter;
+    this.setter = options.setter;
+    this.outputFormatter = options.outputFormatter;
+    this.inputFormatter = options.inputFormatter;
+    this.requestManager = null;
+};
+
+Property.prototype.setRequestManager = function (rm) {
+    this.requestManager = rm;
+};
+
+/**
+ * Should be called to format input args of method
+ * 
+ * @method formatInput
+ * @param {Array}
+ * @return {Array}
+ */
+Property.prototype.formatInput = function (arg) {
+    return this.inputFormatter ? this.inputFormatter(arg) : arg;
+};
+
+/**
+ * Should be called to format output(result) of method
+ *
+ * @method formatOutput
+ * @param {Object}
+ * @return {Object}
+ */
+Property.prototype.formatOutput = function (result) {
+    return this.outputFormatter && result !== null ? this.outputFormatter(result) : result;
+};
+
+/**
+ * Should be used to extract callback from array of arguments. Modifies input param
+ *
+ * @method extractCallback
+ * @param {Array} arguments
+ * @return {Function|Null} callback, if exists
+ */
+Property.prototype.extractCallback = function (args) {
+    if (utils.isFunction(args[args.length - 1])) {
+        return args.pop(); // modify the args array!
+    }
+};
+
+/**
+ * Should attach function to method
+ * 
+ * @method attachToObject
+ * @param {Object}
+ * @param {Function}
+ */
+Property.prototype.attachToObject = function (obj) {
+    var proto = {
+        get: this.buildGet()
+    };
+
+    var names = this.name.split('.');
+    var name = names[0];
+    if (names.length > 1) {
+        obj[names[0]] = obj[names[0]] || {};
+        obj = obj[names[0]];
+        name = names[1];
+    }
+
+    Object.defineProperty(obj, name, proto);
+    obj[asyncGetterName(name)] = this.buildAsyncGet();
+};
+
+var asyncGetterName = function (name) {
+    return 'get' + name.charAt(0).toUpperCase() + name.slice(1);
+};
+
+Property.prototype.buildGet = function () {
+    var property = this;
+    return function get() {
+        return property.formatOutput(property.requestManager.send({
+            method: property.getter
+        }));
+    };
+};
+
+Property.prototype.buildAsyncGet = function () {
+    var property = this;
+    var get = function (callback) {
+        property.requestManager.sendAsync({
+            method: property.getter
+        }, function (err, result) {
+            callback(err, property.formatOutput(result));
+        });
+    };
+    get.request = this.request.bind(this);
+    return get;
+};
+
+/**
+ * Should be called to create pure JSONRPC request which can be used in batch request
+ *
+ * @method request
+ * @param {...} params
+ * @return {Object} jsonrpc request
+ */
+Property.prototype.request = function () {
+    var payload = {
+        method: this.getter,
+        params: [],
+        callback: this.extractCallback(Array.prototype.slice.call(arguments))
+    };
+    payload.format = this.formatOutput.bind(this);
+    return payload;
+};
+
+module.exports = Property;
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+    This file is part of web3.js.
+
+    web3.js is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    web3.js is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/** 
+ * @file sha3.js
+ * @author Marek Kotewicz <marek@ethdev.com>
+ * @date 2015
+ */
+
+var CryptoJS = __webpack_require__(59);
+var sha3 = __webpack_require__(30);
+
+module.exports = function (value, options) {
+    if (options && options.encoding === 'hex') {
+        if (value.length > 2 && value.substr(0, 2) === '0x') {
+            value = value.substr(2);
+        }
+        value = CryptoJS.enc.Hex.parse(value);
+    }
+
+    return sha3(value, {
+        outputLength: 256
+    }).toString();
+};
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+;(function (root, factory) {
+	if (true) {
+		// CommonJS
+		module.exports = exports = factory(__webpack_require__(0));
+	} else if (typeof define === "function" && define.amd) {
+		// AMD
+		define(["./core"], factory);
+	} else {
+		// Global (browser)
+		factory(root.CryptoJS);
+	}
+})(this, function (CryptoJS) {
+
+	(function (undefined) {
+		// Shortcuts
+		var C = CryptoJS;
+		var C_lib = C.lib;
+		var Base = C_lib.Base;
+		var X32WordArray = C_lib.WordArray;
+
+		/**
+   * x64 namespace.
+   */
+		var C_x64 = C.x64 = {};
+
+		/**
+   * A 64-bit word.
+   */
+		var X64Word = C_x64.Word = Base.extend({
+			/**
+    * Initializes a newly created 64-bit word.
+    *
+    * @param {number} high The high 32 bits.
+    * @param {number} low The low 32 bits.
+    *
+    * @example
+    *
+    *     var x64Word = CryptoJS.x64.Word.create(0x00010203, 0x04050607);
+    */
+			init: function (high, low) {
+				this.high = high;
+				this.low = low;
+			}
+
+			/**
+    * Bitwise NOTs this word.
+    *
+    * @return {X64Word} A new x64-Word object after negating.
+    *
+    * @example
+    *
+    *     var negated = x64Word.not();
+    */
+			// not: function () {
+			// var high = ~this.high;
+			// var low = ~this.low;
+
+			// return X64Word.create(high, low);
+			// },
+
+			/**
+    * Bitwise ANDs this word with the passed word.
+    *
+    * @param {X64Word} word The x64-Word to AND with this word.
+    *
+    * @return {X64Word} A new x64-Word object after ANDing.
+    *
+    * @example
+    *
+    *     var anded = x64Word.and(anotherX64Word);
+    */
+			// and: function (word) {
+			// var high = this.high & word.high;
+			// var low = this.low & word.low;
+
+			// return X64Word.create(high, low);
+			// },
+
+			/**
+    * Bitwise ORs this word with the passed word.
+    *
+    * @param {X64Word} word The x64-Word to OR with this word.
+    *
+    * @return {X64Word} A new x64-Word object after ORing.
+    *
+    * @example
+    *
+    *     var ored = x64Word.or(anotherX64Word);
+    */
+			// or: function (word) {
+			// var high = this.high | word.high;
+			// var low = this.low | word.low;
+
+			// return X64Word.create(high, low);
+			// },
+
+			/**
+    * Bitwise XORs this word with the passed word.
+    *
+    * @param {X64Word} word The x64-Word to XOR with this word.
+    *
+    * @return {X64Word} A new x64-Word object after XORing.
+    *
+    * @example
+    *
+    *     var xored = x64Word.xor(anotherX64Word);
+    */
+			// xor: function (word) {
+			// var high = this.high ^ word.high;
+			// var low = this.low ^ word.low;
+
+			// return X64Word.create(high, low);
+			// },
+
+			/**
+    * Shifts this word n bits to the left.
+    *
+    * @param {number} n The number of bits to shift.
+    *
+    * @return {X64Word} A new x64-Word object after shifting.
+    *
+    * @example
+    *
+    *     var shifted = x64Word.shiftL(25);
+    */
+			// shiftL: function (n) {
+			// if (n < 32) {
+			// var high = (this.high << n) | (this.low >>> (32 - n));
+			// var low = this.low << n;
+			// } else {
+			// var high = this.low << (n - 32);
+			// var low = 0;
+			// }
+
+			// return X64Word.create(high, low);
+			// },
+
+			/**
+    * Shifts this word n bits to the right.
+    *
+    * @param {number} n The number of bits to shift.
+    *
+    * @return {X64Word} A new x64-Word object after shifting.
+    *
+    * @example
+    *
+    *     var shifted = x64Word.shiftR(7);
+    */
+			// shiftR: function (n) {
+			// if (n < 32) {
+			// var low = (this.low >>> n) | (this.high << (32 - n));
+			// var high = this.high >>> n;
+			// } else {
+			// var low = this.high >>> (n - 32);
+			// var high = 0;
+			// }
+
+			// return X64Word.create(high, low);
+			// },
+
+			/**
+    * Rotates this word n bits to the left.
+    *
+    * @param {number} n The number of bits to rotate.
+    *
+    * @return {X64Word} A new x64-Word object after rotating.
+    *
+    * @example
+    *
+    *     var rotated = x64Word.rotL(25);
+    */
+			// rotL: function (n) {
+			// return this.shiftL(n).or(this.shiftR(64 - n));
+			// },
+
+			/**
+    * Rotates this word n bits to the right.
+    *
+    * @param {number} n The number of bits to rotate.
+    *
+    * @return {X64Word} A new x64-Word object after rotating.
+    *
+    * @example
+    *
+    *     var rotated = x64Word.rotR(7);
+    */
+			// rotR: function (n) {
+			// return this.shiftR(n).or(this.shiftL(64 - n));
+			// },
+
+			/**
+    * Adds this word with the passed word.
+    *
+    * @param {X64Word} word The x64-Word to add with this word.
+    *
+    * @return {X64Word} A new x64-Word object after adding.
+    *
+    * @example
+    *
+    *     var added = x64Word.add(anotherX64Word);
+    */
+			// add: function (word) {
+			// var low = (this.low + word.low) | 0;
+			// var carry = (low >>> 0) < (this.low >>> 0) ? 1 : 0;
+			// var high = (this.high + word.high + carry) | 0;
+
+			// return X64Word.create(high, low);
+			// }
+		});
+
+		/**
+   * An array of 64-bit words.
+   *
+   * @property {Array} words The array of CryptoJS.x64.Word objects.
+   * @property {number} sigBytes The number of significant bytes in this word array.
+   */
+		var X64WordArray = C_x64.WordArray = Base.extend({
+			/**
+    * Initializes a newly created word array.
+    *
+    * @param {Array} words (Optional) An array of CryptoJS.x64.Word objects.
+    * @param {number} sigBytes (Optional) The number of significant bytes in the words.
+    *
+    * @example
+    *
+    *     var wordArray = CryptoJS.x64.WordArray.create();
+    *
+    *     var wordArray = CryptoJS.x64.WordArray.create([
+    *         CryptoJS.x64.Word.create(0x00010203, 0x04050607),
+    *         CryptoJS.x64.Word.create(0x18191a1b, 0x1c1d1e1f)
+    *     ]);
+    *
+    *     var wordArray = CryptoJS.x64.WordArray.create([
+    *         CryptoJS.x64.Word.create(0x00010203, 0x04050607),
+    *         CryptoJS.x64.Word.create(0x18191a1b, 0x1c1d1e1f)
+    *     ], 10);
+    */
+			init: function (words, sigBytes) {
+				words = this.words = words || [];
+
+				if (sigBytes != undefined) {
+					this.sigBytes = sigBytes;
+				} else {
+					this.sigBytes = words.length * 8;
+				}
+			},
+
+			/**
+    * Converts this 64-bit word array to a 32-bit word array.
+    *
+    * @return {CryptoJS.lib.WordArray} This word array's data as a 32-bit word array.
+    *
+    * @example
+    *
+    *     var x32WordArray = x64WordArray.toX32();
+    */
+			toX32: function () {
+				// Shortcuts
+				var x64Words = this.words;
+				var x64WordsLength = x64Words.length;
+
+				// Convert
+				var x32Words = [];
+				for (var i = 0; i < x64WordsLength; i++) {
+					var x64Word = x64Words[i];
+					x32Words.push(x64Word.high);
+					x32Words.push(x64Word.low);
+				}
+
+				return X32WordArray.create(x32Words, this.sigBytes);
+			},
+
+			/**
+    * Creates a copy of this word array.
+    *
+    * @return {X64WordArray} The clone.
+    *
+    * @example
+    *
+    *     var clone = x64WordArray.clone();
+    */
+			clone: function () {
+				var clone = Base.clone.call(this);
+
+				// Clone "words" array
+				var words = clone.words = this.words.slice(0);
+
+				// Clone each X64Word object
+				var wordsLength = words.length;
+				for (var i = 0; i < wordsLength; i++) {
+					words[i] = words[i].clone();
+				}
+
+				return clone;
+			}
+		});
+	})();
+
+	return CryptoJS;
+});
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+    This file is part of web3.js.
+
+    web3.js is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    web3.js is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/** @file filter.js
+ * @authors:
+ *   Jeffrey Wilcke <jeff@ethdev.com>
+ *   Marek Kotewicz <marek@ethdev.com>
+ *   Marian Oancea <marian@ethdev.com>
+ *   Fabian Vogelsteller <fabian@ethdev.com>
+ *   Gav Wood <g@ethdev.com>
+ * @date 2014
+ */
+
+var formatters = __webpack_require__(5);
+var utils = __webpack_require__(1);
+
+/**
+* Converts a given topic to a hex string, but also allows null values.
+*
+* @param {Mixed} value
+* @return {String}
+*/
+var toTopic = function (value) {
+
+    if (value === null || typeof value === 'undefined') return null;
+
+    value = String(value);
+
+    if (value.indexOf('0x') === 0) return value;else return utils.fromUtf8(value);
+};
+
+/// This method should be called on options object, to verify deprecated properties && lazy load dynamic ones
+/// @param should be string or object
+/// @returns options string or object
+var getOptions = function (options) {
+
+    if (utils.isString(options)) {
+        return options;
+    }
+
+    options = options || {};
+
+    // make sure topics, get converted to hex
+    options.topics = options.topics || [];
+    options.topics = options.topics.map(function (topic) {
+        return utils.isArray(topic) ? topic.map(toTopic) : toTopic(topic);
+    });
+
+    // lazy load
+    return {
+        topics: options.topics,
+        to: options.to,
+        address: options.address,
+        fromBlock: formatters.inputBlockNumberFormatter(options.fromBlock),
+        toBlock: formatters.inputBlockNumberFormatter(options.toBlock)
+    };
+};
+
+/**
+Adds the callback and sets up the methods, to iterate over the results.
+
+@method getLogsAtStart
+@param {Object} self
+@param {funciton} 
+*/
+var getLogsAtStart = function (self, callback) {
+    // call getFilterLogs for the first watch callback start
+    if (!utils.isString(self.options)) {
+        self.get(function (err, messages) {
+            // don't send all the responses to all the watches again... just to self one
+            if (err) {
+                callback(err);
+            }
+
+            if (utils.isArray(messages)) {
+                messages.forEach(function (message) {
+                    callback(null, message);
+                });
+            }
+        });
+    }
+};
+
+/**
+Adds the callback and sets up the methods, to iterate over the results.
+
+@method pollFilter
+@param {Object} self
+*/
+var pollFilter = function (self) {
+
+    var onMessage = function (error, messages) {
+        if (error) {
+            return self.callbacks.forEach(function (callback) {
+                callback(error);
+            });
+        }
+
+        if (utils.isArray(messages)) {
+            messages.forEach(function (message) {
+                message = self.formatter ? self.formatter(message) : message;
+                self.callbacks.forEach(function (callback) {
+                    callback(null, message);
+                });
+            });
+        }
+    };
+
+    self.requestManager.startPolling({
+        method: self.implementation.poll.call,
+        params: [self.filterId]
+    }, self.filterId, onMessage, self.stopWatching.bind(self));
+};
+
+var Filter = function (web3, options, methods, formatter, callback) {
+    var self = this;
+    var implementation = {};
+    methods.forEach(function (method) {
+        method.setRequestManager(web3._requestManager);
+        method.attachToObject(implementation);
+    });
+    this.requestManager = web3._requestManager;
+    this.options = getOptions(options);
+    this.implementation = implementation;
+    this.filterId = null;
+    this.callbacks = [];
+    this.getLogsCallbacks = [];
+    this.pollFilters = [];
+    this.formatter = formatter;
+    this.implementation.newFilter(this.options, function (error, id) {
+        if (error) {
+            self.callbacks.forEach(function (cb) {
+                cb(error);
+            });
+        } else {
+            self.filterId = id;
+
+            // check if there are get pending callbacks as a consequence
+            // of calling get() with filterId unassigned.
+            self.getLogsCallbacks.forEach(function (cb) {
+                self.get(cb);
+            });
+            self.getLogsCallbacks = [];
+
+            // get filter logs for the already existing watch calls
+            self.callbacks.forEach(function (cb) {
+                getLogsAtStart(self, cb);
+            });
+            if (self.callbacks.length > 0) pollFilter(self);
+
+            // start to watch immediately
+            if (callback) {
+                return self.watch(callback);
+            }
+        }
+    });
+
+    return this;
+};
+
+Filter.prototype.watch = function (callback) {
+    this.callbacks.push(callback);
+
+    if (this.filterId) {
+        getLogsAtStart(this, callback);
+        pollFilter(this);
+    }
+
+    return this;
+};
+
+Filter.prototype.stopWatching = function () {
+    this.requestManager.stopPolling(this.filterId);
+    // remove filter async
+    this.implementation.uninstallFilter(this.filterId, function () {});
+    this.callbacks = [];
+};
+
+Filter.prototype.get = function (callback) {
+    var self = this;
+    if (utils.isFunction(callback)) {
+        if (this.filterId === null) {
+            // If filterId is not set yet, call it back
+            // when newFilter() assigns it.
+            this.getLogsCallbacks.push(callback);
+        } else {
+            this.implementation.getLogs(this.filterId, function (err, res) {
+                if (err) {
+                    callback(err);
+                } else {
+                    callback(null, res.map(function (log) {
+                        return self.formatter ? self.formatter(log) : log;
+                    }));
+                }
+            });
+        }
+    } else {
+        if (this.filterId === null) {
+            throw new Error('Filter ID Error: filter().get() can\'t be chained synchronous, please provide a callback for the get() method.');
+        }
+        var logs = this.implementation.getLogs(this.filterId);
+        return logs.map(function (log) {
+            return self.formatter ? self.formatter(log) : log;
+        });
+    }
+
+    return this;
+};
+
+module.exports = Filter;
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+    This file is part of web3.js.
+
+    web3.js is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    web3.js is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/** @file watches.js
+ * @authors:
+ *   Marek Kotewicz <marek@ethdev.com>
+ * @date 2015
+ */
+
+var Method = __webpack_require__(10);
+
+/// @returns an array of objects describing web3.eth.filter api methods
+var eth = function () {
+    var newFilterCall = function (args) {
+        var type = args[0];
+
+        switch (type) {
+            case 'latest':
+                args.shift();
+                this.params = 0;
+                return 'eth_newBlockFilter';
+            case 'pending':
+                args.shift();
+                this.params = 0;
+                return 'eth_newPendingTransactionFilter';
+            default:
+                return 'eth_newFilter';
+        }
+    };
+
+    var newFilter = new Method({
+        name: 'newFilter',
+        call: newFilterCall,
+        params: 1
+    });
+
+    var uninstallFilter = new Method({
+        name: 'uninstallFilter',
+        call: 'eth_uninstallFilter',
+        params: 1
+    });
+
+    var getLogs = new Method({
+        name: 'getLogs',
+        call: 'eth_getFilterLogs',
+        params: 1
+    });
+
+    var poll = new Method({
+        name: 'poll',
+        call: 'eth_getFilterChanges',
+        params: 1
+    });
+
+    return [newFilter, uninstallFilter, getLogs, poll];
+};
+
+/// @returns an array of objects describing web3.shh.watch api methods
+var shh = function () {
+    var newFilter = new Method({
+        name: 'newFilter',
+        call: 'shh_newFilter',
+        params: 1
+    });
+
+    var uninstallFilter = new Method({
+        name: 'uninstallFilter',
+        call: 'shh_uninstallFilter',
+        params: 1
+    });
+
+    var getLogs = new Method({
+        name: 'getLogs',
+        call: 'shh_getMessages',
+        params: 1
+    });
+
+    var poll = new Method({
+        name: 'poll',
+        call: 'shh_getFilterChanges',
+        params: 1
+    });
+
+    return [newFilter, uninstallFilter, getLogs, poll];
+};
+
+module.exports = {
+    eth: eth,
+    shh: shh
+};
+
+/***/ }),
+/* 21 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(process, global, setImmediate) {/*!
+/* WEBPACK VAR INJECTION */(function(global, setImmediate) {/*!
  * Vue.js v2.5.13
  * (c) 2014-2017 Evan You
  * Released under the MIT License.
@@ -18386,12 +17843,12 @@ var config = {
   /**
    * Show production mode tip message on boot?
    */
-  productionTip: process.env.NODE_ENV !== 'production',
+  productionTip: "production" !== 'production',
 
   /**
    * Whether to enable devtools
    */
-  devtools: process.env.NODE_ENV !== 'production',
+  devtools: "production" !== 'production',
 
   /**
    * Whether to record perf
@@ -18594,7 +18051,7 @@ var tip = noop;
 var generateComponentTrace = noop; // work around flow check
 var formatComponentName = noop;
 
-if (process.env.NODE_ENV !== 'production') {
+if (false) {
   var hasConsole = typeof console !== 'undefined';
   var classifyRE = /(?:^|[-_])(\w)/g;
   var classify = function (str) {
@@ -18988,7 +18445,7 @@ function defineReactive(obj, key, val, customSetter, shallow) {
         return;
       }
       /* eslint-enable no-self-compare */
-      if (process.env.NODE_ENV !== 'production' && customSetter) {
+      if (false) {
         customSetter();
       }
       if (setter) {
@@ -19019,7 +18476,7 @@ function set(target, key, val) {
   }
   var ob = target.__ob__;
   if (target._isVue || ob && ob.vmCount) {
-    process.env.NODE_ENV !== 'production' && warn('Avoid adding reactive properties to a Vue instance or its root $data ' + 'at runtime - declare it upfront in the data option.');
+    "production" !== 'production' && warn('Avoid adding reactive properties to a Vue instance or its root $data ' + 'at runtime - declare it upfront in the data option.');
     return val;
   }
   if (!ob) {
@@ -19041,7 +18498,7 @@ function del(target, key) {
   }
   var ob = target.__ob__;
   if (target._isVue || ob && ob.vmCount) {
-    process.env.NODE_ENV !== 'production' && warn('Avoid deleting properties on a Vue instance or its root $data ' + '- just set it to null.');
+    "production" !== 'production' && warn('Avoid deleting properties on a Vue instance or its root $data ' + '- just set it to null.');
     return;
   }
   if (!hasOwn(target, key)) {
@@ -19080,7 +18537,7 @@ var strats = config.optionMergeStrategies;
 /**
  * Options with restrictions
  */
-if (process.env.NODE_ENV !== 'production') {
+if (false) {
   strats.el = strats.propsData = function (parent, child, vm, key) {
     if (!vm) {
       warn("option \"" + key + "\" can only be used during instance " + 'creation with the `new` keyword.');
@@ -19148,7 +18605,7 @@ function mergeDataOrFn(parentVal, childVal, vm) {
 strats.data = function (parentVal, childVal, vm) {
   if (!vm) {
     if (childVal && typeof childVal !== 'function') {
-      process.env.NODE_ENV !== 'production' && warn('The "data" option should be a function ' + 'that returns a per-instance value in component ' + 'definitions.', vm);
+      "production" !== 'production' && warn('The "data" option should be a function ' + 'that returns a per-instance value in component ' + 'definitions.', vm);
 
       return parentVal;
     }
@@ -19179,7 +18636,7 @@ LIFECYCLE_HOOKS.forEach(function (hook) {
 function mergeAssets(parentVal, childVal, vm, key) {
   var res = Object.create(parentVal || null);
   if (childVal) {
-    process.env.NODE_ENV !== 'production' && assertObjectType(key, childVal, vm);
+    "production" !== 'production' && assertObjectType(key, childVal, vm);
     return extend(res, childVal);
   } else {
     return res;
@@ -19208,7 +18665,7 @@ strats.watch = function (parentVal, childVal, vm, key) {
   if (!childVal) {
     return Object.create(parentVal || null);
   }
-  if (process.env.NODE_ENV !== 'production') {
+  if (false) {
     assertObjectType(key, childVal, vm);
   }
   if (!parentVal) {
@@ -19231,7 +18688,7 @@ strats.watch = function (parentVal, childVal, vm, key) {
  * Other object hashes.
  */
 strats.props = strats.methods = strats.inject = strats.computed = function (parentVal, childVal, vm, key) {
-  if (childVal && process.env.NODE_ENV !== 'production') {
+  if (childVal && "production" !== 'production') {
     assertObjectType(key, childVal, vm);
   }
   if (!parentVal) {
@@ -19289,7 +18746,7 @@ function normalizeProps(options, vm) {
       if (typeof val === 'string') {
         name = camelize(val);
         res[name] = { type: null };
-      } else if (process.env.NODE_ENV !== 'production') {
+      } else if (false) {
         warn('props must be strings when using array syntax.');
       }
     }
@@ -19299,7 +18756,7 @@ function normalizeProps(options, vm) {
       name = camelize(key);
       res[name] = isPlainObject(val) ? val : { type: val };
     }
-  } else if (process.env.NODE_ENV !== 'production') {
+  } else if (false) {
     warn("Invalid value for option \"props\": expected an Array or an Object, " + "but got " + toRawType(props) + ".", vm);
   }
   options.props = res;
@@ -19323,7 +18780,7 @@ function normalizeInject(options, vm) {
       var val = inject[key];
       normalized[key] = isPlainObject(val) ? extend({ from: key }, val) : { from: val };
     }
-  } else if (process.env.NODE_ENV !== 'production') {
+  } else if (false) {
     warn("Invalid value for option \"inject\": expected an Array or an Object, " + "but got " + toRawType(inject) + ".", vm);
   }
 }
@@ -19354,7 +18811,7 @@ function assertObjectType(name, value, vm) {
  * Core utility used in both instantiation and inheritance.
  */
 function mergeOptions(parent, child, vm) {
-  if (process.env.NODE_ENV !== 'production') {
+  if (false) {
     checkComponents(child);
   }
 
@@ -19416,7 +18873,7 @@ function resolveAsset(options, type, id, warnMissing) {
   }
   // fallback to prototype chain
   var res = assets[id] || assets[camelizedId] || assets[PascalCaseId];
-  if (process.env.NODE_ENV !== 'production' && warnMissing && !res) {
+  if (false) {
     warn('Failed to resolve ' + type.slice(0, -1) + ': ' + id, options);
   }
   return res;
@@ -19446,9 +18903,7 @@ function validateProp(key, propOptions, propsData, vm) {
     observe(value);
     observerState.shouldConvert = prevShouldConvert;
   }
-  if (process.env.NODE_ENV !== 'production' &&
-  // skip validation for weex recycle-list child component props
-  !(false && isObject(value) && '@binding' in value)) {
+  if (false) {
     assertProp(prop, key, value, vm, absent);
   }
   return value;
@@ -19464,7 +18919,7 @@ function getPropDefaultValue(vm, prop, key) {
   }
   var def = prop.default;
   // warn against non-factory defaults for Object & Array
-  if (process.env.NODE_ENV !== 'production' && isObject(def)) {
+  if (false) {
     warn('Invalid default value for prop "' + key + '": ' + 'Props with type Object/Array must use a factory function ' + 'to return the default value.', vm);
   }
   // the raw prop value was also undefined from previous render,
@@ -19597,7 +19052,7 @@ function globalHandleError(err, vm, info) {
 }
 
 function logError(err, vm, info) {
-  if (process.env.NODE_ENV !== 'production') {
+  if (false) {
     warn("Error in " + info + ": \"" + err.toString() + "\"", vm);
   }
   /* istanbul ignore else */
@@ -19727,7 +19182,7 @@ function nextTick(cb, ctx) {
 var mark;
 var measure;
 
-if (process.env.NODE_ENV !== 'production') {
+if (false) {
   var perf = inBrowser && window.performance;
   /* istanbul ignore if */
   if (perf && perf.mark && perf.measure && perf.clearMarks && perf.clearMeasures) {
@@ -19747,7 +19202,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 var initProxy;
 
-if (process.env.NODE_ENV !== 'production') {
+if (false) {
   var allowedGlobals = makeMap('Infinity,undefined,NaN,isFinite,isNaN,' + 'parseFloat,parseInt,decodeURI,decodeURIComponent,encodeURI,encodeURIComponent,' + 'Math,Number,Date,Array,Object,Boolean,String,RegExp,Map,Set,JSON,Intl,' + 'require' // for Webpack/Browserify
   );
 
@@ -19889,7 +19344,7 @@ function updateListeners(on, oldOn, add, remove$$1, vm) {
     event = normalizeEvent(name);
     /* istanbul ignore if */
     if (isUndef(cur)) {
-      process.env.NODE_ENV !== 'production' && warn("Invalid handler for event \"" + event.name + "\": got " + String(cur), vm);
+      "production" !== 'production' && warn("Invalid handler for event \"" + event.name + "\": got " + String(cur), vm);
     } else if (isUndef(old)) {
       if (isUndef(cur.fns)) {
         cur = on[name] = createFnInvoker(cur);
@@ -19959,7 +19414,7 @@ function extractPropsFromVNodeData(data, Ctor, tag) {
   if (isDef(attrs) || isDef(props)) {
     for (var key in propOptions) {
       var altKey = hyphenate(key);
-      if (process.env.NODE_ENV !== 'production') {
+      if (false) {
         var keyInLowerCase = key.toLowerCase();
         if (key !== keyInLowerCase && attrs && hasOwn(attrs, keyInLowerCase)) {
           tip("Prop \"" + keyInLowerCase + "\" is passed to component " + formatComponentName(tag || Ctor) + ", but the declared prop name is" + " \"" + key + "\". " + "Note that HTML attributes are case-insensitive and camelCased " + "props need to use their kebab-case equivalents when using in-DOM " + "templates. You should probably use \"" + altKey + "\" instead of \"" + key + "\".");
@@ -20125,7 +19580,7 @@ function resolveAsyncComponent(factory, baseCtor, context) {
     });
 
     var reject = once(function (reason) {
-      process.env.NODE_ENV !== 'production' && warn("Failed to resolve async component: " + String(factory) + (reason ? "\nReason: " + reason : ''));
+      "production" !== 'production' && warn("Failed to resolve async component: " + String(factory) + (reason ? "\nReason: " + reason : ''));
       if (isDef(factory.errorComp)) {
         factory.error = true;
         forceRender();
@@ -20164,7 +19619,7 @@ function resolveAsyncComponent(factory, baseCtor, context) {
         if (isDef(res.timeout)) {
           setTimeout(function () {
             if (isUndef(factory.resolved)) {
-              reject(process.env.NODE_ENV !== 'production' ? "timeout (" + res.timeout + "ms)" : null);
+              reject( false ? "timeout (" + res.timeout + "ms)" : null);
             }
           }, res.timeout);
         }
@@ -20304,7 +19759,7 @@ function eventsMixin(Vue) {
 
   Vue.prototype.$emit = function (event) {
     var vm = this;
-    if (process.env.NODE_ENV !== 'production') {
+    if (false) {
       var lowerCaseEvent = event.toLowerCase();
       if (lowerCaseEvent !== event && vm._events[lowerCaseEvent]) {
         tip("Event \"" + lowerCaseEvent + "\" is emitted in component " + formatComponentName(vm) + " but the handler is registered for \"" + event + "\". " + "Note that HTML attributes are case-insensitive and you cannot use " + "v-on to listen to camelCase events when using in-DOM templates. " + "You should probably use \"" + hyphenate(event) + "\" instead of \"" + event + "\".");
@@ -20509,7 +19964,7 @@ function mountComponent(vm, el, hydrating) {
   vm.$el = el;
   if (!vm.$options.render) {
     vm.$options.render = createEmptyVNode;
-    if (process.env.NODE_ENV !== 'production') {
+    if (false) {
       /* istanbul ignore if */
       if (vm.$options.template && vm.$options.template.charAt(0) !== '#' || vm.$options.el || el) {
         warn('You are using the runtime-only build of Vue where the template ' + 'compiler is not available. Either pre-compile the templates into ' + 'render functions, or use the compiler-included build.', vm);
@@ -20522,7 +19977,7 @@ function mountComponent(vm, el, hydrating) {
 
   var updateComponent;
   /* istanbul ignore if */
-  if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
+  if (false) {
     updateComponent = function () {
       var name = vm._name;
       var id = vm._uid;
@@ -20561,7 +20016,7 @@ function mountComponent(vm, el, hydrating) {
 }
 
 function updateChildComponent(vm, propsData, listeners, parentVnode, renderChildren) {
-  if (process.env.NODE_ENV !== 'production') {
+  if (false) {
     isUpdatingChildComponent = true;
   }
 
@@ -20614,7 +20069,7 @@ function updateChildComponent(vm, propsData, listeners, parentVnode, renderChild
     vm.$forceUpdate();
   }
 
-  if (process.env.NODE_ENV !== 'production') {
+  if (false) {
     isUpdatingChildComponent = false;
   }
 }
@@ -20696,7 +20151,7 @@ var index = 0;
 function resetSchedulerState() {
   index = queue.length = activatedChildren.length = 0;
   has = {};
-  if (process.env.NODE_ENV !== 'production') {
+  if (false) {
     circular = {};
   }
   waiting = flushing = false;
@@ -20729,7 +20184,7 @@ function flushSchedulerQueue() {
     has[id] = null;
     watcher.run();
     // in dev build, check and stop circular updates.
-    if (process.env.NODE_ENV !== 'production' && has[id] != null) {
+    if (false) {
       circular[id] = (circular[id] || 0) + 1;
       if (circular[id] > MAX_UPDATE_COUNT) {
         warn('You may have an infinite update loop ' + (watcher.user ? "in watcher with expression \"" + watcher.expression + "\"" : "in a component render function."), watcher.vm);
@@ -20844,7 +20299,7 @@ var Watcher = function Watcher(vm, expOrFn, cb, options, isRenderWatcher) {
   this.newDeps = [];
   this.depIds = new _Set();
   this.newDepIds = new _Set();
-  this.expression = process.env.NODE_ENV !== 'production' ? expOrFn.toString() : '';
+  this.expression =  false ? expOrFn.toString() : '';
   // parse expression for getter
   if (typeof expOrFn === 'function') {
     this.getter = expOrFn;
@@ -20852,7 +20307,7 @@ var Watcher = function Watcher(vm, expOrFn, cb, options, isRenderWatcher) {
     this.getter = parsePath(expOrFn);
     if (!this.getter) {
       this.getter = function () {};
-      process.env.NODE_ENV !== 'production' && warn("Failed watching path: \"" + expOrFn + "\" " + 'Watcher only accepts simple dot-delimited paths. ' + 'For full control, use a function instead.', vm);
+      "production" !== 'production' && warn("Failed watching path: \"" + expOrFn + "\" " + 'Watcher only accepts simple dot-delimited paths. ' + 'For full control, use a function instead.', vm);
     }
   }
   this.value = this.lazy ? undefined : this.get();
@@ -21061,7 +20516,7 @@ function initProps(vm, propsOptions) {
     keys.push(key);
     var value = validateProp(key, propsOptions, propsData, vm);
     /* istanbul ignore else */
-    if (process.env.NODE_ENV !== 'production') {
+    if (false) {
       var hyphenatedKey = hyphenate(key);
       if (isReservedAttribute(hyphenatedKey) || config.isReservedAttr(hyphenatedKey)) {
         warn("\"" + hyphenatedKey + "\" is a reserved attribute and cannot be used as component prop.", vm);
@@ -21091,7 +20546,7 @@ function initData(vm) {
   data = vm._data = typeof data === 'function' ? getData(data, vm) : data || {};
   if (!isPlainObject(data)) {
     data = {};
-    process.env.NODE_ENV !== 'production' && warn('data functions should return an object:\n' + 'https://vuejs.org/v2/guide/components.html#data-Must-Be-a-Function', vm);
+    "production" !== 'production' && warn('data functions should return an object:\n' + 'https://vuejs.org/v2/guide/components.html#data-Must-Be-a-Function', vm);
   }
   // proxy data on instance
   var keys = Object.keys(data);
@@ -21100,13 +20555,13 @@ function initData(vm) {
   var i = keys.length;
   while (i--) {
     var key = keys[i];
-    if (process.env.NODE_ENV !== 'production') {
+    if (false) {
       if (methods && hasOwn(methods, key)) {
         warn("Method \"" + key + "\" has already been defined as a data property.", vm);
       }
     }
     if (props && hasOwn(props, key)) {
-      process.env.NODE_ENV !== 'production' && warn("The data property \"" + key + "\" is already declared as a prop. " + "Use prop default value instead.", vm);
+      "production" !== 'production' && warn("The data property \"" + key + "\" is already declared as a prop. " + "Use prop default value instead.", vm);
     } else if (!isReserved(key)) {
       proxy(vm, "_data", key);
     }
@@ -21135,7 +20590,7 @@ function initComputed(vm, computed) {
   for (var key in computed) {
     var userDef = computed[key];
     var getter = typeof userDef === 'function' ? userDef : userDef.get;
-    if (process.env.NODE_ENV !== 'production' && getter == null) {
+    if (false) {
       warn("Getter is missing for computed property \"" + key + "\".", vm);
     }
 
@@ -21149,7 +20604,7 @@ function initComputed(vm, computed) {
     // at instantiation here.
     if (!(key in vm)) {
       defineComputed(vm, key, userDef);
-    } else if (process.env.NODE_ENV !== 'production') {
+    } else if (false) {
       if (key in vm.$data) {
         warn("The computed property \"" + key + "\" is already defined in data.", vm);
       } else if (vm.$options.props && key in vm.$options.props) {
@@ -21168,7 +20623,7 @@ function defineComputed(target, key, userDef) {
     sharedPropertyDefinition.get = userDef.get ? shouldCache && userDef.cache !== false ? createComputedGetter(key) : userDef.get : noop;
     sharedPropertyDefinition.set = userDef.set ? userDef.set : noop;
   }
-  if (process.env.NODE_ENV !== 'production' && sharedPropertyDefinition.set === noop) {
+  if (false) {
     sharedPropertyDefinition.set = function () {
       warn("Computed property \"" + key + "\" was assigned to but it has no setter.", this);
     };
@@ -21194,7 +20649,7 @@ function createComputedGetter(key) {
 function initMethods(vm, methods) {
   var props = vm.$options.props;
   for (var key in methods) {
-    if (process.env.NODE_ENV !== 'production') {
+    if (false) {
       if (methods[key] == null) {
         warn("Method \"" + key + "\" has an undefined value in the component definition. " + "Did you reference the function correctly?", vm);
       }
@@ -21245,7 +20700,7 @@ function stateMixin(Vue) {
   propsDef.get = function () {
     return this._props;
   };
-  if (process.env.NODE_ENV !== 'production') {
+  if (false) {
     dataDef.set = function (newData) {
       warn('Avoid replacing instance root $data. ' + 'Use nested data properties instead.', this);
     };
@@ -21291,7 +20746,7 @@ function initInjections(vm) {
     observerState.shouldConvert = false;
     Object.keys(result).forEach(function (key) {
       /* istanbul ignore else */
-      if (process.env.NODE_ENV !== 'production') {
+      if (false) {
         defineReactive(vm, key, result[key], function () {
           warn("Avoid mutating an injected value directly since the changes will be " + "overwritten whenever the provided component re-renders. " + "injection being mutated: \"" + key + "\"", vm);
         });
@@ -21327,7 +20782,7 @@ function resolveInject(inject, vm) {
         if ('default' in inject[key]) {
           var provideDefault = inject[key].default;
           result[key] = typeof provideDefault === 'function' ? provideDefault.call(vm) : provideDefault;
-        } else if (process.env.NODE_ENV !== 'production') {
+        } else if (false) {
           warn("Injection \"" + key + "\" not found", vm);
         }
       }
@@ -21379,7 +20834,7 @@ function renderSlot(name, fallback, props, bindObject) {
     // scoped slot
     props = props || {};
     if (bindObject) {
-      if (process.env.NODE_ENV !== 'production' && !isObject(bindObject)) {
+      if (false) {
         warn('slot v-bind without argument expects an Object', this);
       }
       props = extend(extend({}, bindObject), props);
@@ -21389,7 +20844,7 @@ function renderSlot(name, fallback, props, bindObject) {
     var slotNodes = this.$slots[name];
     // warn duplicate slot usage
     if (slotNodes) {
-      if (process.env.NODE_ENV !== 'production' && slotNodes._rendered) {
+      if (false) {
         warn("Duplicate presence of slot \"" + name + "\" found in the same render tree " + "- this will likely cause render errors.", this);
       }
       slotNodes._rendered = true;
@@ -21442,7 +20897,7 @@ function checkKeyCodes(eventKeyCode, key, builtInAlias, eventKeyName) {
 function bindObjectProps(data, tag, value, asProp, isSync) {
   if (value) {
     if (!isObject(value)) {
-      process.env.NODE_ENV !== 'production' && warn('v-bind without argument expects an Object or Array value', this);
+      "production" !== 'production' && warn('v-bind without argument expects an Object or Array value', this);
     } else {
       if (Array.isArray(value)) {
         value = toObject(value);
@@ -21525,7 +20980,7 @@ function markStaticNode(node, key, isOnce) {
 function bindObjectListeners(data, value) {
   if (value) {
     if (!isPlainObject(value)) {
-      process.env.NODE_ENV !== 'production' && warn('v-on without argument expects an Object value', this);
+      "production" !== 'production' && warn('v-on without argument expects an Object value', this);
     } else {
       var on = data.on = data.on ? extend({}, data.on) : {};
       for (var key in value) {
@@ -21734,7 +21189,7 @@ function createComponent(Ctor, data, context, children, tag) {
   // if at this stage it's not a constructor or an async component factory,
   // reject.
   if (typeof Ctor !== 'function') {
-    if (process.env.NODE_ENV !== 'production') {
+    if (false) {
       warn("Invalid Component definition: " + String(Ctor), context);
     }
     return;
@@ -21877,7 +21332,7 @@ function createElement(context, tag, data, children, normalizationType, alwaysNo
 
 function _createElement(context, tag, data, children, normalizationType) {
   if (isDef(data) && isDef(data.__ob__)) {
-    process.env.NODE_ENV !== 'production' && warn("Avoid using observed data object as vnode data: " + JSON.stringify(data) + "\n" + 'Always create fresh vnode data objects in each render!', context);
+    "production" !== 'production' && warn("Avoid using observed data object as vnode data: " + JSON.stringify(data) + "\n" + 'Always create fresh vnode data objects in each render!', context);
     return createEmptyVNode();
   }
   // object syntax in v-bind
@@ -21889,7 +21344,7 @@ function _createElement(context, tag, data, children, normalizationType) {
     return createEmptyVNode();
   }
   // warn against non-primitive key
-  if (process.env.NODE_ENV !== 'production' && isDef(data) && isDef(data.key) && !isPrimitive(data.key)) {
+  if (false) {
     {
       warn('Avoid using non-primitive value as key, ' + 'use string/number value instead.', context);
     }
@@ -21980,7 +21435,7 @@ function initRender(vm) {
   var parentData = parentVnode && parentVnode.data;
 
   /* istanbul ignore else */
-  if (process.env.NODE_ENV !== 'production') {
+  if (false) {
     defineReactive(vm, '$attrs', parentData && parentData.attrs || emptyObject, function () {
       !isUpdatingChildComponent && warn("$attrs is readonly.", vm);
     }, true);
@@ -22034,7 +21489,7 @@ function renderMixin(Vue) {
       // return error render result,
       // or previous vnode to prevent render error causing blank component
       /* istanbul ignore else */
-      if (process.env.NODE_ENV !== 'production') {
+      if (false) {
         if (vm.$options.renderError) {
           try {
             vnode = vm.$options.renderError.call(vm._renderProxy, vm.$createElement, e);
@@ -22051,7 +21506,7 @@ function renderMixin(Vue) {
     }
     // return empty vnode in case the render function errored out
     if (!(vnode instanceof VNode)) {
-      if (process.env.NODE_ENV !== 'production' && Array.isArray(vnode)) {
+      if (false) {
         warn('Multiple root nodes returned from render function. Render function ' + 'should return a single root node.', vm);
       }
       vnode = createEmptyVNode();
@@ -22074,7 +21529,7 @@ function initMixin(Vue) {
 
     var startTag, endTag;
     /* istanbul ignore if */
-    if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
+    if (false) {
       startTag = "vue-perf-start:" + vm._uid;
       endTag = "vue-perf-end:" + vm._uid;
       mark(startTag);
@@ -22092,7 +21547,7 @@ function initMixin(Vue) {
       vm.$options = mergeOptions(resolveConstructorOptions(vm.constructor), options || {}, vm);
     }
     /* istanbul ignore else */
-    if (process.env.NODE_ENV !== 'production') {
+    if (false) {
       initProxy(vm);
     } else {
       vm._renderProxy = vm;
@@ -22109,7 +21564,7 @@ function initMixin(Vue) {
     callHook(vm, 'created');
 
     /* istanbul ignore if */
-    if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
+    if (false) {
       vm._name = formatComponentName(vm, false);
       mark(endTag);
       measure("vue " + vm._name + " init", startTag, endTag);
@@ -22202,7 +21657,7 @@ function dedupe(latest, extended, sealed) {
 }
 
 function Vue$3(options) {
-  if (process.env.NODE_ENV !== 'production' && !(this instanceof Vue$3)) {
+  if (false) {
     warn('Vue is a constructor and should be called with the `new` keyword');
   }
   this._init(options);
@@ -22269,7 +21724,7 @@ function initExtend(Vue) {
     }
 
     var name = extendOptions.name || Super.options.name;
-    if (process.env.NODE_ENV !== 'production' && name) {
+    if (false) {
       validateComponentName(name);
     }
 
@@ -22346,7 +21801,7 @@ function initAssetRegisters(Vue) {
         return this.options[type + 's'][id];
       } else {
         /* istanbul ignore if */
-        if (process.env.NODE_ENV !== 'production' && type === 'component') {
+        if (false) {
           validateComponentName(id);
         }
         if (type === 'component' && isPlainObject(definition)) {
@@ -22500,7 +21955,7 @@ function initGlobalAPI(Vue) {
   configDef.get = function () {
     return config;
   };
-  if (process.env.NODE_ENV !== 'production') {
+  if (false) {
     configDef.set = function () {
       warn('Do not replace the Vue.config object, set individual fields instead.');
     };
@@ -22729,7 +22184,7 @@ function query(el) {
   if (typeof el === 'string') {
     var selected = document.querySelector(el);
     if (!selected) {
-      process.env.NODE_ENV !== 'production' && warn('Cannot find element: ' + el);
+      "production" !== 'production' && warn('Cannot find element: ' + el);
       return document.createElement('div');
     }
     return selected;
@@ -22954,7 +22409,7 @@ function createPatchFunction(backend) {
     var children = vnode.children;
     var tag = vnode.tag;
     if (isDef(tag)) {
-      if (process.env.NODE_ENV !== 'production') {
+      if (false) {
         if (data && data.pre) {
           creatingElmInVPre++;
         }
@@ -22974,7 +22429,7 @@ function createPatchFunction(backend) {
         insert(parentElm, vnode.elm, refElm);
       }
 
-      if (process.env.NODE_ENV !== 'production' && data && data.pre) {
+      if (false) {
         creatingElmInVPre--;
       }
     } else if (isTrue(vnode.isComment)) {
@@ -23061,7 +22516,7 @@ function createPatchFunction(backend) {
 
   function createChildren(vnode, children, insertedVnodeQueue) {
     if (Array.isArray(children)) {
-      if (process.env.NODE_ENV !== 'production') {
+      if (false) {
         checkDuplicateKeys(children);
       }
       for (var i = 0; i < children.length; ++i) {
@@ -23200,7 +22655,7 @@ function createPatchFunction(backend) {
     // during leaving transitions
     var canMove = !removeOnly;
 
-    if (process.env.NODE_ENV !== 'production') {
+    if (false) {
       checkDuplicateKeys(newCh);
     }
 
@@ -23382,7 +22837,7 @@ function createPatchFunction(backend) {
       return true;
     }
     // assert node match
-    if (process.env.NODE_ENV !== 'production') {
+    if (false) {
       if (!assertNodeMatch(elm, vnode, inVPre)) {
         return false;
       }
@@ -23407,7 +22862,7 @@ function createPatchFunction(backend) {
           if (isDef(i = data) && isDef(i = i.domProps) && isDef(i = i.innerHTML)) {
             if (i !== elm.innerHTML) {
               /* istanbul ignore if */
-              if (process.env.NODE_ENV !== 'production' && typeof console !== 'undefined' && !hydrationBailed) {
+              if (false) {
                 hydrationBailed = true;
                 console.warn('Parent: ', elm);
                 console.warn('server innerHTML: ', i);
@@ -23430,7 +22885,7 @@ function createPatchFunction(backend) {
             // longer than the virtual children list.
             if (!childrenMatch || childNode) {
               /* istanbul ignore if */
-              if (process.env.NODE_ENV !== 'production' && typeof console !== 'undefined' && !hydrationBailed) {
+              if (false) {
                 hydrationBailed = true;
                 console.warn('Parent: ', elm);
                 console.warn('Mismatching childNodes vs. VNodes: ', elm.childNodes, children);
@@ -23501,7 +22956,7 @@ function createPatchFunction(backend) {
             if (hydrate(oldVnode, vnode, insertedVnodeQueue)) {
               invokeInsertHook(vnode, insertedVnodeQueue, true);
               return oldVnode;
-            } else if (process.env.NODE_ENV !== 'production') {
+            } else if (false) {
               warn('The client-side rendered virtual DOM tree is not matching ' + 'server-rendered content. This is likely caused by incorrect ' + 'HTML markup, for example nesting block-level elements inside ' + '<p>, or missing <tbody>. Bailing hydration and performing ' + 'full client-side render.');
             }
           }
@@ -23953,7 +23408,7 @@ function addHandler(el, name, value, modifiers, important, warn) {
   modifiers = modifiers || emptyObject;
   // warn prevent and passive modifier
   /* istanbul ignore if */
-  if (process.env.NODE_ENV !== 'production' && warn && modifiers.prevent && modifiers.passive) {
+  if (false) {
     warn('passive and prevent can\'t be used together. ' + 'Passive handler can\'t prevent default event.');
   }
 
@@ -24201,7 +23656,7 @@ function model(el, dir, _warn) {
   var tag = el.tag;
   var type = el.attrsMap.type;
 
-  if (process.env.NODE_ENV !== 'production') {
+  if (false) {
     // inputs with type="file" are read only and setting the input's
     // value will throw an error.
     if (tag === 'input' && type === 'file') {
@@ -24225,7 +23680,7 @@ function model(el, dir, _warn) {
     genComponentModel(el, value, modifiers);
     // component v-model doesn't need extra runtime
     return false;
-  } else if (process.env.NODE_ENV !== 'production') {
+  } else if (false) {
     warn$1("<" + el.tag + " v-model=\"" + value + "\">: " + "v-model is not supported on this element type. " + 'If you are working with contenteditable, it\'s recommended to ' + 'wrap a library dedicated for that purpose inside a custom component.');
   }
 
@@ -24264,7 +23719,7 @@ function genDefaultModel(el, value, modifiers) {
   var type = el.attrsMap.type;
 
   // warn if v-bind:value conflicts with v-model
-  if (process.env.NODE_ENV !== 'production') {
+  if (false) {
     var value$1 = el.attrsMap['v-bind:value'] || el.attrsMap[':value'];
     if (value$1) {
       var binding = el.attrsMap['v-bind:value'] ? 'v-bind:value' : ':value';
@@ -24906,7 +24361,7 @@ function enter(vnode, toggleDisplay) {
 
   var explicitEnterDuration = toNumber(isObject(duration) ? duration.enter : duration);
 
-  if (process.env.NODE_ENV !== 'production' && explicitEnterDuration != null) {
+  if (false) {
     checkDuration(explicitEnterDuration, 'enter', vnode);
   }
 
@@ -25005,7 +24460,7 @@ function leave(vnode, rm) {
 
   var explicitLeaveDuration = toNumber(isObject(duration) ? duration.leave : duration);
 
-  if (process.env.NODE_ENV !== 'production' && isDef(explicitLeaveDuration)) {
+  if (false) {
     checkDuration(explicitLeaveDuration, 'leave', vnode);
   }
 
@@ -25215,7 +24670,7 @@ function actuallySetSelected(el, binding, vm) {
   var value = binding.value;
   var isMultiple = el.multiple;
   if (isMultiple && !Array.isArray(value)) {
-    process.env.NODE_ENV !== 'production' && warn("<select multiple v-model=\"" + binding.expression + "\"> " + "expects an Array value for its binding, but got " + Object.prototype.toString.call(value).slice(8, -1), vm);
+    "production" !== 'production' && warn("<select multiple v-model=\"" + binding.expression + "\"> " + "expects an Array value for its binding, but got " + Object.prototype.toString.call(value).slice(8, -1), vm);
     return;
   }
   var selected, option;
@@ -25424,14 +24879,14 @@ var Transition = {
     }
 
     // warn multiple elements
-    if (process.env.NODE_ENV !== 'production' && children.length > 1) {
+    if (false) {
       warn('<transition> can only be used on a single element. Use ' + '<transition-group> for lists.', this.$parent);
     }
 
     var mode = this.mode;
 
     // warn invalid mode
-    if (process.env.NODE_ENV !== 'production' && mode && mode !== 'in-out' && mode !== 'out-in') {
+    if (false) {
       warn('invalid <transition> mode: ' + mode, this.$parent);
     }
 
@@ -25545,7 +25000,7 @@ var TransitionGroup = {
         if (c.key != null && String(c.key).indexOf('__vlist') !== 0) {
           children.push(c);
           map[c.key] = c;(c.data || (c.data = {})).transition = transitionData;
-        } else if (process.env.NODE_ENV !== 'production') {
+        } else if (false) {
           var opts = c.componentOptions;
           var name = opts ? opts.Ctor.options.name || opts.tag || '' : c.tag;
           warn("<transition-group> children must be keyed: <" + name + ">");
@@ -25708,11 +25163,11 @@ Vue$3.nextTick(function () {
   if (config.devtools) {
     if (devtools) {
       devtools.emit('init', Vue$3);
-    } else if (process.env.NODE_ENV !== 'production' && isChrome) {
+    } else if (false) {
       console[console.info ? 'info' : 'log']('Download the Vue Devtools extension for a better development experience:\n' + 'https://github.com/vuejs/vue-devtools');
     }
   }
-  if (process.env.NODE_ENV !== 'production' && config.productionTip !== false && inBrowser && typeof console !== 'undefined') {
+  if (false) {
     console[console.info ? 'info' : 'log']("You are running Vue in development mode.\n" + "Make sure to turn on production mode when deploying for production.\n" + "See more tips at https://vuejs.org/guide/deployment.html");
   }
 }, 0);
@@ -25765,7 +25220,7 @@ function parseText(text, delimiters) {
 function transformNode(el, options) {
   var warn = options.warn || baseWarn;
   var staticClass = getAndRemoveAttr(el, 'class');
-  if (process.env.NODE_ENV !== 'production' && staticClass) {
+  if (false) {
     var res = parseText(staticClass, options.delimiters);
     if (res) {
       warn("class=\"" + staticClass + "\": " + 'Interpolation inside attributes has been removed. ' + 'Use v-bind or the colon shorthand instead. For example, ' + 'instead of <div class="{{ val }}">, use <div :class="val">.');
@@ -25804,7 +25259,7 @@ function transformNode$1(el, options) {
   var staticStyle = getAndRemoveAttr(el, 'style');
   if (staticStyle) {
     /* istanbul ignore if */
-    if (process.env.NODE_ENV !== 'production') {
+    if (false) {
       var res = parseText(staticStyle, options.delimiters);
       if (res) {
         warn("style=\"" + staticStyle + "\": " + 'Interpolation inside attributes has been removed. ' + 'Use v-bind or the colon shorthand instead. For example, ' + 'instead of <div style="{{ val }}">, use <div :style="val">.');
@@ -26030,7 +25485,7 @@ function parseHTML(html, options) {
 
     if (html === last) {
       options.chars && options.chars(html);
-      if (process.env.NODE_ENV !== 'production' && !stack.length && options.warn) {
+      if (false) {
         options.warn("Mal-formatted tag at end of template: \"" + html + "\"");
       }
       break;
@@ -26145,7 +25600,7 @@ function parseHTML(html, options) {
     if (pos >= 0) {
       // Close all the open elements, up the stack
       for (var i = stack.length - 1; i >= pos; i--) {
-        if (process.env.NODE_ENV !== 'production' && (i > pos || !tagName) && options.warn) {
+        if (false) {
           options.warn("tag <" + stack[i].tag + "> has no matching end tag.");
         }
         if (options.end) {
@@ -26277,7 +25732,7 @@ function parse(template, options) {
 
       if (isForbiddenTag(element) && !isServerRendering()) {
         element.forbidden = true;
-        process.env.NODE_ENV !== 'production' && warn$2('Templates should only be responsible for mapping the state to the ' + 'UI. Avoid placing tags with side-effects in your templates, such as ' + "<" + tag + ">" + ', as they will not be parsed.');
+        "production" !== 'production' && warn$2('Templates should only be responsible for mapping the state to the ' + 'UI. Avoid placing tags with side-effects in your templates, such as ' + "<" + tag + ">" + ', as they will not be parsed.');
       }
 
       // apply pre-transforms
@@ -26306,7 +25761,7 @@ function parse(template, options) {
       }
 
       function checkRootConstraints(el) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (false) {
           if (el.tag === 'slot' || el.tag === 'template') {
             warnOnce("Cannot use <" + el.tag + "> as component root element because it may " + 'contain multiple nodes.');
           }
@@ -26328,7 +25783,7 @@ function parse(template, options) {
             exp: element.elseif,
             block: element
           });
-        } else if (process.env.NODE_ENV !== 'production') {
+        } else if (false) {
           warnOnce("Component template should contain exactly one root element. " + "If you are using v-if on multiple elements, " + "use v-else-if to chain them instead.");
         }
       }
@@ -26367,7 +25822,7 @@ function parse(template, options) {
 
     chars: function chars(text) {
       if (!currentParent) {
-        if (process.env.NODE_ENV !== 'production') {
+        if (false) {
           if (text === template) {
             warnOnce('Component template requires a root element, rather than just text.');
           } else if (text = text.trim()) {
@@ -26454,7 +25909,7 @@ function processElement(element, options) {
 function processKey(el) {
   var exp = getBindingAttr(el, 'key');
   if (exp) {
-    if (process.env.NODE_ENV !== 'production' && el.tag === 'template') {
+    if (false) {
       warn$2("<template> cannot be keyed. Place the key on real elements instead.");
     }
     el.key = exp;
@@ -26475,7 +25930,7 @@ function processFor(el) {
     var res = parseFor(exp);
     if (res) {
       extend(el, res);
-    } else if (process.env.NODE_ENV !== 'production') {
+    } else if (false) {
       warn$2("Invalid v-for expression: " + exp);
     }
   }
@@ -26528,7 +25983,7 @@ function processIfConditions(el, parent) {
       exp: el.elseif,
       block: el
     });
-  } else if (process.env.NODE_ENV !== 'production') {
+  } else if (false) {
     warn$2("v-" + (el.elseif ? 'else-if="' + el.elseif + '"' : 'else') + " " + "used on element <" + el.tag + "> without corresponding v-if.");
   }
 }
@@ -26539,7 +25994,7 @@ function findPrevElement(children) {
     if (children[i].type === 1) {
       return children[i];
     } else {
-      if (process.env.NODE_ENV !== 'production' && children[i].text !== ' ') {
+      if (false) {
         warn$2("text \"" + children[i].text.trim() + "\" between v-if and v-else(-if) " + "will be ignored.");
       }
       children.pop();
@@ -26564,7 +26019,7 @@ function processOnce(el) {
 function processSlot(el) {
   if (el.tag === 'slot') {
     el.slotName = getBindingAttr(el, 'name');
-    if (process.env.NODE_ENV !== 'production' && el.key) {
+    if (false) {
       warn$2("`key` does not work on <slot> because slots are abstract outlets " + "and can possibly expand into multiple elements. " + "Use the key on a wrapping element instead.");
     }
   } else {
@@ -26572,13 +26027,13 @@ function processSlot(el) {
     if (el.tag === 'template') {
       slotScope = getAndRemoveAttr(el, 'scope');
       /* istanbul ignore if */
-      if (process.env.NODE_ENV !== 'production' && slotScope) {
+      if (false) {
         warn$2("the \"scope\" attribute for scoped slots have been deprecated and " + "replaced by \"slot-scope\" since 2.5. The new \"slot-scope\" attribute " + "can also be used on plain elements in addition to <template> to " + "denote scoped slots.", true);
       }
       el.slotScope = slotScope || getAndRemoveAttr(el, 'slot-scope');
     } else if (slotScope = getAndRemoveAttr(el, 'slot-scope')) {
       /* istanbul ignore if */
-      if (process.env.NODE_ENV !== 'production' && el.attrsMap['v-for']) {
+      if (false) {
         warn$2("Ambiguous combined usage of slot-scope and v-for on <" + el.tag + "> " + "(v-for takes higher priority). Use a wrapper <template> for the " + "scoped slot to make it clearer.", true);
       }
       el.slotScope = slotScope;
@@ -26658,13 +26113,13 @@ function processAttrs(el) {
           name = name.slice(0, -(arg.length + 1));
         }
         addDirective(el, name, rawName, value, arg, modifiers);
-        if (process.env.NODE_ENV !== 'production' && name === 'model') {
+        if (false) {
           checkForAliasModel(el, value);
         }
       }
     } else {
       // literal attribute
-      if (process.env.NODE_ENV !== 'production') {
+      if (false) {
         var res = parseText(value, delimiters);
         if (res) {
           warn$2(name + "=\"" + value + "\": " + 'Interpolation inside attributes has been removed. ' + 'Use v-bind or the colon shorthand instead. For example, ' + 'instead of <div id="{{ val }}">, use <div :id="val">.');
@@ -26705,7 +26160,7 @@ function parseModifiers(name) {
 function makeAttrsMap(attrs) {
   var map = {};
   for (var i = 0, l = attrs.length; i < l; i++) {
-    if (process.env.NODE_ENV !== 'production' && map[attrs[i].name] && !isIE && !isEdge) {
+    if (false) {
       warn$2('duplicate attribute: ' + attrs[i].name);
     }
     map[attrs[i].name] = attrs[i].value;
@@ -27093,7 +26548,7 @@ function genFilterCode(key) {
 /*  */
 
 function on(el, dir) {
-  if (process.env.NODE_ENV !== 'production' && dir.modifiers) {
+  if (false) {
     warn("v-on without argument does not support modifiers.");
   }
   el.wrapListeners = function (code) {
@@ -27197,7 +26652,7 @@ function genOnce(el, state) {
       parent = parent.parent;
     }
     if (!key) {
-      process.env.NODE_ENV !== 'production' && state.warn("v-once can only be used inside v-for that is keyed. ");
+      "production" !== 'production' && state.warn("v-once can only be used inside v-for that is keyed. ");
       return genElement(el, state);
     }
     return "_o(" + genElement(el, state) + "," + state.onceId++ + "," + key + ")";
@@ -27235,7 +26690,7 @@ function genFor(el, state, altGen, altHelper) {
   var iterator1 = el.iterator1 ? "," + el.iterator1 : '';
   var iterator2 = el.iterator2 ? "," + el.iterator2 : '';
 
-  if (process.env.NODE_ENV !== 'production' && state.maybeComponent(el) && el.tag !== 'slot' && el.tag !== 'template' && !el.key) {
+  if (false) {
     state.warn("<" + el.tag + " v-for=\"" + alias + " in " + exp + "\">: component lists rendered with " + "v-for should have explicit keys. " + "See https://vuejs.org/guide/list.html#key for more info.", true /* tip */
     );
   }
@@ -27353,7 +26808,7 @@ function genDirectives(el, state) {
 
 function genInlineTemplate(el, state) {
   var ast = el.children[0];
-  if (process.env.NODE_ENV !== 'production' && (el.children.length !== 1 || ast.type !== 1)) {
+  if (false) {
     state.warn('Inline-template components must have exactly one child element.');
   }
   if (ast.type === 1) {
@@ -27601,7 +27056,7 @@ function createCompileToFunctionFn(compile) {
     delete options.warn;
 
     /* istanbul ignore if */
-    if (process.env.NODE_ENV !== 'production') {
+    if (false) {
       // detect possible CSP restriction
       try {
         new Function('return 1');
@@ -27622,7 +27077,7 @@ function createCompileToFunctionFn(compile) {
     var compiled = compile(template, options);
 
     // check compilation errors/tips
-    if (process.env.NODE_ENV !== 'production') {
+    if (false) {
       if (compiled.errors && compiled.errors.length) {
         warn$$1("Error compiling template:\n\n" + template + "\n\n" + compiled.errors.map(function (e) {
           return "- " + e;
@@ -27647,7 +27102,7 @@ function createCompileToFunctionFn(compile) {
     // this should only happen if there is a bug in the compiler itself.
     // mostly for codegen development use
     /* istanbul ignore if */
-    if (process.env.NODE_ENV !== 'production') {
+    if (false) {
       if ((!compiled.errors || !compiled.errors.length) && fnGenErrors.length) {
         warn$$1("Failed to generate render function:\n\n" + fnGenErrors.map(function (ref) {
           var err = ref.err;
@@ -27692,7 +27147,7 @@ function createCompilerCreator(baseCompile) {
       }
 
       var compiled = baseCompile(template, finalOptions);
-      if (process.env.NODE_ENV !== 'production') {
+      if (false) {
         errors.push.apply(errors, detectErrors(compiled.ast));
       }
       compiled.errors = errors;
@@ -27758,7 +27213,7 @@ Vue$3.prototype.$mount = function (el, hydrating) {
 
   /* istanbul ignore if */
   if (el === document.body || el === document.documentElement) {
-    process.env.NODE_ENV !== 'production' && warn("Do not mount Vue to <html> or <body> - mount to normal elements instead.");
+    "production" !== 'production' && warn("Do not mount Vue to <html> or <body> - mount to normal elements instead.");
     return this;
   }
 
@@ -27771,14 +27226,14 @@ Vue$3.prototype.$mount = function (el, hydrating) {
         if (template.charAt(0) === '#') {
           template = idToTemplate(template);
           /* istanbul ignore if */
-          if (process.env.NODE_ENV !== 'production' && !template) {
+          if (false) {
             warn("Template element not found or is empty: " + options.template, this);
           }
         }
       } else if (template.nodeType) {
         template = template.innerHTML;
       } else {
-        if (process.env.NODE_ENV !== 'production') {
+        if (false) {
           warn('invalid template option:' + template, this);
         }
         return this;
@@ -27788,7 +27243,7 @@ Vue$3.prototype.$mount = function (el, hydrating) {
     }
     if (template) {
       /* istanbul ignore if */
-      if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
+      if (false) {
         mark('compile');
       }
 
@@ -27804,7 +27259,7 @@ Vue$3.prototype.$mount = function (el, hydrating) {
       options.staticRenderFns = staticRenderFns;
 
       /* istanbul ignore if */
-      if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
+      if (false) {
         mark('compile end');
         measure("vue " + this._name + " compile", 'compile', 'compile end');
       }
@@ -27830,200 +27285,553 @@ function getOuterHTML(el) {
 Vue$3.compile = compileToFunctions;
 
 /* harmony default export */ __webpack_exports__["a"] = (Vue$3);
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(25), __webpack_require__(11), __webpack_require__(35).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(12), __webpack_require__(35).setImmediate))
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+    This file is part of web3.js.
+
+    web3.js is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    web3.js is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/** 
+ * @file coder.js
+ * @author Marek Kotewicz <marek@ethdev.com>
+ * @date 2015
+ */
+
+var f = __webpack_require__(3);
+
+var SolidityTypeAddress = __webpack_require__(50);
+var SolidityTypeBool = __webpack_require__(51);
+var SolidityTypeInt = __webpack_require__(52);
+var SolidityTypeUInt = __webpack_require__(53);
+var SolidityTypeDynamicBytes = __webpack_require__(54);
+var SolidityTypeString = __webpack_require__(55);
+var SolidityTypeReal = __webpack_require__(56);
+var SolidityTypeUReal = __webpack_require__(57);
+var SolidityTypeBytes = __webpack_require__(58);
+
+/**
+ * SolidityCoder prototype should be used to encode/decode solidity params of any type
+ */
+var SolidityCoder = function (types) {
+    this._types = types;
+};
+
+/**
+ * This method should be used to transform type to SolidityType
+ *
+ * @method _requireType
+ * @param {String} type
+ * @returns {SolidityType} 
+ * @throws {Error} throws if no matching type is found
+ */
+SolidityCoder.prototype._requireType = function (type) {
+    var solidityType = this._types.filter(function (t) {
+        return t.isType(type);
+    })[0];
+
+    if (!solidityType) {
+        throw Error('invalid solidity type!: ' + type);
+    }
+
+    return solidityType;
+};
+
+/**
+ * Should be used to encode plain param
+ *
+ * @method encodeParam
+ * @param {String} type
+ * @param {Object} plain param
+ * @return {String} encoded plain param
+ */
+SolidityCoder.prototype.encodeParam = function (type, param) {
+    return this.encodeParams([type], [param]);
+};
+
+/**
+ * Should be used to encode list of params
+ *
+ * @method encodeParams
+ * @param {Array} types
+ * @param {Array} params
+ * @return {String} encoded list of params
+ */
+SolidityCoder.prototype.encodeParams = function (types, params) {
+    var solidityTypes = this.getSolidityTypes(types);
+
+    var encodeds = solidityTypes.map(function (solidityType, index) {
+        return solidityType.encode(params[index], types[index]);
+    });
+
+    var dynamicOffset = solidityTypes.reduce(function (acc, solidityType, index) {
+        var staticPartLength = solidityType.staticPartLength(types[index]);
+        var roundedStaticPartLength = Math.floor((staticPartLength + 31) / 32) * 32;
+        return acc + roundedStaticPartLength;
+    }, 0);
+
+    var result = this.encodeMultiWithOffset(types, solidityTypes, encodeds, dynamicOffset);
+
+    return result;
+};
+
+SolidityCoder.prototype.encodeMultiWithOffset = function (types, solidityTypes, encodeds, dynamicOffset) {
+    var result = "";
+    var self = this;
+
+    var isDynamic = function (i) {
+        return solidityTypes[i].isDynamicArray(types[i]) || solidityTypes[i].isDynamicType(types[i]);
+    };
+
+    types.forEach(function (type, i) {
+        if (isDynamic(i)) {
+            result += f.formatInputInt(dynamicOffset).encode();
+            var e = self.encodeWithOffset(types[i], solidityTypes[i], encodeds[i], dynamicOffset);
+            dynamicOffset += e.length / 2;
+        } else {
+            // don't add length to dynamicOffset. it's already counted
+            result += self.encodeWithOffset(types[i], solidityTypes[i], encodeds[i], dynamicOffset);
+        }
+
+        // TODO: figure out nested arrays
+    });
+
+    types.forEach(function (type, i) {
+        if (isDynamic(i)) {
+            var e = self.encodeWithOffset(types[i], solidityTypes[i], encodeds[i], dynamicOffset);
+            dynamicOffset += e.length / 2;
+            result += e;
+        }
+    });
+    return result;
+};
+
+// TODO: refactor whole encoding!
+SolidityCoder.prototype.encodeWithOffset = function (type, solidityType, encoded, offset) {
+    var self = this;
+    if (solidityType.isDynamicArray(type)) {
+        return function () {
+            // offset was already set
+            var nestedName = solidityType.nestedName(type);
+            var nestedStaticPartLength = solidityType.staticPartLength(nestedName);
+            var result = encoded[0];
+
+            (function () {
+                var previousLength = 2; // in int
+                if (solidityType.isDynamicArray(nestedName)) {
+                    for (var i = 1; i < encoded.length; i++) {
+                        previousLength += +encoded[i - 1][0] || 0;
+                        result += f.formatInputInt(offset + i * nestedStaticPartLength + previousLength * 32).encode();
+                    }
+                }
+            })();
+
+            // first element is length, skip it
+            (function () {
+                for (var i = 0; i < encoded.length - 1; i++) {
+                    var additionalOffset = result / 2;
+                    result += self.encodeWithOffset(nestedName, solidityType, encoded[i + 1], offset + additionalOffset);
+                }
+            })();
+
+            return result;
+        }();
+    } else if (solidityType.isStaticArray(type)) {
+        return function () {
+            var nestedName = solidityType.nestedName(type);
+            var nestedStaticPartLength = solidityType.staticPartLength(nestedName);
+            var result = "";
+
+            if (solidityType.isDynamicArray(nestedName)) {
+                (function () {
+                    var previousLength = 0; // in int
+                    for (var i = 0; i < encoded.length; i++) {
+                        // calculate length of previous item
+                        previousLength += +(encoded[i - 1] || [])[0] || 0;
+                        result += f.formatInputInt(offset + i * nestedStaticPartLength + previousLength * 32).encode();
+                    }
+                })();
+            }
+
+            (function () {
+                for (var i = 0; i < encoded.length; i++) {
+                    var additionalOffset = result / 2;
+                    result += self.encodeWithOffset(nestedName, solidityType, encoded[i], offset + additionalOffset);
+                }
+            })();
+
+            return result;
+        }();
+    }
+
+    return encoded;
+};
+
+/**
+ * Should be used to decode bytes to plain param
+ *
+ * @method decodeParam
+ * @param {String} type
+ * @param {String} bytes
+ * @return {Object} plain param
+ */
+SolidityCoder.prototype.decodeParam = function (type, bytes) {
+    return this.decodeParams([type], bytes)[0];
+};
+
+/**
+ * Should be used to decode list of params
+ *
+ * @method decodeParam
+ * @param {Array} types
+ * @param {String} bytes
+ * @return {Array} array of plain params
+ */
+SolidityCoder.prototype.decodeParams = function (types, bytes) {
+    var solidityTypes = this.getSolidityTypes(types);
+    var offsets = this.getOffsets(types, solidityTypes);
+
+    return solidityTypes.map(function (solidityType, index) {
+        return solidityType.decode(bytes, offsets[index], types[index], index);
+    });
+};
+
+SolidityCoder.prototype.getOffsets = function (types, solidityTypes) {
+    var lengths = solidityTypes.map(function (solidityType, index) {
+        return solidityType.staticPartLength(types[index]);
+    });
+
+    for (var i = 1; i < lengths.length; i++) {
+        // sum with length of previous element
+        lengths[i] += lengths[i - 1];
+    }
+
+    return lengths.map(function (length, index) {
+        // remove the current length, so the length is sum of previous elements
+        var staticPartLength = solidityTypes[index].staticPartLength(types[index]);
+        return length - staticPartLength;
+    });
+};
+
+SolidityCoder.prototype.getSolidityTypes = function (types) {
+    var self = this;
+    return types.map(function (type) {
+        return self._requireType(type);
+    });
+};
+
+var coder = new SolidityCoder([new SolidityTypeAddress(), new SolidityTypeBool(), new SolidityTypeInt(), new SolidityTypeUInt(), new SolidityTypeDynamicBytes(), new SolidityTypeBytes(), new SolidityTypeString(), new SolidityTypeReal(), new SolidityTypeUReal()]);
+
+module.exports = coder;
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+;(function (root, factory) {
+	if (true) {
+		// CommonJS
+		module.exports = exports = factory(__webpack_require__(0));
+	} else if (typeof define === "function" && define.amd) {
+		// AMD
+		define(["./core"], factory);
+	} else {
+		// Global (browser)
+		factory(root.CryptoJS);
+	}
+})(this, function (CryptoJS) {
+
+	(function () {
+		// Shortcuts
+		var C = CryptoJS;
+		var C_lib = C.lib;
+		var WordArray = C_lib.WordArray;
+		var Hasher = C_lib.Hasher;
+		var C_algo = C.algo;
+
+		// Reusable object
+		var W = [];
+
+		/**
+   * SHA-1 hash algorithm.
+   */
+		var SHA1 = C_algo.SHA1 = Hasher.extend({
+			_doReset: function () {
+				this._hash = new WordArray.init([0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0]);
+			},
+
+			_doProcessBlock: function (M, offset) {
+				// Shortcut
+				var H = this._hash.words;
+
+				// Working variables
+				var a = H[0];
+				var b = H[1];
+				var c = H[2];
+				var d = H[3];
+				var e = H[4];
+
+				// Computation
+				for (var i = 0; i < 80; i++) {
+					if (i < 16) {
+						W[i] = M[offset + i] | 0;
+					} else {
+						var n = W[i - 3] ^ W[i - 8] ^ W[i - 14] ^ W[i - 16];
+						W[i] = n << 1 | n >>> 31;
+					}
+
+					var t = (a << 5 | a >>> 27) + e + W[i];
+					if (i < 20) {
+						t += (b & c | ~b & d) + 0x5a827999;
+					} else if (i < 40) {
+						t += (b ^ c ^ d) + 0x6ed9eba1;
+					} else if (i < 60) {
+						t += (b & c | b & d | c & d) - 0x70e44324;
+					} else /* if (i < 80) */{
+							t += (b ^ c ^ d) - 0x359d3e2a;
+						}
+
+					e = d;
+					d = c;
+					c = b << 30 | b >>> 2;
+					b = a;
+					a = t;
+				}
+
+				// Intermediate hash value
+				H[0] = H[0] + a | 0;
+				H[1] = H[1] + b | 0;
+				H[2] = H[2] + c | 0;
+				H[3] = H[3] + d | 0;
+				H[4] = H[4] + e | 0;
+			},
+
+			_doFinalize: function () {
+				// Shortcuts
+				var data = this._data;
+				var dataWords = data.words;
+
+				var nBitsTotal = this._nDataBytes * 8;
+				var nBitsLeft = data.sigBytes * 8;
+
+				// Add padding
+				dataWords[nBitsLeft >>> 5] |= 0x80 << 24 - nBitsLeft % 32;
+				dataWords[(nBitsLeft + 64 >>> 9 << 4) + 14] = Math.floor(nBitsTotal / 0x100000000);
+				dataWords[(nBitsLeft + 64 >>> 9 << 4) + 15] = nBitsTotal;
+				data.sigBytes = dataWords.length * 4;
+
+				// Hash final blocks
+				this._process();
+
+				// Return final computed hash
+				return this._hash;
+			},
+
+			clone: function () {
+				var clone = Hasher.clone.call(this);
+				clone._hash = this._hash.clone();
+
+				return clone;
+			}
+		});
+
+		/**
+   * Shortcut function to the hasher's object interface.
+   *
+   * @param {WordArray|string} message The message to hash.
+   *
+   * @return {WordArray} The hash.
+   *
+   * @static
+   *
+   * @example
+   *
+   *     var hash = CryptoJS.SHA1('message');
+   *     var hash = CryptoJS.SHA1(wordArray);
+   */
+		C.SHA1 = Hasher._createHelper(SHA1);
+
+		/**
+   * Shortcut function to the HMAC's object interface.
+   *
+   * @param {WordArray|string} message The message to hash.
+   * @param {WordArray|string} key The secret key.
+   *
+   * @return {WordArray} The HMAC.
+   *
+   * @static
+   *
+   * @example
+   *
+   *     var hmac = CryptoJS.HmacSHA1(message, key);
+   */
+		C.HmacSHA1 = Hasher._createHmacHelper(SHA1);
+	})();
+
+	return CryptoJS.SHA1;
+});
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+;(function (root, factory) {
+	if (true) {
+		// CommonJS
+		module.exports = exports = factory(__webpack_require__(0));
+	} else if (typeof define === "function" && define.amd) {
+		// AMD
+		define(["./core"], factory);
+	} else {
+		// Global (browser)
+		factory(root.CryptoJS);
+	}
+})(this, function (CryptoJS) {
+
+	(function () {
+		// Shortcuts
+		var C = CryptoJS;
+		var C_lib = C.lib;
+		var Base = C_lib.Base;
+		var C_enc = C.enc;
+		var Utf8 = C_enc.Utf8;
+		var C_algo = C.algo;
+
+		/**
+   * HMAC algorithm.
+   */
+		var HMAC = C_algo.HMAC = Base.extend({
+			/**
+    * Initializes a newly created HMAC.
+    *
+    * @param {Hasher} hasher The hash algorithm to use.
+    * @param {WordArray|string} key The secret key.
+    *
+    * @example
+    *
+    *     var hmacHasher = CryptoJS.algo.HMAC.create(CryptoJS.algo.SHA256, key);
+    */
+			init: function (hasher, key) {
+				// Init hasher
+				hasher = this._hasher = new hasher.init();
+
+				// Convert string to WordArray, else assume WordArray already
+				if (typeof key == 'string') {
+					key = Utf8.parse(key);
+				}
+
+				// Shortcuts
+				var hasherBlockSize = hasher.blockSize;
+				var hasherBlockSizeBytes = hasherBlockSize * 4;
+
+				// Allow arbitrary length keys
+				if (key.sigBytes > hasherBlockSizeBytes) {
+					key = hasher.finalize(key);
+				}
+
+				// Clamp excess bits
+				key.clamp();
+
+				// Clone key for inner and outer pads
+				var oKey = this._oKey = key.clone();
+				var iKey = this._iKey = key.clone();
+
+				// Shortcuts
+				var oKeyWords = oKey.words;
+				var iKeyWords = iKey.words;
+
+				// XOR keys with pad constants
+				for (var i = 0; i < hasherBlockSize; i++) {
+					oKeyWords[i] ^= 0x5c5c5c5c;
+					iKeyWords[i] ^= 0x36363636;
+				}
+				oKey.sigBytes = iKey.sigBytes = hasherBlockSizeBytes;
+
+				// Set initial values
+				this.reset();
+			},
+
+			/**
+    * Resets this HMAC to its initial state.
+    *
+    * @example
+    *
+    *     hmacHasher.reset();
+    */
+			reset: function () {
+				// Shortcut
+				var hasher = this._hasher;
+
+				// Reset
+				hasher.reset();
+				hasher.update(this._iKey);
+			},
+
+			/**
+    * Updates this HMAC with a message.
+    *
+    * @param {WordArray|string} messageUpdate The message to append.
+    *
+    * @return {HMAC} This HMAC instance.
+    *
+    * @example
+    *
+    *     hmacHasher.update('message');
+    *     hmacHasher.update(wordArray);
+    */
+			update: function (messageUpdate) {
+				this._hasher.update(messageUpdate);
+
+				// Chainable
+				return this;
+			},
+
+			/**
+    * Finalizes the HMAC computation.
+    * Note that the finalize operation is effectively a destructive, read-once operation.
+    *
+    * @param {WordArray|string} messageUpdate (Optional) A final message update.
+    *
+    * @return {WordArray} The HMAC.
+    *
+    * @example
+    *
+    *     var hmac = hmacHasher.finalize();
+    *     var hmac = hmacHasher.finalize('message');
+    *     var hmac = hmacHasher.finalize(wordArray);
+    */
+			finalize: function (messageUpdate) {
+				// Shortcut
+				var hasher = this._hasher;
+
+				// Compute HMAC
+				var innerHash = hasher.finalize(messageUpdate);
+				hasher.reset();
+				var hmac = hasher.finalize(this._oKey.clone().concat(innerHash));
+
+				return hmac;
+			}
+		});
+	})();
+});
 
 /***/ }),
 /* 25 */
-/***/ (function(module, exports) {
-
-// shim for using process in browser
-var process = module.exports = {};
-
-// cached from whatever global is present so that test runners that stub it
-// don't break things.  But we need to wrap it in a try catch in case it is
-// wrapped in strict mode code which doesn't define any globals.  It's inside a
-// function because try/catches deoptimize in certain engines.
-
-var cachedSetTimeout;
-var cachedClearTimeout;
-
-function defaultSetTimout() {
-    throw new Error('setTimeout has not been defined');
-}
-function defaultClearTimeout() {
-    throw new Error('clearTimeout has not been defined');
-}
-(function () {
-    try {
-        if (typeof setTimeout === 'function') {
-            cachedSetTimeout = setTimeout;
-        } else {
-            cachedSetTimeout = defaultSetTimout;
-        }
-    } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
-    }
-    try {
-        if (typeof clearTimeout === 'function') {
-            cachedClearTimeout = clearTimeout;
-        } else {
-            cachedClearTimeout = defaultClearTimeout;
-        }
-    } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
-    }
-})();
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    // if setTimeout wasn't available but was latter defined
-    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-        cachedSetTimeout = setTimeout;
-        return setTimeout(fun, 0);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
-    } catch (e) {
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch (e) {
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
-}
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    // if clearTimeout wasn't available but was latter defined
-    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-        cachedClearTimeout = clearTimeout;
-        return clearTimeout(marker);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
-    } catch (e) {
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e) {
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
-}
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = runTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while (len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    runClearTimeout(timeout);
-}
-
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-    }
-};
-
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-process.prependListener = noop;
-process.prependOnceListener = noop;
-
-process.listeners = function (name) {
-    return [];
-};
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () {
-    return '/';
-};
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function () {
-    return 0;
-};
-
-/***/ }),
-/* 26 */
 /***/ (function(module, exports) {
 
 /*
@@ -28113,7 +27921,7 @@ Jsonrpc.prototype.toBatchPayload = function (messages) {
 module.exports = Jsonrpc;
 
 /***/ }),
-/* 27 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -28267,7 +28075,7 @@ SolidityParam.encodeList = function (params) {
 module.exports = SolidityParam;
 
 /***/ }),
-/* 28 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -28293,11 +28101,11 @@ module.exports = SolidityParam;
  */
 
 var utils = __webpack_require__(1);
-var coder = __webpack_require__(20);
+var coder = __webpack_require__(22);
 var formatters = __webpack_require__(5);
-var sha3 = __webpack_require__(16);
-var Filter = __webpack_require__(18);
-var watches = __webpack_require__(19);
+var sha3 = __webpack_require__(17);
+var Filter = __webpack_require__(19);
+var watches = __webpack_require__(20);
 
 /**
  * This prototype should be used to create event filters
@@ -28480,7 +28288,7 @@ SolidityEvent.prototype.attachToContract = function (contract) {
 module.exports = SolidityEvent;
 
 /***/ }),
-/* 29 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory) {
@@ -28676,13 +28484,13 @@ module.exports = SolidityEvent;
 });
 
 /***/ }),
-/* 30 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
 	if (true) {
 		// CommonJS
-		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(17));
+		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(18));
 	} else if (typeof define === "function" && define.amd) {
 		// AMD
 		define(["./core", "./x64-core"], factory);
@@ -28954,13 +28762,13 @@ module.exports = SolidityEvent;
 });
 
 /***/ }),
-/* 31 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
 	if (true) {
 		// CommonJS
-		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(17));
+		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(18));
 	} else if (typeof define === "function" && define.amd) {
 		// AMD
 		define(["./core", "./x64-core"], factory);
@@ -29268,27 +29076,35 @@ module.exports = SolidityEvent;
 });
 
 /***/ }),
-/* 32 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(33);
-module.exports = __webpack_require__(99);
+__webpack_require__(32);
+module.exports = __webpack_require__(102);
 
 
 /***/ }),
-/* 33 */
+/* 32 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__images_0xbitcoin_png__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__images_0xbitcoin_png__ = __webpack_require__(33);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__images_0xbitcoin_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__images_0xbitcoin_png__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vue__ = __webpack_require__(24);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__alert_renderer__ = __webpack_require__(37);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__dashboard_renderer__ = __webpack_require__(38);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ethhelper__ = __webpack_require__(39);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__images_GitHub_Mark_64px_png__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__images_GitHub_Mark_64px_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__images_GitHub_Mark_64px_png__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vue__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__alert_renderer__ = __webpack_require__(38);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__dashboard_renderer__ = __webpack_require__(39);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__ethhelper__ = __webpack_require__(40);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__home_dashboard__ = __webpack_require__(100);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__wallet_dashboard__ = __webpack_require__(101);
 
-const $ = __webpack_require__(23);
+const $ = __webpack_require__(11);
+
+
+
+
 
 
 
@@ -29300,36 +29116,47 @@ const $ = __webpack_require__(23);
 
 //var web3 = this.connectWeb3();
 
-var dashboardRenderer = new __WEBPACK_IMPORTED_MODULE_3__dashboard_renderer__["a" /* default */]();
-var alertRenderer = new __WEBPACK_IMPORTED_MODULE_2__alert_renderer__["a" /* default */]();
-var ethHelper = new __WEBPACK_IMPORTED_MODULE_4__ethhelper__["a" /* default */]();
+var dashboardRenderer = new __WEBPACK_IMPORTED_MODULE_4__dashboard_renderer__["a" /* default */]();
+var alertRenderer = new __WEBPACK_IMPORTED_MODULE_3__alert_renderer__["a" /* default */]();
+var ethHelper = new __WEBPACK_IMPORTED_MODULE_5__ethhelper__["a" /* default */]();
+var home = new __WEBPACK_IMPORTED_MODULE_6__home_dashboard__["a" /* default */]();
+var wallet = new __WEBPACK_IMPORTED_MODULE_7__wallet_dashboard__["a" /* default */]();
 
-var navbar = new __WEBPACK_IMPORTED_MODULE_1_vue__["a" /* default */]({
+var navbar = new __WEBPACK_IMPORTED_MODULE_2_vue__["a" /* default */]({
   el: '#navbar',
   data: {
-    brandImageUrl: __WEBPACK_IMPORTED_MODULE_0__images_0xbitcoin_png___default.a
+    brandImageUrl: __WEBPACK_IMPORTED_MODULE_0__images_0xbitcoin_png___default.a,
+    githubLogo: __WEBPACK_IMPORTED_MODULE_1__images_GitHub_Mark_64px_png___default.a
   }
 });
 
 $(document).ready(function () {
 
-  var web3 = ethHelper.init(alertRenderer);
+  if ($("#home").length > 0) {
+    var web3 = ethHelper.init(alertRenderer);
 
-  dashboardRenderer.hide();
+    home.init(ethHelper, web3, dashboardRenderer);
+  }
 
-  var app = new __WEBPACK_IMPORTED_MODULE_1_vue__["a" /* default */]({
-    el: '#app',
-    data: {}
-  });
+  if ($("#wallet").length > 0) {
 
-  var contractData = ethHelper.connectToContract(web3, dashboardRenderer);
+    wallet.init(alertRenderer, ethHelper);
+  }
 });
+
+//dashboardRenderer.hide();
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports) {
+
+module.exports = "/app/assets/images/0xbitcoin.png";
 
 /***/ }),
 /* 34 */
 /***/ (function(module, exports) {
 
-module.exports = "app/assets/images/0xbitcoin.png";
+module.exports = "/app/assets/images/GitHub-Mark-64px.png";
 
 /***/ }),
 /* 35 */
@@ -29389,7 +29216,7 @@ __webpack_require__(36);
 // `setimmediate` library.
 exports.setImmediate = typeof self !== "undefined" && self.setImmediate || typeof global !== "undefined" && global.setImmediate || this && this.setImmediate;
 exports.clearImmediate = typeof self !== "undefined" && self.clearImmediate || typeof global !== "undefined" && global.clearImmediate || this && this.clearImmediate;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
 
 /***/ }),
 /* 36 */
@@ -29577,20 +29404,212 @@ exports.clearImmediate = typeof self !== "undefined" && self.clearImmediate || t
     attachTo.setImmediate = setImmediate;
     attachTo.clearImmediate = clearImmediate;
 })(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11), __webpack_require__(25)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12), __webpack_require__(37)))
 
 /***/ }),
 /* 37 */
+/***/ (function(module, exports) {
+
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout() {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+})();
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch (e) {
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch (e) {
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e) {
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e) {
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while (len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) {
+    return [];
+};
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () {
+    return '/';
+};
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function () {
+    return 0;
+};
+
+/***/ }),
+/* 38 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 class AlertRenderer {
 
   renderError(message) {
+    console.log('render error', message);
     this.alertMessage = message;
   }
 
   renderHelp(message) {
+    console.log('render help', message);
     this.alertMessage = message;
   }
 
@@ -29603,23 +29622,46 @@ class AlertRenderer {
 
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(24);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(21);
 
-const $ = __webpack_require__(23);
+const $ = __webpack_require__(11);
 
+
+var app;
+var dashboardData;
 
 class DashboardRenderer {
 
-  renderContractData(renderData) {
+  init(renderData) {
 
-    var app = new __WEBPACK_IMPORTED_MODULE_0_vue__["a" /* default */]({
+    dashboardData = renderData;
+
+    app = new __WEBPACK_IMPORTED_MODULE_0_vue__["a" /* default */]({
       el: '#dashboard',
-      data: renderData
+      data: dashboardData
     });
+
+    this.show();
+  }
+
+  update(renderData) {
+
+    dashboardData.contractAddress = renderData.contractAddress;
+    dashboardData.totalSupply = renderData.totalSupply;
+    dashboardData.amountMined = renderData.amountMined;
+    dashboardData.difficulty = renderData.difficulty;
+    dashboardData.challenge_number = renderData.challenge_number;
+    dashboardData.lastRewardTo = renderData.lastRewardTo;
+    dashboardData.lastRewardAmount = renderData.lastRewardAmount;
+    dashboardData.lastRewardEthBlockNumber = renderData.lastRewardEthBlockNumber;
+
+    //  app.data =   renderData;
+
+    //vm.$forceUpdate();
 
     this.show();
   }
@@ -29637,16 +29679,17 @@ class DashboardRenderer {
 
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 var INFURA_ROPSTEN_URL = 'https://ropsten.infura.io/gmXEVo5luMPUGPqg6mhy';
+var INFURA_MAINNET_URL = 'https://mainnet.infura.io/gmXEVo5luMPUGPqg6mhy';
 
-var deployedContractInfo = __webpack_require__(40);
-var _0xBitcoinContract = __webpack_require__(41);
+var deployedContractInfo = __webpack_require__(41);
+var _0xBitcoinContract = __webpack_require__(42);
 
-var embeddedWeb3 = __webpack_require__(42);
+var embeddedWeb3 = __webpack_require__(43);
 
 class EthHelper {
 
@@ -29659,7 +29702,7 @@ class EthHelper {
   connectWeb3(web3) {
     if (typeof web3 !== 'undefined') {
 
-      window.web3 = new Web3(new Web3.providers.HttpProvider(INFURA_ROPSTEN_URL));
+      window.web3 = new Web3(new Web3.providers.HttpProvider(INFURA_MAINNET_URL));
       console.log('connected to web3!');
       return window.web3;
     } else {
@@ -29671,10 +29714,12 @@ class EthHelper {
     }
   }
 
-  async connectToContract(web3, dashboardRenderer) {
+  async connectToContract(web3, dashboardRenderer, callback) {
     var tokenContract = this.getWeb3ContractInstance(web3, this.getContractAddress(), this.getContractABI());
 
     console.log(tokenContract);
+
+    var contractAddress = this.getContractAddress();
 
     var difficulty = await tokenContract.getMiningDifficulty().toNumber();
 
@@ -29692,6 +29737,8 @@ class EthHelper {
 
     var decimals = Math.pow(10, 8);
     var renderData = {
+      contractUrl: 'https://etherscan.io/address/' + contractAddress,
+      contractAddress: contractAddress,
       difficulty: difficulty,
       challenge_number: challenge_number,
       amountMined: parseInt(amountMined) / decimals,
@@ -29700,14 +29747,19 @@ class EthHelper {
       lastRewardAmount: parseInt(lastRewardAmount) / decimals,
       lastRewardEthBlockNumber: lastRewardEthBlockNumber
 
-    };
+      //dashboardRenderer.renderContractData(renderData);
 
-    dashboardRenderer.renderContractData(renderData);
 
-    return renderData;
+    };callback(renderData);
   }
 
   getWeb3ContractInstance(web3, contract_address, contract_abi) {
+    if (contract_address == null) {
+      var contract_address = this.getContractAddress();
+    }
+    if (contract_abi == null) {
+      var contract_abi = this.getContractABI();
+    }
 
     return web3.eth.contract(contract_abi).at(contract_address);
   }
@@ -29725,22 +29777,22 @@ class EthHelper {
 
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports) {
 
-module.exports = {"network-name":"Ropsten","contracts":{"_0xbitcointoken":{"name":"0xBitcoinToken","blockchain_address":"0xF9aA5FED427BE07C126cDed943bCC022A5B9f364"}}}
+module.exports = {"network-name":"MainNet","contracts":{"_0xbitcointoken":{"name":"0xBitcoinToken","blockchain_address":"0xb6ed7644c69416d67b522e20bc294a9a9b405b31"}}}
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports) {
 
 module.exports = {"contractName":"_0xBitcoinToken","abi":[{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"tokens","type":"uint256"}],"name":"approve","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"lastRewardEthBlockNumber","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getMiningDifficulty","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"nonce","type":"uint256"},{"name":"challenge_digest","type":"bytes32"}],"name":"mint","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"from","type":"address"},{"name":"to","type":"address"},{"name":"tokens","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"rewardEra","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getMiningTarget","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"_totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getMiningReward","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getChallengeNumber","outputs":[{"name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"maxSupplyForEra","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"tokensMinted","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"lastRewardTo","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"tokenOwner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"acceptOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"nonce","type":"uint256"},{"name":"challenge_digest","type":"bytes32"},{"name":"challenge_number","type":"bytes32"},{"name":"testDifficulty","type":"uint256"}],"name":"checkMintSolution","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"epochCount","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"_MAXIMUM_TARGET","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"miningTarget","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"challengeNumber","outputs":[{"name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"nonce","type":"uint256"},{"name":"challenge_digest","type":"bytes32"},{"name":"challenge_number","type":"bytes32"}],"name":"getMintDigest","outputs":[{"name":"digesttest","type":"bytes32"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"tokens","type":"uint256"}],"name":"transfer","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"_BLOCKS_PER_READJUSTMENT","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"lastRewardAmount","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"tokens","type":"uint256"},{"name":"data","type":"bytes"}],"name":"approveAndCall","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"latestDifficultyPeriodStarted","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"newOwner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"tokenAddress","type":"address"},{"name":"tokens","type":"uint256"}],"name":"transferAnyERC20Token","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"_MINIMUM_TARGET","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"tokenOwner","type":"address"},{"name":"spender","type":"address"}],"name":"allowance","outputs":[{"name":"remaining","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"payable":true,"stateMutability":"payable","type":"fallback"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":false,"name":"reward_amount","type":"uint256"},{"indexed":false,"name":"epochCount","type":"uint256"},{"indexed":false,"name":"newChallengeNumber","type":"bytes32"}],"name":"Mint","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_from","type":"address"},{"indexed":true,"name":"_to","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"tokens","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"tokenOwner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"tokens","type":"uint256"}],"name":"Approval","type":"event"}],"bytecode":"0x60606040526101006008556101006009557f0400000000000000000000000000000000000000000000000000000000000000600a5534156200004057600080fd5b336000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055506000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff16141515620000dc57600080fd5b6040805190810160405280600581526020017f307842544300000000000000000000000000000000000000000000000000000081525060029080519060200190620001299291906200045e565b506040805190810160405280600f81526020017f3078426974636f696e20546f6b656e000000000000000000000000000000000081525060039080519060200190620001779291906200045e565b506008600460006101000a81548160ff021916908360ff160217905550600460009054906101000a900460ff1660ff16600a0a6301406f400260058190555060006013819055506000600d81905550620001ec6002600554620002266401000000000262001d60179091906401000000009004565b600e81905550600a54600b8190555043600681905550620002206200024c6401000000000262001da0176401000000009004565b6200050d565b600080821115156200023757600080fd5b81838115156200024357fe5b04905092915050565b600e54601354101580156200026357506020600d54105b1562000276576001600d5401600d819055505b620002a36001600d540160020a600554620002266401000000000262001d60179091906401000000009004565b60055403600e819055506001430340600c8160001916905550620002e26001600754620003236401000000000262001d84179091906401000000009004565b6007819055506000600854600754811515620002fa57fe5b061415620003215762000320620003406401000000000262001e59176401000000009004565b5b565b600081830190508281101515156200033a57600080fd5b92915050565b6000806000600654430392506008549150603c8202905080831015620003b657620003aa6200038a6014600b54620002266401000000000262001d60179091906401000000009004565b600b54620004416401000000000262001e3d179091906401000000009004565b600b8190555062000407565b62000400620003e06014600b54620002266401000000000262001d60179091906401000000009004565b600b54620003236401000000000262001d84179091906401000000009004565b600b819055505b43600681905550600954600b5410156200042557600954600b819055505b600a54600b5411156200043c57600a54600b819055505b505050565b60008282111515156200045357600080fd5b818303905092915050565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f10620004a157805160ff1916838001178555620004d2565b82800160010185558215620004d2579182015b82811115620004d1578251825591602001919060010190620004b4565b5b509050620004e19190620004e5565b5090565b6200050a91905b8082111562000506576000816000905550600101620004ec565b5090565b90565b611f42806200051d6000396000f3006060604052600436106101c2576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff16806306fdde03146101c7578063095ea7b314610255578063163aa00d146102af57806317da485f146102d85780631801fbe51461030157806318160ddd1461034957806323b872dd146103725780632d38bf7a146103eb578063313ce5671461041457806332e99708146104435780633eaaf86b1461046c578063490203a7146104955780634ef37628146104be5780634fa972e1146104ef5780636de9f32b146105185780636fd396d61461054157806370a082311461059657806379ba5097146105e357806381269a56146105f8578063829965cc1461065657806387a2a9d61461067f5780638a769d35146106a85780638ae0368b146106d15780638da5cb5b1461070257806395d89b411461075757806397566aa0146107e5578063a9059cbb1461083e578063b5ade81b14610898578063bafedcaa146108c1578063cae9ca51146108ea578063cb9ae70714610987578063d4ee1d90146109b0578063dc39d06d14610a05578063dc6e9cf914610a5f578063dd62ed3e14610a88578063f2fde38b14610af4575b600080fd5b34156101d257600080fd5b6101da610b2d565b6040518080602001828103825283818151815260200191508051906020019080838360005b8381101561021a5780820151818401526020810190506101ff565b50505050905090810190601f1680156102475780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b341561026057600080fd5b610295600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091908035906020019091905050610bcb565b604051808215151515815260200191505060405180910390f35b34156102ba57600080fd5b6102c2610cbd565b6040518082815260200191505060405180910390f35b34156102e357600080fd5b6102eb610cc3565b6040518082815260200191505060405180910390f35b341561030c57600080fd5b61032f600480803590602001909190803560001916906020019091905050610ce1565b604051808215151515815260200191505060405180910390f35b341561035457600080fd5b61035c610f54565b6040518082815260200191505060405180910390f35b341561037d57600080fd5b6103d1600480803573ffffffffffffffffffffffffffffffffffffffff1690602001909190803573ffffffffffffffffffffffffffffffffffffffff16906020019091908035906020019091905050610f9f565b604051808215151515815260200191505060405180910390f35b34156103f657600080fd5b6103fe61124a565b6040518082815260200191505060405180910390f35b341561041f57600080fd5b610427611250565b604051808260ff1660ff16815260200191505060405180910390f35b341561044e57600080fd5b610456611263565b6040518082815260200191505060405180910390f35b341561047757600080fd5b61047f61126d565b6040518082815260200191505060405180910390f35b34156104a057600080fd5b6104a8611273565b6040518082815260200191505060405180910390f35b34156104c957600080fd5b6104d16112aa565b60405180826000191660001916815260200191505060405180910390f35b34156104fa57600080fd5b6105026112b4565b6040518082815260200191505060405180910390f35b341561052357600080fd5b61052b6112ba565b6040518082815260200191505060405180910390f35b341561054c57600080fd5b6105546112c0565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b34156105a157600080fd5b6105cd600480803573ffffffffffffffffffffffffffffffffffffffff169060200190919050506112e6565b6040518082815260200191505060405180910390f35b34156105ee57600080fd5b6105f661132f565b005b341561060357600080fd5b61063c600480803590602001909190803560001916906020019091908035600019169060200190919080359060200190919050506114ce565b604051808215151515815260200191505060405180910390f35b341561066157600080fd5b610669611577565b6040518082815260200191505060405180910390f35b341561068a57600080fd5b61069261157d565b6040518082815260200191505060405180910390f35b34156106b357600080fd5b6106bb611583565b6040518082815260200191505060405180910390f35b34156106dc57600080fd5b6106e4611589565b60405180826000191660001916815260200191505060405180910390f35b341561070d57600080fd5b61071561158f565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b341561076257600080fd5b61076a6115b4565b6040518080602001828103825283818151815260200191508051906020019080838360005b838110156107aa57808201518184015260208101905061078f565b50505050905090810190601f1680156107d75780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b34156107f057600080fd5b61082060048080359060200190919080356000191690602001909190803560001916906020019091905050611652565b60405180826000191660001916815260200191505060405180910390f35b341561084957600080fd5b61087e600480803573ffffffffffffffffffffffffffffffffffffffff169060200190919080359060200190919050506116cb565b604051808215151515815260200191505060405180910390f35b34156108a357600080fd5b6108ab611866565b6040518082815260200191505060405180910390f35b34156108cc57600080fd5b6108d461186c565b6040518082815260200191505060405180910390f35b34156108f557600080fd5b61096d600480803573ffffffffffffffffffffffffffffffffffffffff1690602001909190803590602001909190803590602001908201803590602001908080601f01602080910402602001604051908101604052809392919081815260200183838082843782019150505050505091905050611872565b604051808215151515815260200191505060405180910390f35b341561099257600080fd5b61099a611abc565b6040518082815260200191505060405180910390f35b34156109bb57600080fd5b6109c3611ac2565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b3415610a1057600080fd5b610a45600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091908035906020019091905050611ae8565b604051808215151515815260200191505060405180910390f35b3415610a6a57600080fd5b610a72611c34565b6040518082815260200191505060405180910390f35b3415610a9357600080fd5b610ade600480803573ffffffffffffffffffffffffffffffffffffffff1690602001909190803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050611c3a565b6040518082815260200191505060405180910390f35b3415610aff57600080fd5b610b2b600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050611cc1565b005b60038054600181600116156101000203166002900480601f016020809104026020016040519081016040528092919081815260200182805460018160011615610100020316600290048015610bc35780601f10610b9857610100808354040283529160200191610bc3565b820191906000526020600020905b815481529060010190602001808311610ba657829003601f168201915b505050505081565b600081601560003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055508273ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925846040518082815260200191505060405180910390a36001905092915050565b60115481565b6000610cdc600b54600a54611d6090919063ffffffff16565b905090565b600080600080610cef611273565b9250600c5433876040518084600019166000191681526020018373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166c0100000000000000000000000002815260140182815260200193505050506040518091039020915084600019168260001916141515610d7457600080fd5b600b5482600190041115610d8757600080fd5b60126000836000191660001916815260200190815260200160002054905060075460126000846000191660001916815260200190815260200160002081905550600081141515610dd657600080fd5b610e2883601460003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054611d8490919063ffffffff16565b601460003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002081905550610e8083601354611d8490919063ffffffff16565b60138190555033600f60006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055508260108190555043601181905550610edd611da0565b3373ffffffffffffffffffffffffffffffffffffffff167fcf6fbb9dcea7d07263ab4f5c3a92f53af33dffc421d9d121e1c74b307e68189d84600754600c54604051808481526020018381526020018260001916600019168152602001935050505060405180910390a26001935050505092915050565b6000601460008073ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000205460055403905090565b6000610ff382601460008773ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054611e3d90919063ffffffff16565b601460008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055506110c582601560008773ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054611e3d90919063ffffffff16565b601560008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000208190555061119782601460008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054611d8490919063ffffffff16565b601460008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055508273ffffffffffffffffffffffffffffffffffffffff168473ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef846040518082815260200191505060405180910390a3600190509392505050565b600d5481565b600460009054906101000a900460ff1681565b6000600b54905090565b60055481565b60006112a5600d5460020a600460009054906101000a900460ff1660ff16600a0a603202611d6090919063ffffffff16565b905090565b6000600c54905090565b600e5481565b60135481565b600f60009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b6000601460008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020549050919050565b600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614151561138b57600080fd5b600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff167f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e060405160405180910390a3600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff166000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055506000600160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550565b6000806000808492506114df611273565b91508533896040518084600019166000191681526020018373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166c01000000000000000000000000028152601401828152602001935050505060405180910390209050600b548160019004111561155f57600080fd5b86600019168160001916149350505050949350505050565b60075481565b600a5481565b600b5481565b600c5481565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60028054600181600116156101000203166002900480601f01602080910402602001604051908101604052809291908181526020018280546001816001161561010002031660029004801561164a5780601f1061161f5761010080835404028352916020019161164a565b820191906000526020600020905b81548152906001019060200180831161162d57829003601f168201915b505050505081565b6000808233866040518084600019166000191681526020018373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166c01000000000000000000000000028152601401828152602001935050505060405180910390209050809150509392505050565b600061171f82601460003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054611e3d90919063ffffffff16565b601460003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055506117b482601460008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054611d8490919063ffffffff16565b601460008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055508273ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef846040518082815260200191505060405180910390a36001905092915050565b60085481565b60105481565b600082601560003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055508373ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925856040518082815260200191505060405180910390a38373ffffffffffffffffffffffffffffffffffffffff16638f4ffcb1338530866040518563ffffffff167c0100000000000000000000000000000000000000000000000000000000028152600401808573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020018481526020018373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200180602001828103825283818151815260200191508051906020019080838360005b83811015611a4f578082015181840152602081019050611a34565b50505050905090810190601f168015611a7c5780820380516001836020036101000a031916815260200191505b5095505050505050600060405180830381600087803b1515611a9d57600080fd5b6102c65a03f11515611aae57600080fd5b505050600190509392505050565b60065481565b600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff16141515611b4557600080fd5b8273ffffffffffffffffffffffffffffffffffffffff1663a9059cbb6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff16846000604051602001526040518363ffffffff167c0100000000000000000000000000000000000000000000000000000000028152600401808373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200182815260200192505050602060405180830381600087803b1515611c1157600080fd5b6102c65a03f11515611c2257600080fd5b50505060405180519050905092915050565b60095481565b6000601560008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054905092915050565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff16141515611d1c57600080fd5b80600160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b60008082111515611d7057600080fd5b8183811515611d7b57fe5b04905092915050565b60008183019050828110151515611d9a57600080fd5b92915050565b600e5460135410158015611db657506020600d54105b15611dc8576001600d5401600d819055505b611de56001600d540160020a600554611d6090919063ffffffff16565b60055403600e819055506001430340600c8160001916905550611e146001600754611d8490919063ffffffff16565b6007819055506000600854600754811515611e2b57fe5b061415611e3b57611e3a611e59565b5b565b6000828211151515611e4e57600080fd5b818303905092915050565b6000806000600654430392506008549150603c8202905080831015611ead57611ea2611e916014600b54611d6090919063ffffffff16565b600b54611e3d90919063ffffffff16565b600b81905550611ede565b611ed7611ec66014600b54611d6090919063ffffffff16565b600b54611d8490919063ffffffff16565b600b819055505b43600681905550600954600b541015611efb57600954600b819055505b600a54600b541115611f1157600a54600b819055505b5050505600a165627a7a72305820d59f3473ee8072d3b732daa114aa23e8db3e168007f7eca216306713144505270029","deployedBytecode":"0x6060604052600436106101c2576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff16806306fdde03146101c7578063095ea7b314610255578063163aa00d146102af57806317da485f146102d85780631801fbe51461030157806318160ddd1461034957806323b872dd146103725780632d38bf7a146103eb578063313ce5671461041457806332e99708146104435780633eaaf86b1461046c578063490203a7146104955780634ef37628146104be5780634fa972e1146104ef5780636de9f32b146105185780636fd396d61461054157806370a082311461059657806379ba5097146105e357806381269a56146105f8578063829965cc1461065657806387a2a9d61461067f5780638a769d35146106a85780638ae0368b146106d15780638da5cb5b1461070257806395d89b411461075757806397566aa0146107e5578063a9059cbb1461083e578063b5ade81b14610898578063bafedcaa146108c1578063cae9ca51146108ea578063cb9ae70714610987578063d4ee1d90146109b0578063dc39d06d14610a05578063dc6e9cf914610a5f578063dd62ed3e14610a88578063f2fde38b14610af4575b600080fd5b34156101d257600080fd5b6101da610b2d565b6040518080602001828103825283818151815260200191508051906020019080838360005b8381101561021a5780820151818401526020810190506101ff565b50505050905090810190601f1680156102475780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b341561026057600080fd5b610295600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091908035906020019091905050610bcb565b604051808215151515815260200191505060405180910390f35b34156102ba57600080fd5b6102c2610cbd565b6040518082815260200191505060405180910390f35b34156102e357600080fd5b6102eb610cc3565b6040518082815260200191505060405180910390f35b341561030c57600080fd5b61032f600480803590602001909190803560001916906020019091905050610ce1565b604051808215151515815260200191505060405180910390f35b341561035457600080fd5b61035c610f54565b6040518082815260200191505060405180910390f35b341561037d57600080fd5b6103d1600480803573ffffffffffffffffffffffffffffffffffffffff1690602001909190803573ffffffffffffffffffffffffffffffffffffffff16906020019091908035906020019091905050610f9f565b604051808215151515815260200191505060405180910390f35b34156103f657600080fd5b6103fe61124a565b6040518082815260200191505060405180910390f35b341561041f57600080fd5b610427611250565b604051808260ff1660ff16815260200191505060405180910390f35b341561044e57600080fd5b610456611263565b6040518082815260200191505060405180910390f35b341561047757600080fd5b61047f61126d565b6040518082815260200191505060405180910390f35b34156104a057600080fd5b6104a8611273565b6040518082815260200191505060405180910390f35b34156104c957600080fd5b6104d16112aa565b60405180826000191660001916815260200191505060405180910390f35b34156104fa57600080fd5b6105026112b4565b6040518082815260200191505060405180910390f35b341561052357600080fd5b61052b6112ba565b6040518082815260200191505060405180910390f35b341561054c57600080fd5b6105546112c0565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b34156105a157600080fd5b6105cd600480803573ffffffffffffffffffffffffffffffffffffffff169060200190919050506112e6565b6040518082815260200191505060405180910390f35b34156105ee57600080fd5b6105f661132f565b005b341561060357600080fd5b61063c600480803590602001909190803560001916906020019091908035600019169060200190919080359060200190919050506114ce565b604051808215151515815260200191505060405180910390f35b341561066157600080fd5b610669611577565b6040518082815260200191505060405180910390f35b341561068a57600080fd5b61069261157d565b6040518082815260200191505060405180910390f35b34156106b357600080fd5b6106bb611583565b6040518082815260200191505060405180910390f35b34156106dc57600080fd5b6106e4611589565b60405180826000191660001916815260200191505060405180910390f35b341561070d57600080fd5b61071561158f565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b341561076257600080fd5b61076a6115b4565b6040518080602001828103825283818151815260200191508051906020019080838360005b838110156107aa57808201518184015260208101905061078f565b50505050905090810190601f1680156107d75780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b34156107f057600080fd5b61082060048080359060200190919080356000191690602001909190803560001916906020019091905050611652565b60405180826000191660001916815260200191505060405180910390f35b341561084957600080fd5b61087e600480803573ffffffffffffffffffffffffffffffffffffffff169060200190919080359060200190919050506116cb565b604051808215151515815260200191505060405180910390f35b34156108a357600080fd5b6108ab611866565b6040518082815260200191505060405180910390f35b34156108cc57600080fd5b6108d461186c565b6040518082815260200191505060405180910390f35b34156108f557600080fd5b61096d600480803573ffffffffffffffffffffffffffffffffffffffff1690602001909190803590602001909190803590602001908201803590602001908080601f01602080910402602001604051908101604052809392919081815260200183838082843782019150505050505091905050611872565b604051808215151515815260200191505060405180910390f35b341561099257600080fd5b61099a611abc565b6040518082815260200191505060405180910390f35b34156109bb57600080fd5b6109c3611ac2565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b3415610a1057600080fd5b610a45600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091908035906020019091905050611ae8565b604051808215151515815260200191505060405180910390f35b3415610a6a57600080fd5b610a72611c34565b6040518082815260200191505060405180910390f35b3415610a9357600080fd5b610ade600480803573ffffffffffffffffffffffffffffffffffffffff1690602001909190803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050611c3a565b6040518082815260200191505060405180910390f35b3415610aff57600080fd5b610b2b600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050611cc1565b005b60038054600181600116156101000203166002900480601f016020809104026020016040519081016040528092919081815260200182805460018160011615610100020316600290048015610bc35780601f10610b9857610100808354040283529160200191610bc3565b820191906000526020600020905b815481529060010190602001808311610ba657829003601f168201915b505050505081565b600081601560003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055508273ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925846040518082815260200191505060405180910390a36001905092915050565b60115481565b6000610cdc600b54600a54611d6090919063ffffffff16565b905090565b600080600080610cef611273565b9250600c5433876040518084600019166000191681526020018373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166c0100000000000000000000000002815260140182815260200193505050506040518091039020915084600019168260001916141515610d7457600080fd5b600b5482600190041115610d8757600080fd5b60126000836000191660001916815260200190815260200160002054905060075460126000846000191660001916815260200190815260200160002081905550600081141515610dd657600080fd5b610e2883601460003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054611d8490919063ffffffff16565b601460003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002081905550610e8083601354611d8490919063ffffffff16565b60138190555033600f60006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055508260108190555043601181905550610edd611da0565b3373ffffffffffffffffffffffffffffffffffffffff167fcf6fbb9dcea7d07263ab4f5c3a92f53af33dffc421d9d121e1c74b307e68189d84600754600c54604051808481526020018381526020018260001916600019168152602001935050505060405180910390a26001935050505092915050565b6000601460008073ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000205460055403905090565b6000610ff382601460008773ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054611e3d90919063ffffffff16565b601460008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055506110c582601560008773ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054611e3d90919063ffffffff16565b601560008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000208190555061119782601460008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054611d8490919063ffffffff16565b601460008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055508273ffffffffffffffffffffffffffffffffffffffff168473ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef846040518082815260200191505060405180910390a3600190509392505050565b600d5481565b600460009054906101000a900460ff1681565b6000600b54905090565b60055481565b60006112a5600d5460020a600460009054906101000a900460ff1660ff16600a0a603202611d6090919063ffffffff16565b905090565b6000600c54905090565b600e5481565b60135481565b600f60009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b6000601460008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020549050919050565b600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614151561138b57600080fd5b600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff167f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e060405160405180910390a3600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff166000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055506000600160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550565b6000806000808492506114df611273565b91508533896040518084600019166000191681526020018373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166c01000000000000000000000000028152601401828152602001935050505060405180910390209050600b548160019004111561155f57600080fd5b86600019168160001916149350505050949350505050565b60075481565b600a5481565b600b5481565b600c5481565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60028054600181600116156101000203166002900480601f01602080910402602001604051908101604052809291908181526020018280546001816001161561010002031660029004801561164a5780601f1061161f5761010080835404028352916020019161164a565b820191906000526020600020905b81548152906001019060200180831161162d57829003601f168201915b505050505081565b6000808233866040518084600019166000191681526020018373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166c01000000000000000000000000028152601401828152602001935050505060405180910390209050809150509392505050565b600061171f82601460003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054611e3d90919063ffffffff16565b601460003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055506117b482601460008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054611d8490919063ffffffff16565b601460008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055508273ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef846040518082815260200191505060405180910390a36001905092915050565b60085481565b60105481565b600082601560003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055508373ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925856040518082815260200191505060405180910390a38373ffffffffffffffffffffffffffffffffffffffff16638f4ffcb1338530866040518563ffffffff167c0100000000000000000000000000000000000000000000000000000000028152600401808573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020018481526020018373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200180602001828103825283818151815260200191508051906020019080838360005b83811015611a4f578082015181840152602081019050611a34565b50505050905090810190601f168015611a7c5780820380516001836020036101000a031916815260200191505b5095505050505050600060405180830381600087803b1515611a9d57600080fd5b6102c65a03f11515611aae57600080fd5b505050600190509392505050565b60065481565b600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff16141515611b4557600080fd5b8273ffffffffffffffffffffffffffffffffffffffff1663a9059cbb6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff16846000604051602001526040518363ffffffff167c0100000000000000000000000000000000000000000000000000000000028152600401808373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200182815260200192505050602060405180830381600087803b1515611c1157600080fd5b6102c65a03f11515611c2257600080fd5b50505060405180519050905092915050565b60095481565b6000601560008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054905092915050565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff16141515611d1c57600080fd5b80600160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b60008082111515611d7057600080fd5b8183811515611d7b57fe5b04905092915050565b60008183019050828110151515611d9a57600080fd5b92915050565b600e5460135410158015611db657506020600d54105b15611dc8576001600d5401600d819055505b611de56001600d540160020a600554611d6090919063ffffffff16565b60055403600e819055506001430340600c8160001916905550611e146001600754611d8490919063ffffffff16565b6007819055506000600854600754811515611e2b57fe5b061415611e3b57611e3a611e59565b5b565b6000828211151515611e4e57600080fd5b818303905092915050565b6000806000600654430392506008549150603c8202905080831015611ead57611ea2611e916014600b54611d6090919063ffffffff16565b600b54611e3d90919063ffffffff16565b600b81905550611ede565b611ed7611ec66014600b54611d6090919063ffffffff16565b600b54611d8490919063ffffffff16565b600b819055505b43600681905550600954600b541015611efb57600954600b819055505b600a54600b541115611f1157600a54600b819055505b5050505600a165627a7a72305820d59f3473ee8072d3b732daa114aa23e8db3e168007f7eca216306713144505270029","sourceMap":"3478:11796:0:-;;;3927:3;3888:42;;4037:4;4006:35;;4101:6;4070:37;;4982:514;;;;;;;;2804:10;2796:5;;:18;;;;;;;;;;;;;;;;;;2881:5;;;;;;;;;;;2867:19;;:10;:19;;;2859:28;;;;;;;;5036:16;;;;;;;;;;;;;;;;;;:6;:16;;;;;;;;;;;;:::i;:::-;;5063:24;;;;;;;;;;;;;;;;;;:4;:24;;;;;;;;;;;;:::i;:::-;;5109:1;5098:8;;:12;;;;;;;;;;;;;;;;;;5156:8;;;;;;;;;;;5151:14;;5147:2;:18;5136:8;:29;5121:12;:44;;;;5190:1;5175:12;:16;;;;5214:1;5202:9;:13;;;;5243:19;5260:1;5243:12;;:16;;;;;;:19;;;;;:::i;:::-;5225:15;:37;;;;5288:15;;5273:12;:30;;;;5346:12;5314:29;:44;;;;5369:22;:20;;;;;:22;;;:::i;:::-;3478:11796;;916:113;968:6;999:1;995;:5;987:14;;;;;;;;1020:1;1016;:5;;;;;;;;1012:9;;916:113;;;;:::o;5502:821::-;5646:15;;5630:12;;:31;;:49;;;;;5677:2;5665:9;;:14;5630:49;5627:152;;;5769:1;5757:9;;:13;5745:9;:25;;;;5627:152;5884:37;5918:1;5906:9;;:13;5902:1;:18;5884:12;;:16;;;;;;:37;;;;;:::i;:::-;5869:12;;:52;5851:15;:70;;;;6096:1;6081:12;:16;6065:33;6047:15;:51;;;;;;;6121:17;6136:1;6121:10;;:14;;;;;;:17;;;;;:::i;:::-;6108:10;:30;;;;6265:1;6237:24;;6224:10;;:37;;;;;;;;:42;6221:93;;;6284:21;:19;;;;;:21;;;:::i;:::-;6221:93;5502:821::o;542:114::-;594:6;621:1;617;:5;613:9;;646:1;641;:6;;633:15;;;;;;;;542:114;;;;:::o;6547:1108::-;6599:39;6857:16;6917:28;6656:29;;6641:12;:44;6599:86;;6876:24;;6857:43;;6962:2;6948:11;:16;6917:47;;7127:23;7090:34;:60;7086:285;;;7215:38;7232:20;7249:2;7232:12;;:16;;;;;;:20;;;;;:::i;:::-;7215:12;;:16;;;;;;:38;;;;;:::i;:::-;7200:12;:53;;;;7086:285;;;7322:38;7339:20;7356:2;7339:12;;:16;;;;;;:20;;;;;:::i;:::-;7322:12;;:16;;;;;;:38;;;;;:::i;:::-;7307:12;:53;;;;7086:285;7415:12;7383:29;:44;;;;7456:15;;7441:12;;:30;7438:100;;;7512:15;;7497:12;:30;;;;7438:100;7566:15;;7551:12;;:30;7548:101;;;7623:15;;7608:12;:30;;;;7548:101;6547:1108;;;:::o;662:114::-;714:6;746:1;741;:6;;733:15;;;;;;;;767:1;763;:5;759:9;;662:114;;;;:::o;3478:11796::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;:::o;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;:::-;;;;;;;","deployedSourceMap":"3478:11796:0:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;14835:8;;;3593:19;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;23:1:-1;8:100;33:3;30:1;27:2;8:100;;;99:1;94:3;90;84:5;80:1;75:3;71;64:6;52:2;49:1;45:3;40:15;;8:100;;;12:14;3:109;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;12405:203:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;4441:36;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;10036:119;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8393:1361;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;10815:116;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;13149:338;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;4312:21;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3619;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;10161:92;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3647:24;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;10367:257;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;9844:103;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;4339:27;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;4559:24;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;4374:27;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;11156:124;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3022:191;;;;;;;;;;;;;;7902:484;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3832:22;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;4070:37;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;4115:24;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;4222:30;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2625:20;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3566;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;23:1:-1;8:100;33:3;30:1;27:2;8:100;;;99:1;94:3;90;84:5;80:1;75:3;71;64:6;52:2;49:1;45:3;40:15;;8:100;;;12:14;3:109;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;7662:232:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;11629:262;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3888:42;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;4407:28;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;14290:312;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3782:41;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2652:23;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;15087:184;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;4006:35;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;13773:151;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2914:102;;;;;;;;;;;;;;;;;;;;;;;;;;;;3593:19;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;12405:203::-;12468:12;12524:6;12493:7;:19;12501:10;12493:19;;;;;;;;;;;;;;;:28;12513:7;12493:28;;;;;;;;;;;;;;;:37;;;;12562:7;12541:37;;12550:10;12541:37;;;12571:6;12541:37;;;;;;;;;;;;;;;;;;12596:4;12589:11;;12405:203;;;;:::o;4441:36::-;;;;:::o;10036:119::-;10092:4;10115:33;10135:12;;10115:15;;:19;;:33;;;;:::i;:::-;10108:40;;10036:119;:::o;8393:1361::-;8464:12;8540:18;8739:14;9139;8561:17;:15;:17::i;:::-;8540:38;;8767:15;;8784:10;8796:5;8757:46;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8739:64;;8883:16;8873:26;;;:6;:26;;;;;8869:40;;;8901:8;;;8869:40;8994:12;;8984:6;8976:15;;;:30;8973:43;;;9008:8;;;8973:43;9156:17;:25;9174:6;9156:25;;;;;;;;;;;;;;;;;;9139:42;;9220:10;;9192:17;:25;9210:6;9192:25;;;;;;;;;;;;;;;;;:38;;;;9257:1;9244:9;:14;;9241:27;;;9260:8;;;9241:27;9351:39;9376:13;9351:8;:20;9360:10;9351:20;;;;;;;;;;;;;;;;:24;;:39;;;;:::i;:::-;9328:8;:20;9337:10;9328:20;;;;;;;;;;;;;;;:62;;;;9417:31;9434:13;9417:12;;:16;;:31;;;;:::i;:::-;9402:12;:46;;;;9515:10;9500:12;;:25;;;;;;;;;;;;;;;;;;9554:13;9535:16;:32;;;;9604:12;9577:24;:39;;;;9629:22;:20;:22::i;:::-;9669:10;9664:61;;;9681:13;9696:10;;9708:15;;9664:61;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;9742:4;9735:11;;8393:1361;;;;;;;:::o;10815:116::-;10863:4;10903:8;:20;10920:1;10903:20;;;;;;;;;;;;;;;;10887:12;;:36;10880:43;;10815:116;:::o;13149:338::-;13226:12;13268:26;13287:6;13268:8;:14;13277:4;13268:14;;;;;;;;;;;;;;;;:18;;:26;;;;:::i;:::-;13251:8;:14;13260:4;13251:14;;;;;;;;;;;;;;;:43;;;;13333:37;13363:6;13333:7;:13;13341:4;13333:13;;;;;;;;;;;;;;;:25;13347:10;13333:25;;;;;;;;;;;;;;;;:29;;:37;;;;:::i;:::-;13305:7;:13;13313:4;13305:13;;;;;;;;;;;;;;;:25;13319:10;13305:25;;;;;;;;;;;;;;;:65;;;;13396:24;13413:6;13396:8;:12;13405:2;13396:12;;;;;;;;;;;;;;;;:16;;:24;;;;:::i;:::-;13381:8;:12;13390:2;13381:12;;;;;;;;;;;;;;;:39;;;;13446:2;13431:26;;13440:4;13431:26;;;13450:6;13431:26;;;;;;;;;;;;;;;;;;13475:4;13468:11;;13149:338;;;;;:::o;4312:21::-;;;;:::o;3619:::-;;;;;;;;;;;;;:::o;10161:92::-;10213:4;10235:12;;10228:19;;10161:92;:::o;3647:24::-;;;;:::o;10367:257::-;10419:4;10569:46;10604:9;;10601:1;:12;10584:8;;;;;;;;;;;10579:14;;10575:2;:18;10570:2;:23;10569:30;;:46;;;;:::i;:::-;10562:53;;10367:257;:::o;9844:103::-;9899:7;9925:15;;9918:22;;9844:103;:::o;4339:27::-;;;;:::o;4559:24::-;;;;:::o;4374:27::-;;;;;;;;;;;;;:::o;11156:124::-;11220:12;11252:8;:20;11261:10;11252:20;;;;;;;;;;;;;;;;11245:27;;11156:124;;;:::o;3022:191::-;3089:8;;;;;;;;;;;3075:22;;:10;:22;;;3067:31;;;;;;;;3137:8;;;;;;;;;;;3109:37;;3130:5;;;;;;;;;;;3109:37;;;;;;;;;;;;3165:8;;;;;;;;;;;3157:5;;:16;;;;;;;;;;;;;;;;;;3203:1;3184:8;;:21;;;;;;;;;;;;;;;;;;3022:191::o;7902:484::-;8033:12;8060:15;8104:18;8155:14;8078;8060:32;;8125:17;:15;:17::i;:::-;8104:38;;8182:16;8199:10;8210:5;8172:44;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8155:61;;8304:12;;8294:6;8286:15;;;:30;8283:43;;;8318:8;;;8283:43;8357:16;8347:26;;;:6;:26;;;;8339:35;;7902:484;;;;;;;;;:::o;3832:22::-;;;;:::o;4070:37::-;;;;:::o;4115:24::-;;;;:::o;4222:30::-;;;;:::o;2625:20::-;;;;;;;;;;;;;:::o;3566:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;7662:232::-;7768:18;7799:14;7826:16;7843:10;7854:5;7816:44;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;7799:61;;7878:6;7871:13;;7662:232;;;;;;:::o;11629:262::-;11688:12;11736:32;11761:6;11736:8;:20;11745:10;11736:20;;;;;;;;;;;;;;;;:24;;:32;;;;:::i;:::-;11713:8;:20;11722:10;11713:20;;;;;;;;;;;;;;;:55;;;;11794:24;11811:6;11794:8;:12;11803:2;11794:12;;;;;;;;;;;;;;;;:16;;:24;;;;:::i;:::-;11779:8;:12;11788:2;11779:12;;;;;;;;;;;;;;;:39;;;;11850:2;11829:32;;11838:10;11829:32;;;11854:6;11829:32;;;;;;;;;;;;;;;;;;11879:4;11872:11;;11629:262;;;;:::o;3888:42::-;;;;:::o;4407:28::-;;;;:::o;14290:312::-;14372:12;14428:6;14397:7;:19;14405:10;14397:19;;;;;;;;;;;;;;;:28;14417:7;14397:28;;;;;;;;;;;;;;;:37;;;;14466:7;14445:37;;14454:10;14445:37;;;14475:6;14445:37;;;;;;;;;;;;;;;;;;14516:7;14493:47;;;14541:10;14553:6;14561:4;14567;14493:79;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;23:1:-1;8:100;33:3;30:1;27:2;8:100;;;99:1;94:3;90;84:5;80:1;75:3;71;64:6;52:2;49:1;45:3;40:15;;8:100;;;12:14;3:109;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;14590:4:0;14583:11;;14290:312;;;;;:::o;3782:41::-;;;;:::o;2652:23::-;;;;;;;;;;;;;:::o;15087:184::-;15179:12;2881:5;;;;;;;;;;;2867:19;;:10;:19;;;2859:28;;;;;;;;15226:12;15211:37;;;15249:5;;;;;;;;;;;15256:6;15211:52;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;15204:59;;15087:184;;;;:::o;4006:35::-;;;;:::o;13773:151::-;13854:14;13888:7;:19;13896:10;13888:19;;;;;;;;;;;;;;;:28;13908:7;13888:28;;;;;;;;;;;;;;;;13881:35;;13773:151;;;;:::o;2914:102::-;2881:5;;;;;;;;;;;2867:19;;:10;:19;;;2859:28;;;;;;;;2999:9;2988:8;;:20;;;;;;;;;;;;;;;;;;2914:102;:::o;916:113::-;968:6;999:1;995;:5;987:14;;;;;;;;1020:1;1016;:5;;;;;;;;1012:9;;916:113;;;;:::o;542:114::-;594:6;621:1;617;:5;613:9;;646:1;641;:6;;633:15;;;;;;;;542:114;;;;:::o;5502:821::-;5646:15;;5630:12;;:31;;:49;;;;;5677:2;5665:9;;:14;5630:49;5627:152;;;5769:1;5757:9;;:13;5745:9;:25;;;;5627:152;5884:37;5918:1;5906:9;;:13;5902:1;:18;5884:12;;:16;;:37;;;;:::i;:::-;5869:12;;:52;5851:15;:70;;;;6096:1;6081:12;:16;6065:33;6047:15;:51;;;;;;;6121:17;6136:1;6121:10;;:14;;:17;;;;:::i;:::-;6108:10;:30;;;;6265:1;6237:24;;6224:10;;:37;;;;;;;;:42;6221:93;;;6284:21;:19;:21::i;:::-;6221:93;5502:821::o;662:114::-;714:6;746:1;741;:6;;733:15;;;;;;;;767:1;763;:5;759:9;;662:114;;;;:::o;6547:1108::-;6599:39;6857:16;6917:28;6656:29;;6641:12;:44;6599:86;;6876:24;;6857:43;;6962:2;6948:11;:16;6917:47;;7127:23;7090:34;:60;7086:285;;;7215:38;7232:20;7249:2;7232:12;;:16;;:20;;;;:::i;:::-;7215:12;;:16;;:38;;;;:::i;:::-;7200:12;:53;;;;7086:285;;;7322:38;7339:20;7356:2;7339:12;;:16;;:20;;;;:::i;:::-;7322:12;;:16;;:38;;;;:::i;:::-;7307:12;:53;;;;7086:285;7415:12;7383:29;:44;;;;7456:15;;7441:12;;:30;7438:100;;;7512:15;;7497:12;:30;;;;7438:100;7566:15;;7551:12;;:30;7548:101;;;7623:15;;7608:12;:30;;;;7548:101;6547:1108;;;:::o","source":"pragma solidity ^0.4.18;\n\n\n// ----------------------------------------------------------------------------\n\n// '0xBitcoin Token' contract\n\n//\n\n// Symbol      : 0xBTC\n\n// Name        : 0xBitcoin Token\n\n// Total supply: 21,000,000.00\n\n// Decimals    : 8\n\n//\n\n\n// ----------------------------------------------------------------------------\n\n\n\n// ----------------------------------------------------------------------------\n\n// Safe maths\n\n// ----------------------------------------------------------------------------\n\nlibrary SafeMath {\n\n    function add(uint a, uint b) internal pure returns (uint c) {\n\n        c = a + b;\n\n        require(c >= a);\n\n    }\n\n    function sub(uint a, uint b) internal pure returns (uint c) {\n\n        require(b <= a);\n\n        c = a - b;\n\n    }\n\n    function mul(uint a, uint b) internal pure returns (uint c) {\n\n        c = a * b;\n\n        require(a == 0 || c / a == b);\n\n    }\n\n    function div(uint a, uint b) internal pure returns (uint c) {\n\n        require(b > 0);\n\n        c = a / b;\n\n    }\n\n}\n\n\n\n// ----------------------------------------------------------------------------\n\n// ERC Token Standard #20 Interface\n\n// https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md\n\n// ----------------------------------------------------------------------------\n\ncontract ERC20Interface {\n\n    function totalSupply() public constant returns (uint);\n\n    function balanceOf(address tokenOwner) public constant returns (uint balance);\n\n    function allowance(address tokenOwner, address spender) public constant returns (uint remaining);\n\n    function transfer(address to, uint tokens) public returns (bool success);\n\n    function approve(address spender, uint tokens) public returns (bool success);\n\n    function transferFrom(address from, address to, uint tokens) public returns (bool success);\n\n\n    event Transfer(address indexed from, address indexed to, uint tokens);\n\n    event Approval(address indexed tokenOwner, address indexed spender, uint tokens);\n\n}\n\n\n\n// ----------------------------------------------------------------------------\n\n// Contract function to receive approval and execute function in one call\n\n//\n\n// Borrowed from MiniMeToken\n\n// ----------------------------------------------------------------------------\n\ncontract ApproveAndCallFallBack {\n\n    function receiveApproval(address from, uint256 tokens, address token, bytes data) public;\n\n}\n\n\n\n// ----------------------------------------------------------------------------\n\n// Owned contract\n\n// ----------------------------------------------------------------------------\n\ncontract Owned {\n\n    address public owner;\n\n    address public newOwner;\n\n\n    event OwnershipTransferred(address indexed _from, address indexed _to);\n\n\n    function Owned() public {\n\n        owner = msg.sender;\n\n    }\n\n\n    modifier onlyOwner {\n\n        require(msg.sender == owner);\n\n        _;\n\n    }\n\n\n    function transferOwnership(address _newOwner) public onlyOwner {\n\n        newOwner = _newOwner;\n\n    }\n\n    function acceptOwnership() public {\n\n        require(msg.sender == newOwner);\n\n        OwnershipTransferred(owner, newOwner);\n\n        owner = newOwner;\n\n        newOwner = address(0);\n\n    }\n\n}\n\n\n\n// ----------------------------------------------------------------------------\n\n// ERC20 Token, with the addition of symbol, name and decimals and an\n\n// initial fixed supply\n\n// ----------------------------------------------------------------------------\n\ncontract _0xBitcoinToken is ERC20Interface, Owned {\n\n    using SafeMath for uint;\n\n\n    string public symbol;\n\n    string public  name;\n\n    uint8 public decimals;\n\n    uint public _totalSupply;\n\n\n\n      //ethereum block number when last 0xbtc was minted\n  //  uint public latestMiningEpochStarted;\n\n    uint public latestDifficultyPeriodStarted;\n\n\n\n    uint public epochCount;//number of 'blocks' mined\n\n\n    uint public _BLOCKS_PER_READJUSTMENT = 256;\n\n\n    //a big number is easier ; just find a solution that is smaller\n    uint public  _MINIMUM_TARGET = 2**8;\n\n    //a little number\n    uint public  _MAXIMUM_TARGET = 2**250;\n\n\n    uint public miningTarget;\n  //  uint public miningDifficulty; //adjusts every 2016 epochs (or blocks)\n\n    bytes32 public challengeNumber;   //generate a new one when a new reward is minted\n\n\n\n    uint public rewardEra;\n    uint public maxSupplyForEra;\n\n\n    address public lastRewardTo;\n    uint public lastRewardAmount;\n    uint public lastRewardEthBlockNumber;\n\n\n    mapping(bytes32 => uint) rewardHashesFound; //the hash and the nonce\n\n    uint public tokensMinted;\n\n    mapping(address => uint) balances;\n\n\n\n\n\n    mapping(address => mapping(address => uint)) allowed;\n\n\n\n\n    event Mint(address indexed from, uint reward_amount, uint epochCount, bytes32 newChallengeNumber);\n\n    // ------------------------------------------------------------------------\n\n    // Constructor\n\n    // ------------------------------------------------------------------------\n\n    function _0xBitcoinToken() public onlyOwner{\n\n        symbol = \"0xBTC\";\n\n        name = \"0xBitcoin Token\";\n\n        decimals = 8;\n\n        _totalSupply = 21000000 * 10**uint(decimals);\n        tokensMinted = 0;\n\n        rewardEra = 0;\n        maxSupplyForEra = _totalSupply.div(2);\n\n        miningTarget = _MAXIMUM_TARGET;\n\n        latestDifficultyPeriodStarted = block.number;\n\n        _startNewMiningEpoch();\n\n        //balances[owner] = _totalSupply;\n\n        //Transfer(address(0), owner, _totalSupply);\n\n    }\n\n    function _startNewMiningEpoch() internal {//a new block to be mined\n\n      //latestMiningEpochStarted = block.number;\n\n      if(tokensMinted >= maxSupplyForEra && rewardEra < 32) //32 is the final era, almost all tokens minted\n      {\n        rewardEra = rewardEra + 1;\n      }\n\n      //set the next minted supply at which the era will change\n      maxSupplyForEra = _totalSupply - _totalSupply.div( 2**(rewardEra + 1));\n\n      //make the latest ethereum block hash a part of the next challenge for PoW to prevent pre-mining future blocks\n      challengeNumber = block.blockhash(block.number - 1);\n\n\n      epochCount = epochCount.add(1);\n\n      //every so often, readjust difficulty, dont readjust when deploying\n      if(epochCount % _BLOCKS_PER_READJUSTMENT == 0)\n      {\n        _reAdjustDifficulty();\n      }\n\n\n\n    }\n\n\n\n\n    //https://en.bitcoin.it/wiki/Difficulty#What_is_the_formula_for_difficulty.3F\n    //as of 2017 the bitcoin difficulty was up to 17 zeroes, it was only 8 in the early days\n\n    //readjust the target by 5 percent\n    function _reAdjustDifficulty() internal {\n\n\n        uint ethBlocksSinceLastDifficultyPeriod = block.number - latestDifficultyPeriodStarted;\n\n        //assume 360 ethereum blocks per hour\n\n        //we want miners to spend 10 minutes to mine each 'block', about 60 ethereum blocks = one 0xbitcoin epoch\n        uint epochsMined = _BLOCKS_PER_READJUSTMENT; //256\n\n        uint targetEthBlocksPerEpoch = epochsMined * 60; //should be 60 times slower than ethereum\n\n        //if there were less eth blocks passed in time than expected\n        if( ethBlocksSinceLastDifficultyPeriod < targetEthBlocksPerEpoch )\n        {\n          //make it harder\n          miningTarget = miningTarget.sub(miningTarget.div(20));\n        }else{\n          //make it easier\n          miningTarget = miningTarget.add(miningTarget.div(20));\n        }\n\n\n\n        latestDifficultyPeriodStarted = block.number;\n\n        if(miningTarget < _MINIMUM_TARGET) //6\n        {\n          miningTarget = _MINIMUM_TARGET;\n        }\n\n        if(miningTarget > _MAXIMUM_TARGET) //54\n        {\n          miningTarget = _MAXIMUM_TARGET;\n        }\n    }\n\n\n    function getMintDigest(uint256 nonce, bytes32 challenge_digest, bytes32 challenge_number) public returns (bytes32 digesttest) {\n\n        bytes32 digest = keccak256(challenge_number,msg.sender,nonce);\n\n        return digest;\n\n      }\n\n      function checkMintSolution(uint256 nonce, bytes32 challenge_digest, bytes32 challenge_number, uint testDifficulty) public returns (bool success) {\n\n          uint difficulty = testDifficulty;\n          uint reward_amount = getMiningReward();\n\n          bytes32 digest = keccak256(challenge_number,msg.sender,nonce);\n\n          //bytes memory characters = bytes(digest);\n\n          if(uint256(digest) > miningTarget) revert();\n\n          return (digest == challenge_digest);\n\n        }\n\n\n    function mint(uint256 nonce, bytes32 challenge_digest) public returns (bool success) {\n\n      //  uint difficulty = getMiningDifficulty();\n        uint reward_amount = getMiningReward();\n\n        //the PoW must contain work that includes a recent etherum block hash (challenge number) and the msg.sender's address to prevent MITM attacks\n        bytes32 digest =  keccak256(challengeNumber, msg.sender, nonce );\n\n        //the challenge digest must match the expected\n        if (digest != challenge_digest) revert();\n\n        //the digest must be smaller than the target\n        if(uint256(digest) > miningTarget) revert();\n      //  for(uint i = 0; i < difficulty    ; i++) {\n      //     if (digest[i] != 0x0 ) revert();\n      //  }\n\n         uint hashFound = rewardHashesFound[digest];\n         rewardHashesFound[digest] = epochCount;\n         if(hashFound != 0) revert();  //prevent the same answer from awarding twice\n\n\n\n        balances[msg.sender] = balances[msg.sender].add(reward_amount);\n\n\n        tokensMinted = tokensMinted.add(reward_amount);\n\n\n        //set readonly diagnostics data\n        lastRewardTo = msg.sender;\n        lastRewardAmount = reward_amount;\n        lastRewardEthBlockNumber = block.number;\n\n\n         _startNewMiningEpoch();\n\n          Mint(msg.sender, reward_amount, epochCount, challengeNumber );\n\n       return true;\n\n    }\n\n    //this is a recent ethreum block hash, used to prevent pre-mining future blocks\n    function getChallengeNumber() public constant returns (bytes32) {\n        return challengeNumber;\n    }\n\n    //the number of zeroes the digest of the PoW solution requires.  Auto adjusts\n     function getMiningDifficulty() public constant returns (uint) {\n        return _MAXIMUM_TARGET.div(miningTarget);\n    }\n\n    function getMiningTarget() public constant returns (uint) {\n       return miningTarget;\n   }\n\n\n\n    //21m coins total\n    //reward begins at 50 and is cut in half every reward era (as tokens are mined)\n    function getMiningReward() public constant returns (uint) {\n        //once we get half way thru the coins, only get 25 per block\n\n         //every reward era, the reward amount halves.\n\n         return (50 * 10**uint(decimals) ).div( 2**rewardEra ) ;\n\n    }\n\n\n\n    // ------------------------------------------------------------------------\n\n    // Total supply\n\n    // ------------------------------------------------------------------------\n\n    function totalSupply() public constant returns (uint) {\n\n        return _totalSupply  - balances[address(0)];\n\n    }\n\n\n\n    // ------------------------------------------------------------------------\n\n    // Get the token balance for account `tokenOwner`\n\n    // ------------------------------------------------------------------------\n\n    function balanceOf(address tokenOwner) public constant returns (uint balance) {\n\n        return balances[tokenOwner];\n\n    }\n\n\n\n    // ------------------------------------------------------------------------\n\n    // Transfer the balance from token owner's account to `to` account\n\n    // - Owner's account must have sufficient balance to transfer\n\n    // - 0 value transfers are allowed\n\n    // ------------------------------------------------------------------------\n\n    function transfer(address to, uint tokens) public returns (bool success) {\n\n        balances[msg.sender] = balances[msg.sender].sub(tokens);\n\n        balances[to] = balances[to].add(tokens);\n\n        Transfer(msg.sender, to, tokens);\n\n        return true;\n\n    }\n\n\n\n    // ------------------------------------------------------------------------\n\n    // Token owner can approve for `spender` to transferFrom(...) `tokens`\n\n    // from the token owner's account\n\n    //\n\n    // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md\n\n    // recommends that there are no checks for the approval double-spend attack\n\n    // as this should be implemented in user interfaces\n\n    // ------------------------------------------------------------------------\n\n    function approve(address spender, uint tokens) public returns (bool success) {\n\n        allowed[msg.sender][spender] = tokens;\n\n        Approval(msg.sender, spender, tokens);\n\n        return true;\n\n    }\n\n\n\n    // ------------------------------------------------------------------------\n\n    // Transfer `tokens` from the `from` account to the `to` account\n\n    //\n\n    // The calling account must already have sufficient tokens approve(...)-d\n\n    // for spending from the `from` account and\n\n    // - From account must have sufficient balance to transfer\n\n    // - Spender must have sufficient allowance to transfer\n\n    // - 0 value transfers are allowed\n\n    // ------------------------------------------------------------------------\n\n    function transferFrom(address from, address to, uint tokens) public returns (bool success) {\n\n        balances[from] = balances[from].sub(tokens);\n\n        allowed[from][msg.sender] = allowed[from][msg.sender].sub(tokens);\n\n        balances[to] = balances[to].add(tokens);\n\n        Transfer(from, to, tokens);\n\n        return true;\n\n    }\n\n\n\n    // ------------------------------------------------------------------------\n\n    // Returns the amount of tokens approved by the owner that can be\n\n    // transferred to the spender's account\n\n    // ------------------------------------------------------------------------\n\n    function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {\n\n        return allowed[tokenOwner][spender];\n\n    }\n\n\n\n    // ------------------------------------------------------------------------\n\n    // Token owner can approve for `spender` to transferFrom(...) `tokens`\n\n    // from the token owner's account. The `spender` contract function\n\n    // `receiveApproval(...)` is then executed\n\n    // ------------------------------------------------------------------------\n\n    function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {\n\n        allowed[msg.sender][spender] = tokens;\n\n        Approval(msg.sender, spender, tokens);\n\n        ApproveAndCallFallBack(spender).receiveApproval(msg.sender, tokens, this, data);\n\n        return true;\n\n    }\n\n\n\n    // ------------------------------------------------------------------------\n\n    // Don't accept ETH\n\n    // ------------------------------------------------------------------------\n\n    function () public payable {\n\n        revert();\n\n    }\n\n\n\n    // ------------------------------------------------------------------------\n\n    // Owner can transfer out any accidentally sent ERC20 tokens\n\n    // ------------------------------------------------------------------------\n\n    function transferAnyERC20Token(address tokenAddress, uint tokens) public onlyOwner returns (bool success) {\n\n        return ERC20Interface(tokenAddress).transfer(owner, tokens);\n\n    }\n\n}\n","sourcePath":"/home/andy/dev/0xbitcoin-token/contracts/_0xBitcoinToken.sol","ast":{"attributes":{"absolutePath":"/home/andy/dev/0xbitcoin-token/contracts/_0xBitcoinToken.sol","exportedSymbols":{"ApproveAndCallFallBack":[175],"ERC20Interface":[163],"Owned":[244],"SafeMath":[96],"_0xBitcoinToken":[964]}},"children":[{"attributes":{"literals":["solidity","^","0.4",".18"]},"id":1,"name":"PragmaDirective","src":"0:24:0"},{"attributes":{"baseContracts":[null],"contractDependencies":[null],"contractKind":"library","documentation":null,"fullyImplemented":true,"linearizedBaseContracts":[96],"name":"SafeMath","scope":965},"children":[{"attributes":{"constant":true,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"add","payable":false,"scope":96,"stateMutability":"pure","superFunction":null,"visibility":"internal"},"children":[{"children":[{"attributes":{"constant":false,"name":"a","scope":23,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":2,"name":"ElementaryTypeName","src":"555:4:0"}],"id":3,"name":"VariableDeclaration","src":"555:6:0"},{"attributes":{"constant":false,"name":"b","scope":23,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":4,"name":"ElementaryTypeName","src":"563:4:0"}],"id":5,"name":"VariableDeclaration","src":"563:6:0"}],"id":6,"name":"ParameterList","src":"554:16:0"},{"children":[{"attributes":{"constant":false,"name":"c","scope":23,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":7,"name":"ElementaryTypeName","src":"594:4:0"}],"id":8,"name":"VariableDeclaration","src":"594:6:0"}],"id":9,"name":"ParameterList","src":"593:8:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":8,"type":"uint256","value":"c"},"id":10,"name":"Identifier","src":"613:1:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"+","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":3,"type":"uint256","value":"a"},"id":11,"name":"Identifier","src":"617:1:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":5,"type":"uint256","value":"b"},"id":12,"name":"Identifier","src":"621:1:0"}],"id":13,"name":"BinaryOperation","src":"617:5:0"}],"id":14,"name":"Assignment","src":"613:9:0"}],"id":15,"name":"ExpressionStatement","src":"613:9:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_bool","typeString":"bool"}],"overloadedDeclarations":[null],"referencedDeclaration":979,"type":"function (bool) pure","value":"require"},"id":16,"name":"Identifier","src":"633:7:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":">=","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":8,"type":"uint256","value":"c"},"id":17,"name":"Identifier","src":"641:1:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":3,"type":"uint256","value":"a"},"id":18,"name":"Identifier","src":"646:1:0"}],"id":19,"name":"BinaryOperation","src":"641:6:0"}],"id":20,"name":"FunctionCall","src":"633:15:0"}],"id":21,"name":"ExpressionStatement","src":"633:15:0"}],"id":22,"name":"Block","src":"602:54:0"}],"id":23,"name":"FunctionDefinition","src":"542:114:0"},{"attributes":{"constant":true,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"sub","payable":false,"scope":96,"stateMutability":"pure","superFunction":null,"visibility":"internal"},"children":[{"children":[{"attributes":{"constant":false,"name":"a","scope":45,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":24,"name":"ElementaryTypeName","src":"675:4:0"}],"id":25,"name":"VariableDeclaration","src":"675:6:0"},{"attributes":{"constant":false,"name":"b","scope":45,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":26,"name":"ElementaryTypeName","src":"683:4:0"}],"id":27,"name":"VariableDeclaration","src":"683:6:0"}],"id":28,"name":"ParameterList","src":"674:16:0"},{"children":[{"attributes":{"constant":false,"name":"c","scope":45,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":29,"name":"ElementaryTypeName","src":"714:4:0"}],"id":30,"name":"VariableDeclaration","src":"714:6:0"}],"id":31,"name":"ParameterList","src":"713:8:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_bool","typeString":"bool"}],"overloadedDeclarations":[null],"referencedDeclaration":979,"type":"function (bool) pure","value":"require"},"id":32,"name":"Identifier","src":"733:7:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"<=","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":27,"type":"uint256","value":"b"},"id":33,"name":"Identifier","src":"741:1:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":25,"type":"uint256","value":"a"},"id":34,"name":"Identifier","src":"746:1:0"}],"id":35,"name":"BinaryOperation","src":"741:6:0"}],"id":36,"name":"FunctionCall","src":"733:15:0"}],"id":37,"name":"ExpressionStatement","src":"733:15:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":30,"type":"uint256","value":"c"},"id":38,"name":"Identifier","src":"759:1:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"-","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":25,"type":"uint256","value":"a"},"id":39,"name":"Identifier","src":"763:1:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":27,"type":"uint256","value":"b"},"id":40,"name":"Identifier","src":"767:1:0"}],"id":41,"name":"BinaryOperation","src":"763:5:0"}],"id":42,"name":"Assignment","src":"759:9:0"}],"id":43,"name":"ExpressionStatement","src":"759:9:0"}],"id":44,"name":"Block","src":"722:54:0"}],"id":45,"name":"FunctionDefinition","src":"662:114:0"},{"attributes":{"constant":true,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"mul","payable":false,"scope":96,"stateMutability":"pure","superFunction":null,"visibility":"internal"},"children":[{"children":[{"attributes":{"constant":false,"name":"a","scope":73,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":46,"name":"ElementaryTypeName","src":"795:4:0"}],"id":47,"name":"VariableDeclaration","src":"795:6:0"},{"attributes":{"constant":false,"name":"b","scope":73,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":48,"name":"ElementaryTypeName","src":"803:4:0"}],"id":49,"name":"VariableDeclaration","src":"803:6:0"}],"id":50,"name":"ParameterList","src":"794:16:0"},{"children":[{"attributes":{"constant":false,"name":"c","scope":73,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":51,"name":"ElementaryTypeName","src":"834:4:0"}],"id":52,"name":"VariableDeclaration","src":"834:6:0"}],"id":53,"name":"ParameterList","src":"833:8:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":52,"type":"uint256","value":"c"},"id":54,"name":"Identifier","src":"853:1:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"*","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":47,"type":"uint256","value":"a"},"id":55,"name":"Identifier","src":"857:1:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":49,"type":"uint256","value":"b"},"id":56,"name":"Identifier","src":"861:1:0"}],"id":57,"name":"BinaryOperation","src":"857:5:0"}],"id":58,"name":"Assignment","src":"853:9:0"}],"id":59,"name":"ExpressionStatement","src":"853:9:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_bool","typeString":"bool"}],"overloadedDeclarations":[null],"referencedDeclaration":979,"type":"function (bool) pure","value":"require"},"id":60,"name":"Identifier","src":"873:7:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_bool","typeString":"bool"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"||","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"==","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":47,"type":"uint256","value":"a"},"id":61,"name":"Identifier","src":"881:1:0"},{"attributes":{"argumentTypes":null,"hexvalue":"30","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 0","value":"0"},"id":62,"name":"Literal","src":"886:1:0"}],"id":63,"name":"BinaryOperation","src":"881:6:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"==","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"/","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":52,"type":"uint256","value":"c"},"id":64,"name":"Identifier","src":"891:1:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":47,"type":"uint256","value":"a"},"id":65,"name":"Identifier","src":"895:1:0"}],"id":66,"name":"BinaryOperation","src":"891:5:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":49,"type":"uint256","value":"b"},"id":67,"name":"Identifier","src":"900:1:0"}],"id":68,"name":"BinaryOperation","src":"891:10:0"}],"id":69,"name":"BinaryOperation","src":"881:20:0"}],"id":70,"name":"FunctionCall","src":"873:29:0"}],"id":71,"name":"ExpressionStatement","src":"873:29:0"}],"id":72,"name":"Block","src":"842:68:0"}],"id":73,"name":"FunctionDefinition","src":"782:128:0"},{"attributes":{"constant":true,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"div","payable":false,"scope":96,"stateMutability":"pure","superFunction":null,"visibility":"internal"},"children":[{"children":[{"attributes":{"constant":false,"name":"a","scope":95,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":74,"name":"ElementaryTypeName","src":"929:4:0"}],"id":75,"name":"VariableDeclaration","src":"929:6:0"},{"attributes":{"constant":false,"name":"b","scope":95,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":76,"name":"ElementaryTypeName","src":"937:4:0"}],"id":77,"name":"VariableDeclaration","src":"937:6:0"}],"id":78,"name":"ParameterList","src":"928:16:0"},{"children":[{"attributes":{"constant":false,"name":"c","scope":95,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":79,"name":"ElementaryTypeName","src":"968:4:0"}],"id":80,"name":"VariableDeclaration","src":"968:6:0"}],"id":81,"name":"ParameterList","src":"967:8:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_bool","typeString":"bool"}],"overloadedDeclarations":[null],"referencedDeclaration":979,"type":"function (bool) pure","value":"require"},"id":82,"name":"Identifier","src":"987:7:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":">","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":77,"type":"uint256","value":"b"},"id":83,"name":"Identifier","src":"995:1:0"},{"attributes":{"argumentTypes":null,"hexvalue":"30","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 0","value":"0"},"id":84,"name":"Literal","src":"999:1:0"}],"id":85,"name":"BinaryOperation","src":"995:5:0"}],"id":86,"name":"FunctionCall","src":"987:14:0"}],"id":87,"name":"ExpressionStatement","src":"987:14:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":80,"type":"uint256","value":"c"},"id":88,"name":"Identifier","src":"1012:1:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"/","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":75,"type":"uint256","value":"a"},"id":89,"name":"Identifier","src":"1016:1:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":77,"type":"uint256","value":"b"},"id":90,"name":"Identifier","src":"1020:1:0"}],"id":91,"name":"BinaryOperation","src":"1016:5:0"}],"id":92,"name":"Assignment","src":"1012:9:0"}],"id":93,"name":"ExpressionStatement","src":"1012:9:0"}],"id":94,"name":"Block","src":"976:53:0"}],"id":95,"name":"FunctionDefinition","src":"916:113:0"}],"id":96,"name":"ContractDefinition","src":"518:514:0"},{"attributes":{"baseContracts":[null],"contractDependencies":[null],"contractKind":"contract","documentation":null,"fullyImplemented":false,"linearizedBaseContracts":[163],"name":"ERC20Interface","scope":965},"children":[{"attributes":{"body":null,"constant":true,"implemented":false,"isConstructor":false,"modifiers":[null],"name":"totalSupply","payable":false,"scope":163,"stateMutability":"view","superFunction":null,"visibility":"public"},"children":[{"attributes":{"parameters":[null]},"children":[],"id":97,"name":"ParameterList","src":"1365:2:0"},{"children":[{"attributes":{"constant":false,"name":"","scope":101,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":98,"name":"ElementaryTypeName","src":"1393:4:0"}],"id":99,"name":"VariableDeclaration","src":"1393:4:0"}],"id":100,"name":"ParameterList","src":"1392:6:0"}],"id":101,"name":"FunctionDefinition","src":"1345:54:0"},{"attributes":{"body":null,"constant":true,"implemented":false,"isConstructor":false,"modifiers":[null],"name":"balanceOf","payable":false,"scope":163,"stateMutability":"view","superFunction":null,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"tokenOwner","scope":108,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":102,"name":"ElementaryTypeName","src":"1424:7:0"}],"id":103,"name":"VariableDeclaration","src":"1424:18:0"}],"id":104,"name":"ParameterList","src":"1423:20:0"},{"children":[{"attributes":{"constant":false,"name":"balance","scope":108,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":105,"name":"ElementaryTypeName","src":"1469:4:0"}],"id":106,"name":"VariableDeclaration","src":"1469:12:0"}],"id":107,"name":"ParameterList","src":"1468:14:0"}],"id":108,"name":"FunctionDefinition","src":"1405:78:0"},{"attributes":{"body":null,"constant":true,"implemented":false,"isConstructor":false,"modifiers":[null],"name":"allowance","payable":false,"scope":163,"stateMutability":"view","superFunction":null,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"tokenOwner","scope":117,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":109,"name":"ElementaryTypeName","src":"1508:7:0"}],"id":110,"name":"VariableDeclaration","src":"1508:18:0"},{"attributes":{"constant":false,"name":"spender","scope":117,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":111,"name":"ElementaryTypeName","src":"1528:7:0"}],"id":112,"name":"VariableDeclaration","src":"1528:15:0"}],"id":113,"name":"ParameterList","src":"1507:37:0"},{"children":[{"attributes":{"constant":false,"name":"remaining","scope":117,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":114,"name":"ElementaryTypeName","src":"1570:4:0"}],"id":115,"name":"VariableDeclaration","src":"1570:14:0"}],"id":116,"name":"ParameterList","src":"1569:16:0"}],"id":117,"name":"FunctionDefinition","src":"1489:97:0"},{"attributes":{"body":null,"constant":false,"implemented":false,"isConstructor":false,"modifiers":[null],"name":"transfer","payable":false,"scope":163,"stateMutability":"nonpayable","superFunction":null,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"to","scope":126,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":118,"name":"ElementaryTypeName","src":"1610:7:0"}],"id":119,"name":"VariableDeclaration","src":"1610:10:0"},{"attributes":{"constant":false,"name":"tokens","scope":126,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":120,"name":"ElementaryTypeName","src":"1622:4:0"}],"id":121,"name":"VariableDeclaration","src":"1622:11:0"}],"id":122,"name":"ParameterList","src":"1609:25:0"},{"children":[{"attributes":{"constant":false,"name":"success","scope":126,"stateVariable":false,"storageLocation":"default","type":"bool","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bool","type":"bool"},"id":123,"name":"ElementaryTypeName","src":"1651:4:0"}],"id":124,"name":"VariableDeclaration","src":"1651:12:0"}],"id":125,"name":"ParameterList","src":"1650:14:0"}],"id":126,"name":"FunctionDefinition","src":"1592:73:0"},{"attributes":{"body":null,"constant":false,"implemented":false,"isConstructor":false,"modifiers":[null],"name":"approve","payable":false,"scope":163,"stateMutability":"nonpayable","superFunction":null,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"spender","scope":135,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":127,"name":"ElementaryTypeName","src":"1688:7:0"}],"id":128,"name":"VariableDeclaration","src":"1688:15:0"},{"attributes":{"constant":false,"name":"tokens","scope":135,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":129,"name":"ElementaryTypeName","src":"1705:4:0"}],"id":130,"name":"VariableDeclaration","src":"1705:11:0"}],"id":131,"name":"ParameterList","src":"1687:30:0"},{"children":[{"attributes":{"constant":false,"name":"success","scope":135,"stateVariable":false,"storageLocation":"default","type":"bool","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bool","type":"bool"},"id":132,"name":"ElementaryTypeName","src":"1734:4:0"}],"id":133,"name":"VariableDeclaration","src":"1734:12:0"}],"id":134,"name":"ParameterList","src":"1733:14:0"}],"id":135,"name":"FunctionDefinition","src":"1671:77:0"},{"attributes":{"body":null,"constant":false,"implemented":false,"isConstructor":false,"modifiers":[null],"name":"transferFrom","payable":false,"scope":163,"stateMutability":"nonpayable","superFunction":null,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"from","scope":146,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":136,"name":"ElementaryTypeName","src":"1776:7:0"}],"id":137,"name":"VariableDeclaration","src":"1776:12:0"},{"attributes":{"constant":false,"name":"to","scope":146,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":138,"name":"ElementaryTypeName","src":"1790:7:0"}],"id":139,"name":"VariableDeclaration","src":"1790:10:0"},{"attributes":{"constant":false,"name":"tokens","scope":146,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":140,"name":"ElementaryTypeName","src":"1802:4:0"}],"id":141,"name":"VariableDeclaration","src":"1802:11:0"}],"id":142,"name":"ParameterList","src":"1775:39:0"},{"children":[{"attributes":{"constant":false,"name":"success","scope":146,"stateVariable":false,"storageLocation":"default","type":"bool","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bool","type":"bool"},"id":143,"name":"ElementaryTypeName","src":"1831:4:0"}],"id":144,"name":"VariableDeclaration","src":"1831:12:0"}],"id":145,"name":"ParameterList","src":"1830:14:0"}],"id":146,"name":"FunctionDefinition","src":"1754:91:0"},{"attributes":{"anonymous":false,"name":"Transfer"},"children":[{"children":[{"attributes":{"constant":false,"indexed":true,"name":"from","scope":154,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":147,"name":"ElementaryTypeName","src":"1867:7:0"}],"id":148,"name":"VariableDeclaration","src":"1867:20:0"},{"attributes":{"constant":false,"indexed":true,"name":"to","scope":154,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":149,"name":"ElementaryTypeName","src":"1889:7:0"}],"id":150,"name":"VariableDeclaration","src":"1889:18:0"},{"attributes":{"constant":false,"indexed":false,"name":"tokens","scope":154,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":151,"name":"ElementaryTypeName","src":"1909:4:0"}],"id":152,"name":"VariableDeclaration","src":"1909:11:0"}],"id":153,"name":"ParameterList","src":"1866:55:0"}],"id":154,"name":"EventDefinition","src":"1852:70:0"},{"attributes":{"anonymous":false,"name":"Approval"},"children":[{"children":[{"attributes":{"constant":false,"indexed":true,"name":"tokenOwner","scope":162,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":155,"name":"ElementaryTypeName","src":"1943:7:0"}],"id":156,"name":"VariableDeclaration","src":"1943:26:0"},{"attributes":{"constant":false,"indexed":true,"name":"spender","scope":162,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":157,"name":"ElementaryTypeName","src":"1971:7:0"}],"id":158,"name":"VariableDeclaration","src":"1971:23:0"},{"attributes":{"constant":false,"indexed":false,"name":"tokens","scope":162,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":159,"name":"ElementaryTypeName","src":"1996:4:0"}],"id":160,"name":"VariableDeclaration","src":"1996:11:0"}],"id":161,"name":"ParameterList","src":"1942:66:0"}],"id":162,"name":"EventDefinition","src":"1928:81:0"}],"id":163,"name":"ContractDefinition","src":"1314:698:0"},{"attributes":{"baseContracts":[null],"contractDependencies":[null],"contractKind":"contract","documentation":null,"fullyImplemented":false,"linearizedBaseContracts":[175],"name":"ApproveAndCallFallBack","scope":965},"children":[{"attributes":{"body":null,"constant":false,"implemented":false,"isConstructor":false,"modifiers":[null],"name":"receiveApproval","payable":false,"scope":175,"stateMutability":"nonpayable","superFunction":null,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"from","scope":174,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":164,"name":"ElementaryTypeName","src":"2351:7:0"}],"id":165,"name":"VariableDeclaration","src":"2351:12:0"},{"attributes":{"constant":false,"name":"tokens","scope":174,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint256","type":"uint256"},"id":166,"name":"ElementaryTypeName","src":"2365:7:0"}],"id":167,"name":"VariableDeclaration","src":"2365:14:0"},{"attributes":{"constant":false,"name":"token","scope":174,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":168,"name":"ElementaryTypeName","src":"2381:7:0"}],"id":169,"name":"VariableDeclaration","src":"2381:13:0"},{"attributes":{"constant":false,"name":"data","scope":174,"stateVariable":false,"storageLocation":"default","type":"bytes memory","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bytes","type":"bytes storage pointer"},"id":170,"name":"ElementaryTypeName","src":"2396:5:0"}],"id":171,"name":"VariableDeclaration","src":"2396:10:0"}],"id":172,"name":"ParameterList","src":"2350:57:0"},{"attributes":{"parameters":[null]},"children":[],"id":173,"name":"ParameterList","src":"2414:0:0"}],"id":174,"name":"FunctionDefinition","src":"2326:89:0"}],"id":175,"name":"ContractDefinition","src":"2287:131:0"},{"attributes":{"baseContracts":[null],"contractDependencies":[null],"contractKind":"contract","documentation":null,"fullyImplemented":true,"linearizedBaseContracts":[244],"name":"Owned","scope":965},"children":[{"attributes":{"constant":false,"name":"owner","scope":244,"stateVariable":true,"storageLocation":"default","type":"address","value":null,"visibility":"public"},"children":[{"attributes":{"name":"address","type":"address"},"id":176,"name":"ElementaryTypeName","src":"2625:7:0"}],"id":177,"name":"VariableDeclaration","src":"2625:20:0"},{"attributes":{"constant":false,"name":"newOwner","scope":244,"stateVariable":true,"storageLocation":"default","type":"address","value":null,"visibility":"public"},"children":[{"attributes":{"name":"address","type":"address"},"id":178,"name":"ElementaryTypeName","src":"2652:7:0"}],"id":179,"name":"VariableDeclaration","src":"2652:23:0"},{"attributes":{"anonymous":false,"name":"OwnershipTransferred"},"children":[{"children":[{"attributes":{"constant":false,"indexed":true,"name":"_from","scope":185,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":180,"name":"ElementaryTypeName","src":"2710:7:0"}],"id":181,"name":"VariableDeclaration","src":"2710:21:0"},{"attributes":{"constant":false,"indexed":true,"name":"_to","scope":185,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":182,"name":"ElementaryTypeName","src":"2733:7:0"}],"id":183,"name":"VariableDeclaration","src":"2733:19:0"}],"id":184,"name":"ParameterList","src":"2709:44:0"}],"id":185,"name":"EventDefinition","src":"2683:71:0"},{"attributes":{"constant":false,"implemented":true,"isConstructor":true,"modifiers":[null],"name":"Owned","payable":false,"scope":244,"stateMutability":"nonpayable","superFunction":null,"visibility":"public"},"children":[{"attributes":{"parameters":[null]},"children":[],"id":186,"name":"ParameterList","src":"2775:2:0"},{"attributes":{"parameters":[null]},"children":[],"id":187,"name":"ParameterList","src":"2785:0:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":177,"type":"address","value":"owner"},"id":188,"name":"Identifier","src":"2796:5:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":189,"name":"Identifier","src":"2804:3:0"}],"id":190,"name":"MemberAccess","src":"2804:10:0"}],"id":191,"name":"Assignment","src":"2796:18:0"}],"id":192,"name":"ExpressionStatement","src":"2796:18:0"}],"id":193,"name":"Block","src":"2785:37:0"}],"id":194,"name":"FunctionDefinition","src":"2761:61:0"},{"attributes":{"name":"onlyOwner","visibility":"internal"},"children":[{"attributes":{"parameters":[null]},"children":[],"id":195,"name":"ParameterList","src":"2848:0:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_bool","typeString":"bool"}],"overloadedDeclarations":[null],"referencedDeclaration":979,"type":"function (bool) pure","value":"require"},"id":196,"name":"Identifier","src":"2859:7:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_address","typeString":"address"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"==","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":197,"name":"Identifier","src":"2867:3:0"}],"id":198,"name":"MemberAccess","src":"2867:10:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":177,"type":"address","value":"owner"},"id":199,"name":"Identifier","src":"2881:5:0"}],"id":200,"name":"BinaryOperation","src":"2867:19:0"}],"id":201,"name":"FunctionCall","src":"2859:28:0"}],"id":202,"name":"ExpressionStatement","src":"2859:28:0"},{"id":203,"name":"PlaceholderStatement","src":"2898:1:0"}],"id":204,"name":"Block","src":"2848:59:0"}],"id":205,"name":"ModifierDefinition","src":"2829:78:0"},{"attributes":{"constant":false,"implemented":true,"isConstructor":false,"name":"transferOwnership","payable":false,"scope":244,"stateMutability":"nonpayable","superFunction":null,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"_newOwner","scope":217,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":206,"name":"ElementaryTypeName","src":"2941:7:0"}],"id":207,"name":"VariableDeclaration","src":"2941:17:0"}],"id":208,"name":"ParameterList","src":"2940:19:0"},{"attributes":{"parameters":[null]},"children":[],"id":211,"name":"ParameterList","src":"2977:0:0"},{"attributes":{"arguments":[null]},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":205,"type":"modifier ()","value":"onlyOwner"},"id":209,"name":"Identifier","src":"2967:9:0"}],"id":210,"name":"ModifierInvocation","src":"2967:9:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":179,"type":"address","value":"newOwner"},"id":212,"name":"Identifier","src":"2988:8:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":207,"type":"address","value":"_newOwner"},"id":213,"name":"Identifier","src":"2999:9:0"}],"id":214,"name":"Assignment","src":"2988:20:0"}],"id":215,"name":"ExpressionStatement","src":"2988:20:0"}],"id":216,"name":"Block","src":"2977:39:0"}],"id":217,"name":"FunctionDefinition","src":"2914:102:0"},{"attributes":{"constant":false,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"acceptOwnership","payable":false,"scope":244,"stateMutability":"nonpayable","superFunction":null,"visibility":"public"},"children":[{"attributes":{"parameters":[null]},"children":[],"id":218,"name":"ParameterList","src":"3046:2:0"},{"attributes":{"parameters":[null]},"children":[],"id":219,"name":"ParameterList","src":"3056:0:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_bool","typeString":"bool"}],"overloadedDeclarations":[null],"referencedDeclaration":979,"type":"function (bool) pure","value":"require"},"id":220,"name":"Identifier","src":"3067:7:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_address","typeString":"address"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"==","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":221,"name":"Identifier","src":"3075:3:0"}],"id":222,"name":"MemberAccess","src":"3075:10:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":179,"type":"address","value":"newOwner"},"id":223,"name":"Identifier","src":"3089:8:0"}],"id":224,"name":"BinaryOperation","src":"3075:22:0"}],"id":225,"name":"FunctionCall","src":"3067:31:0"}],"id":226,"name":"ExpressionStatement","src":"3067:31:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_address","typeString":"address"},{"typeIdentifier":"t_address","typeString":"address"}],"overloadedDeclarations":[null],"referencedDeclaration":185,"type":"function (address,address)","value":"OwnershipTransferred"},"id":227,"name":"Identifier","src":"3109:20:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":177,"type":"address","value":"owner"},"id":228,"name":"Identifier","src":"3130:5:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":179,"type":"address","value":"newOwner"},"id":229,"name":"Identifier","src":"3137:8:0"}],"id":230,"name":"FunctionCall","src":"3109:37:0"}],"id":231,"name":"ExpressionStatement","src":"3109:37:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":177,"type":"address","value":"owner"},"id":232,"name":"Identifier","src":"3157:5:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":179,"type":"address","value":"newOwner"},"id":233,"name":"Identifier","src":"3165:8:0"}],"id":234,"name":"Assignment","src":"3157:16:0"}],"id":235,"name":"ExpressionStatement","src":"3157:16:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":179,"type":"address","value":"newOwner"},"id":236,"name":"Identifier","src":"3184:8:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":true,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"address","type_conversion":true},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_rational_0_by_1","typeString":"int_const 0"}],"isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"type":"type(address)","value":"address"},"id":237,"name":"ElementaryTypeNameExpression","src":"3195:7:0"},{"attributes":{"argumentTypes":null,"hexvalue":"30","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 0","value":"0"},"id":238,"name":"Literal","src":"3203:1:0"}],"id":239,"name":"FunctionCall","src":"3195:10:0"}],"id":240,"name":"Assignment","src":"3184:21:0"}],"id":241,"name":"ExpressionStatement","src":"3184:21:0"}],"id":242,"name":"Block","src":"3056:157:0"}],"id":243,"name":"FunctionDefinition","src":"3022:191:0"}],"id":244,"name":"ContractDefinition","src":"2603:613:0"},{"attributes":{"contractDependencies":[163,244],"contractKind":"contract","documentation":null,"fullyImplemented":true,"linearizedBaseContracts":[964,244,163],"name":"_0xBitcoinToken","scope":965},"children":[{"attributes":{"arguments":[null]},"children":[{"attributes":{"contractScope":null,"name":"ERC20Interface","referencedDeclaration":163,"type":"contract ERC20Interface"},"id":245,"name":"UserDefinedTypeName","src":"3506:14:0"}],"id":246,"name":"InheritanceSpecifier","src":"3506:14:0"},{"attributes":{"arguments":[null]},"children":[{"attributes":{"contractScope":null,"name":"Owned","referencedDeclaration":244,"type":"contract Owned"},"id":247,"name":"UserDefinedTypeName","src":"3522:5:0"}],"id":248,"name":"InheritanceSpecifier","src":"3522:5:0"},{"children":[{"attributes":{"contractScope":null,"name":"SafeMath","referencedDeclaration":96,"type":"library SafeMath"},"id":249,"name":"UserDefinedTypeName","src":"3541:8:0"},{"attributes":{"name":"uint","type":"uint256"},"id":250,"name":"ElementaryTypeName","src":"3554:4:0"}],"id":251,"name":"UsingForDirective","src":"3535:24:0"},{"attributes":{"constant":false,"name":"symbol","scope":964,"stateVariable":true,"storageLocation":"default","type":"string storage ref","value":null,"visibility":"public"},"children":[{"attributes":{"name":"string","type":"string storage pointer"},"id":252,"name":"ElementaryTypeName","src":"3566:6:0"}],"id":253,"name":"VariableDeclaration","src":"3566:20:0"},{"attributes":{"constant":false,"name":"name","scope":964,"stateVariable":true,"storageLocation":"default","type":"string storage ref","value":null,"visibility":"public"},"children":[{"attributes":{"name":"string","type":"string storage pointer"},"id":254,"name":"ElementaryTypeName","src":"3593:6:0"}],"id":255,"name":"VariableDeclaration","src":"3593:19:0"},{"attributes":{"constant":false,"name":"decimals","scope":964,"stateVariable":true,"storageLocation":"default","type":"uint8","value":null,"visibility":"public"},"children":[{"attributes":{"name":"uint8","type":"uint8"},"id":256,"name":"ElementaryTypeName","src":"3619:5:0"}],"id":257,"name":"VariableDeclaration","src":"3619:21:0"},{"attributes":{"constant":false,"name":"_totalSupply","scope":964,"stateVariable":true,"storageLocation":"default","type":"uint256","value":null,"visibility":"public"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":258,"name":"ElementaryTypeName","src":"3647:4:0"}],"id":259,"name":"VariableDeclaration","src":"3647:24:0"},{"attributes":{"constant":false,"name":"latestDifficultyPeriodStarted","scope":964,"stateVariable":true,"storageLocation":"default","type":"uint256","value":null,"visibility":"public"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":260,"name":"ElementaryTypeName","src":"3782:4:0"}],"id":261,"name":"VariableDeclaration","src":"3782:41:0"},{"attributes":{"constant":false,"name":"epochCount","scope":964,"stateVariable":true,"storageLocation":"default","type":"uint256","value":null,"visibility":"public"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":262,"name":"ElementaryTypeName","src":"3832:4:0"}],"id":263,"name":"VariableDeclaration","src":"3832:22:0"},{"attributes":{"constant":false,"name":"_BLOCKS_PER_READJUSTMENT","scope":964,"stateVariable":true,"storageLocation":"default","type":"uint256","visibility":"public"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":264,"name":"ElementaryTypeName","src":"3888:4:0"},{"attributes":{"argumentTypes":null,"hexvalue":"323536","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 256","value":"256"},"id":265,"name":"Literal","src":"3927:3:0"}],"id":266,"name":"VariableDeclaration","src":"3888:42:0"},{"attributes":{"constant":false,"name":"_MINIMUM_TARGET","scope":964,"stateVariable":true,"storageLocation":"default","type":"uint256","visibility":"public"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":267,"name":"ElementaryTypeName","src":"4006:4:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_rational_256_by_1","typeString":"int_const 256"},"isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"operator":"**","type":"int_const 256"},"children":[{"attributes":{"argumentTypes":null,"hexvalue":"32","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 2","value":"2"},"id":268,"name":"Literal","src":"4037:1:0"},{"attributes":{"argumentTypes":null,"hexvalue":"38","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 8","value":"8"},"id":269,"name":"Literal","src":"4040:1:0"}],"id":270,"name":"BinaryOperation","src":"4037:4:0"}],"id":271,"name":"VariableDeclaration","src":"4006:35:0"},{"attributes":{"constant":false,"name":"_MAXIMUM_TARGET","scope":964,"stateVariable":true,"storageLocation":"default","type":"uint256","visibility":"public"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":272,"name":"ElementaryTypeName","src":"4070:4:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_rational_1809251394333065553493296640760748560207343510400633813116524750123642650624_by_1","typeString":"int_const 1809251394333065553493296640760748560207343510400633813116524750123642650624"},"isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"operator":"**","type":"int_const 1809251394333065553493296640760748560207343510400633813116524750123642650624"},"children":[{"attributes":{"argumentTypes":null,"hexvalue":"32","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 2","value":"2"},"id":273,"name":"Literal","src":"4101:1:0"},{"attributes":{"argumentTypes":null,"hexvalue":"323530","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 250","value":"250"},"id":274,"name":"Literal","src":"4104:3:0"}],"id":275,"name":"BinaryOperation","src":"4101:6:0"}],"id":276,"name":"VariableDeclaration","src":"4070:37:0"},{"attributes":{"constant":false,"name":"miningTarget","scope":964,"stateVariable":true,"storageLocation":"default","type":"uint256","value":null,"visibility":"public"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":277,"name":"ElementaryTypeName","src":"4115:4:0"}],"id":278,"name":"VariableDeclaration","src":"4115:24:0"},{"attributes":{"constant":false,"name":"challengeNumber","scope":964,"stateVariable":true,"storageLocation":"default","type":"bytes32","value":null,"visibility":"public"},"children":[{"attributes":{"name":"bytes32","type":"bytes32"},"id":279,"name":"ElementaryTypeName","src":"4222:7:0"}],"id":280,"name":"VariableDeclaration","src":"4222:30:0"},{"attributes":{"constant":false,"name":"rewardEra","scope":964,"stateVariable":true,"storageLocation":"default","type":"uint256","value":null,"visibility":"public"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":281,"name":"ElementaryTypeName","src":"4312:4:0"}],"id":282,"name":"VariableDeclaration","src":"4312:21:0"},{"attributes":{"constant":false,"name":"maxSupplyForEra","scope":964,"stateVariable":true,"storageLocation":"default","type":"uint256","value":null,"visibility":"public"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":283,"name":"ElementaryTypeName","src":"4339:4:0"}],"id":284,"name":"VariableDeclaration","src":"4339:27:0"},{"attributes":{"constant":false,"name":"lastRewardTo","scope":964,"stateVariable":true,"storageLocation":"default","type":"address","value":null,"visibility":"public"},"children":[{"attributes":{"name":"address","type":"address"},"id":285,"name":"ElementaryTypeName","src":"4374:7:0"}],"id":286,"name":"VariableDeclaration","src":"4374:27:0"},{"attributes":{"constant":false,"name":"lastRewardAmount","scope":964,"stateVariable":true,"storageLocation":"default","type":"uint256","value":null,"visibility":"public"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":287,"name":"ElementaryTypeName","src":"4407:4:0"}],"id":288,"name":"VariableDeclaration","src":"4407:28:0"},{"attributes":{"constant":false,"name":"lastRewardEthBlockNumber","scope":964,"stateVariable":true,"storageLocation":"default","type":"uint256","value":null,"visibility":"public"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":289,"name":"ElementaryTypeName","src":"4441:4:0"}],"id":290,"name":"VariableDeclaration","src":"4441:36:0"},{"attributes":{"constant":false,"name":"rewardHashesFound","scope":964,"stateVariable":true,"storageLocation":"default","type":"mapping(bytes32 => uint256)","value":null,"visibility":"internal"},"children":[{"attributes":{"type":"mapping(bytes32 => uint256)"},"children":[{"attributes":{"name":"bytes32","type":"bytes32"},"id":291,"name":"ElementaryTypeName","src":"4493:7:0"},{"attributes":{"name":"uint","type":"uint256"},"id":292,"name":"ElementaryTypeName","src":"4504:4:0"}],"id":293,"name":"Mapping","src":"4485:24:0"}],"id":294,"name":"VariableDeclaration","src":"4485:42:0"},{"attributes":{"constant":false,"name":"tokensMinted","scope":964,"stateVariable":true,"storageLocation":"default","type":"uint256","value":null,"visibility":"public"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":295,"name":"ElementaryTypeName","src":"4559:4:0"}],"id":296,"name":"VariableDeclaration","src":"4559:24:0"},{"attributes":{"constant":false,"name":"balances","scope":964,"stateVariable":true,"storageLocation":"default","type":"mapping(address => uint256)","value":null,"visibility":"internal"},"children":[{"attributes":{"type":"mapping(address => uint256)"},"children":[{"attributes":{"name":"address","type":"address"},"id":297,"name":"ElementaryTypeName","src":"4598:7:0"},{"attributes":{"name":"uint","type":"uint256"},"id":298,"name":"ElementaryTypeName","src":"4609:4:0"}],"id":299,"name":"Mapping","src":"4590:24:0"}],"id":300,"name":"VariableDeclaration","src":"4590:33:0"},{"attributes":{"constant":false,"name":"allowed","scope":964,"stateVariable":true,"storageLocation":"default","type":"mapping(address => mapping(address => uint256))","value":null,"visibility":"internal"},"children":[{"attributes":{"type":"mapping(address => mapping(address => uint256))"},"children":[{"attributes":{"name":"address","type":"address"},"id":301,"name":"ElementaryTypeName","src":"4642:7:0"},{"attributes":{"type":"mapping(address => uint256)"},"children":[{"attributes":{"name":"address","type":"address"},"id":302,"name":"ElementaryTypeName","src":"4661:7:0"},{"attributes":{"name":"uint","type":"uint256"},"id":303,"name":"ElementaryTypeName","src":"4672:4:0"}],"id":304,"name":"Mapping","src":"4653:24:0"}],"id":305,"name":"Mapping","src":"4634:44:0"}],"id":306,"name":"VariableDeclaration","src":"4634:52:0"},{"attributes":{"anonymous":false,"name":"Mint"},"children":[{"children":[{"attributes":{"constant":false,"indexed":true,"name":"from","scope":316,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":307,"name":"ElementaryTypeName","src":"4707:7:0"}],"id":308,"name":"VariableDeclaration","src":"4707:20:0"},{"attributes":{"constant":false,"indexed":false,"name":"reward_amount","scope":316,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":309,"name":"ElementaryTypeName","src":"4729:4:0"}],"id":310,"name":"VariableDeclaration","src":"4729:18:0"},{"attributes":{"constant":false,"indexed":false,"name":"epochCount","scope":316,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":311,"name":"ElementaryTypeName","src":"4749:4:0"}],"id":312,"name":"VariableDeclaration","src":"4749:15:0"},{"attributes":{"constant":false,"indexed":false,"name":"newChallengeNumber","scope":316,"stateVariable":false,"storageLocation":"default","type":"bytes32","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bytes32","type":"bytes32"},"id":313,"name":"ElementaryTypeName","src":"4766:7:0"}],"id":314,"name":"VariableDeclaration","src":"4766:26:0"}],"id":315,"name":"ParameterList","src":"4706:87:0"}],"id":316,"name":"EventDefinition","src":"4696:98:0"},{"attributes":{"constant":false,"implemented":true,"isConstructor":true,"name":"_0xBitcoinToken","payable":false,"scope":964,"stateMutability":"nonpayable","superFunction":null,"visibility":"public"},"children":[{"attributes":{"parameters":[null]},"children":[],"id":317,"name":"ParameterList","src":"5006:2:0"},{"attributes":{"parameters":[null]},"children":[],"id":320,"name":"ParameterList","src":"5025:0:0"},{"attributes":{"arguments":[null]},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":205,"type":"modifier ()","value":"onlyOwner"},"id":318,"name":"Identifier","src":"5016:9:0"}],"id":319,"name":"ModifierInvocation","src":"5016:9:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"string storage ref"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":253,"type":"string storage ref","value":"symbol"},"id":321,"name":"Identifier","src":"5036:6:0"},{"attributes":{"argumentTypes":null,"hexvalue":"3078425443","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"string","type":"literal_string \"0xBTC\"","value":"0xBTC"},"id":322,"name":"Literal","src":"5045:7:0"}],"id":323,"name":"Assignment","src":"5036:16:0"}],"id":324,"name":"ExpressionStatement","src":"5036:16:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"string storage ref"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":255,"type":"string storage ref","value":"name"},"id":325,"name":"Identifier","src":"5063:4:0"},{"attributes":{"argumentTypes":null,"hexvalue":"3078426974636f696e20546f6b656e","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"string","type":"literal_string \"0xBitcoin Token\"","value":"0xBitcoin Token"},"id":326,"name":"Literal","src":"5070:17:0"}],"id":327,"name":"Assignment","src":"5063:24:0"}],"id":328,"name":"ExpressionStatement","src":"5063:24:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint8"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":257,"type":"uint8","value":"decimals"},"id":329,"name":"Identifier","src":"5098:8:0"},{"attributes":{"argumentTypes":null,"hexvalue":"38","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 8","value":"8"},"id":330,"name":"Literal","src":"5109:1:0"}],"id":331,"name":"Assignment","src":"5098:12:0"}],"id":332,"name":"ExpressionStatement","src":"5098:12:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":259,"type":"uint256","value":"_totalSupply"},"id":333,"name":"Identifier","src":"5121:12:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"*","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"hexvalue":"3231303030303030","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 21000000","value":"21000000"},"id":334,"name":"Literal","src":"5136:8:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"**","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"hexvalue":"3130","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 10","value":"10"},"id":335,"name":"Literal","src":"5147:2:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":true},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_uint8","typeString":"uint8"}],"isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"type":"type(uint256)","value":"uint"},"id":336,"name":"ElementaryTypeNameExpression","src":"5151:4:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":257,"type":"uint8","value":"decimals"},"id":337,"name":"Identifier","src":"5156:8:0"}],"id":338,"name":"FunctionCall","src":"5151:14:0"}],"id":339,"name":"BinaryOperation","src":"5147:18:0"}],"id":340,"name":"BinaryOperation","src":"5136:29:0"}],"id":341,"name":"Assignment","src":"5121:44:0"}],"id":342,"name":"ExpressionStatement","src":"5121:44:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":296,"type":"uint256","value":"tokensMinted"},"id":343,"name":"Identifier","src":"5175:12:0"},{"attributes":{"argumentTypes":null,"hexvalue":"30","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 0","value":"0"},"id":344,"name":"Literal","src":"5190:1:0"}],"id":345,"name":"Assignment","src":"5175:16:0"}],"id":346,"name":"ExpressionStatement","src":"5175:16:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":282,"type":"uint256","value":"rewardEra"},"id":347,"name":"Identifier","src":"5202:9:0"},{"attributes":{"argumentTypes":null,"hexvalue":"30","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 0","value":"0"},"id":348,"name":"Literal","src":"5214:1:0"}],"id":349,"name":"Assignment","src":"5202:13:0"}],"id":350,"name":"ExpressionStatement","src":"5202:13:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":284,"type":"uint256","value":"maxSupplyForEra"},"id":351,"name":"Identifier","src":"5225:15:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_rational_2_by_1","typeString":"int_const 2"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"div","referencedDeclaration":95,"type":"function (uint256,uint256) pure returns (uint256)"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":259,"type":"uint256","value":"_totalSupply"},"id":352,"name":"Identifier","src":"5243:12:0"}],"id":353,"name":"MemberAccess","src":"5243:16:0"},{"attributes":{"argumentTypes":null,"hexvalue":"32","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 2","value":"2"},"id":354,"name":"Literal","src":"5260:1:0"}],"id":355,"name":"FunctionCall","src":"5243:19:0"}],"id":356,"name":"Assignment","src":"5225:37:0"}],"id":357,"name":"ExpressionStatement","src":"5225:37:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":278,"type":"uint256","value":"miningTarget"},"id":358,"name":"Identifier","src":"5273:12:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":276,"type":"uint256","value":"_MAXIMUM_TARGET"},"id":359,"name":"Identifier","src":"5288:15:0"}],"id":360,"name":"Assignment","src":"5273:30:0"}],"id":361,"name":"ExpressionStatement","src":"5273:30:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":261,"type":"uint256","value":"latestDifficultyPeriodStarted"},"id":362,"name":"Identifier","src":"5314:29:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"number","referencedDeclaration":null,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":968,"type":"block","value":"block"},"id":363,"name":"Identifier","src":"5346:5:0"}],"id":364,"name":"MemberAccess","src":"5346:12:0"}],"id":365,"name":"Assignment","src":"5314:44:0"}],"id":366,"name":"ExpressionStatement","src":"5314:44:0"},{"children":[{"attributes":{"argumentTypes":null,"arguments":[null],"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[null],"overloadedDeclarations":[null],"referencedDeclaration":431,"type":"function ()","value":"_startNewMiningEpoch"},"id":367,"name":"Identifier","src":"5369:20:0"}],"id":368,"name":"FunctionCall","src":"5369:22:0"}],"id":369,"name":"ExpressionStatement","src":"5369:22:0"}],"id":370,"name":"Block","src":"5025:471:0"}],"id":371,"name":"FunctionDefinition","src":"4982:514:0"},{"attributes":{"constant":false,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"_startNewMiningEpoch","payable":false,"scope":964,"stateMutability":"nonpayable","superFunction":null,"visibility":"internal"},"children":[{"attributes":{"parameters":[null]},"children":[],"id":372,"name":"ParameterList","src":"5531:2:0"},{"attributes":{"parameters":[null]},"children":[],"id":373,"name":"ParameterList","src":"5543:0:0"},{"children":[{"attributes":{"falseBody":null},"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_bool","typeString":"bool"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"&&","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":">=","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":296,"type":"uint256","value":"tokensMinted"},"id":374,"name":"Identifier","src":"5630:12:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":284,"type":"uint256","value":"maxSupplyForEra"},"id":375,"name":"Identifier","src":"5646:15:0"}],"id":376,"name":"BinaryOperation","src":"5630:31:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"<","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":282,"type":"uint256","value":"rewardEra"},"id":377,"name":"Identifier","src":"5665:9:0"},{"attributes":{"argumentTypes":null,"hexvalue":"3332","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 32","value":"32"},"id":378,"name":"Literal","src":"5677:2:0"}],"id":379,"name":"BinaryOperation","src":"5665:14:0"}],"id":380,"name":"BinaryOperation","src":"5630:49:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":282,"type":"uint256","value":"rewardEra"},"id":381,"name":"Identifier","src":"5745:9:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"+","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":282,"type":"uint256","value":"rewardEra"},"id":382,"name":"Identifier","src":"5757:9:0"},{"attributes":{"argumentTypes":null,"hexvalue":"31","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 1","value":"1"},"id":383,"name":"Literal","src":"5769:1:0"}],"id":384,"name":"BinaryOperation","src":"5757:13:0"}],"id":385,"name":"Assignment","src":"5745:25:0"}],"id":386,"name":"ExpressionStatement","src":"5745:25:0"}],"id":387,"name":"Block","src":"5735:44:0"}],"id":388,"name":"IfStatement","src":"5627:152:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":284,"type":"uint256","value":"maxSupplyForEra"},"id":389,"name":"Identifier","src":"5851:15:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"-","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":259,"type":"uint256","value":"_totalSupply"},"id":390,"name":"Identifier","src":"5869:12:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_uint256","typeString":"uint256"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"div","referencedDeclaration":95,"type":"function (uint256,uint256) pure returns (uint256)"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":259,"type":"uint256","value":"_totalSupply"},"id":391,"name":"Identifier","src":"5884:12:0"}],"id":392,"name":"MemberAccess","src":"5884:16:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"**","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"hexvalue":"32","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 2","value":"2"},"id":393,"name":"Literal","src":"5902:1:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isInlineArray":false,"isLValue":false,"isPure":false,"lValueRequested":false,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"+","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":282,"type":"uint256","value":"rewardEra"},"id":394,"name":"Identifier","src":"5906:9:0"},{"attributes":{"argumentTypes":null,"hexvalue":"31","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 1","value":"1"},"id":395,"name":"Literal","src":"5918:1:0"}],"id":396,"name":"BinaryOperation","src":"5906:13:0"}],"id":397,"name":"TupleExpression","src":"5905:15:0"}],"id":398,"name":"BinaryOperation","src":"5902:18:0"}],"id":399,"name":"FunctionCall","src":"5884:37:0"}],"id":400,"name":"BinaryOperation","src":"5869:52:0"}],"id":401,"name":"Assignment","src":"5851:70:0"}],"id":402,"name":"ExpressionStatement","src":"5851:70:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"bytes32"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":280,"type":"bytes32","value":"challengeNumber"},"id":403,"name":"Identifier","src":"6047:15:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"bytes32","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_uint256","typeString":"uint256"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"blockhash","referencedDeclaration":null,"type":"function (uint256) view returns (bytes32)"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":968,"type":"block","value":"block"},"id":404,"name":"Identifier","src":"6065:5:0"}],"id":405,"name":"MemberAccess","src":"6065:15:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"-","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"number","referencedDeclaration":null,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":968,"type":"block","value":"block"},"id":406,"name":"Identifier","src":"6081:5:0"}],"id":407,"name":"MemberAccess","src":"6081:12:0"},{"attributes":{"argumentTypes":null,"hexvalue":"31","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 1","value":"1"},"id":408,"name":"Literal","src":"6096:1:0"}],"id":409,"name":"BinaryOperation","src":"6081:16:0"}],"id":410,"name":"FunctionCall","src":"6065:33:0"}],"id":411,"name":"Assignment","src":"6047:51:0"}],"id":412,"name":"ExpressionStatement","src":"6047:51:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":263,"type":"uint256","value":"epochCount"},"id":413,"name":"Identifier","src":"6108:10:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_rational_1_by_1","typeString":"int_const 1"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"add","referencedDeclaration":23,"type":"function (uint256,uint256) pure returns (uint256)"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":263,"type":"uint256","value":"epochCount"},"id":414,"name":"Identifier","src":"6121:10:0"}],"id":415,"name":"MemberAccess","src":"6121:14:0"},{"attributes":{"argumentTypes":null,"hexvalue":"31","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 1","value":"1"},"id":416,"name":"Literal","src":"6136:1:0"}],"id":417,"name":"FunctionCall","src":"6121:17:0"}],"id":418,"name":"Assignment","src":"6108:30:0"}],"id":419,"name":"ExpressionStatement","src":"6108:30:0"},{"attributes":{"falseBody":null},"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"==","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"%","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":263,"type":"uint256","value":"epochCount"},"id":420,"name":"Identifier","src":"6224:10:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":266,"type":"uint256","value":"_BLOCKS_PER_READJUSTMENT"},"id":421,"name":"Identifier","src":"6237:24:0"}],"id":422,"name":"BinaryOperation","src":"6224:37:0"},{"attributes":{"argumentTypes":null,"hexvalue":"30","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 0","value":"0"},"id":423,"name":"Literal","src":"6265:1:0"}],"id":424,"name":"BinaryOperation","src":"6224:42:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"arguments":[null],"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[null],"overloadedDeclarations":[null],"referencedDeclaration":501,"type":"function ()","value":"_reAdjustDifficulty"},"id":425,"name":"Identifier","src":"6284:19:0"}],"id":426,"name":"FunctionCall","src":"6284:21:0"}],"id":427,"name":"ExpressionStatement","src":"6284:21:0"}],"id":428,"name":"Block","src":"6274:40:0"}],"id":429,"name":"IfStatement","src":"6221:93:0"}],"id":430,"name":"Block","src":"5543:780:0"}],"id":431,"name":"FunctionDefinition","src":"5502:821:0"},{"attributes":{"constant":false,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"_reAdjustDifficulty","payable":false,"scope":964,"stateMutability":"nonpayable","superFunction":null,"visibility":"internal"},"children":[{"attributes":{"parameters":[null]},"children":[],"id":432,"name":"ParameterList","src":"6575:2:0"},{"attributes":{"parameters":[null]},"children":[],"id":433,"name":"ParameterList","src":"6587:0:0"},{"children":[{"attributes":{"assignments":[435]},"children":[{"attributes":{"constant":false,"name":"ethBlocksSinceLastDifficultyPeriod","scope":501,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":434,"name":"ElementaryTypeName","src":"6599:4:0"}],"id":435,"name":"VariableDeclaration","src":"6599:39:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"-","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"number","referencedDeclaration":null,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":968,"type":"block","value":"block"},"id":436,"name":"Identifier","src":"6641:5:0"}],"id":437,"name":"MemberAccess","src":"6641:12:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":261,"type":"uint256","value":"latestDifficultyPeriodStarted"},"id":438,"name":"Identifier","src":"6656:29:0"}],"id":439,"name":"BinaryOperation","src":"6641:44:0"}],"id":440,"name":"VariableDeclarationStatement","src":"6599:86:0"},{"attributes":{"assignments":[442]},"children":[{"attributes":{"constant":false,"name":"epochsMined","scope":501,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":441,"name":"ElementaryTypeName","src":"6857:4:0"}],"id":442,"name":"VariableDeclaration","src":"6857:16:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":266,"type":"uint256","value":"_BLOCKS_PER_READJUSTMENT"},"id":443,"name":"Identifier","src":"6876:24:0"}],"id":444,"name":"VariableDeclarationStatement","src":"6857:43:0"},{"attributes":{"assignments":[446]},"children":[{"attributes":{"constant":false,"name":"targetEthBlocksPerEpoch","scope":501,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":445,"name":"ElementaryTypeName","src":"6917:4:0"}],"id":446,"name":"VariableDeclaration","src":"6917:28:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"*","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":442,"type":"uint256","value":"epochsMined"},"id":447,"name":"Identifier","src":"6948:11:0"},{"attributes":{"argumentTypes":null,"hexvalue":"3630","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 60","value":"60"},"id":448,"name":"Literal","src":"6962:2:0"}],"id":449,"name":"BinaryOperation","src":"6948:16:0"}],"id":450,"name":"VariableDeclarationStatement","src":"6917:47:0"},{"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"<","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":435,"type":"uint256","value":"ethBlocksSinceLastDifficultyPeriod"},"id":451,"name":"Identifier","src":"7090:34:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":446,"type":"uint256","value":"targetEthBlocksPerEpoch"},"id":452,"name":"Identifier","src":"7127:23:0"}],"id":453,"name":"BinaryOperation","src":"7090:60:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":278,"type":"uint256","value":"miningTarget"},"id":454,"name":"Identifier","src":"7200:12:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_uint256","typeString":"uint256"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sub","referencedDeclaration":45,"type":"function (uint256,uint256) pure returns (uint256)"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":278,"type":"uint256","value":"miningTarget"},"id":455,"name":"Identifier","src":"7215:12:0"}],"id":456,"name":"MemberAccess","src":"7215:16:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_rational_20_by_1","typeString":"int_const 20"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"div","referencedDeclaration":95,"type":"function (uint256,uint256) pure returns (uint256)"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":278,"type":"uint256","value":"miningTarget"},"id":457,"name":"Identifier","src":"7232:12:0"}],"id":458,"name":"MemberAccess","src":"7232:16:0"},{"attributes":{"argumentTypes":null,"hexvalue":"3230","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 20","value":"20"},"id":459,"name":"Literal","src":"7249:2:0"}],"id":460,"name":"FunctionCall","src":"7232:20:0"}],"id":461,"name":"FunctionCall","src":"7215:38:0"}],"id":462,"name":"Assignment","src":"7200:53:0"}],"id":463,"name":"ExpressionStatement","src":"7200:53:0"}],"id":464,"name":"Block","src":"7161:103:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":278,"type":"uint256","value":"miningTarget"},"id":465,"name":"Identifier","src":"7307:12:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_uint256","typeString":"uint256"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"add","referencedDeclaration":23,"type":"function (uint256,uint256) pure returns (uint256)"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":278,"type":"uint256","value":"miningTarget"},"id":466,"name":"Identifier","src":"7322:12:0"}],"id":467,"name":"MemberAccess","src":"7322:16:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_rational_20_by_1","typeString":"int_const 20"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"div","referencedDeclaration":95,"type":"function (uint256,uint256) pure returns (uint256)"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":278,"type":"uint256","value":"miningTarget"},"id":468,"name":"Identifier","src":"7339:12:0"}],"id":469,"name":"MemberAccess","src":"7339:16:0"},{"attributes":{"argumentTypes":null,"hexvalue":"3230","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 20","value":"20"},"id":470,"name":"Literal","src":"7356:2:0"}],"id":471,"name":"FunctionCall","src":"7339:20:0"}],"id":472,"name":"FunctionCall","src":"7322:38:0"}],"id":473,"name":"Assignment","src":"7307:53:0"}],"id":474,"name":"ExpressionStatement","src":"7307:53:0"}],"id":475,"name":"Block","src":"7268:103:0"}],"id":476,"name":"IfStatement","src":"7086:285:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":261,"type":"uint256","value":"latestDifficultyPeriodStarted"},"id":477,"name":"Identifier","src":"7383:29:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"number","referencedDeclaration":null,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":968,"type":"block","value":"block"},"id":478,"name":"Identifier","src":"7415:5:0"}],"id":479,"name":"MemberAccess","src":"7415:12:0"}],"id":480,"name":"Assignment","src":"7383:44:0"}],"id":481,"name":"ExpressionStatement","src":"7383:44:0"},{"attributes":{"falseBody":null},"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"<","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":278,"type":"uint256","value":"miningTarget"},"id":482,"name":"Identifier","src":"7441:12:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":271,"type":"uint256","value":"_MINIMUM_TARGET"},"id":483,"name":"Identifier","src":"7456:15:0"}],"id":484,"name":"BinaryOperation","src":"7441:30:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":278,"type":"uint256","value":"miningTarget"},"id":485,"name":"Identifier","src":"7497:12:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":271,"type":"uint256","value":"_MINIMUM_TARGET"},"id":486,"name":"Identifier","src":"7512:15:0"}],"id":487,"name":"Assignment","src":"7497:30:0"}],"id":488,"name":"ExpressionStatement","src":"7497:30:0"}],"id":489,"name":"Block","src":"7485:53:0"}],"id":490,"name":"IfStatement","src":"7438:100:0"},{"attributes":{"falseBody":null},"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":">","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":278,"type":"uint256","value":"miningTarget"},"id":491,"name":"Identifier","src":"7551:12:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":276,"type":"uint256","value":"_MAXIMUM_TARGET"},"id":492,"name":"Identifier","src":"7566:15:0"}],"id":493,"name":"BinaryOperation","src":"7551:30:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":278,"type":"uint256","value":"miningTarget"},"id":494,"name":"Identifier","src":"7608:12:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":276,"type":"uint256","value":"_MAXIMUM_TARGET"},"id":495,"name":"Identifier","src":"7623:15:0"}],"id":496,"name":"Assignment","src":"7608:30:0"}],"id":497,"name":"ExpressionStatement","src":"7608:30:0"}],"id":498,"name":"Block","src":"7596:53:0"}],"id":499,"name":"IfStatement","src":"7548:101:0"}],"id":500,"name":"Block","src":"6587:1068:0"}],"id":501,"name":"FunctionDefinition","src":"6547:1108:0"},{"attributes":{"constant":false,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"getMintDigest","payable":false,"scope":964,"stateMutability":"nonpayable","superFunction":null,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"nonce","scope":524,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint256","type":"uint256"},"id":502,"name":"ElementaryTypeName","src":"7685:7:0"}],"id":503,"name":"VariableDeclaration","src":"7685:13:0"},{"attributes":{"constant":false,"name":"challenge_digest","scope":524,"stateVariable":false,"storageLocation":"default","type":"bytes32","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bytes32","type":"bytes32"},"id":504,"name":"ElementaryTypeName","src":"7700:7:0"}],"id":505,"name":"VariableDeclaration","src":"7700:24:0"},{"attributes":{"constant":false,"name":"challenge_number","scope":524,"stateVariable":false,"storageLocation":"default","type":"bytes32","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bytes32","type":"bytes32"},"id":506,"name":"ElementaryTypeName","src":"7726:7:0"}],"id":507,"name":"VariableDeclaration","src":"7726:24:0"}],"id":508,"name":"ParameterList","src":"7684:67:0"},{"children":[{"attributes":{"constant":false,"name":"digesttest","scope":524,"stateVariable":false,"storageLocation":"default","type":"bytes32","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bytes32","type":"bytes32"},"id":509,"name":"ElementaryTypeName","src":"7768:7:0"}],"id":510,"name":"VariableDeclaration","src":"7768:18:0"}],"id":511,"name":"ParameterList","src":"7767:20:0"},{"children":[{"attributes":{"assignments":[513]},"children":[{"attributes":{"constant":false,"name":"digest","scope":524,"stateVariable":false,"storageLocation":"default","type":"bytes32","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bytes32","type":"bytes32"},"id":512,"name":"ElementaryTypeName","src":"7799:7:0"}],"id":513,"name":"VariableDeclaration","src":"7799:14:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"bytes32","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_bytes32","typeString":"bytes32"},{"typeIdentifier":"t_address","typeString":"address"},{"typeIdentifier":"t_uint256","typeString":"uint256"}],"overloadedDeclarations":[null],"referencedDeclaration":970,"type":"function () pure returns (bytes32)","value":"keccak256"},"id":514,"name":"Identifier","src":"7816:9:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":507,"type":"bytes32","value":"challenge_number"},"id":515,"name":"Identifier","src":"7826:16:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":516,"name":"Identifier","src":"7843:3:0"}],"id":517,"name":"MemberAccess","src":"7843:10:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":503,"type":"uint256","value":"nonce"},"id":518,"name":"Identifier","src":"7854:5:0"}],"id":519,"name":"FunctionCall","src":"7816:44:0"}],"id":520,"name":"VariableDeclarationStatement","src":"7799:61:0"},{"attributes":{"functionReturnParameters":511},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":513,"type":"bytes32","value":"digest"},"id":521,"name":"Identifier","src":"7878:6:0"}],"id":522,"name":"Return","src":"7871:13:0"}],"id":523,"name":"Block","src":"7788:106:0"}],"id":524,"name":"FunctionDefinition","src":"7662:232:0"},{"attributes":{"constant":false,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"checkMintSolution","payable":false,"scope":964,"stateMutability":"nonpayable","superFunction":null,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"nonce","scope":570,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint256","type":"uint256"},"id":525,"name":"ElementaryTypeName","src":"7929:7:0"}],"id":526,"name":"VariableDeclaration","src":"7929:13:0"},{"attributes":{"constant":false,"name":"challenge_digest","scope":570,"stateVariable":false,"storageLocation":"default","type":"bytes32","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bytes32","type":"bytes32"},"id":527,"name":"ElementaryTypeName","src":"7944:7:0"}],"id":528,"name":"VariableDeclaration","src":"7944:24:0"},{"attributes":{"constant":false,"name":"challenge_number","scope":570,"stateVariable":false,"storageLocation":"default","type":"bytes32","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bytes32","type":"bytes32"},"id":529,"name":"ElementaryTypeName","src":"7970:7:0"}],"id":530,"name":"VariableDeclaration","src":"7970:24:0"},{"attributes":{"constant":false,"name":"testDifficulty","scope":570,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":531,"name":"ElementaryTypeName","src":"7996:4:0"}],"id":532,"name":"VariableDeclaration","src":"7996:19:0"}],"id":533,"name":"ParameterList","src":"7928:88:0"},{"children":[{"attributes":{"constant":false,"name":"success","scope":570,"stateVariable":false,"storageLocation":"default","type":"bool","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bool","type":"bool"},"id":534,"name":"ElementaryTypeName","src":"8033:4:0"}],"id":535,"name":"VariableDeclaration","src":"8033:12:0"}],"id":536,"name":"ParameterList","src":"8032:14:0"},{"children":[{"attributes":{"assignments":[538]},"children":[{"attributes":{"constant":false,"name":"difficulty","scope":570,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":537,"name":"ElementaryTypeName","src":"8060:4:0"}],"id":538,"name":"VariableDeclaration","src":"8060:15:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":532,"type":"uint256","value":"testDifficulty"},"id":539,"name":"Identifier","src":"8078:14:0"}],"id":540,"name":"VariableDeclarationStatement","src":"8060:32:0"},{"attributes":{"assignments":[542]},"children":[{"attributes":{"constant":false,"name":"reward_amount","scope":570,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":541,"name":"ElementaryTypeName","src":"8104:4:0"}],"id":542,"name":"VariableDeclaration","src":"8104:18:0"},{"attributes":{"argumentTypes":null,"arguments":[null],"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[null],"overloadedDeclarations":[null],"referencedDeclaration":723,"type":"function () view returns (uint256)","value":"getMiningReward"},"id":543,"name":"Identifier","src":"8125:15:0"}],"id":544,"name":"FunctionCall","src":"8125:17:0"}],"id":545,"name":"VariableDeclarationStatement","src":"8104:38:0"},{"attributes":{"assignments":[547]},"children":[{"attributes":{"constant":false,"name":"digest","scope":570,"stateVariable":false,"storageLocation":"default","type":"bytes32","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bytes32","type":"bytes32"},"id":546,"name":"ElementaryTypeName","src":"8155:7:0"}],"id":547,"name":"VariableDeclaration","src":"8155:14:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"bytes32","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_bytes32","typeString":"bytes32"},{"typeIdentifier":"t_address","typeString":"address"},{"typeIdentifier":"t_uint256","typeString":"uint256"}],"overloadedDeclarations":[null],"referencedDeclaration":970,"type":"function () pure returns (bytes32)","value":"keccak256"},"id":548,"name":"Identifier","src":"8172:9:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":530,"type":"bytes32","value":"challenge_number"},"id":549,"name":"Identifier","src":"8182:16:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":550,"name":"Identifier","src":"8199:3:0"}],"id":551,"name":"MemberAccess","src":"8199:10:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":526,"type":"uint256","value":"nonce"},"id":552,"name":"Identifier","src":"8210:5:0"}],"id":553,"name":"FunctionCall","src":"8172:44:0"}],"id":554,"name":"VariableDeclarationStatement","src":"8155:61:0"},{"attributes":{"falseBody":null},"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":">","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":true},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_bytes32","typeString":"bytes32"}],"isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"type":"type(uint256)","value":"uint256"},"id":555,"name":"ElementaryTypeNameExpression","src":"8286:7:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":547,"type":"bytes32","value":"digest"},"id":556,"name":"Identifier","src":"8294:6:0"}],"id":557,"name":"FunctionCall","src":"8286:15:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":278,"type":"uint256","value":"miningTarget"},"id":558,"name":"Identifier","src":"8304:12:0"}],"id":559,"name":"BinaryOperation","src":"8286:30:0"},{"children":[{"attributes":{"argumentTypes":null,"arguments":[null],"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[null],"overloadedDeclarations":[null],"referencedDeclaration":980,"type":"function () pure","value":"revert"},"id":560,"name":"Identifier","src":"8318:6:0"}],"id":561,"name":"FunctionCall","src":"8318:8:0"}],"id":562,"name":"ExpressionStatement","src":"8318:8:0"}],"id":563,"name":"IfStatement","src":"8283:43:0"},{"attributes":{"functionReturnParameters":536},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isInlineArray":false,"isLValue":false,"isPure":false,"lValueRequested":false,"type":"bool"},"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_bytes32","typeString":"bytes32"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"==","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":547,"type":"bytes32","value":"digest"},"id":564,"name":"Identifier","src":"8347:6:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":528,"type":"bytes32","value":"challenge_digest"},"id":565,"name":"Identifier","src":"8357:16:0"}],"id":566,"name":"BinaryOperation","src":"8347:26:0"}],"id":567,"name":"TupleExpression","src":"8346:28:0"}],"id":568,"name":"Return","src":"8339:35:0"}],"id":569,"name":"Block","src":"8047:339:0"}],"id":570,"name":"FunctionDefinition","src":"7902:484:0"},{"attributes":{"constant":false,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"mint","payable":false,"scope":964,"stateMutability":"nonpayable","superFunction":null,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"nonce","scope":676,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint256","type":"uint256"},"id":571,"name":"ElementaryTypeName","src":"8407:7:0"}],"id":572,"name":"VariableDeclaration","src":"8407:13:0"},{"attributes":{"constant":false,"name":"challenge_digest","scope":676,"stateVariable":false,"storageLocation":"default","type":"bytes32","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bytes32","type":"bytes32"},"id":573,"name":"ElementaryTypeName","src":"8422:7:0"}],"id":574,"name":"VariableDeclaration","src":"8422:24:0"}],"id":575,"name":"ParameterList","src":"8406:41:0"},{"children":[{"attributes":{"constant":false,"name":"success","scope":676,"stateVariable":false,"storageLocation":"default","type":"bool","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bool","type":"bool"},"id":576,"name":"ElementaryTypeName","src":"8464:4:0"}],"id":577,"name":"VariableDeclaration","src":"8464:12:0"}],"id":578,"name":"ParameterList","src":"8463:14:0"},{"children":[{"attributes":{"assignments":[580]},"children":[{"attributes":{"constant":false,"name":"reward_amount","scope":676,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":579,"name":"ElementaryTypeName","src":"8540:4:0"}],"id":580,"name":"VariableDeclaration","src":"8540:18:0"},{"attributes":{"argumentTypes":null,"arguments":[null],"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[null],"overloadedDeclarations":[null],"referencedDeclaration":723,"type":"function () view returns (uint256)","value":"getMiningReward"},"id":581,"name":"Identifier","src":"8561:15:0"}],"id":582,"name":"FunctionCall","src":"8561:17:0"}],"id":583,"name":"VariableDeclarationStatement","src":"8540:38:0"},{"attributes":{"assignments":[585]},"children":[{"attributes":{"constant":false,"name":"digest","scope":676,"stateVariable":false,"storageLocation":"default","type":"bytes32","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bytes32","type":"bytes32"},"id":584,"name":"ElementaryTypeName","src":"8739:7:0"}],"id":585,"name":"VariableDeclaration","src":"8739:14:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"bytes32","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_bytes32","typeString":"bytes32"},{"typeIdentifier":"t_address","typeString":"address"},{"typeIdentifier":"t_uint256","typeString":"uint256"}],"overloadedDeclarations":[null],"referencedDeclaration":970,"type":"function () pure returns (bytes32)","value":"keccak256"},"id":586,"name":"Identifier","src":"8757:9:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":280,"type":"bytes32","value":"challengeNumber"},"id":587,"name":"Identifier","src":"8767:15:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":588,"name":"Identifier","src":"8784:3:0"}],"id":589,"name":"MemberAccess","src":"8784:10:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":572,"type":"uint256","value":"nonce"},"id":590,"name":"Identifier","src":"8796:5:0"}],"id":591,"name":"FunctionCall","src":"8757:46:0"}],"id":592,"name":"VariableDeclarationStatement","src":"8739:64:0"},{"attributes":{"falseBody":null},"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_bytes32","typeString":"bytes32"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"!=","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":585,"type":"bytes32","value":"digest"},"id":593,"name":"Identifier","src":"8873:6:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":574,"type":"bytes32","value":"challenge_digest"},"id":594,"name":"Identifier","src":"8883:16:0"}],"id":595,"name":"BinaryOperation","src":"8873:26:0"},{"children":[{"attributes":{"argumentTypes":null,"arguments":[null],"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[null],"overloadedDeclarations":[null],"referencedDeclaration":980,"type":"function () pure","value":"revert"},"id":596,"name":"Identifier","src":"8901:6:0"}],"id":597,"name":"FunctionCall","src":"8901:8:0"}],"id":598,"name":"ExpressionStatement","src":"8901:8:0"}],"id":599,"name":"IfStatement","src":"8869:40:0"},{"attributes":{"falseBody":null},"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":">","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":true},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_bytes32","typeString":"bytes32"}],"isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"type":"type(uint256)","value":"uint256"},"id":600,"name":"ElementaryTypeNameExpression","src":"8976:7:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":585,"type":"bytes32","value":"digest"},"id":601,"name":"Identifier","src":"8984:6:0"}],"id":602,"name":"FunctionCall","src":"8976:15:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":278,"type":"uint256","value":"miningTarget"},"id":603,"name":"Identifier","src":"8994:12:0"}],"id":604,"name":"BinaryOperation","src":"8976:30:0"},{"children":[{"attributes":{"argumentTypes":null,"arguments":[null],"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[null],"overloadedDeclarations":[null],"referencedDeclaration":980,"type":"function () pure","value":"revert"},"id":605,"name":"Identifier","src":"9008:6:0"}],"id":606,"name":"FunctionCall","src":"9008:8:0"}],"id":607,"name":"ExpressionStatement","src":"9008:8:0"}],"id":608,"name":"IfStatement","src":"8973:43:0"},{"attributes":{"assignments":[610]},"children":[{"attributes":{"constant":false,"name":"hashFound","scope":676,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":609,"name":"ElementaryTypeName","src":"9139:4:0"}],"id":610,"name":"VariableDeclaration","src":"9139:14:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":false,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":294,"type":"mapping(bytes32 => uint256)","value":"rewardHashesFound"},"id":611,"name":"Identifier","src":"9156:17:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":585,"type":"bytes32","value":"digest"},"id":612,"name":"Identifier","src":"9174:6:0"}],"id":613,"name":"IndexAccess","src":"9156:25:0"}],"id":614,"name":"VariableDeclarationStatement","src":"9139:42:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":true,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":294,"type":"mapping(bytes32 => uint256)","value":"rewardHashesFound"},"id":615,"name":"Identifier","src":"9192:17:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":585,"type":"bytes32","value":"digest"},"id":616,"name":"Identifier","src":"9210:6:0"}],"id":617,"name":"IndexAccess","src":"9192:25:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":263,"type":"uint256","value":"epochCount"},"id":618,"name":"Identifier","src":"9220:10:0"}],"id":619,"name":"Assignment","src":"9192:38:0"}],"id":620,"name":"ExpressionStatement","src":"9192:38:0"},{"attributes":{"falseBody":null},"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"!=","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":610,"type":"uint256","value":"hashFound"},"id":621,"name":"Identifier","src":"9244:9:0"},{"attributes":{"argumentTypes":null,"hexvalue":"30","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 0","value":"0"},"id":622,"name":"Literal","src":"9257:1:0"}],"id":623,"name":"BinaryOperation","src":"9244:14:0"},{"children":[{"attributes":{"argumentTypes":null,"arguments":[null],"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[null],"overloadedDeclarations":[null],"referencedDeclaration":980,"type":"function () pure","value":"revert"},"id":624,"name":"Identifier","src":"9260:6:0"}],"id":625,"name":"FunctionCall","src":"9260:8:0"}],"id":626,"name":"ExpressionStatement","src":"9260:8:0"}],"id":627,"name":"IfStatement","src":"9241:27:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":true,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":300,"type":"mapping(address => uint256)","value":"balances"},"id":628,"name":"Identifier","src":"9328:8:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":629,"name":"Identifier","src":"9337:3:0"}],"id":630,"name":"MemberAccess","src":"9337:10:0"}],"id":631,"name":"IndexAccess","src":"9328:20:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_uint256","typeString":"uint256"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"add","referencedDeclaration":23,"type":"function (uint256,uint256) pure returns (uint256)"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":false,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":300,"type":"mapping(address => uint256)","value":"balances"},"id":632,"name":"Identifier","src":"9351:8:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":633,"name":"Identifier","src":"9360:3:0"}],"id":634,"name":"MemberAccess","src":"9360:10:0"}],"id":635,"name":"IndexAccess","src":"9351:20:0"}],"id":636,"name":"MemberAccess","src":"9351:24:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":580,"type":"uint256","value":"reward_amount"},"id":637,"name":"Identifier","src":"9376:13:0"}],"id":638,"name":"FunctionCall","src":"9351:39:0"}],"id":639,"name":"Assignment","src":"9328:62:0"}],"id":640,"name":"ExpressionStatement","src":"9328:62:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":296,"type":"uint256","value":"tokensMinted"},"id":641,"name":"Identifier","src":"9402:12:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_uint256","typeString":"uint256"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"add","referencedDeclaration":23,"type":"function (uint256,uint256) pure returns (uint256)"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":296,"type":"uint256","value":"tokensMinted"},"id":642,"name":"Identifier","src":"9417:12:0"}],"id":643,"name":"MemberAccess","src":"9417:16:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":580,"type":"uint256","value":"reward_amount"},"id":644,"name":"Identifier","src":"9434:13:0"}],"id":645,"name":"FunctionCall","src":"9417:31:0"}],"id":646,"name":"Assignment","src":"9402:46:0"}],"id":647,"name":"ExpressionStatement","src":"9402:46:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":286,"type":"address","value":"lastRewardTo"},"id":648,"name":"Identifier","src":"9500:12:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":649,"name":"Identifier","src":"9515:3:0"}],"id":650,"name":"MemberAccess","src":"9515:10:0"}],"id":651,"name":"Assignment","src":"9500:25:0"}],"id":652,"name":"ExpressionStatement","src":"9500:25:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":288,"type":"uint256","value":"lastRewardAmount"},"id":653,"name":"Identifier","src":"9535:16:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":580,"type":"uint256","value":"reward_amount"},"id":654,"name":"Identifier","src":"9554:13:0"}],"id":655,"name":"Assignment","src":"9535:32:0"}],"id":656,"name":"ExpressionStatement","src":"9535:32:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":290,"type":"uint256","value":"lastRewardEthBlockNumber"},"id":657,"name":"Identifier","src":"9577:24:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"number","referencedDeclaration":null,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":968,"type":"block","value":"block"},"id":658,"name":"Identifier","src":"9604:5:0"}],"id":659,"name":"MemberAccess","src":"9604:12:0"}],"id":660,"name":"Assignment","src":"9577:39:0"}],"id":661,"name":"ExpressionStatement","src":"9577:39:0"},{"children":[{"attributes":{"argumentTypes":null,"arguments":[null],"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[null],"overloadedDeclarations":[null],"referencedDeclaration":431,"type":"function ()","value":"_startNewMiningEpoch"},"id":662,"name":"Identifier","src":"9629:20:0"}],"id":663,"name":"FunctionCall","src":"9629:22:0"}],"id":664,"name":"ExpressionStatement","src":"9629:22:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_address","typeString":"address"},{"typeIdentifier":"t_uint256","typeString":"uint256"},{"typeIdentifier":"t_uint256","typeString":"uint256"},{"typeIdentifier":"t_bytes32","typeString":"bytes32"}],"overloadedDeclarations":[null],"referencedDeclaration":316,"type":"function (address,uint256,uint256,bytes32)","value":"Mint"},"id":665,"name":"Identifier","src":"9664:4:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":666,"name":"Identifier","src":"9669:3:0"}],"id":667,"name":"MemberAccess","src":"9669:10:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":580,"type":"uint256","value":"reward_amount"},"id":668,"name":"Identifier","src":"9681:13:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":263,"type":"uint256","value":"epochCount"},"id":669,"name":"Identifier","src":"9696:10:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":280,"type":"bytes32","value":"challengeNumber"},"id":670,"name":"Identifier","src":"9708:15:0"}],"id":671,"name":"FunctionCall","src":"9664:61:0"}],"id":672,"name":"ExpressionStatement","src":"9664:61:0"},{"attributes":{"functionReturnParameters":578},"children":[{"attributes":{"argumentTypes":null,"hexvalue":"74727565","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"bool","type":"bool","value":"true"},"id":673,"name":"Literal","src":"9742:4:0"}],"id":674,"name":"Return","src":"9735:11:0"}],"id":675,"name":"Block","src":"8478:1276:0"}],"id":676,"name":"FunctionDefinition","src":"8393:1361:0"},{"attributes":{"constant":true,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"getChallengeNumber","payable":false,"scope":964,"stateMutability":"view","superFunction":null,"visibility":"public"},"children":[{"attributes":{"parameters":[null]},"children":[],"id":677,"name":"ParameterList","src":"9871:2:0"},{"children":[{"attributes":{"constant":false,"name":"","scope":684,"stateVariable":false,"storageLocation":"default","type":"bytes32","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bytes32","type":"bytes32"},"id":678,"name":"ElementaryTypeName","src":"9899:7:0"}],"id":679,"name":"VariableDeclaration","src":"9899:7:0"}],"id":680,"name":"ParameterList","src":"9898:9:0"},{"children":[{"attributes":{"functionReturnParameters":680},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":280,"type":"bytes32","value":"challengeNumber"},"id":681,"name":"Identifier","src":"9925:15:0"}],"id":682,"name":"Return","src":"9918:22:0"}],"id":683,"name":"Block","src":"9908:39:0"}],"id":684,"name":"FunctionDefinition","src":"9844:103:0"},{"attributes":{"constant":true,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"getMiningDifficulty","payable":false,"scope":964,"stateMutability":"view","superFunction":null,"visibility":"public"},"children":[{"attributes":{"parameters":[null]},"children":[],"id":685,"name":"ParameterList","src":"10064:2:0"},{"children":[{"attributes":{"constant":false,"name":"","scope":695,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":686,"name":"ElementaryTypeName","src":"10092:4:0"}],"id":687,"name":"VariableDeclaration","src":"10092:4:0"}],"id":688,"name":"ParameterList","src":"10091:6:0"},{"children":[{"attributes":{"functionReturnParameters":688},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_uint256","typeString":"uint256"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"div","referencedDeclaration":95,"type":"function (uint256,uint256) pure returns (uint256)"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":276,"type":"uint256","value":"_MAXIMUM_TARGET"},"id":689,"name":"Identifier","src":"10115:15:0"}],"id":690,"name":"MemberAccess","src":"10115:19:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":278,"type":"uint256","value":"miningTarget"},"id":691,"name":"Identifier","src":"10135:12:0"}],"id":692,"name":"FunctionCall","src":"10115:33:0"}],"id":693,"name":"Return","src":"10108:40:0"}],"id":694,"name":"Block","src":"10098:57:0"}],"id":695,"name":"FunctionDefinition","src":"10036:119:0"},{"attributes":{"constant":true,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"getMiningTarget","payable":false,"scope":964,"stateMutability":"view","superFunction":null,"visibility":"public"},"children":[{"attributes":{"parameters":[null]},"children":[],"id":696,"name":"ParameterList","src":"10185:2:0"},{"children":[{"attributes":{"constant":false,"name":"","scope":703,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":697,"name":"ElementaryTypeName","src":"10213:4:0"}],"id":698,"name":"VariableDeclaration","src":"10213:4:0"}],"id":699,"name":"ParameterList","src":"10212:6:0"},{"children":[{"attributes":{"functionReturnParameters":699},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":278,"type":"uint256","value":"miningTarget"},"id":700,"name":"Identifier","src":"10235:12:0"}],"id":701,"name":"Return","src":"10228:19:0"}],"id":702,"name":"Block","src":"10219:34:0"}],"id":703,"name":"FunctionDefinition","src":"10161:92:0"},{"attributes":{"constant":true,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"getMiningReward","payable":false,"scope":964,"stateMutability":"view","superFunction":null,"visibility":"public"},"children":[{"attributes":{"parameters":[null]},"children":[],"id":704,"name":"ParameterList","src":"10391:2:0"},{"children":[{"attributes":{"constant":false,"name":"","scope":723,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":705,"name":"ElementaryTypeName","src":"10419:4:0"}],"id":706,"name":"VariableDeclaration","src":"10419:4:0"}],"id":707,"name":"ParameterList","src":"10418:6:0"},{"children":[{"attributes":{"functionReturnParameters":707},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_uint256","typeString":"uint256"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"div","referencedDeclaration":95,"type":"function (uint256,uint256) pure returns (uint256)"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isInlineArray":false,"isLValue":false,"isPure":false,"lValueRequested":false,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"*","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"hexvalue":"3530","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 50","value":"50"},"id":708,"name":"Literal","src":"10570:2:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"**","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"hexvalue":"3130","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 10","value":"10"},"id":709,"name":"Literal","src":"10575:2:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":true},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_uint8","typeString":"uint8"}],"isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"type":"type(uint256)","value":"uint"},"id":710,"name":"ElementaryTypeNameExpression","src":"10579:4:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":257,"type":"uint8","value":"decimals"},"id":711,"name":"Identifier","src":"10584:8:0"}],"id":712,"name":"FunctionCall","src":"10579:14:0"}],"id":713,"name":"BinaryOperation","src":"10575:18:0"}],"id":714,"name":"BinaryOperation","src":"10570:23:0"}],"id":715,"name":"TupleExpression","src":"10569:26:0"}],"id":716,"name":"MemberAccess","src":"10569:30:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"**","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"hexvalue":"32","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 2","value":"2"},"id":717,"name":"Literal","src":"10601:1:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":282,"type":"uint256","value":"rewardEra"},"id":718,"name":"Identifier","src":"10604:9:0"}],"id":719,"name":"BinaryOperation","src":"10601:12:0"}],"id":720,"name":"FunctionCall","src":"10569:46:0"}],"id":721,"name":"Return","src":"10562:53:0"}],"id":722,"name":"Block","src":"10425:199:0"}],"id":723,"name":"FunctionDefinition","src":"10367:257:0"},{"attributes":{"constant":true,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"totalSupply","payable":false,"scope":964,"stateMutability":"view","superFunction":101,"visibility":"public"},"children":[{"attributes":{"parameters":[null]},"children":[],"id":724,"name":"ParameterList","src":"10835:2:0"},{"children":[{"attributes":{"constant":false,"name":"","scope":737,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":725,"name":"ElementaryTypeName","src":"10863:4:0"}],"id":726,"name":"VariableDeclaration","src":"10863:4:0"}],"id":727,"name":"ParameterList","src":"10862:6:0"},{"children":[{"attributes":{"functionReturnParameters":727},"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"-","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":259,"type":"uint256","value":"_totalSupply"},"id":728,"name":"Identifier","src":"10887:12:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":false,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":300,"type":"mapping(address => uint256)","value":"balances"},"id":729,"name":"Identifier","src":"10903:8:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":true,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"address","type_conversion":true},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_rational_0_by_1","typeString":"int_const 0"}],"isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"type":"type(address)","value":"address"},"id":730,"name":"ElementaryTypeNameExpression","src":"10912:7:0"},{"attributes":{"argumentTypes":null,"hexvalue":"30","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 0","value":"0"},"id":731,"name":"Literal","src":"10920:1:0"}],"id":732,"name":"FunctionCall","src":"10912:10:0"}],"id":733,"name":"IndexAccess","src":"10903:20:0"}],"id":734,"name":"BinaryOperation","src":"10887:36:0"}],"id":735,"name":"Return","src":"10880:43:0"}],"id":736,"name":"Block","src":"10869:62:0"}],"id":737,"name":"FunctionDefinition","src":"10815:116:0"},{"attributes":{"constant":true,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"balanceOf","payable":false,"scope":964,"stateMutability":"view","superFunction":108,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"tokenOwner","scope":749,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":738,"name":"ElementaryTypeName","src":"11175:7:0"}],"id":739,"name":"VariableDeclaration","src":"11175:18:0"}],"id":740,"name":"ParameterList","src":"11174:20:0"},{"children":[{"attributes":{"constant":false,"name":"balance","scope":749,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":741,"name":"ElementaryTypeName","src":"11220:4:0"}],"id":742,"name":"VariableDeclaration","src":"11220:12:0"}],"id":743,"name":"ParameterList","src":"11219:14:0"},{"children":[{"attributes":{"functionReturnParameters":743},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":false,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":300,"type":"mapping(address => uint256)","value":"balances"},"id":744,"name":"Identifier","src":"11252:8:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":739,"type":"address","value":"tokenOwner"},"id":745,"name":"Identifier","src":"11261:10:0"}],"id":746,"name":"IndexAccess","src":"11252:20:0"}],"id":747,"name":"Return","src":"11245:27:0"}],"id":748,"name":"Block","src":"11234:46:0"}],"id":749,"name":"FunctionDefinition","src":"11156:124:0"},{"attributes":{"constant":false,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"transfer","payable":false,"scope":964,"stateMutability":"nonpayable","superFunction":126,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"to","scope":792,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":750,"name":"ElementaryTypeName","src":"11647:7:0"}],"id":751,"name":"VariableDeclaration","src":"11647:10:0"},{"attributes":{"constant":false,"name":"tokens","scope":792,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":752,"name":"ElementaryTypeName","src":"11659:4:0"}],"id":753,"name":"VariableDeclaration","src":"11659:11:0"}],"id":754,"name":"ParameterList","src":"11646:25:0"},{"children":[{"attributes":{"constant":false,"name":"success","scope":792,"stateVariable":false,"storageLocation":"default","type":"bool","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bool","type":"bool"},"id":755,"name":"ElementaryTypeName","src":"11688:4:0"}],"id":756,"name":"VariableDeclaration","src":"11688:12:0"}],"id":757,"name":"ParameterList","src":"11687:14:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":true,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":300,"type":"mapping(address => uint256)","value":"balances"},"id":758,"name":"Identifier","src":"11713:8:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":759,"name":"Identifier","src":"11722:3:0"}],"id":760,"name":"MemberAccess","src":"11722:10:0"}],"id":761,"name":"IndexAccess","src":"11713:20:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_uint256","typeString":"uint256"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sub","referencedDeclaration":45,"type":"function (uint256,uint256) pure returns (uint256)"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":false,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":300,"type":"mapping(address => uint256)","value":"balances"},"id":762,"name":"Identifier","src":"11736:8:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":763,"name":"Identifier","src":"11745:3:0"}],"id":764,"name":"MemberAccess","src":"11745:10:0"}],"id":765,"name":"IndexAccess","src":"11736:20:0"}],"id":766,"name":"MemberAccess","src":"11736:24:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":753,"type":"uint256","value":"tokens"},"id":767,"name":"Identifier","src":"11761:6:0"}],"id":768,"name":"FunctionCall","src":"11736:32:0"}],"id":769,"name":"Assignment","src":"11713:55:0"}],"id":770,"name":"ExpressionStatement","src":"11713:55:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":true,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":300,"type":"mapping(address => uint256)","value":"balances"},"id":771,"name":"Identifier","src":"11779:8:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":751,"type":"address","value":"to"},"id":772,"name":"Identifier","src":"11788:2:0"}],"id":773,"name":"IndexAccess","src":"11779:12:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_uint256","typeString":"uint256"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"add","referencedDeclaration":23,"type":"function (uint256,uint256) pure returns (uint256)"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":false,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":300,"type":"mapping(address => uint256)","value":"balances"},"id":774,"name":"Identifier","src":"11794:8:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":751,"type":"address","value":"to"},"id":775,"name":"Identifier","src":"11803:2:0"}],"id":776,"name":"IndexAccess","src":"11794:12:0"}],"id":777,"name":"MemberAccess","src":"11794:16:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":753,"type":"uint256","value":"tokens"},"id":778,"name":"Identifier","src":"11811:6:0"}],"id":779,"name":"FunctionCall","src":"11794:24:0"}],"id":780,"name":"Assignment","src":"11779:39:0"}],"id":781,"name":"ExpressionStatement","src":"11779:39:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_address","typeString":"address"},{"typeIdentifier":"t_address","typeString":"address"},{"typeIdentifier":"t_uint256","typeString":"uint256"}],"overloadedDeclarations":[null],"referencedDeclaration":154,"type":"function (address,address,uint256)","value":"Transfer"},"id":782,"name":"Identifier","src":"11829:8:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":783,"name":"Identifier","src":"11838:3:0"}],"id":784,"name":"MemberAccess","src":"11838:10:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":751,"type":"address","value":"to"},"id":785,"name":"Identifier","src":"11850:2:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":753,"type":"uint256","value":"tokens"},"id":786,"name":"Identifier","src":"11854:6:0"}],"id":787,"name":"FunctionCall","src":"11829:32:0"}],"id":788,"name":"ExpressionStatement","src":"11829:32:0"},{"attributes":{"functionReturnParameters":757},"children":[{"attributes":{"argumentTypes":null,"hexvalue":"74727565","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"bool","type":"bool","value":"true"},"id":789,"name":"Literal","src":"11879:4:0"}],"id":790,"name":"Return","src":"11872:11:0"}],"id":791,"name":"Block","src":"11702:189:0"}],"id":792,"name":"FunctionDefinition","src":"11629:262:0"},{"attributes":{"constant":false,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"approve","payable":false,"scope":964,"stateMutability":"nonpayable","superFunction":135,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"spender","scope":820,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":793,"name":"ElementaryTypeName","src":"12422:7:0"}],"id":794,"name":"VariableDeclaration","src":"12422:15:0"},{"attributes":{"constant":false,"name":"tokens","scope":820,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":795,"name":"ElementaryTypeName","src":"12439:4:0"}],"id":796,"name":"VariableDeclaration","src":"12439:11:0"}],"id":797,"name":"ParameterList","src":"12421:30:0"},{"children":[{"attributes":{"constant":false,"name":"success","scope":820,"stateVariable":false,"storageLocation":"default","type":"bool","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bool","type":"bool"},"id":798,"name":"ElementaryTypeName","src":"12468:4:0"}],"id":799,"name":"VariableDeclaration","src":"12468:12:0"}],"id":800,"name":"ParameterList","src":"12467:14:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":true,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":false,"type":"mapping(address => uint256)"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":306,"type":"mapping(address => mapping(address => uint256))","value":"allowed"},"id":801,"name":"Identifier","src":"12493:7:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":802,"name":"Identifier","src":"12501:3:0"}],"id":803,"name":"MemberAccess","src":"12501:10:0"}],"id":805,"name":"IndexAccess","src":"12493:19:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":794,"type":"address","value":"spender"},"id":804,"name":"Identifier","src":"12513:7:0"}],"id":806,"name":"IndexAccess","src":"12493:28:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":796,"type":"uint256","value":"tokens"},"id":807,"name":"Identifier","src":"12524:6:0"}],"id":808,"name":"Assignment","src":"12493:37:0"}],"id":809,"name":"ExpressionStatement","src":"12493:37:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_address","typeString":"address"},{"typeIdentifier":"t_address","typeString":"address"},{"typeIdentifier":"t_uint256","typeString":"uint256"}],"overloadedDeclarations":[null],"referencedDeclaration":162,"type":"function (address,address,uint256)","value":"Approval"},"id":810,"name":"Identifier","src":"12541:8:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":811,"name":"Identifier","src":"12550:3:0"}],"id":812,"name":"MemberAccess","src":"12550:10:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":794,"type":"address","value":"spender"},"id":813,"name":"Identifier","src":"12562:7:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":796,"type":"uint256","value":"tokens"},"id":814,"name":"Identifier","src":"12571:6:0"}],"id":815,"name":"FunctionCall","src":"12541:37:0"}],"id":816,"name":"ExpressionStatement","src":"12541:37:0"},{"attributes":{"functionReturnParameters":800},"children":[{"attributes":{"argumentTypes":null,"hexvalue":"74727565","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"bool","type":"bool","value":"true"},"id":817,"name":"Literal","src":"12596:4:0"}],"id":818,"name":"Return","src":"12589:11:0"}],"id":819,"name":"Block","src":"12482:126:0"}],"id":820,"name":"FunctionDefinition","src":"12405:203:0"},{"attributes":{"constant":false,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"transferFrom","payable":false,"scope":964,"stateMutability":"nonpayable","superFunction":146,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"from","scope":879,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":821,"name":"ElementaryTypeName","src":"13171:7:0"}],"id":822,"name":"VariableDeclaration","src":"13171:12:0"},{"attributes":{"constant":false,"name":"to","scope":879,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":823,"name":"ElementaryTypeName","src":"13185:7:0"}],"id":824,"name":"VariableDeclaration","src":"13185:10:0"},{"attributes":{"constant":false,"name":"tokens","scope":879,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":825,"name":"ElementaryTypeName","src":"13197:4:0"}],"id":826,"name":"VariableDeclaration","src":"13197:11:0"}],"id":827,"name":"ParameterList","src":"13170:39:0"},{"children":[{"attributes":{"constant":false,"name":"success","scope":879,"stateVariable":false,"storageLocation":"default","type":"bool","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bool","type":"bool"},"id":828,"name":"ElementaryTypeName","src":"13226:4:0"}],"id":829,"name":"VariableDeclaration","src":"13226:12:0"}],"id":830,"name":"ParameterList","src":"13225:14:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":true,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":300,"type":"mapping(address => uint256)","value":"balances"},"id":831,"name":"Identifier","src":"13251:8:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":822,"type":"address","value":"from"},"id":832,"name":"Identifier","src":"13260:4:0"}],"id":833,"name":"IndexAccess","src":"13251:14:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_uint256","typeString":"uint256"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sub","referencedDeclaration":45,"type":"function (uint256,uint256) pure returns (uint256)"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":false,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":300,"type":"mapping(address => uint256)","value":"balances"},"id":834,"name":"Identifier","src":"13268:8:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":822,"type":"address","value":"from"},"id":835,"name":"Identifier","src":"13277:4:0"}],"id":836,"name":"IndexAccess","src":"13268:14:0"}],"id":837,"name":"MemberAccess","src":"13268:18:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":826,"type":"uint256","value":"tokens"},"id":838,"name":"Identifier","src":"13287:6:0"}],"id":839,"name":"FunctionCall","src":"13268:26:0"}],"id":840,"name":"Assignment","src":"13251:43:0"}],"id":841,"name":"ExpressionStatement","src":"13251:43:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":true,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":false,"type":"mapping(address => uint256)"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":306,"type":"mapping(address => mapping(address => uint256))","value":"allowed"},"id":842,"name":"Identifier","src":"13305:7:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":822,"type":"address","value":"from"},"id":843,"name":"Identifier","src":"13313:4:0"}],"id":846,"name":"IndexAccess","src":"13305:13:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":844,"name":"Identifier","src":"13319:3:0"}],"id":845,"name":"MemberAccess","src":"13319:10:0"}],"id":847,"name":"IndexAccess","src":"13305:25:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_uint256","typeString":"uint256"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sub","referencedDeclaration":45,"type":"function (uint256,uint256) pure returns (uint256)"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":false,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":false,"type":"mapping(address => uint256)"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":306,"type":"mapping(address => mapping(address => uint256))","value":"allowed"},"id":848,"name":"Identifier","src":"13333:7:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":822,"type":"address","value":"from"},"id":849,"name":"Identifier","src":"13341:4:0"}],"id":850,"name":"IndexAccess","src":"13333:13:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":851,"name":"Identifier","src":"13347:3:0"}],"id":852,"name":"MemberAccess","src":"13347:10:0"}],"id":853,"name":"IndexAccess","src":"13333:25:0"}],"id":854,"name":"MemberAccess","src":"13333:29:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":826,"type":"uint256","value":"tokens"},"id":855,"name":"Identifier","src":"13363:6:0"}],"id":856,"name":"FunctionCall","src":"13333:37:0"}],"id":857,"name":"Assignment","src":"13305:65:0"}],"id":858,"name":"ExpressionStatement","src":"13305:65:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":true,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":300,"type":"mapping(address => uint256)","value":"balances"},"id":859,"name":"Identifier","src":"13381:8:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":824,"type":"address","value":"to"},"id":860,"name":"Identifier","src":"13390:2:0"}],"id":861,"name":"IndexAccess","src":"13381:12:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_uint256","typeString":"uint256"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"add","referencedDeclaration":23,"type":"function (uint256,uint256) pure returns (uint256)"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":false,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":300,"type":"mapping(address => uint256)","value":"balances"},"id":862,"name":"Identifier","src":"13396:8:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":824,"type":"address","value":"to"},"id":863,"name":"Identifier","src":"13405:2:0"}],"id":864,"name":"IndexAccess","src":"13396:12:0"}],"id":865,"name":"MemberAccess","src":"13396:16:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":826,"type":"uint256","value":"tokens"},"id":866,"name":"Identifier","src":"13413:6:0"}],"id":867,"name":"FunctionCall","src":"13396:24:0"}],"id":868,"name":"Assignment","src":"13381:39:0"}],"id":869,"name":"ExpressionStatement","src":"13381:39:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_address","typeString":"address"},{"typeIdentifier":"t_address","typeString":"address"},{"typeIdentifier":"t_uint256","typeString":"uint256"}],"overloadedDeclarations":[null],"referencedDeclaration":154,"type":"function (address,address,uint256)","value":"Transfer"},"id":870,"name":"Identifier","src":"13431:8:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":822,"type":"address","value":"from"},"id":871,"name":"Identifier","src":"13440:4:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":824,"type":"address","value":"to"},"id":872,"name":"Identifier","src":"13446:2:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":826,"type":"uint256","value":"tokens"},"id":873,"name":"Identifier","src":"13450:6:0"}],"id":874,"name":"FunctionCall","src":"13431:26:0"}],"id":875,"name":"ExpressionStatement","src":"13431:26:0"},{"attributes":{"functionReturnParameters":830},"children":[{"attributes":{"argumentTypes":null,"hexvalue":"74727565","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"bool","type":"bool","value":"true"},"id":876,"name":"Literal","src":"13475:4:0"}],"id":877,"name":"Return","src":"13468:11:0"}],"id":878,"name":"Block","src":"13240:247:0"}],"id":879,"name":"FunctionDefinition","src":"13149:338:0"},{"attributes":{"constant":true,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"allowance","payable":false,"scope":964,"stateMutability":"view","superFunction":117,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"tokenOwner","scope":895,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":880,"name":"ElementaryTypeName","src":"13792:7:0"}],"id":881,"name":"VariableDeclaration","src":"13792:18:0"},{"attributes":{"constant":false,"name":"spender","scope":895,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":882,"name":"ElementaryTypeName","src":"13812:7:0"}],"id":883,"name":"VariableDeclaration","src":"13812:15:0"}],"id":884,"name":"ParameterList","src":"13791:37:0"},{"children":[{"attributes":{"constant":false,"name":"remaining","scope":895,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":885,"name":"ElementaryTypeName","src":"13854:4:0"}],"id":886,"name":"VariableDeclaration","src":"13854:14:0"}],"id":887,"name":"ParameterList","src":"13853:16:0"},{"children":[{"attributes":{"functionReturnParameters":887},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":false,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":false,"type":"mapping(address => uint256)"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":306,"type":"mapping(address => mapping(address => uint256))","value":"allowed"},"id":888,"name":"Identifier","src":"13888:7:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":881,"type":"address","value":"tokenOwner"},"id":889,"name":"Identifier","src":"13896:10:0"}],"id":890,"name":"IndexAccess","src":"13888:19:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":883,"type":"address","value":"spender"},"id":891,"name":"Identifier","src":"13908:7:0"}],"id":892,"name":"IndexAccess","src":"13888:28:0"}],"id":893,"name":"Return","src":"13881:35:0"}],"id":894,"name":"Block","src":"13870:54:0"}],"id":895,"name":"FunctionDefinition","src":"13773:151:0"},{"attributes":{"constant":false,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"approveAndCall","payable":false,"scope":964,"stateMutability":"nonpayable","superFunction":null,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"spender","scope":936,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":896,"name":"ElementaryTypeName","src":"14314:7:0"}],"id":897,"name":"VariableDeclaration","src":"14314:15:0"},{"attributes":{"constant":false,"name":"tokens","scope":936,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":898,"name":"ElementaryTypeName","src":"14331:4:0"}],"id":899,"name":"VariableDeclaration","src":"14331:11:0"},{"attributes":{"constant":false,"name":"data","scope":936,"stateVariable":false,"storageLocation":"default","type":"bytes memory","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bytes","type":"bytes storage pointer"},"id":900,"name":"ElementaryTypeName","src":"14344:5:0"}],"id":901,"name":"VariableDeclaration","src":"14344:10:0"}],"id":902,"name":"ParameterList","src":"14313:42:0"},{"children":[{"attributes":{"constant":false,"name":"success","scope":936,"stateVariable":false,"storageLocation":"default","type":"bool","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bool","type":"bool"},"id":903,"name":"ElementaryTypeName","src":"14372:4:0"}],"id":904,"name":"VariableDeclaration","src":"14372:12:0"}],"id":905,"name":"ParameterList","src":"14371:14:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":true,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":false,"type":"mapping(address => uint256)"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":306,"type":"mapping(address => mapping(address => uint256))","value":"allowed"},"id":906,"name":"Identifier","src":"14397:7:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":907,"name":"Identifier","src":"14405:3:0"}],"id":908,"name":"MemberAccess","src":"14405:10:0"}],"id":910,"name":"IndexAccess","src":"14397:19:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":897,"type":"address","value":"spender"},"id":909,"name":"Identifier","src":"14417:7:0"}],"id":911,"name":"IndexAccess","src":"14397:28:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":899,"type":"uint256","value":"tokens"},"id":912,"name":"Identifier","src":"14428:6:0"}],"id":913,"name":"Assignment","src":"14397:37:0"}],"id":914,"name":"ExpressionStatement","src":"14397:37:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_address","typeString":"address"},{"typeIdentifier":"t_address","typeString":"address"},{"typeIdentifier":"t_uint256","typeString":"uint256"}],"overloadedDeclarations":[null],"referencedDeclaration":162,"type":"function (address,address,uint256)","value":"Approval"},"id":915,"name":"Identifier","src":"14445:8:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":916,"name":"Identifier","src":"14454:3:0"}],"id":917,"name":"MemberAccess","src":"14454:10:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":897,"type":"address","value":"spender"},"id":918,"name":"Identifier","src":"14466:7:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":899,"type":"uint256","value":"tokens"},"id":919,"name":"Identifier","src":"14475:6:0"}],"id":920,"name":"FunctionCall","src":"14445:37:0"}],"id":921,"name":"ExpressionStatement","src":"14445:37:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_address","typeString":"address"},{"typeIdentifier":"t_uint256","typeString":"uint256"},{"typeIdentifier":"t_contract$__0xBitcoinToken_$964","typeString":"contract _0xBitcoinToken"},{"typeIdentifier":"t_bytes_memory_ptr","typeString":"bytes memory"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"receiveApproval","referencedDeclaration":174,"type":"function (address,uint256,address,bytes memory) external"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"contract ApproveAndCallFallBack","type_conversion":true},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_address","typeString":"address"}],"overloadedDeclarations":[null],"referencedDeclaration":175,"type":"type(contract ApproveAndCallFallBack)","value":"ApproveAndCallFallBack"},"id":922,"name":"Identifier","src":"14493:22:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":897,"type":"address","value":"spender"},"id":923,"name":"Identifier","src":"14516:7:0"}],"id":924,"name":"FunctionCall","src":"14493:31:0"}],"id":925,"name":"MemberAccess","src":"14493:47:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":926,"name":"Identifier","src":"14541:3:0"}],"id":927,"name":"MemberAccess","src":"14541:10:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":899,"type":"uint256","value":"tokens"},"id":928,"name":"Identifier","src":"14553:6:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":995,"type":"contract _0xBitcoinToken","value":"this"},"id":929,"name":"Identifier","src":"14561:4:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":901,"type":"bytes memory","value":"data"},"id":930,"name":"Identifier","src":"14567:4:0"}],"id":931,"name":"FunctionCall","src":"14493:79:0"}],"id":932,"name":"ExpressionStatement","src":"14493:79:0"},{"attributes":{"functionReturnParameters":905},"children":[{"attributes":{"argumentTypes":null,"hexvalue":"74727565","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"bool","type":"bool","value":"true"},"id":933,"name":"Literal","src":"14590:4:0"}],"id":934,"name":"Return","src":"14583:11:0"}],"id":935,"name":"Block","src":"14386:216:0"}],"id":936,"name":"FunctionDefinition","src":"14290:312:0"},{"attributes":{"constant":false,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"","payable":true,"scope":964,"stateMutability":"payable","superFunction":null,"visibility":"public"},"children":[{"attributes":{"parameters":[null]},"children":[],"id":937,"name":"ParameterList","src":"14806:2:0"},{"attributes":{"parameters":[null]},"children":[],"id":938,"name":"ParameterList","src":"14824:0:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"arguments":[null],"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[null],"overloadedDeclarations":[null],"referencedDeclaration":980,"type":"function () pure","value":"revert"},"id":939,"name":"Identifier","src":"14835:6:0"}],"id":940,"name":"FunctionCall","src":"14835:8:0"}],"id":941,"name":"ExpressionStatement","src":"14835:8:0"}],"id":942,"name":"Block","src":"14824:27:0"}],"id":943,"name":"FunctionDefinition","src":"14797:54:0"},{"attributes":{"constant":false,"implemented":true,"isConstructor":false,"name":"transferAnyERC20Token","payable":false,"scope":964,"stateMutability":"nonpayable","superFunction":null,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"tokenAddress","scope":963,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":944,"name":"ElementaryTypeName","src":"15118:7:0"}],"id":945,"name":"VariableDeclaration","src":"15118:20:0"},{"attributes":{"constant":false,"name":"tokens","scope":963,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":946,"name":"ElementaryTypeName","src":"15140:4:0"}],"id":947,"name":"VariableDeclaration","src":"15140:11:0"}],"id":948,"name":"ParameterList","src":"15117:35:0"},{"children":[{"attributes":{"constant":false,"name":"success","scope":963,"stateVariable":false,"storageLocation":"default","type":"bool","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bool","type":"bool"},"id":951,"name":"ElementaryTypeName","src":"15179:4:0"}],"id":952,"name":"VariableDeclaration","src":"15179:12:0"}],"id":953,"name":"ParameterList","src":"15178:14:0"},{"attributes":{"arguments":[null]},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":205,"type":"modifier ()","value":"onlyOwner"},"id":949,"name":"Identifier","src":"15160:9:0"}],"id":950,"name":"ModifierInvocation","src":"15160:9:0"},{"children":[{"attributes":{"functionReturnParameters":953},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"bool","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_address","typeString":"address"},{"typeIdentifier":"t_uint256","typeString":"uint256"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"transfer","referencedDeclaration":126,"type":"function (address,uint256) external returns (bool)"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"contract ERC20Interface","type_conversion":true},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_address","typeString":"address"}],"overloadedDeclarations":[null],"referencedDeclaration":163,"type":"type(contract ERC20Interface)","value":"ERC20Interface"},"id":954,"name":"Identifier","src":"15211:14:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":945,"type":"address","value":"tokenAddress"},"id":955,"name":"Identifier","src":"15226:12:0"}],"id":956,"name":"FunctionCall","src":"15211:28:0"}],"id":957,"name":"MemberAccess","src":"15211:37:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":177,"type":"address","value":"owner"},"id":958,"name":"Identifier","src":"15249:5:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":947,"type":"uint256","value":"tokens"},"id":959,"name":"Identifier","src":"15256:6:0"}],"id":960,"name":"FunctionCall","src":"15211:52:0"}],"id":961,"name":"Return","src":"15204:59:0"}],"id":962,"name":"Block","src":"15193:78:0"}],"id":963,"name":"FunctionDefinition","src":"15087:184:0"}],"id":964,"name":"ContractDefinition","src":"3478:11796:0"}],"id":965,"name":"SourceUnit","src":"0:15275:0"},"compiler":{"name":"solc","version":"0.4.18+commit.9cf6e910.Emscripten.clang"},"networks":{},"schemaVersion":"1.0.1","updatedAt":"2018-02-03T22:55:50.574Z"}
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Web3 = __webpack_require__(43);
+var Web3 = __webpack_require__(44);
 
 // dont override global variable
 if (typeof window !== 'undefined' && typeof window.Web3 === 'undefined') {
@@ -29750,7 +29802,7 @@ if (typeof window !== 'undefined' && typeof window.Web3 === 'undefined') {
 module.exports = Web3;
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -29780,21 +29832,21 @@ module.exports = Web3;
  * @date 2014
  */
 
-var RequestManager = __webpack_require__(44);
-var Iban = __webpack_require__(14);
-var Eth = __webpack_require__(47);
-var DB = __webpack_require__(89);
-var Shh = __webpack_require__(90);
-var Net = __webpack_require__(91);
-var Settings = __webpack_require__(92);
-var version = __webpack_require__(93);
+var RequestManager = __webpack_require__(45);
+var Iban = __webpack_require__(15);
+var Eth = __webpack_require__(48);
+var DB = __webpack_require__(90);
+var Shh = __webpack_require__(91);
+var Net = __webpack_require__(92);
+var Settings = __webpack_require__(93);
+var version = __webpack_require__(94);
 var utils = __webpack_require__(1);
-var sha3 = __webpack_require__(16);
-var extend = __webpack_require__(94);
-var Batch = __webpack_require__(95);
-var Property = __webpack_require__(15);
-var HttpProvider = __webpack_require__(96);
-var IpcProvider = __webpack_require__(98);
+var sha3 = __webpack_require__(17);
+var extend = __webpack_require__(95);
+var Batch = __webpack_require__(96);
+var Property = __webpack_require__(16);
+var HttpProvider = __webpack_require__(97);
+var IpcProvider = __webpack_require__(99);
 
 function Web3(provider) {
     this._requestManager = new RequestManager(provider);
@@ -29885,7 +29937,7 @@ Web3.prototype.createBatch = function () {
 module.exports = Web3;
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -29914,9 +29966,9 @@ module.exports = Web3;
  * @date 2014
  */
 
-var Jsonrpc = __webpack_require__(26);
+var Jsonrpc = __webpack_require__(25);
 var utils = __webpack_require__(1);
-var c = __webpack_require__(13);
+var c = __webpack_require__(14);
 var errors = __webpack_require__(9);
 
 /**
@@ -30150,7 +30202,7 @@ RequestManager.prototype.poll = function () {
 module.exports = RequestManager;
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(module, global) {var __WEBPACK_AMD_DEFINE_RESULT__;/*! https://mths.be/utf8js v2.1.2 by @mathias */
@@ -30394,10 +30446,10 @@ module.exports = RequestManager;
 		root.utf8 = utf8;
 	}
 })(this);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(46)(module), __webpack_require__(11)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(47)(module), __webpack_require__(12)))
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, exports) {
 
 module.exports = function (module) {
@@ -30424,7 +30476,7 @@ module.exports = function (module) {
 };
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -30456,15 +30508,15 @@ module.exports = function (module) {
 var formatters = __webpack_require__(5);
 var utils = __webpack_require__(1);
 var Method = __webpack_require__(10);
-var Property = __webpack_require__(15);
-var c = __webpack_require__(13);
-var Contract = __webpack_require__(48);
-var watches = __webpack_require__(19);
-var Filter = __webpack_require__(18);
-var IsSyncing = __webpack_require__(83);
-var namereg = __webpack_require__(84);
-var Iban = __webpack_require__(14);
-var transfer = __webpack_require__(87);
+var Property = __webpack_require__(16);
+var c = __webpack_require__(14);
+var Contract = __webpack_require__(49);
+var watches = __webpack_require__(20);
+var Filter = __webpack_require__(19);
+var IsSyncing = __webpack_require__(84);
+var namereg = __webpack_require__(85);
+var Iban = __webpack_require__(15);
+var transfer = __webpack_require__(88);
 
 var blockCall = function (args) {
     return utils.isString(args[0]) && args[0].indexOf('0x') === 0 ? "eth_getBlockByHash" : "eth_getBlockByNumber";
@@ -30728,7 +30780,7 @@ Eth.prototype.isSyncing = function (callback) {
 module.exports = Eth;
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -30754,10 +30806,10 @@ module.exports = Eth;
  */
 
 var utils = __webpack_require__(1);
-var coder = __webpack_require__(20);
-var SolidityEvent = __webpack_require__(28);
-var SolidityFunction = __webpack_require__(81);
-var AllEvents = __webpack_require__(82);
+var coder = __webpack_require__(22);
+var SolidityEvent = __webpack_require__(27);
+var SolidityFunction = __webpack_require__(82);
+var AllEvents = __webpack_require__(83);
 
 /**
  * Should be called to encode constructor params
@@ -30995,7 +31047,7 @@ var Contract = function (web3, abi, address) {
 module.exports = ContractFactory;
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var f = __webpack_require__(3);
@@ -31030,7 +31082,7 @@ SolidityTypeAddress.prototype.staticPartLength = function (name) {
 module.exports = SolidityTypeAddress;
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var f = __webpack_require__(3);
@@ -31065,7 +31117,7 @@ SolidityTypeBool.prototype.staticPartLength = function (name) {
 module.exports = SolidityTypeBool;
 
 /***/ }),
-/* 51 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var f = __webpack_require__(3);
@@ -31106,7 +31158,7 @@ SolidityTypeInt.prototype.staticPartLength = function (name) {
 module.exports = SolidityTypeInt;
 
 /***/ }),
-/* 52 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var f = __webpack_require__(3);
@@ -31147,7 +31199,7 @@ SolidityTypeUInt.prototype.staticPartLength = function (name) {
 module.exports = SolidityTypeUInt;
 
 /***/ }),
-/* 53 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var f = __webpack_require__(3);
@@ -31176,7 +31228,7 @@ SolidityTypeDynamicBytes.prototype.isDynamicType = function () {
 module.exports = SolidityTypeDynamicBytes;
 
 /***/ }),
-/* 54 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var f = __webpack_require__(3);
@@ -31205,7 +31257,7 @@ SolidityTypeString.prototype.isDynamicType = function () {
 module.exports = SolidityTypeString;
 
 /***/ }),
-/* 55 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var f = __webpack_require__(3);
@@ -31246,7 +31298,7 @@ SolidityTypeReal.prototype.staticPartLength = function (name) {
 module.exports = SolidityTypeReal;
 
 /***/ }),
-/* 56 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var f = __webpack_require__(3);
@@ -31287,7 +31339,7 @@ SolidityTypeUReal.prototype.staticPartLength = function (name) {
 module.exports = SolidityTypeUReal;
 
 /***/ }),
-/* 57 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var f = __webpack_require__(3);
@@ -31330,13 +31382,13 @@ SolidityTypeBytes.prototype.staticPartLength = function (name) {
 module.exports = SolidityTypeBytes;
 
 /***/ }),
-/* 58 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
 	if (true) {
 		// CommonJS
-		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(17), __webpack_require__(59), __webpack_require__(60), __webpack_require__(6), __webpack_require__(7), __webpack_require__(21), __webpack_require__(29), __webpack_require__(61), __webpack_require__(30), __webpack_require__(62), __webpack_require__(31), __webpack_require__(63), __webpack_require__(22), __webpack_require__(64), __webpack_require__(8), __webpack_require__(2), __webpack_require__(65), __webpack_require__(66), __webpack_require__(67), __webpack_require__(68), __webpack_require__(69), __webpack_require__(70), __webpack_require__(71), __webpack_require__(72), __webpack_require__(73), __webpack_require__(74), __webpack_require__(75), __webpack_require__(76), __webpack_require__(77), __webpack_require__(78), __webpack_require__(79), __webpack_require__(80));
+		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(18), __webpack_require__(60), __webpack_require__(61), __webpack_require__(6), __webpack_require__(7), __webpack_require__(23), __webpack_require__(28), __webpack_require__(62), __webpack_require__(29), __webpack_require__(63), __webpack_require__(30), __webpack_require__(64), __webpack_require__(24), __webpack_require__(65), __webpack_require__(8), __webpack_require__(2), __webpack_require__(66), __webpack_require__(67), __webpack_require__(68), __webpack_require__(69), __webpack_require__(70), __webpack_require__(71), __webpack_require__(72), __webpack_require__(73), __webpack_require__(74), __webpack_require__(75), __webpack_require__(76), __webpack_require__(77), __webpack_require__(78), __webpack_require__(79), __webpack_require__(80), __webpack_require__(81));
 	} else if (typeof define === "function" && define.amd) {
 		// AMD
 		define(["./core", "./x64-core", "./lib-typedarrays", "./enc-utf16", "./enc-base64", "./md5", "./sha1", "./sha256", "./sha224", "./sha512", "./sha384", "./sha3", "./ripemd160", "./hmac", "./pbkdf2", "./evpkdf", "./cipher-core", "./mode-cfb", "./mode-ctr", "./mode-ctr-gladman", "./mode-ofb", "./mode-ecb", "./pad-ansix923", "./pad-iso10126", "./pad-iso97971", "./pad-zeropadding", "./pad-nopadding", "./format-hex", "./aes", "./tripledes", "./rc4", "./rabbit", "./rabbit-legacy"], factory);
@@ -31350,7 +31402,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 59 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory) {
@@ -31418,7 +31470,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 60 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory) {
@@ -31568,13 +31620,13 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 61 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
 	if (true) {
 		// CommonJS
-		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(29));
+		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(28));
 	} else if (typeof define === "function" && define.amd) {
 		// AMD
 		define(["./core", "./sha256"], factory);
@@ -31646,13 +31698,13 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 62 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
 	if (true) {
 		// CommonJS
-		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(17), __webpack_require__(30));
+		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(18), __webpack_require__(29));
 	} else if (typeof define === "function" && define.amd) {
 		// AMD
 		define(["./core", "./x64-core", "./sha512"], factory);
@@ -31725,7 +31777,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 63 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory) {
@@ -31961,13 +32013,13 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 64 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
 	if (true) {
 		// CommonJS
-		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(21), __webpack_require__(22));
+		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(23), __webpack_require__(24));
 	} else if (typeof define === "function" && define.amd) {
 		// AMD
 		define(["./core", "./sha1", "./hmac"], factory);
@@ -32107,7 +32159,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 65 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
@@ -32186,7 +32238,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 66 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
@@ -32245,7 +32297,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 67 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
@@ -32348,7 +32400,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 68 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
@@ -32403,7 +32455,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 69 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
@@ -32444,7 +32496,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 70 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
@@ -32494,7 +32546,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 71 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
@@ -32538,7 +32590,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 72 */
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
@@ -32579,7 +32631,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 73 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
@@ -32625,7 +32677,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 74 */
+/* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
@@ -32654,7 +32706,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 75 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
@@ -32721,7 +32773,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 76 */
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
@@ -32953,7 +33005,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 77 */
+/* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
@@ -33695,7 +33747,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 78 */
+/* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
@@ -33835,7 +33887,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 79 */
+/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
@@ -34016,7 +34068,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 80 */
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
@@ -34196,7 +34248,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 81 */
+/* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -34221,10 +34273,10 @@ module.exports = SolidityTypeBytes;
  * @date 2015
  */
 
-var coder = __webpack_require__(20);
+var coder = __webpack_require__(22);
 var utils = __webpack_require__(1);
 var formatters = __webpack_require__(5);
-var sha3 = __webpack_require__(16);
+var sha3 = __webpack_require__(17);
 
 /**
  * This prototype should be used to call/sendTransaction to solidity functions
@@ -34437,7 +34489,7 @@ SolidityFunction.prototype.attachToContract = function (contract) {
 module.exports = SolidityFunction;
 
 /***/ }),
-/* 82 */
+/* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -34462,12 +34514,12 @@ module.exports = SolidityFunction;
  * @date 2014
  */
 
-var sha3 = __webpack_require__(16);
-var SolidityEvent = __webpack_require__(28);
+var sha3 = __webpack_require__(17);
+var SolidityEvent = __webpack_require__(27);
 var formatters = __webpack_require__(5);
 var utils = __webpack_require__(1);
-var Filter = __webpack_require__(18);
-var watches = __webpack_require__(19);
+var Filter = __webpack_require__(19);
+var watches = __webpack_require__(20);
 
 var AllSolidityEvents = function (web3, json, address) {
     this._web3 = web3;
@@ -34529,7 +34581,7 @@ AllSolidityEvents.prototype.attachToContract = function (contract) {
 module.exports = AllSolidityEvents;
 
 /***/ }),
-/* 83 */
+/* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -34623,7 +34675,7 @@ IsSyncing.prototype.stopWatching = function () {
 module.exports = IsSyncing;
 
 /***/ }),
-/* 84 */
+/* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -34648,8 +34700,8 @@ module.exports = IsSyncing;
  * @date 2015
  */
 
-var globalRegistrarAbi = __webpack_require__(85);
-var icapRegistrarAbi = __webpack_require__(86);
+var globalRegistrarAbi = __webpack_require__(86);
+var icapRegistrarAbi = __webpack_require__(87);
 
 var globalNameregAddress = '0xc6d9d2cd449a754c494264e1809c50e34d64562b';
 var icapNameregAddress = '0xa1a111bc074c9cfa781f0c38e63bd51c91b8af00';
@@ -34666,19 +34718,19 @@ module.exports = {
 };
 
 /***/ }),
-/* 85 */
+/* 86 */
 /***/ (function(module, exports) {
 
 module.exports = [{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"name","outputs":[{"name":"o_name","type":"bytes32"}],"type":"function"},{"constant":true,"inputs":[{"name":"_name","type":"bytes32"}],"name":"owner","outputs":[{"name":"","type":"address"}],"type":"function"},{"constant":true,"inputs":[{"name":"_name","type":"bytes32"}],"name":"content","outputs":[{"name":"","type":"bytes32"}],"type":"function"},{"constant":true,"inputs":[{"name":"_name","type":"bytes32"}],"name":"addr","outputs":[{"name":"","type":"address"}],"type":"function"},{"constant":false,"inputs":[{"name":"_name","type":"bytes32"}],"name":"reserve","outputs":[],"type":"function"},{"constant":true,"inputs":[{"name":"_name","type":"bytes32"}],"name":"subRegistrar","outputs":[{"name":"","type":"address"}],"type":"function"},{"constant":false,"inputs":[{"name":"_name","type":"bytes32"},{"name":"_newOwner","type":"address"}],"name":"transfer","outputs":[],"type":"function"},{"constant":false,"inputs":[{"name":"_name","type":"bytes32"},{"name":"_registrar","type":"address"}],"name":"setSubRegistrar","outputs":[],"type":"function"},{"constant":false,"inputs":[],"name":"Registrar","outputs":[],"type":"function"},{"constant":false,"inputs":[{"name":"_name","type":"bytes32"},{"name":"_a","type":"address"},{"name":"_primary","type":"bool"}],"name":"setAddress","outputs":[],"type":"function"},{"constant":false,"inputs":[{"name":"_name","type":"bytes32"},{"name":"_content","type":"bytes32"}],"name":"setContent","outputs":[],"type":"function"},{"constant":false,"inputs":[{"name":"_name","type":"bytes32"}],"name":"disown","outputs":[],"type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_name","type":"bytes32"},{"indexed":false,"name":"_winner","type":"address"}],"name":"AuctionEnded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_name","type":"bytes32"},{"indexed":false,"name":"_bidder","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}],"name":"NewBid","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"name","type":"bytes32"}],"name":"Changed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"name","type":"bytes32"},{"indexed":true,"name":"addr","type":"address"}],"name":"PrimaryChanged","type":"event"}]
 
 /***/ }),
-/* 86 */
+/* 87 */
 /***/ (function(module, exports) {
 
 module.exports = [{"constant":true,"inputs":[{"name":"_name","type":"bytes32"}],"name":"owner","outputs":[{"name":"","type":"address"}],"type":"function"},{"constant":false,"inputs":[{"name":"_name","type":"bytes32"},{"name":"_refund","type":"address"}],"name":"disown","outputs":[],"type":"function"},{"constant":true,"inputs":[{"name":"_name","type":"bytes32"}],"name":"addr","outputs":[{"name":"","type":"address"}],"type":"function"},{"constant":false,"inputs":[{"name":"_name","type":"bytes32"}],"name":"reserve","outputs":[],"type":"function"},{"constant":false,"inputs":[{"name":"_name","type":"bytes32"},{"name":"_newOwner","type":"address"}],"name":"transfer","outputs":[],"type":"function"},{"constant":false,"inputs":[{"name":"_name","type":"bytes32"},{"name":"_a","type":"address"}],"name":"setAddr","outputs":[],"type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"name":"name","type":"bytes32"}],"name":"Changed","type":"event"}]
 
 /***/ }),
-/* 87 */
+/* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -34703,8 +34755,8 @@ module.exports = [{"constant":true,"inputs":[{"name":"_name","type":"bytes32"}],
  * @date 2015
  */
 
-var Iban = __webpack_require__(14);
-var exchangeAbi = __webpack_require__(88);
+var Iban = __webpack_require__(15);
+var exchangeAbi = __webpack_require__(89);
 
 /**
  * Should be used to make Iban transfer
@@ -34773,13 +34825,13 @@ var deposit = function (web3, from, to, value, client, callback) {
 module.exports = transfer;
 
 /***/ }),
-/* 88 */
+/* 89 */
 /***/ (function(module, exports) {
 
 module.exports = [{"constant":false,"inputs":[{"name":"from","type":"bytes32"},{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transfer","outputs":[],"type":"function"},{"constant":false,"inputs":[{"name":"from","type":"bytes32"},{"name":"to","type":"address"},{"name":"indirectId","type":"bytes32"},{"name":"value","type":"uint256"}],"name":"icapTransfer","outputs":[],"type":"function"},{"constant":false,"inputs":[{"name":"to","type":"bytes32"}],"name":"deposit","outputs":[],"type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"AnonymousDeposit","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"bytes32"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Deposit","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"bytes32"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"bytes32"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"indirectId","type":"bytes32"},{"indexed":false,"name":"value","type":"uint256"}],"name":"IcapTransfer","type":"event"}]
 
 /***/ }),
-/* 89 */
+/* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -34848,7 +34900,7 @@ var methods = function () {
 module.exports = DB;
 
 /***/ }),
-/* 90 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -34875,8 +34927,8 @@ module.exports = DB;
 
 var Method = __webpack_require__(10);
 var formatters = __webpack_require__(5);
-var Filter = __webpack_require__(18);
-var watches = __webpack_require__(19);
+var Filter = __webpack_require__(19);
+var watches = __webpack_require__(20);
 
 var Shh = function (web3) {
     this.web3 = web3;
@@ -34932,7 +34984,7 @@ var methods = function () {
 module.exports = Shh;
 
 /***/ }),
-/* 91 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -34958,7 +35010,7 @@ module.exports = Shh;
  */
 
 var utils = __webpack_require__(1);
-var Property = __webpack_require__(15);
+var Property = __webpack_require__(16);
 
 var Net = function (web3) {
     this._requestManager = web3._requestManager;
@@ -34986,7 +35038,7 @@ var properties = function () {
 module.exports = Net;
 
 /***/ }),
-/* 92 */
+/* 93 */
 /***/ (function(module, exports) {
 
 
@@ -34999,19 +35051,19 @@ var Settings = function () {
 module.exports = Settings;
 
 /***/ }),
-/* 93 */
+/* 94 */
 /***/ (function(module, exports) {
 
 module.exports = {"version":"0.14.1"}
 
 /***/ }),
-/* 94 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var formatters = __webpack_require__(5);
 var utils = __webpack_require__(1);
 var Method = __webpack_require__(10);
-var Property = __webpack_require__(15);
+var Property = __webpack_require__(16);
 
 // TODO: refactor, so the input params are not altered.
 // it's necessary to make same 'extension' work with multiple providers
@@ -35055,7 +35107,7 @@ var extend = function (web3) {
 module.exports = extend;
 
 /***/ }),
-/* 95 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -35080,7 +35132,7 @@ module.exports = extend;
  * @date 2015
  */
 
-var Jsonrpc = __webpack_require__(26);
+var Jsonrpc = __webpack_require__(25);
 var errors = __webpack_require__(9);
 
 var Batch = function (web3) {
@@ -35125,7 +35177,7 @@ Batch.prototype.execute = function () {
 module.exports = Batch;
 
 /***/ }),
-/* 96 */
+/* 97 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35171,7 +35223,7 @@ if (typeof Meteor !== 'undefined' && Meteor.isServer) {
 
     // node
 } else {
-    XMLHttpRequest = __webpack_require__(97).XMLHttpRequest; // jshint ignore: line
+    XMLHttpRequest = __webpack_require__(98).XMLHttpRequest; // jshint ignore: line
 }
 
 /**
@@ -35277,7 +35329,7 @@ HttpProvider.prototype.isConnected = function () {
 module.exports = HttpProvider;
 
 /***/ }),
-/* 97 */
+/* 98 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35292,7 +35344,7 @@ if (typeof XMLHttpRequest === 'undefined') {
 }
 
 /***/ }),
-/* 98 */
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -35490,7 +35542,182 @@ IpcProvider.prototype.sendAsync = function (payload, callback) {
 module.exports = IpcProvider;
 
 /***/ }),
-/* 99 */
+/* 100 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+
+const $ = __webpack_require__(11);
+
+class HomeDashboard {
+
+  init(ethHelper, web3, dashboardRenderer) {
+    setInterval(function () {
+      console.log("updating contract data");
+
+      ethHelper.connectToContract(web3, dashboardRenderer, function (contractData) {
+
+        dashboardRenderer.update(contractData);
+      });
+    }, 30 * 1000);
+
+    ethHelper.connectToContract(web3, dashboardRenderer, function (contractData) {
+
+      dashboardRenderer.init(contractData);
+    });
+  }
+
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = HomeDashboard;
+
+
+/***/ }),
+/* 101 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(21);
+
+const $ = __webpack_require__(11);
+
+
+
+var balanceText;
+var accountAddress;
+
+class HomeDashboard {
+
+  async init(alertRenderer, ethHelper) {
+    this.alertRenderer = alertRenderer;
+    this.ethHelper = ethHelper;
+
+    $(".transfer-form-fields").hide();
+
+    this.web3 = this.detectInjectedWeb3();
+
+    await this.updateWalletRender();
+
+    console.log(accountAddress);
+
+    var app = new __WEBPACK_IMPORTED_MODULE_0_vue__["a" /* default */]({
+      el: '#wallet-titlebar',
+      data: { account: accountAddress,
+        balance: balanceText,
+        errorMessage: alertRenderer.alertMessage },
+
+      methods: {
+        update: function () {}
+      }
+    });
+
+    var transfer = new __WEBPACK_IMPORTED_MODULE_0_vue__["a" /* default */]({
+      el: '#transfer-form',
+      data: { amount: 0,
+        recipient_address: null },
+
+      methods: {
+        update: function () {}
+      }
+    });
+
+    if (this.web3 != null) {
+      $(".transfer-form-fields").show();
+
+      var self = this;
+
+      $(".start-transfer-button").on('click', function () {
+
+        self.startTransfer(transfer.amount, transfer.recipient_address, function (error, response) {
+
+          console.log(response);
+        });
+      });
+    }
+  }
+
+  detectInjectedWeb3() {
+
+    console.log('detect');
+    if (typeof web3 !== 'undefined') {
+      web3 = new Web3(web3.currentProvider);
+
+      console.log(web3);
+
+      if (typeof web3.eth !== 'undefined' && typeof web3.eth.accounts[0] !== 'undefined') {
+
+        return web3;
+      } else {
+
+        console.log(web3.eth);
+        console.log(web3.eth.accounts[0]);
+
+        this.alertRenderer.renderError("No Web3 interface found.  Please login to Metamask or an Ethereum enabled browser.");
+      }
+    } else {
+      // set the provider you want from Web3.providers
+      //web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+      this.alertRenderer.renderError("No Web3 interface found.  Please install Metamask or use an Ethereum enabled browser..");
+    }
+
+    return null;
+  }
+
+  async updateWalletRender() {
+    if (this.web3 != null) {
+      console.log('loading wallet data ');
+
+      var activeAccount = web3.eth.accounts[0];
+
+      accountAddress = activeAccount;
+
+      console.log(accountAddress);
+
+      var contract = this.ethHelper.getWeb3ContractInstance(this.web3);
+
+      let getDecimals = new Promise(resolve => {
+        contract.decimals(function (error, response) {
+          resolve(response.toNumber());
+        });
+      });
+
+      let getTokenBalance = new Promise(resolve => {
+        contract.balanceOf(activeAccount, function (error, response) {
+          resolve(response.toNumber());
+        });
+      });
+
+      var decimals = await getDecimals;
+      var tokenBalance = await getTokenBalance;
+
+      balanceText = tokenBalance / Math.pow(10, decimals);
+    }
+  }
+
+  async startTransfer(amountRaw, recipient, callback) {
+
+    var contract = this.ethHelper.getWeb3ContractInstance(this.web3);
+
+    let getDecimals = new Promise(resolve => {
+      contract.decimals(function (error, response) {
+        resolve(response.toNumber());
+      });
+    });
+
+    var decimals = await getDecimals;
+
+    var amount = amountRaw * Math.pow(10, decimals);
+
+    console.log('start transfer', amount, recipient);
+
+    contract.transfer.sendTransaction(recipient, amount, callback);
+  }
+
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = HomeDashboard;
+
+
+/***/ }),
+/* 102 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

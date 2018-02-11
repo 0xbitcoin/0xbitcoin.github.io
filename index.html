@@ -6,35 +6,59 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <link href="main.css" rel="stylesheet"></head>
+      <link rel="icon" type="image/png" href="/app/assets/images/0xbitcoin.png" />
+
+  <link href="/assets/main.css" rel="stylesheet"></head>
   <body>
 
 
 
-      <nav id="navbar" class="navbar" role="navigation" aria-label="main navigation">
-        <div class="navbar-brand" style="padding-left:10px;">
-          <a class="navbar-item" href=" ">
-            <img :src="brandImageUrl" height="28" width="28" />
-          </a>
-
-          <!-- <button class="button navbar-burger">
-            <span></span>
-            <span></span>
-            <span></span>
-          </button> -->
+        <nav id="navbar" class="navbar" role="navigation" aria-label="main navigation">
+       <div class="navbar-brand" style="padding-left:10px;">
+         <a class="navbar-item" href="/">
+           <img :src="brandImageUrl" height="28" width="28" />
+         </a>
 
 
 
-        </div>
+       </div>
 
-        <div class="navbar-menu">
-          <div class="navbar-end" style="padding:5px;">
-            <a href="https://github.com/0xbitcoin/" target="_blank">
-              <i class="fa fa-github"><i> G
-            </a>
+       <div class="navbar-menu">
+         <div class="navbar-end" style="padding:5px;">
+           <a href="https://github.com/0xbitcoin/0xbitcoin-token" target="_blank">
+             <img :src="githubLogo" height="28" width="28" target="_blank"/>
+           </a>
+         </div>
+       </div>
+</nav>
+
+
+
+<div class="page-container" id="home">
+
+      <section class="hero">
+        <div class="hero-body">
+          <div class="container has-text-centered">
+            <h1 class="title font-primary-title color-primary">
+              0xBitcoin
+            </h1>
+            <h2 class="subtitle">
+              Mineable ERC20 Token
+            </h2>
+
+            <p style="max-width:60%;margin: 0 auto;">
+              The implementation of Bitcoin Core on the Ethereum network as a smart contract.  Mined using Proof of Work.
+             </p>
+
+
+             <div class="whitespace-sm"></div>
+
+             <a href="/wallet" target="_blank">
+               <div class='button-bubble button-white'>Open the 0xBTC Wallet</div>
+             </a>
           </div>
         </div>
-      </nav>
+      </section>
 
 
       <div id="app">
@@ -46,17 +70,17 @@
         <div class='subtitle '> Download the CPU Miner from Github </div>
 
         <a href="https://github.com/0xbitcoin/0xbitcoin-miner" target="_blank">
-          <div class='button-bubble button-orange'>Download the 0xBTC Miner</div>
+          <div class='button-bubble button-primary'>Download the 0xBTC Miner</div>
         </a>
       </div>
 
-      <div id="dashboard" class="box has-small-text-mobile" style="overflow-x:auto;">
+      <div id="dashboard" class="box has-small-text-mobile" style="overflow-x:auto; min-height:480px;">
         <div class='subtitle'>System Stats</div>
         <table class='table'>
 
         <tbody>
-          <tr> <td> Network: ROPSTEN </td> </tr>
-          <tr> <td> Address: 0x9ec7567938f19d08d1915c2ab7ed23c743e49e31   </td> </tr>
+          <tr> <td> Network: MAINNET </td> </tr>
+          <tr> <td> Address: <a :href='contractUrl' target="_blank"> {{ contractAddress }} </a>  </td> </tr>
           <tr> <td> Total Supply:  {{ totalSupply }} </td> </tr>
           <tr> <td> Amount Mined:  {{ amountMined }}</td></tr>
         <tr> <td> Mining Difficulty:  {{ difficulty }}</td></tr>
@@ -75,8 +99,11 @@
         <div class='title'> Mineable ERC20 Token </div>
         <div class='subtitle '> 0xBitcoin is an Ethereum token distributed using Proof of Work </div>
 
+
+
+
         <div class="">
-          <p> 0xBitcoin is interopertable with the following services: </p>
+          <p> 0xBitcoin is compatible with the following services: </p>
           <ul>
             <li> Metamask </li>
             <li> Etherdelta </li>
@@ -85,26 +112,37 @@
           </ul>
 
         </div>
+
+        <div class="">
+          <p> Read more on <a href="https://github.com/0xbitcoin/0xbitcoin-token" target="_blank"> Github </a> </p>
+
+
+        </div>
       </div>
 
+
+  </div>
 
 
 
       <footer class="footer">
-         <div class="container">
-           <div class="content has-text-centered">
-             <p>
-               <strong>0xBitcoin</strong> Mineable ERC20 Token.
+   <div class="container">
+     <div class="content has-text-centered">
+       <p>
+         <strong>0xBitcoin</strong> Mineable ERC20 Token.
 
-                <br>
-                The source code is licensed
-               <a href="http://opensource.org/licenses/mit-license.php">MIT</a>. The website content
-               is licensed <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY NC SA 4.0</a>.
-             </p>
-           </div>
-         </div>
-       </footer>
+          <br>
+          The source code is licensed
+         <a href="http://opensource.org/licenses/mit-license.php">MIT</a>. The website content
+         is licensed <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY NC SA 4.0</a>.
+       </p>
+     </div>
+   </div>
+ </footer>
 
 
-  <script type="text/javascript" src="bundle.js"></script></body>
+
+
+
+  <script type="text/javascript" src="/bundle.js"></script></body>
 </html>
