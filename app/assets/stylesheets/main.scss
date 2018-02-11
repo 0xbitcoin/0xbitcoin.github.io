@@ -22,19 +22,19 @@ a
   color: #ff7209;
 }
 
-.color-orange
+.color-primary
 {
   color: #ff7209;
 }
 
-.button-orange
+.button-primary
 {
   color: white;
 
    background: linear-gradient(#ff7209, #ff6206);
 }
 
-.button-white
+.button-secondary
 {
   color: #ff7209;
 
@@ -65,4 +65,23 @@ a
 .orange-theme
 {
   background-color: #ff7209;
+
+   
+
+  .color-primary
+  {
+    color: white;
+  }
+
+  .button-primary
+  {
+    color: white;
+
+  }
+
+  .button-secondary
+  {
+    color: black;
+
+  }
 }
