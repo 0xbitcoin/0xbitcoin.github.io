@@ -97,7 +97,7 @@ export default class HomeDashboard {
     } else {
       // set the provider you want from Web3.providers
       //web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-      this.alertRenderer.renderError("No Web3 interface found.  Please install Metamask or use an Ethereum enabled browser..")
+      this.alertRenderer.renderError("No Web3 interface found.  Please install Metamask or use an Ethereum enabled browser.")
 
     }
 
