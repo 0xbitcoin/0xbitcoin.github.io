@@ -1,8 +1,8 @@
 
 const $ = require('jquery');
 
-import logo from '../images/0xbitcoin.png'
-import githubLogo from '../images/GitHub-Mark-64px.png'
+import logo from '../img/0xbitcoin.png'
+import githubLogo from '../img/GitHub-Mark-64px.png'
 
 import Vue from 'vue'
 

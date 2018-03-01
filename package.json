@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "webpack": "webpack",
-    "start:dev": "webpack-dev-server "
+    "dev": "webpack-dev-server "
   },
-  "author": "",
+  "author": "admazzola",
   "license": "MIT",
   "dependencies": {
     "babel-core": "^6.26.0",

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+    <title><%= htmlWebpackPlugin.options.title %></title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+      <link rel="icon" type="image/png" href="/app/assets/images/0xbitcoin.png" />
+
+  </head>
+  <body>
+
+
+
+        <%= require('html-loader!./assets/html/navbar.html') %>
+
+
+<div class="page-container">
+
+      <section class="hero">
+        <div class="hero-body">
+          <div class="container has-text-centered">
+            <h1 class="title font-primary-title color-primary">
+              0xBitcoin
+            </h1>
+            <h2 class="subtitle">
+              Mineable ERC20 Token
+            </h2>
+
+            <p style="max-width:60%;margin: 0 auto;">
+              The implementation of Bitcoin Core on the Ethereum network as a smart contract.  Mined using Proof of Work.
+             </p>
+
+
+             <div class="whitespace-sm"></div>
+
+             <a href="/wallet" target="_blank">
+               <div class='button-bubble button-white'>Open the 0xBTC Wallet</div>
+             </a>
+          </div>
+        </div>
+      </section>
+
+
+      <div id="app">
+
+      </div>
+
+      <div id="guide" class="box has-text-centered">
+        <div class='title'> Start Mining 0xBitcoin </div>
+        <div class='subtitle '> Download the CPU Miner from Github </div>
+
+        <a href="https://github.com/0xbitcoin/0xbitcoin-miner" target="_blank">
+          <div class='button-bubble button-primary'>Download the 0xBTC Miner</div>
+        </a>
+      </div>
+
+      <div id="dashboard" class="box has-small-text-mobile" style="overflow-x:auto; min-height:480px;">
+        <div class='subtitle'>System Stats</div>
+        <table class='table'>
+
+        <tbody>
+          <tr> <td> Network: MAINNET </td> </tr>
+          <tr> <td> Address: <a :href='contractUrl' target="_blank"> {{ contractAddress }} </a>  </td> </tr>
+          <tr> <td> Total Supply:  {{ totalSupply }} </td> </tr>
+          <tr> <td> Amount Mined:  {{ amountMined }}</td></tr>
+        <tr> <td> Mining Difficulty:  {{ difficulty }}</td></tr>
+        <tr> <td> Mining Challenge:  {{ challenge_number }}</td></tr>
+
+        <tr> <td> Last Reward To:  {{ lastRewardTo }}</td></tr>
+        <tr> <td> Last Reward Amount:  {{ lastRewardAmount }}</td></tr>
+        <tr> <td> Last Reward EthBlock#:  {{ lastRewardEthBlockNumber }}</td></tr>
+       </tbody>
+        </table>
+
+      </div>
+
+      <div id="about" class="box has-text-centered">
+
+        <div class='title'> Mineable ERC20 Token </div>
+        <div class='subtitle '> 0xBitcoin is an Ethereum token distributed using Proof of Work </div>
+
+
+
+
+        <div class="">
+          <p> 0xBitcoin is compatible with the following services: </p>
+          <ul>
+            <li> Metamask </li>
+            <li> Etherdelta </li>
+            <li> Radar Relay </li>
+            <li> 0x Protocol </li>
+          </ul>
+
+        </div>
+
+        <div class="">
+          <p> Read more on <a href="https://github.com/0xbitcoin/0xbitcoin-token" target="_blank"> Github </a> </p>
+
+
+        </div>
+      </div>
+
+
+  </div>
+
+
+
+      <%= require('html-loader!./assets/html/footer.html') %>
+
+
+
+
+  </body>
+</html>

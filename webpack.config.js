@@ -89,7 +89,20 @@ module.exports = {
                   }
                 }
               ]
-            }
+            },
+
+            {
+              test: /\.(eot|woff|woff2|ttf|svg)(\?[\s\S]+)?$/,
+              use: [
+                {
+                  loader: 'file-loader',
+                  options: {
+                    name: '[path][name].[ext]',
+                     publicPath: '/',
+                  }
+                }
+              ]
+            },
         ]
     },
     resolve: {
