@@ -3,6 +3,7 @@ const $ = require('jquery');
 
 import logo from '../img/0xbitcoin.png'
 import githubLogo from '../img/GitHub-Mark-64px.png'
+import redditLogo from '../img/reddit-mark-64px.png'
 
 import Vue from 'vue'
 
@@ -24,7 +25,8 @@ var navbar = new Vue({
   el: '#navbar',
   data: {
     brandImageUrl: logo,
-    githubLogo: githubLogo
+    githubLogo: githubLogo,
+    redditLogo: redditLogo
   }
 })
 
