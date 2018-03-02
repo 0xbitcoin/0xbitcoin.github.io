@@ -10161,7 +10161,8 @@ a {
   line-height: 1.40em;
   font-weight: 500;
   text-align: left;
-  padding: 5px; }
+  padding: 5px;
+  overflow-x: auto; }
 
 .code-terminal {
   white-space: pre;
