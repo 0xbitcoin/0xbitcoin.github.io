@@ -34,11 +34,21 @@ a
    background: linear-gradient(#ff7209, #ff6206);
 }
 
+.button-primary:hover
+{
+  background: linear-gradient(#ee7209, #ee6206);
+}
+
 .button-secondary
 {
   color: #ff7209;
 
    background: linear-gradient(#fff, #eee);
+}
+
+.button-secondary:hover
+{
+  background: linear-gradient(#eee, #ddd);
 }
 
 .button-bubble
@@ -66,7 +76,6 @@ a
 {
   background-color: #ff7209;
 
-   
 
   .color-primary
   {
@@ -75,13 +84,34 @@ a
 
   .button-primary
   {
-    color: white;
+  //  color: #ff7209;
 
   }
 
   .button-secondary
   {
-    color: black;
+  //  color: black;
 
   }
+}
+
+.code-terminal-container
+{
+    height: 350px;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    color: #f0f0f0;
+    text-shadow: #000 0px 1px 0px;
+    font-family: "Consolas", "Courier New", "Courier";
+    font-size: 1.45em;
+    line-height: 1.40em;
+    font-weight: 500;
+    text-align: left;
+    padding:5px;
+}
+
+.code-terminal
+{
+      white-space: pre;
+        text-align: left;
 }

@@ -8,10 +8,12 @@ import Vue from 'vue'
 
 import AlertRenderer from './alert-renderer'
 import DashboardRenderer from './dashboard-renderer'
+import HomeRenderer from './home-renderer'
 
 import EthHelper from './ethhelper'
 //var web3 = this.connectWeb3();
 
+var homeRenderer= new HomeRenderer()
 var dashboardRenderer = new DashboardRenderer();
 var alertRenderer = new AlertRenderer();
 var ethHelper = new EthHelper();
@@ -52,6 +54,8 @@ $(document).ready(function(){
 
       } );
 
+
+      homeRenderer.init();
 
 });
 
