@@ -117,7 +117,7 @@
       </div>
 
       <div id="dashboard" class="box  has-small-text-mobile" style="overflow-x:auto; min-height:480px;">
-        <div class='subtitle'>    <i class="icon-graph color-primary" style="font-size:48px" ></i>  </div>
+        <div class='subtitle'>    <i class="icon-chart color-primary" style="font-size:48px" ></i>  </div>
         <table class='table' style='margin: 0 auto'>
 
         <tbody>
@@ -140,7 +140,7 @@
 
 
       <div id="pools" class="box mining-pools-section orange-theme white-title" style="overflow-x:auto; min-height:480px;">
-     <!--   <div class='subtitle color-primary'>Mining Pools</div>  -->
+        <div class='subtitle color-primary'>  <i class="icon-share color-primary" style="font-size:48px" ></i> </div>
 
 
       <!--   <img src="app/assets/img/pool_mining.png" width="80" height="80"></img> -->
@@ -149,9 +149,22 @@
 
 
           <div v-for="(item, index) in pools.poolList.pools"  v-bind:class="item.htmlClass">
-            <div class="pool-tile-container backgound-slate-primary color-primary">
+            <div class="pool-tile-container  color-primary">
 
               <div class='pool-title'> {{ item.name  }}  </div>
+
+              <div class='pool-address'>
+                <a v-bind:href="item.url" target="_blank">
+                  {{ item.url  }}
+                </a>
+              </div>
+
+              <div class='pool-image'>
+                  <a v-bind:href="item.url" target="_blank">
+                    <img v-bind:src="item.image"><img>
+                   </a>
+                </div>
+
 
 
             </div>
@@ -176,12 +189,12 @@
         <div class="">
           <p> Use 0xBitcoin with: </p>
           <ul>
-             <li> <a href="https://metamask.io"> Metamask </a></li>
-              <li> <a href="https://forkdelta.github.io/#!/trade/0xBTC-ETH"> Forkdelta </a> </li>
+               <li> <a href="https://forkdelta.github.io/#!/trade/0xBTC-ETH"> Forkdelta </a> </li>
               <li> <a href="https://etherscan.io/address/0xb6ed7644c69416d67b522e20bc294a9a9b405b31"> Etherscan </a></li>
-              <li> Radar Relay (Requested) </li>
-              <li> 0x Protocol (Requested) </li>
-              <li> And many many more to come... </li>
+              <li> <a href="https://www.ledgerwallet.com/"> Ledger Nano </a> </li>
+              <li> <a href="https://parity.io">  Parity </a>  </li>
+              <li> <a href="https://metamask.io"> Metamask </a></li>
+              <li> <a href="https://https://www.cipherbrowser.com/">  Cipher Mobile Wallet </a> </li>
           </ul>
 
         </div>

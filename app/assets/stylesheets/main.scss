@@ -169,7 +169,7 @@ position: relative;
 
 .pools-feature-container
 {
-  padding-top:80px;
+  padding-top:20px;
   max-width:400px;
   margin: 0 auto;
 }
@@ -177,17 +177,35 @@ position: relative;
 .pool-tile-container
 {
 
-  height:300px;
+  height:380px;
   padding: 15px;
+      padding-top: 40px;
   text-align:center;
 
-  background-color: white;
+  background-color: #21252b;
+   box-shadow: 2px 2px #888888;
   border-radius:5px;
 
   margin-left: 20px;
   margin-right: 20px;
-}
+    margin-bottom: 10px;
 
+  .pool-title
+  {
+      font-size:32px;
+  }
+
+
+  .pool-image
+  {
+    img{
+      max-height: 200px;
+      margin: 30px auto;
+    }
+  }
+
+
+}
 
 
 .color-fun-primary
