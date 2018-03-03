@@ -25,7 +25,6 @@ export default class WalletDashboard {
 
      this.web3 = this.detectInjectedWeb3();
 
-           console.log(  'web3', this.web3)
 
      await this.updateWalletRender();
 
@@ -127,7 +126,7 @@ export default class WalletDashboard {
 
 
       var contract = this.ethHelper.getWeb3ContractInstance(this.web3  );
-      console.log('contract',contract)
+     
 
       let getDecimals = new Promise(resolve => {
         contract.decimals( function(error,response){

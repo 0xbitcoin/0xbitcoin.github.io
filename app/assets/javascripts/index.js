@@ -11,6 +11,9 @@ import AlertRenderer from './alert-renderer'
 import HomeRenderer from './home-renderer'
 
 import EthHelper from './ethhelper'
+
+import HomeDashboard from './home-dashboard'
+import WalletDashboard from './wallet-dashboard'
 //var web3 = this.connectWeb3();
 import WalletDashboard from './wallet-dashboard'
 
@@ -44,7 +47,7 @@ $(document).ready(function(){
 
     if($("#wallet").length > 0){
       // var web3 = ethHelper.init( alertRenderer);
-      
+
       wallet.init(alertRenderer,ethHelper);
     }
 

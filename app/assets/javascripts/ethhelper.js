@@ -112,17 +112,19 @@ export default class EthHelper {
 
     getWeb3ContractInstance(web3, contract_address, contract_abi )
     {
-      if(contract_address== null)
+      if(contract_address == null)
       {
-        contract_address =   this.getContractAddress();
+        contract_address = this.getContractAddress();
       }
 
-      if(contract_abi== null)
+      if(contract_abi == null)
       {
-        contract_abi =   this.getContractABI();
+        contract_abi = this.getContractABI();
       }
 
         return web3.eth.contract(contract_abi).at(contract_address)
+
+
     }
 
 
