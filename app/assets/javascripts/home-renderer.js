@@ -3,6 +3,7 @@ const $ = require('jquery');
 import Vue from 'vue';
 
 import Typed from 'typed.js';
+import Slick from 'slick-carousel';
 
 //require('owl.carousel')
 
@@ -29,6 +30,9 @@ export default class HomeRenderer {
          } );
 
       },3000);
+
+
+
 
         ethHelper.connectToContract( web3 , dashboardRenderer, function(contractData){
 
@@ -59,21 +63,13 @@ export default class HomeRenderer {
            backSpeed: 0,
         }
 
-  /*    var options = {
-          strings: [
-            "<i>First</i> sentence.",
-           "&amp; a second sentence."
-           , "&amp; a second sentence."
-           , "&amp; a second sentence."
-         ],
-          typeSpeed: 40,
-           startDelay: 500,
-           loop: true,
-          backSpeed: 0,
-        }
-*/
+
 
         var typed = new Typed(".code-terminal", options);
+
+
+
+      
 
 
   /*

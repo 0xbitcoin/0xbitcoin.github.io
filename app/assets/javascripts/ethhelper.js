@@ -6,6 +6,9 @@ var _0xBitcoinContract = require('../contracts/_0xBitcoinToken.json');
 
 var embeddedWeb3 = require('web3')
 
+var web3utils = require('web3-utils')
+
+
 export default class EthHelper {
 
 
@@ -63,6 +66,10 @@ export default class EthHelper {
 
        var lastRewardEthBlockNumber = await tokenContract.lastRewardEthBlockNumber()
 
+       var hashrateEstimate = this.estimateHashrateFromDifficulty(  difficulty  )
+
+
+
       var decimals = Math.pow(10,8);
        var renderData = {
          contractUrl: 'https://etherscan.io/address/'+contractAddress,
@@ -71,6 +78,7 @@ export default class EthHelper {
          challenge_number: challenge_number,
          amountMined: (parseInt(amountMined) / decimals),
          totalSupply: (parseInt(totalSupply) / decimals),
+         hashrateEstimate: hashrateEstimate,
          lastRewardTo: lastRewardTo,
          lastRewardAmount: (parseInt(lastRewardAmount) / decimals),
          lastRewardEthBlockNumber: lastRewardEthBlockNumber
@@ -82,6 +90,23 @@ export default class EthHelper {
 
 
        callback(renderData);
+
+    }
+
+    estimateHashrateFromDifficulty(difficulty){
+
+
+       var timeToSolveABlock =  10*60;  //seconds.. ten minutes
+
+        var hashrate = web3utils.toBN(difficulty)
+              .mul( web3utils.toBN(2)
+              .pow(  web3utils.toBN(22) ))
+              .div( web3utils.toBN(timeToSolveABlock ))
+
+      var gigHashes = hashrate / ( parseFloat( web3utils.toBN(10).pow( web3utils.toBN(9) )) )
+
+       console.log('hashrate is ',hashrate )
+     return gigHashes.toFixed(2).toString() + " GH/s"
 
     }
 

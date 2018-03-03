@@ -117,7 +117,7 @@
       </div>
 
       <div id="dashboard" class="box  has-small-text-mobile" style="overflow-x:auto; min-height:480px;">
-        <div class='subtitle'>System Stats</div>
+        <div class='subtitle'>    <i class="icon-graph color-primary" style="font-size:48px" ></i>  </div>
         <table class='table' style='margin: 0 auto'>
 
         <tbody>
@@ -126,6 +126,7 @@
           <tr> <td> Total Supply:  {{ totalSupply }} </td> </tr>
           <tr> <td> Amount Mined:  {{ amountMined }}</td></tr>
         <tr> <td> Mining Difficulty:  {{ difficulty }}</td></tr>
+        <tr> <td> Hashrate Estimate:  {{ hashrateEstimate }}</td></tr>
         <tr> <td> Mining Challenge:  {{ challenge_number }}</td></tr>
 
         <tr> <td> Last Reward To:  {{ lastRewardTo }}</td></tr>
@@ -133,6 +134,34 @@
         <tr> <td> Last Reward EthBlock#:  {{ lastRewardEthBlockNumber }}</td></tr>
        </tbody>
         </table>
+
+      </div>
+
+
+
+      <div id="pools" class="box mining-pools-section orange-theme white-title" style="overflow-x:auto; min-height:480px;">
+     <!--   <div class='subtitle color-primary'>Mining Pools</div>  -->
+
+
+      <!--   <img src="app/assets/img/pool_mining.png" width="80" height="80"></img> -->
+      <div class="pools-feature-container">
+        <div class="pools-feature" id="pooltiles">
+
+
+          <div v-for="(item, index) in pools.poolList.pools"  v-bind:class="item.htmlClass">
+            <div class="pool-tile-container backgound-slate-primary color-primary">
+
+              <div class='pool-title'> {{ item.name  }}  </div>
+
+
+            </div>
+
+          </div>
+
+
+        </div>
+    </div>
+
 
       </div>
 
@@ -180,7 +209,7 @@
       <%= require('html-loader!./assets/html/footer.html') %>
 
 
-
+      <a id="scrollUp" href="#top" style="position: fixed; z-index: 2147483647;"><i class="icon-arrow-up"></i></a>
 
   </body>
 </html>

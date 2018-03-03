@@ -621,7 +621,7 @@ ABOUT OUR APP
    font-size: 18px;
     line-height: 28px;
     font-weight: 300;
- 
+
 }
 .icon-box{
     margin: 0 0 40px 0;
@@ -649,7 +649,7 @@ ABOUT OUR APP
  line-height: 50px;
  margin-top: 2px;
  background-color: #FF7007!important;
- 
+
  text-align: center;
 }
 .icon-box-content {
@@ -914,7 +914,7 @@ Team
 }
 .team-member  img{
   box-shadow: 0 0 32px rgba(0, 0, 0, 0.15);
-      width: 100%;  
+      width: 100%;
 }
 
  .member-caption {
@@ -937,7 +937,7 @@ Team
 }
 .member-content {
     width: 100%;
-    height: 100%;  
+    height: 100%;
 }
 .member-content-inner {
     position: absolute;
@@ -1143,8 +1143,8 @@ footer{
 }
 
 #scrollUp{
-    background-color: #3ab142!important;
-    border: 1px solid #3ab142!important;
+    background-color: #ff7209!important;
+    border: 1px solid #ff7209!important;
     border-radius: 8px;
     bottom: 30px;
     color: #ffffff;

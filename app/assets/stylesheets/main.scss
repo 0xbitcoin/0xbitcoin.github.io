@@ -146,6 +146,70 @@ a
   cursor: pointer;
 }
 
+
+.mining-pools-section
+{
+  background-color: #FF7007;
+
+}
+
+.mining-pools-section
+{
+position: relative;
+
+}
+.mining-pools-section:after
+{
+   content: url(/app/assets/img/pool_mining_shadow.png);
+   position: absolute;
+   top: 15%;
+   opacity: 0.05;
+   right: 4%;
+}
+
+.pools-feature-container
+{
+  padding-top:80px;
+  max-width:400px;
+  margin: 0 auto;
+}
+
+.pool-tile-container
+{
+
+  height:300px;
+  padding: 15px;
+  text-align:center;
+
+  background-color: white;
+  border-radius:5px;
+
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+
+
+.color-fun-primary
+{
+    color: #e2c08d;
+}
+
+.color-fun-secondary
+{
+    color: #73c990;
+}
+
+.backgound-slate-primary
+{
+  background-color: #21252b;
+}
+.backgound-slate-secondary
+{
+  background-color: #282c34;
+}
+
+
 .footer
 {
   color: black;
