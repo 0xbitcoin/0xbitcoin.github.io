@@ -7,6 +7,10 @@ import Vue from 'vue'
 var balanceText;
 var accountAddress;
 
+
+
+
+
 export default class WalletDashboard {
 
 
@@ -18,8 +22,10 @@ export default class WalletDashboard {
       $(".transfer-form-fields").hide();
 
 
+
      this.web3 = this.detectInjectedWeb3();
 
+           console.log(  'web3', this.web3)
 
      await this.updateWalletRender();
 
@@ -118,9 +124,10 @@ export default class WalletDashboard {
 
       console.log(accountAddress)
 
-      var contract = this.ethHelper.getWeb3ContractInstance(this.web3);
 
 
+      var contract = this.ethHelper.getWeb3ContractInstance(this.web3  );
+      console.log('contract',contract)
 
       let getDecimals = new Promise(resolve => {
         contract.decimals( function(error,response){

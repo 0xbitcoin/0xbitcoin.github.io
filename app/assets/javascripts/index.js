@@ -33,7 +33,7 @@ var navbar = new Vue({
 
 $(document).ready(function(){
 
- 
+
 
     if($("#home").length > 0){
       var web3 = ethHelper.init( alertRenderer);
@@ -43,8 +43,8 @@ $(document).ready(function(){
 
 
     if($("#wallet").length > 0){
-      var web3 = ethHelper.init( alertRenderer);
-
+      // var web3 = ethHelper.init( alertRenderer);
+      
       wallet.init(alertRenderer,ethHelper);
     }
 

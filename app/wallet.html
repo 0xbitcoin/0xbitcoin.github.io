@@ -5,8 +5,7 @@
     <title><%= htmlWebpackPlugin.options.title %></title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-        <link rel="icon" type="image/png" href="/app/assets/img/favicon.png" />
+    <link rel="icon" type="image/png" href="/app/assets/img/favicon.png" />
 
 
   </head>
@@ -30,6 +29,18 @@
             <h2 class="subtitle color-primary">
               {{ balance }}
             </h2>
+
+            <div class="whitespace-sm"></div>
+
+            <h2 class="subtitle color-primary">
+              {{ errorMessage }}
+            </h2>
+
+            <div class="whitespace-sm"></div>
+
+            <h2 class="smalltitle color-primary">
+              {{ account }}
+            </h2>
           </div>
         </div>
       </section>
@@ -37,12 +48,29 @@
       <div class="whitespace-md"></div>
 
 
-      <div id="guide" class="box has-text-centered section-white-theme">
-        <div class='title'> Transfer 0xBitcoin </div>
-        <div class='subtitle '> Requires <a href="https://metamask.io" target="_blank"> Metamask </a> </div>
+      <div id="transfer-form" class="box has-text-centered section-white-theme" >
 
-        <div class="transfer-form-container">
+        <div class="form-container" style="max-width:400px; margin:0 auto;">
+          <div class='title'> Transfer 0xBitcoin </div>
+          <div class='subtitle requires-metamask'> Requires <a href="https://metamask.io" target="_blank"> Metamask </a> or <a href="https://www.cipherbrowser.com/" target="_blank"> Cipher </a> </div>
 
+          <div class="transfer-form-fields">
+
+            <div class="label">Amount: {{ amount }}</div>
+            <input class="input" v-model="amount" placeholder="amount">
+
+
+            <div class="whitespace-sm"></div>
+
+            <div class="label">Recipient: {{ recipient_address }}</div>
+            <input class="input" v-model="recipient_address" placeholder="Recipient address">
+
+
+            <div class="whitespace-sm"></div>
+
+
+            <div class="button-bubble button-primary start-transfer-button acts-as-link"> Transfer </div>
+          </div>
         </div>
       </div>
 
@@ -54,10 +82,9 @@
         <div class='title'> Buy/Sell 0xBitcoin </div>
         <!-- <div class='subtitle '> Serviced by Etherdelta </div> -->
 
-        <a href="https://etherdelta.com/#0xb6ed7644c69416d67b522e20bc294a9a9b405b31-ETH" target="_blank">
-          <div class='button-bubble button-primary'>0xBTC on Etherdelta</div>
+        <a href="https://forkdelta.github.io/#!/trade/0xBTC-ETH" target="_blank">
+          <div class='button-bubble button-primary'>0xBTC on Forkdelta</div>
         </a>
-
 
       </div>
 
