@@ -6,11 +6,39 @@ import Typed from 'typed.js';
 
 //require('owl.carousel')
 
+import DashboardRenderer from './dashboard-renderer'
+
+var dashboardRenderer = new DashboardRenderer();
+
 
 export default class HomeRenderer {
 
-    init( )
+    init( ethHelper )
     {
+
+
+
+
+     setInterval( function(){
+
+
+         ethHelper.connectToContract( web3 , dashboardRenderer, function(contractData){
+
+           dashboardRenderer.update(contractData);
+
+         } );
+
+      },3000);
+
+        ethHelper.connectToContract( web3 , dashboardRenderer, function(contractData){
+
+          dashboardRenderer.init(contractData);
+
+        } );
+
+
+
+
 
 
       $(window).on('load', function () {

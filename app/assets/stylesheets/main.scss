@@ -26,6 +26,8 @@ a
 
     font-family: 'Anton', sans-serif;
     line-height: 1.5;
+     font-size: 2.4rem
+
 }
 
 
@@ -90,6 +92,15 @@ a
         text-decoration: underline;
   }
 
+  .section-white-theme
+  {
+    a
+    {
+      color:  #ff7209;
+      text-decoration: underline;
+    }
+  }
+
 
   .color-primary
   {
@@ -133,4 +144,11 @@ a
 .footer
 {
   color: black;
+
+  a
+  {
+    color:  #ff7209;
+    text-decoration: underline;
+  }
+  
 }
