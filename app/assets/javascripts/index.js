@@ -14,8 +14,7 @@ import EthHelper from './ethhelper'
 
 import HomeDashboard from './home-dashboard'
 import WalletDashboard from './wallet-dashboard'
-//var web3 = this.connectWeb3();
-import WalletDashboard from './wallet-dashboard'
+
 
 var homeRenderer= new HomeRenderer()
 

@@ -1,12 +1,9 @@
 {
   "name": "0xbitcointokenweb",
-<<<<<<< HEAD
-  "version": "0.1.1",
+ 
+  "version": "0.1.2",
   "description": "Official website for 0xbitcoin",
-=======
-  "version": "1.0.1",
-  "description": "The official website of 0xBitcoin.  Bitcoin on Ethereum.",
->>>>>>> c1127e229e26c162c4591570e98b865995c16251
+
   "main": "index.js",
   "scripts": {
     "webpack": "webpack",
