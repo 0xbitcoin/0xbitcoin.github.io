@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 31);
+/******/ 	return __webpack_require__(__webpack_require__.s = 37);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -861,8 +861,8 @@
  * @constructor
  */
 
-var BigNumber = __webpack_require__(14);
-var utf8 = __webpack_require__(51);
+var BigNumber = __webpack_require__(15);
+var utf8 = __webpack_require__(60);
 
 var unitMap = {
     'wei': '1',
@@ -2252,10 +2252,10 @@ module.exports = {
  * @date 2015
  */
 
-var BigNumber = __webpack_require__(14);
+var BigNumber = __webpack_require__(15);
 var utils = __webpack_require__(1);
-var c = __webpack_require__(15);
-var SolidityParam = __webpack_require__(26);
+var c = __webpack_require__(16);
+var SolidityParam = __webpack_require__(29);
 
 /**
  * Formats input value to byte representation of int
@@ -2484,7 +2484,7 @@ module.exports = {
 /***/ (function(module, exports, __webpack_require__) {
 
 var f = __webpack_require__(3);
-var SolidityParam = __webpack_require__(26);
+var SolidityParam = __webpack_require__(29);
 
 /**
  * SolidityType prototype is used to encode/decode solidity params of certain type
@@ -2754,8 +2754,8 @@ module.exports = SolidityType;
  */
 
 var utils = __webpack_require__(1);
-var config = __webpack_require__(15);
-var Iban = __webpack_require__(16);
+var config = __webpack_require__(16);
+var Iban = __webpack_require__(17);
 
 /**
  * Should the format output to a big number
@@ -3022,530 +3022,6 @@ module.exports = {
 
 /***/ }),
 /* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-;(function (root, factory) {
-	if (true) {
-		// CommonJS
-		module.exports = exports = factory(__webpack_require__(0));
-	} else if (typeof define === "function" && define.amd) {
-		// AMD
-		define(["./core"], factory);
-	} else {
-		// Global (browser)
-		factory(root.CryptoJS);
-	}
-})(this, function (CryptoJS) {
-
-	(function () {
-		// Shortcuts
-		var C = CryptoJS;
-		var C_lib = C.lib;
-		var WordArray = C_lib.WordArray;
-		var C_enc = C.enc;
-
-		/**
-   * Base64 encoding strategy.
-   */
-		var Base64 = C_enc.Base64 = {
-			/**
-    * Converts a word array to a Base64 string.
-    *
-    * @param {WordArray} wordArray The word array.
-    *
-    * @return {string} The Base64 string.
-    *
-    * @static
-    *
-    * @example
-    *
-    *     var base64String = CryptoJS.enc.Base64.stringify(wordArray);
-    */
-			stringify: function (wordArray) {
-				// Shortcuts
-				var words = wordArray.words;
-				var sigBytes = wordArray.sigBytes;
-				var map = this._map;
-
-				// Clamp excess bits
-				wordArray.clamp();
-
-				// Convert
-				var base64Chars = [];
-				for (var i = 0; i < sigBytes; i += 3) {
-					var byte1 = words[i >>> 2] >>> 24 - i % 4 * 8 & 0xff;
-					var byte2 = words[i + 1 >>> 2] >>> 24 - (i + 1) % 4 * 8 & 0xff;
-					var byte3 = words[i + 2 >>> 2] >>> 24 - (i + 2) % 4 * 8 & 0xff;
-
-					var triplet = byte1 << 16 | byte2 << 8 | byte3;
-
-					for (var j = 0; j < 4 && i + j * 0.75 < sigBytes; j++) {
-						base64Chars.push(map.charAt(triplet >>> 6 * (3 - j) & 0x3f));
-					}
-				}
-
-				// Add padding
-				var paddingChar = map.charAt(64);
-				if (paddingChar) {
-					while (base64Chars.length % 4) {
-						base64Chars.push(paddingChar);
-					}
-				}
-
-				return base64Chars.join('');
-			},
-
-			/**
-    * Converts a Base64 string to a word array.
-    *
-    * @param {string} base64Str The Base64 string.
-    *
-    * @return {WordArray} The word array.
-    *
-    * @static
-    *
-    * @example
-    *
-    *     var wordArray = CryptoJS.enc.Base64.parse(base64String);
-    */
-			parse: function (base64Str) {
-				// Shortcuts
-				var base64StrLength = base64Str.length;
-				var map = this._map;
-				var reverseMap = this._reverseMap;
-
-				if (!reverseMap) {
-					reverseMap = this._reverseMap = [];
-					for (var j = 0; j < map.length; j++) {
-						reverseMap[map.charCodeAt(j)] = j;
-					}
-				}
-
-				// Ignore padding
-				var paddingChar = map.charAt(64);
-				if (paddingChar) {
-					var paddingIndex = base64Str.indexOf(paddingChar);
-					if (paddingIndex !== -1) {
-						base64StrLength = paddingIndex;
-					}
-				}
-
-				// Convert
-				return parseLoop(base64Str, base64StrLength, reverseMap);
-			},
-
-			_map: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='
-		};
-
-		function parseLoop(base64Str, base64StrLength, reverseMap) {
-			var words = [];
-			var nBytes = 0;
-			for (var i = 0; i < base64StrLength; i++) {
-				if (i % 4) {
-					var bits1 = reverseMap[base64Str.charCodeAt(i - 1)] << i % 4 * 2;
-					var bits2 = reverseMap[base64Str.charCodeAt(i)] >>> 6 - i % 4 * 2;
-					words[nBytes >>> 2] |= (bits1 | bits2) << 24 - nBytes % 4 * 8;
-					nBytes++;
-				}
-			}
-			return WordArray.create(words, nBytes);
-		}
-	})();
-
-	return CryptoJS.enc.Base64;
-});
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-;(function (root, factory) {
-	if (true) {
-		// CommonJS
-		module.exports = exports = factory(__webpack_require__(0));
-	} else if (typeof define === "function" && define.amd) {
-		// AMD
-		define(["./core"], factory);
-	} else {
-		// Global (browser)
-		factory(root.CryptoJS);
-	}
-})(this, function (CryptoJS) {
-
-	(function (Math) {
-		// Shortcuts
-		var C = CryptoJS;
-		var C_lib = C.lib;
-		var WordArray = C_lib.WordArray;
-		var Hasher = C_lib.Hasher;
-		var C_algo = C.algo;
-
-		// Constants table
-		var T = [];
-
-		// Compute constants
-		(function () {
-			for (var i = 0; i < 64; i++) {
-				T[i] = Math.abs(Math.sin(i + 1)) * 0x100000000 | 0;
-			}
-		})();
-
-		/**
-   * MD5 hash algorithm.
-   */
-		var MD5 = C_algo.MD5 = Hasher.extend({
-			_doReset: function () {
-				this._hash = new WordArray.init([0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476]);
-			},
-
-			_doProcessBlock: function (M, offset) {
-				// Swap endian
-				for (var i = 0; i < 16; i++) {
-					// Shortcuts
-					var offset_i = offset + i;
-					var M_offset_i = M[offset_i];
-
-					M[offset_i] = (M_offset_i << 8 | M_offset_i >>> 24) & 0x00ff00ff | (M_offset_i << 24 | M_offset_i >>> 8) & 0xff00ff00;
-				}
-
-				// Shortcuts
-				var H = this._hash.words;
-
-				var M_offset_0 = M[offset + 0];
-				var M_offset_1 = M[offset + 1];
-				var M_offset_2 = M[offset + 2];
-				var M_offset_3 = M[offset + 3];
-				var M_offset_4 = M[offset + 4];
-				var M_offset_5 = M[offset + 5];
-				var M_offset_6 = M[offset + 6];
-				var M_offset_7 = M[offset + 7];
-				var M_offset_8 = M[offset + 8];
-				var M_offset_9 = M[offset + 9];
-				var M_offset_10 = M[offset + 10];
-				var M_offset_11 = M[offset + 11];
-				var M_offset_12 = M[offset + 12];
-				var M_offset_13 = M[offset + 13];
-				var M_offset_14 = M[offset + 14];
-				var M_offset_15 = M[offset + 15];
-
-				// Working varialbes
-				var a = H[0];
-				var b = H[1];
-				var c = H[2];
-				var d = H[3];
-
-				// Computation
-				a = FF(a, b, c, d, M_offset_0, 7, T[0]);
-				d = FF(d, a, b, c, M_offset_1, 12, T[1]);
-				c = FF(c, d, a, b, M_offset_2, 17, T[2]);
-				b = FF(b, c, d, a, M_offset_3, 22, T[3]);
-				a = FF(a, b, c, d, M_offset_4, 7, T[4]);
-				d = FF(d, a, b, c, M_offset_5, 12, T[5]);
-				c = FF(c, d, a, b, M_offset_6, 17, T[6]);
-				b = FF(b, c, d, a, M_offset_7, 22, T[7]);
-				a = FF(a, b, c, d, M_offset_8, 7, T[8]);
-				d = FF(d, a, b, c, M_offset_9, 12, T[9]);
-				c = FF(c, d, a, b, M_offset_10, 17, T[10]);
-				b = FF(b, c, d, a, M_offset_11, 22, T[11]);
-				a = FF(a, b, c, d, M_offset_12, 7, T[12]);
-				d = FF(d, a, b, c, M_offset_13, 12, T[13]);
-				c = FF(c, d, a, b, M_offset_14, 17, T[14]);
-				b = FF(b, c, d, a, M_offset_15, 22, T[15]);
-
-				a = GG(a, b, c, d, M_offset_1, 5, T[16]);
-				d = GG(d, a, b, c, M_offset_6, 9, T[17]);
-				c = GG(c, d, a, b, M_offset_11, 14, T[18]);
-				b = GG(b, c, d, a, M_offset_0, 20, T[19]);
-				a = GG(a, b, c, d, M_offset_5, 5, T[20]);
-				d = GG(d, a, b, c, M_offset_10, 9, T[21]);
-				c = GG(c, d, a, b, M_offset_15, 14, T[22]);
-				b = GG(b, c, d, a, M_offset_4, 20, T[23]);
-				a = GG(a, b, c, d, M_offset_9, 5, T[24]);
-				d = GG(d, a, b, c, M_offset_14, 9, T[25]);
-				c = GG(c, d, a, b, M_offset_3, 14, T[26]);
-				b = GG(b, c, d, a, M_offset_8, 20, T[27]);
-				a = GG(a, b, c, d, M_offset_13, 5, T[28]);
-				d = GG(d, a, b, c, M_offset_2, 9, T[29]);
-				c = GG(c, d, a, b, M_offset_7, 14, T[30]);
-				b = GG(b, c, d, a, M_offset_12, 20, T[31]);
-
-				a = HH(a, b, c, d, M_offset_5, 4, T[32]);
-				d = HH(d, a, b, c, M_offset_8, 11, T[33]);
-				c = HH(c, d, a, b, M_offset_11, 16, T[34]);
-				b = HH(b, c, d, a, M_offset_14, 23, T[35]);
-				a = HH(a, b, c, d, M_offset_1, 4, T[36]);
-				d = HH(d, a, b, c, M_offset_4, 11, T[37]);
-				c = HH(c, d, a, b, M_offset_7, 16, T[38]);
-				b = HH(b, c, d, a, M_offset_10, 23, T[39]);
-				a = HH(a, b, c, d, M_offset_13, 4, T[40]);
-				d = HH(d, a, b, c, M_offset_0, 11, T[41]);
-				c = HH(c, d, a, b, M_offset_3, 16, T[42]);
-				b = HH(b, c, d, a, M_offset_6, 23, T[43]);
-				a = HH(a, b, c, d, M_offset_9, 4, T[44]);
-				d = HH(d, a, b, c, M_offset_12, 11, T[45]);
-				c = HH(c, d, a, b, M_offset_15, 16, T[46]);
-				b = HH(b, c, d, a, M_offset_2, 23, T[47]);
-
-				a = II(a, b, c, d, M_offset_0, 6, T[48]);
-				d = II(d, a, b, c, M_offset_7, 10, T[49]);
-				c = II(c, d, a, b, M_offset_14, 15, T[50]);
-				b = II(b, c, d, a, M_offset_5, 21, T[51]);
-				a = II(a, b, c, d, M_offset_12, 6, T[52]);
-				d = II(d, a, b, c, M_offset_3, 10, T[53]);
-				c = II(c, d, a, b, M_offset_10, 15, T[54]);
-				b = II(b, c, d, a, M_offset_1, 21, T[55]);
-				a = II(a, b, c, d, M_offset_8, 6, T[56]);
-				d = II(d, a, b, c, M_offset_15, 10, T[57]);
-				c = II(c, d, a, b, M_offset_6, 15, T[58]);
-				b = II(b, c, d, a, M_offset_13, 21, T[59]);
-				a = II(a, b, c, d, M_offset_4, 6, T[60]);
-				d = II(d, a, b, c, M_offset_11, 10, T[61]);
-				c = II(c, d, a, b, M_offset_2, 15, T[62]);
-				b = II(b, c, d, a, M_offset_9, 21, T[63]);
-
-				// Intermediate hash value
-				H[0] = H[0] + a | 0;
-				H[1] = H[1] + b | 0;
-				H[2] = H[2] + c | 0;
-				H[3] = H[3] + d | 0;
-			},
-
-			_doFinalize: function () {
-				// Shortcuts
-				var data = this._data;
-				var dataWords = data.words;
-
-				var nBitsTotal = this._nDataBytes * 8;
-				var nBitsLeft = data.sigBytes * 8;
-
-				// Add padding
-				dataWords[nBitsLeft >>> 5] |= 0x80 << 24 - nBitsLeft % 32;
-
-				var nBitsTotalH = Math.floor(nBitsTotal / 0x100000000);
-				var nBitsTotalL = nBitsTotal;
-				dataWords[(nBitsLeft + 64 >>> 9 << 4) + 15] = (nBitsTotalH << 8 | nBitsTotalH >>> 24) & 0x00ff00ff | (nBitsTotalH << 24 | nBitsTotalH >>> 8) & 0xff00ff00;
-				dataWords[(nBitsLeft + 64 >>> 9 << 4) + 14] = (nBitsTotalL << 8 | nBitsTotalL >>> 24) & 0x00ff00ff | (nBitsTotalL << 24 | nBitsTotalL >>> 8) & 0xff00ff00;
-
-				data.sigBytes = (dataWords.length + 1) * 4;
-
-				// Hash final blocks
-				this._process();
-
-				// Shortcuts
-				var hash = this._hash;
-				var H = hash.words;
-
-				// Swap endian
-				for (var i = 0; i < 4; i++) {
-					// Shortcut
-					var H_i = H[i];
-
-					H[i] = (H_i << 8 | H_i >>> 24) & 0x00ff00ff | (H_i << 24 | H_i >>> 8) & 0xff00ff00;
-				}
-
-				// Return final computed hash
-				return hash;
-			},
-
-			clone: function () {
-				var clone = Hasher.clone.call(this);
-				clone._hash = this._hash.clone();
-
-				return clone;
-			}
-		});
-
-		function FF(a, b, c, d, x, s, t) {
-			var n = a + (b & c | ~b & d) + x + t;
-			return (n << s | n >>> 32 - s) + b;
-		}
-
-		function GG(a, b, c, d, x, s, t) {
-			var n = a + (b & d | c & ~d) + x + t;
-			return (n << s | n >>> 32 - s) + b;
-		}
-
-		function HH(a, b, c, d, x, s, t) {
-			var n = a + (b ^ c ^ d) + x + t;
-			return (n << s | n >>> 32 - s) + b;
-		}
-
-		function II(a, b, c, d, x, s, t) {
-			var n = a + (c ^ (b | ~d)) + x + t;
-			return (n << s | n >>> 32 - s) + b;
-		}
-
-		/**
-   * Shortcut function to the hasher's object interface.
-   *
-   * @param {WordArray|string} message The message to hash.
-   *
-   * @return {WordArray} The hash.
-   *
-   * @static
-   *
-   * @example
-   *
-   *     var hash = CryptoJS.MD5('message');
-   *     var hash = CryptoJS.MD5(wordArray);
-   */
-		C.MD5 = Hasher._createHelper(MD5);
-
-		/**
-   * Shortcut function to the HMAC's object interface.
-   *
-   * @param {WordArray|string} message The message to hash.
-   * @param {WordArray|string} key The secret key.
-   *
-   * @return {WordArray} The HMAC.
-   *
-   * @static
-   *
-   * @example
-   *
-   *     var hmac = CryptoJS.HmacMD5(message, key);
-   */
-		C.HmacMD5 = Hasher._createHmacHelper(MD5);
-	})(Math);
-
-	return CryptoJS.MD5;
-});
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-;(function (root, factory, undef) {
-	if (true) {
-		// CommonJS
-		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(23), __webpack_require__(24));
-	} else if (typeof define === "function" && define.amd) {
-		// AMD
-		define(["./core", "./sha1", "./hmac"], factory);
-	} else {
-		// Global (browser)
-		factory(root.CryptoJS);
-	}
-})(this, function (CryptoJS) {
-
-	(function () {
-		// Shortcuts
-		var C = CryptoJS;
-		var C_lib = C.lib;
-		var Base = C_lib.Base;
-		var WordArray = C_lib.WordArray;
-		var C_algo = C.algo;
-		var MD5 = C_algo.MD5;
-
-		/**
-   * This key derivation function is meant to conform with EVP_BytesToKey.
-   * www.openssl.org/docs/crypto/EVP_BytesToKey.html
-   */
-		var EvpKDF = C_algo.EvpKDF = Base.extend({
-			/**
-    * Configuration options.
-    *
-    * @property {number} keySize The key size in words to generate. Default: 4 (128 bits)
-    * @property {Hasher} hasher The hash algorithm to use. Default: MD5
-    * @property {number} iterations The number of iterations to perform. Default: 1
-    */
-			cfg: Base.extend({
-				keySize: 128 / 32,
-				hasher: MD5,
-				iterations: 1
-			}),
-
-			/**
-    * Initializes a newly created key derivation function.
-    *
-    * @param {Object} cfg (Optional) The configuration options to use for the derivation.
-    *
-    * @example
-    *
-    *     var kdf = CryptoJS.algo.EvpKDF.create();
-    *     var kdf = CryptoJS.algo.EvpKDF.create({ keySize: 8 });
-    *     var kdf = CryptoJS.algo.EvpKDF.create({ keySize: 8, iterations: 1000 });
-    */
-			init: function (cfg) {
-				this.cfg = this.cfg.extend(cfg);
-			},
-
-			/**
-    * Derives a key from a password.
-    *
-    * @param {WordArray|string} password The password.
-    * @param {WordArray|string} salt A salt.
-    *
-    * @return {WordArray} The derived key.
-    *
-    * @example
-    *
-    *     var key = kdf.compute(password, salt);
-    */
-			compute: function (password, salt) {
-				// Shortcut
-				var cfg = this.cfg;
-
-				// Init hasher
-				var hasher = cfg.hasher.create();
-
-				// Initial values
-				var derivedKey = WordArray.create();
-
-				// Shortcuts
-				var derivedKeyWords = derivedKey.words;
-				var keySize = cfg.keySize;
-				var iterations = cfg.iterations;
-
-				// Generate key
-				while (derivedKeyWords.length < keySize) {
-					if (block) {
-						hasher.update(block);
-					}
-					var block = hasher.update(password).finalize(salt);
-					hasher.reset();
-
-					// Iterations
-					for (var i = 1; i < iterations; i++) {
-						block = hasher.finalize(block);
-						hasher.reset();
-					}
-
-					derivedKey.concat(block);
-				}
-				derivedKey.sigBytes = keySize * 4;
-
-				return derivedKey;
-			}
-		});
-
-		/**
-   * Derives a key from a password.
-   *
-   * @param {WordArray|string} password The password.
-   * @param {WordArray|string} salt A salt.
-   * @param {Object} cfg (Optional) The configuration options to use for this computation.
-   *
-   * @return {WordArray} The derived key.
-   *
-   * @static
-   *
-   * @example
-   *
-   *     var key = CryptoJS.EvpKDF(password, salt);
-   *     var key = CryptoJS.EvpKDF(password, salt, { keySize: 8 });
-   *     var key = CryptoJS.EvpKDF(password, salt, { keySize: 8, iterations: 1000 });
-   */
-		C.EvpKDF = function (password, salt, cfg) {
-			return EvpKDF.create(cfg).compute(password, salt);
-		};
-	})();
-
-	return CryptoJS.EvpKDF;
-});
-
-/***/ }),
-/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -13468,7 +12944,583 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 });
 
 /***/ }),
+/* 7 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = function () {
+	return this;
+}();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1, eval)("this");
+} catch (e) {
+	// This works if the window reference is available
+	if (typeof window === "object") g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+;(function (root, factory) {
+	if (true) {
+		// CommonJS
+		module.exports = exports = factory(__webpack_require__(0));
+	} else if (typeof define === "function" && define.amd) {
+		// AMD
+		define(["./core"], factory);
+	} else {
+		// Global (browser)
+		factory(root.CryptoJS);
+	}
+})(this, function (CryptoJS) {
+
+	(function () {
+		// Shortcuts
+		var C = CryptoJS;
+		var C_lib = C.lib;
+		var WordArray = C_lib.WordArray;
+		var C_enc = C.enc;
+
+		/**
+   * Base64 encoding strategy.
+   */
+		var Base64 = C_enc.Base64 = {
+			/**
+    * Converts a word array to a Base64 string.
+    *
+    * @param {WordArray} wordArray The word array.
+    *
+    * @return {string} The Base64 string.
+    *
+    * @static
+    *
+    * @example
+    *
+    *     var base64String = CryptoJS.enc.Base64.stringify(wordArray);
+    */
+			stringify: function (wordArray) {
+				// Shortcuts
+				var words = wordArray.words;
+				var sigBytes = wordArray.sigBytes;
+				var map = this._map;
+
+				// Clamp excess bits
+				wordArray.clamp();
+
+				// Convert
+				var base64Chars = [];
+				for (var i = 0; i < sigBytes; i += 3) {
+					var byte1 = words[i >>> 2] >>> 24 - i % 4 * 8 & 0xff;
+					var byte2 = words[i + 1 >>> 2] >>> 24 - (i + 1) % 4 * 8 & 0xff;
+					var byte3 = words[i + 2 >>> 2] >>> 24 - (i + 2) % 4 * 8 & 0xff;
+
+					var triplet = byte1 << 16 | byte2 << 8 | byte3;
+
+					for (var j = 0; j < 4 && i + j * 0.75 < sigBytes; j++) {
+						base64Chars.push(map.charAt(triplet >>> 6 * (3 - j) & 0x3f));
+					}
+				}
+
+				// Add padding
+				var paddingChar = map.charAt(64);
+				if (paddingChar) {
+					while (base64Chars.length % 4) {
+						base64Chars.push(paddingChar);
+					}
+				}
+
+				return base64Chars.join('');
+			},
+
+			/**
+    * Converts a Base64 string to a word array.
+    *
+    * @param {string} base64Str The Base64 string.
+    *
+    * @return {WordArray} The word array.
+    *
+    * @static
+    *
+    * @example
+    *
+    *     var wordArray = CryptoJS.enc.Base64.parse(base64String);
+    */
+			parse: function (base64Str) {
+				// Shortcuts
+				var base64StrLength = base64Str.length;
+				var map = this._map;
+				var reverseMap = this._reverseMap;
+
+				if (!reverseMap) {
+					reverseMap = this._reverseMap = [];
+					for (var j = 0; j < map.length; j++) {
+						reverseMap[map.charCodeAt(j)] = j;
+					}
+				}
+
+				// Ignore padding
+				var paddingChar = map.charAt(64);
+				if (paddingChar) {
+					var paddingIndex = base64Str.indexOf(paddingChar);
+					if (paddingIndex !== -1) {
+						base64StrLength = paddingIndex;
+					}
+				}
+
+				// Convert
+				return parseLoop(base64Str, base64StrLength, reverseMap);
+			},
+
+			_map: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='
+		};
+
+		function parseLoop(base64Str, base64StrLength, reverseMap) {
+			var words = [];
+			var nBytes = 0;
+			for (var i = 0; i < base64StrLength; i++) {
+				if (i % 4) {
+					var bits1 = reverseMap[base64Str.charCodeAt(i - 1)] << i % 4 * 2;
+					var bits2 = reverseMap[base64Str.charCodeAt(i)] >>> 6 - i % 4 * 2;
+					words[nBytes >>> 2] |= (bits1 | bits2) << 24 - nBytes % 4 * 8;
+					nBytes++;
+				}
+			}
+			return WordArray.create(words, nBytes);
+		}
+	})();
+
+	return CryptoJS.enc.Base64;
+});
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+;(function (root, factory) {
+	if (true) {
+		// CommonJS
+		module.exports = exports = factory(__webpack_require__(0));
+	} else if (typeof define === "function" && define.amd) {
+		// AMD
+		define(["./core"], factory);
+	} else {
+		// Global (browser)
+		factory(root.CryptoJS);
+	}
+})(this, function (CryptoJS) {
+
+	(function (Math) {
+		// Shortcuts
+		var C = CryptoJS;
+		var C_lib = C.lib;
+		var WordArray = C_lib.WordArray;
+		var Hasher = C_lib.Hasher;
+		var C_algo = C.algo;
+
+		// Constants table
+		var T = [];
+
+		// Compute constants
+		(function () {
+			for (var i = 0; i < 64; i++) {
+				T[i] = Math.abs(Math.sin(i + 1)) * 0x100000000 | 0;
+			}
+		})();
+
+		/**
+   * MD5 hash algorithm.
+   */
+		var MD5 = C_algo.MD5 = Hasher.extend({
+			_doReset: function () {
+				this._hash = new WordArray.init([0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476]);
+			},
+
+			_doProcessBlock: function (M, offset) {
+				// Swap endian
+				for (var i = 0; i < 16; i++) {
+					// Shortcuts
+					var offset_i = offset + i;
+					var M_offset_i = M[offset_i];
+
+					M[offset_i] = (M_offset_i << 8 | M_offset_i >>> 24) & 0x00ff00ff | (M_offset_i << 24 | M_offset_i >>> 8) & 0xff00ff00;
+				}
+
+				// Shortcuts
+				var H = this._hash.words;
+
+				var M_offset_0 = M[offset + 0];
+				var M_offset_1 = M[offset + 1];
+				var M_offset_2 = M[offset + 2];
+				var M_offset_3 = M[offset + 3];
+				var M_offset_4 = M[offset + 4];
+				var M_offset_5 = M[offset + 5];
+				var M_offset_6 = M[offset + 6];
+				var M_offset_7 = M[offset + 7];
+				var M_offset_8 = M[offset + 8];
+				var M_offset_9 = M[offset + 9];
+				var M_offset_10 = M[offset + 10];
+				var M_offset_11 = M[offset + 11];
+				var M_offset_12 = M[offset + 12];
+				var M_offset_13 = M[offset + 13];
+				var M_offset_14 = M[offset + 14];
+				var M_offset_15 = M[offset + 15];
+
+				// Working varialbes
+				var a = H[0];
+				var b = H[1];
+				var c = H[2];
+				var d = H[3];
+
+				// Computation
+				a = FF(a, b, c, d, M_offset_0, 7, T[0]);
+				d = FF(d, a, b, c, M_offset_1, 12, T[1]);
+				c = FF(c, d, a, b, M_offset_2, 17, T[2]);
+				b = FF(b, c, d, a, M_offset_3, 22, T[3]);
+				a = FF(a, b, c, d, M_offset_4, 7, T[4]);
+				d = FF(d, a, b, c, M_offset_5, 12, T[5]);
+				c = FF(c, d, a, b, M_offset_6, 17, T[6]);
+				b = FF(b, c, d, a, M_offset_7, 22, T[7]);
+				a = FF(a, b, c, d, M_offset_8, 7, T[8]);
+				d = FF(d, a, b, c, M_offset_9, 12, T[9]);
+				c = FF(c, d, a, b, M_offset_10, 17, T[10]);
+				b = FF(b, c, d, a, M_offset_11, 22, T[11]);
+				a = FF(a, b, c, d, M_offset_12, 7, T[12]);
+				d = FF(d, a, b, c, M_offset_13, 12, T[13]);
+				c = FF(c, d, a, b, M_offset_14, 17, T[14]);
+				b = FF(b, c, d, a, M_offset_15, 22, T[15]);
+
+				a = GG(a, b, c, d, M_offset_1, 5, T[16]);
+				d = GG(d, a, b, c, M_offset_6, 9, T[17]);
+				c = GG(c, d, a, b, M_offset_11, 14, T[18]);
+				b = GG(b, c, d, a, M_offset_0, 20, T[19]);
+				a = GG(a, b, c, d, M_offset_5, 5, T[20]);
+				d = GG(d, a, b, c, M_offset_10, 9, T[21]);
+				c = GG(c, d, a, b, M_offset_15, 14, T[22]);
+				b = GG(b, c, d, a, M_offset_4, 20, T[23]);
+				a = GG(a, b, c, d, M_offset_9, 5, T[24]);
+				d = GG(d, a, b, c, M_offset_14, 9, T[25]);
+				c = GG(c, d, a, b, M_offset_3, 14, T[26]);
+				b = GG(b, c, d, a, M_offset_8, 20, T[27]);
+				a = GG(a, b, c, d, M_offset_13, 5, T[28]);
+				d = GG(d, a, b, c, M_offset_2, 9, T[29]);
+				c = GG(c, d, a, b, M_offset_7, 14, T[30]);
+				b = GG(b, c, d, a, M_offset_12, 20, T[31]);
+
+				a = HH(a, b, c, d, M_offset_5, 4, T[32]);
+				d = HH(d, a, b, c, M_offset_8, 11, T[33]);
+				c = HH(c, d, a, b, M_offset_11, 16, T[34]);
+				b = HH(b, c, d, a, M_offset_14, 23, T[35]);
+				a = HH(a, b, c, d, M_offset_1, 4, T[36]);
+				d = HH(d, a, b, c, M_offset_4, 11, T[37]);
+				c = HH(c, d, a, b, M_offset_7, 16, T[38]);
+				b = HH(b, c, d, a, M_offset_10, 23, T[39]);
+				a = HH(a, b, c, d, M_offset_13, 4, T[40]);
+				d = HH(d, a, b, c, M_offset_0, 11, T[41]);
+				c = HH(c, d, a, b, M_offset_3, 16, T[42]);
+				b = HH(b, c, d, a, M_offset_6, 23, T[43]);
+				a = HH(a, b, c, d, M_offset_9, 4, T[44]);
+				d = HH(d, a, b, c, M_offset_12, 11, T[45]);
+				c = HH(c, d, a, b, M_offset_15, 16, T[46]);
+				b = HH(b, c, d, a, M_offset_2, 23, T[47]);
+
+				a = II(a, b, c, d, M_offset_0, 6, T[48]);
+				d = II(d, a, b, c, M_offset_7, 10, T[49]);
+				c = II(c, d, a, b, M_offset_14, 15, T[50]);
+				b = II(b, c, d, a, M_offset_5, 21, T[51]);
+				a = II(a, b, c, d, M_offset_12, 6, T[52]);
+				d = II(d, a, b, c, M_offset_3, 10, T[53]);
+				c = II(c, d, a, b, M_offset_10, 15, T[54]);
+				b = II(b, c, d, a, M_offset_1, 21, T[55]);
+				a = II(a, b, c, d, M_offset_8, 6, T[56]);
+				d = II(d, a, b, c, M_offset_15, 10, T[57]);
+				c = II(c, d, a, b, M_offset_6, 15, T[58]);
+				b = II(b, c, d, a, M_offset_13, 21, T[59]);
+				a = II(a, b, c, d, M_offset_4, 6, T[60]);
+				d = II(d, a, b, c, M_offset_11, 10, T[61]);
+				c = II(c, d, a, b, M_offset_2, 15, T[62]);
+				b = II(b, c, d, a, M_offset_9, 21, T[63]);
+
+				// Intermediate hash value
+				H[0] = H[0] + a | 0;
+				H[1] = H[1] + b | 0;
+				H[2] = H[2] + c | 0;
+				H[3] = H[3] + d | 0;
+			},
+
+			_doFinalize: function () {
+				// Shortcuts
+				var data = this._data;
+				var dataWords = data.words;
+
+				var nBitsTotal = this._nDataBytes * 8;
+				var nBitsLeft = data.sigBytes * 8;
+
+				// Add padding
+				dataWords[nBitsLeft >>> 5] |= 0x80 << 24 - nBitsLeft % 32;
+
+				var nBitsTotalH = Math.floor(nBitsTotal / 0x100000000);
+				var nBitsTotalL = nBitsTotal;
+				dataWords[(nBitsLeft + 64 >>> 9 << 4) + 15] = (nBitsTotalH << 8 | nBitsTotalH >>> 24) & 0x00ff00ff | (nBitsTotalH << 24 | nBitsTotalH >>> 8) & 0xff00ff00;
+				dataWords[(nBitsLeft + 64 >>> 9 << 4) + 14] = (nBitsTotalL << 8 | nBitsTotalL >>> 24) & 0x00ff00ff | (nBitsTotalL << 24 | nBitsTotalL >>> 8) & 0xff00ff00;
+
+				data.sigBytes = (dataWords.length + 1) * 4;
+
+				// Hash final blocks
+				this._process();
+
+				// Shortcuts
+				var hash = this._hash;
+				var H = hash.words;
+
+				// Swap endian
+				for (var i = 0; i < 4; i++) {
+					// Shortcut
+					var H_i = H[i];
+
+					H[i] = (H_i << 8 | H_i >>> 24) & 0x00ff00ff | (H_i << 24 | H_i >>> 8) & 0xff00ff00;
+				}
+
+				// Return final computed hash
+				return hash;
+			},
+
+			clone: function () {
+				var clone = Hasher.clone.call(this);
+				clone._hash = this._hash.clone();
+
+				return clone;
+			}
+		});
+
+		function FF(a, b, c, d, x, s, t) {
+			var n = a + (b & c | ~b & d) + x + t;
+			return (n << s | n >>> 32 - s) + b;
+		}
+
+		function GG(a, b, c, d, x, s, t) {
+			var n = a + (b & d | c & ~d) + x + t;
+			return (n << s | n >>> 32 - s) + b;
+		}
+
+		function HH(a, b, c, d, x, s, t) {
+			var n = a + (b ^ c ^ d) + x + t;
+			return (n << s | n >>> 32 - s) + b;
+		}
+
+		function II(a, b, c, d, x, s, t) {
+			var n = a + (c ^ (b | ~d)) + x + t;
+			return (n << s | n >>> 32 - s) + b;
+		}
+
+		/**
+   * Shortcut function to the hasher's object interface.
+   *
+   * @param {WordArray|string} message The message to hash.
+   *
+   * @return {WordArray} The hash.
+   *
+   * @static
+   *
+   * @example
+   *
+   *     var hash = CryptoJS.MD5('message');
+   *     var hash = CryptoJS.MD5(wordArray);
+   */
+		C.MD5 = Hasher._createHelper(MD5);
+
+		/**
+   * Shortcut function to the HMAC's object interface.
+   *
+   * @param {WordArray|string} message The message to hash.
+   * @param {WordArray|string} key The secret key.
+   *
+   * @return {WordArray} The HMAC.
+   *
+   * @static
+   *
+   * @example
+   *
+   *     var hmac = CryptoJS.HmacMD5(message, key);
+   */
+		C.HmacMD5 = Hasher._createHmacHelper(MD5);
+	})(Math);
+
+	return CryptoJS.MD5;
+});
+
+/***/ }),
 /* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+;(function (root, factory, undef) {
+	if (true) {
+		// CommonJS
+		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(24), __webpack_require__(25));
+	} else if (typeof define === "function" && define.amd) {
+		// AMD
+		define(["./core", "./sha1", "./hmac"], factory);
+	} else {
+		// Global (browser)
+		factory(root.CryptoJS);
+	}
+})(this, function (CryptoJS) {
+
+	(function () {
+		// Shortcuts
+		var C = CryptoJS;
+		var C_lib = C.lib;
+		var Base = C_lib.Base;
+		var WordArray = C_lib.WordArray;
+		var C_algo = C.algo;
+		var MD5 = C_algo.MD5;
+
+		/**
+   * This key derivation function is meant to conform with EVP_BytesToKey.
+   * www.openssl.org/docs/crypto/EVP_BytesToKey.html
+   */
+		var EvpKDF = C_algo.EvpKDF = Base.extend({
+			/**
+    * Configuration options.
+    *
+    * @property {number} keySize The key size in words to generate. Default: 4 (128 bits)
+    * @property {Hasher} hasher The hash algorithm to use. Default: MD5
+    * @property {number} iterations The number of iterations to perform. Default: 1
+    */
+			cfg: Base.extend({
+				keySize: 128 / 32,
+				hasher: MD5,
+				iterations: 1
+			}),
+
+			/**
+    * Initializes a newly created key derivation function.
+    *
+    * @param {Object} cfg (Optional) The configuration options to use for the derivation.
+    *
+    * @example
+    *
+    *     var kdf = CryptoJS.algo.EvpKDF.create();
+    *     var kdf = CryptoJS.algo.EvpKDF.create({ keySize: 8 });
+    *     var kdf = CryptoJS.algo.EvpKDF.create({ keySize: 8, iterations: 1000 });
+    */
+			init: function (cfg) {
+				this.cfg = this.cfg.extend(cfg);
+			},
+
+			/**
+    * Derives a key from a password.
+    *
+    * @param {WordArray|string} password The password.
+    * @param {WordArray|string} salt A salt.
+    *
+    * @return {WordArray} The derived key.
+    *
+    * @example
+    *
+    *     var key = kdf.compute(password, salt);
+    */
+			compute: function (password, salt) {
+				// Shortcut
+				var cfg = this.cfg;
+
+				// Init hasher
+				var hasher = cfg.hasher.create();
+
+				// Initial values
+				var derivedKey = WordArray.create();
+
+				// Shortcuts
+				var derivedKeyWords = derivedKey.words;
+				var keySize = cfg.keySize;
+				var iterations = cfg.iterations;
+
+				// Generate key
+				while (derivedKeyWords.length < keySize) {
+					if (block) {
+						hasher.update(block);
+					}
+					var block = hasher.update(password).finalize(salt);
+					hasher.reset();
+
+					// Iterations
+					for (var i = 1; i < iterations; i++) {
+						block = hasher.finalize(block);
+						hasher.reset();
+					}
+
+					derivedKey.concat(block);
+				}
+				derivedKey.sigBytes = keySize * 4;
+
+				return derivedKey;
+			}
+		});
+
+		/**
+   * Derives a key from a password.
+   *
+   * @param {WordArray|string} password The password.
+   * @param {WordArray|string} salt A salt.
+   * @param {Object} cfg (Optional) The configuration options to use for this computation.
+   *
+   * @return {WordArray} The derived key.
+   *
+   * @static
+   *
+   * @example
+   *
+   *     var key = CryptoJS.EvpKDF(password, salt);
+   *     var key = CryptoJS.EvpKDF(password, salt, { keySize: 8 });
+   *     var key = CryptoJS.EvpKDF(password, salt, { keySize: 8, iterations: 1000 });
+   */
+		C.EvpKDF = function (password, salt, cfg) {
+			return EvpKDF.create(cfg).compute(password, salt);
+		};
+	})();
+
+	return CryptoJS.EvpKDF;
+});
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports) {
+
+module.exports = function (module) {
+	if (!module.webpackPolyfill) {
+		module.deprecate = function () {};
+		module.paths = [];
+		// module.parent = undefined by default
+		if (!module.children) module.children = [];
+		Object.defineProperty(module, "loaded", {
+			enumerable: true,
+			get: function () {
+				return module.l;
+			}
+		});
+		Object.defineProperty(module, "id", {
+			enumerable: true,
+			get: function () {
+				return module.i;
+			}
+		});
+		module.webpackPolyfill = 1;
+	}
+	return module;
+};
+
+/***/ }),
+/* 12 */
 /***/ (function(module, exports) {
 
 /*
@@ -13510,7 +13562,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 11 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -13536,7 +13588,7 @@ module.exports = {
  */
 
 var utils = __webpack_require__(1);
-var errors = __webpack_require__(10);
+var errors = __webpack_require__(12);
 
 var Method = function (options) {
     this.name = options.name;
@@ -13679,7 +13731,7 @@ Method.prototype.request = function () {
 module.exports = Method;
 
 /***/ }),
-/* 12 */
+/* 14 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -23461,35 +23513,10 @@ function getOuterHTML(el) {
 Vue$3.compile = compileToFunctions;
 
 /* harmony default export */ __webpack_exports__["a"] = (Vue$3);
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(13), __webpack_require__(36).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(7), __webpack_require__(45).setImmediate))
 
 /***/ }),
-/* 13 */
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = function () {
-	return this;
-}();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1, eval)("this");
-} catch (e) {
-	// This works if the window reference is available
-	if (typeof window === "object") g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-/***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_RESULT__;/*! bignumber.js v2.0.7 https://github.com/MikeMcl/bignumber.js/LICENCE */
@@ -26174,7 +26201,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/*! bignumber.js v2.0.7 https://github.com/Mik
 })(this);
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -26213,7 +26240,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/*! bignumber.js v2.0.7 https://github.com/Mik
  */
 
 /// required to define ETH_BIGNUMBER_ROUNDING_MODE
-var BigNumber = __webpack_require__(14);
+var BigNumber = __webpack_require__(15);
 
 var ETH_UNITS = ['wei', 'kwei', 'Mwei', 'Gwei', 'szabo', 'finney', 'femtoether', 'picoether', 'nanoether', 'microether', 'milliether', 'nano', 'micro', 'milli', 'ether', 'grand', 'Mether', 'Gether', 'Tether', 'Pether', 'Eether', 'Zether', 'Yether', 'Nether', 'Dether', 'Vether', 'Uether'];
 
@@ -26228,7 +26255,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -26253,7 +26280,7 @@ module.exports = {
  * @date 2015
  */
 
-var BigNumber = __webpack_require__(14);
+var BigNumber = __webpack_require__(15);
 
 var padLeft = function (string, bytes) {
     var result = string;
@@ -26459,7 +26486,7 @@ Iban.prototype.toString = function () {
 module.exports = Iban;
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -26605,7 +26632,7 @@ Property.prototype.request = function () {
 module.exports = Property;
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -26630,8 +26657,8 @@ module.exports = Property;
  * @date 2015
  */
 
-var CryptoJS = __webpack_require__(64);
-var sha3 = __webpack_require__(30);
+var CryptoJS = __webpack_require__(72);
+var sha3 = __webpack_require__(33);
 
 module.exports = function (value, options) {
     if (options && options.encoding === 'hex') {
@@ -26647,7 +26674,7 @@ module.exports = function (value, options) {
 };
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory) {
@@ -26952,7 +26979,7 @@ module.exports = function (value, options) {
 });
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -27180,7 +27207,7 @@ Filter.prototype.get = function (callback) {
 module.exports = Filter;
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -27205,7 +27232,7 @@ module.exports = Filter;
  * @date 2015
  */
 
-var Method = __webpack_require__(11);
+var Method = __webpack_require__(13);
 
 /// @returns an array of objects describing web3.eth.filter api methods
 var eth = function () {
@@ -27288,7 +27315,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -27315,15 +27342,15 @@ module.exports = {
 
 var f = __webpack_require__(3);
 
-var SolidityTypeAddress = __webpack_require__(55);
-var SolidityTypeBool = __webpack_require__(56);
-var SolidityTypeInt = __webpack_require__(57);
-var SolidityTypeUInt = __webpack_require__(58);
-var SolidityTypeDynamicBytes = __webpack_require__(59);
-var SolidityTypeString = __webpack_require__(60);
-var SolidityTypeReal = __webpack_require__(61);
-var SolidityTypeUReal = __webpack_require__(62);
-var SolidityTypeBytes = __webpack_require__(63);
+var SolidityTypeAddress = __webpack_require__(63);
+var SolidityTypeBool = __webpack_require__(64);
+var SolidityTypeInt = __webpack_require__(65);
+var SolidityTypeUInt = __webpack_require__(66);
+var SolidityTypeDynamicBytes = __webpack_require__(67);
+var SolidityTypeString = __webpack_require__(68);
+var SolidityTypeReal = __webpack_require__(69);
+var SolidityTypeUReal = __webpack_require__(70);
+var SolidityTypeBytes = __webpack_require__(71);
 
 /**
  * SolidityCoder prototype should be used to encode/decode solidity params of any type
@@ -27540,7 +27567,7 @@ var coder = new SolidityCoder([new SolidityTypeAddress(), new SolidityTypeBool()
 module.exports = coder;
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory) {
@@ -27687,7 +27714,7 @@ module.exports = coder;
 });
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory) {
@@ -27831,7 +27858,3320 @@ module.exports = coder;
 });
 
 /***/ }),
-/* 25 */
+/* 26 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscore.js 1.8.3
+//     http://underscorejs.org
+//     (c) 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+//     Underscore may be freely distributed under the MIT license.
+
+(function () {
+
+  // Baseline setup
+  // --------------
+
+  // Establish the root object, `window` in the browser, or `exports` on the server.
+  var root = this;
+
+  // Save the previous value of the `_` variable.
+  var previousUnderscore = root._;
+
+  // Save bytes in the minified (but not gzipped) version:
+  var ArrayProto = Array.prototype,
+      ObjProto = Object.prototype,
+      FuncProto = Function.prototype;
+
+  // Create quick reference variables for speed access to core prototypes.
+  var push = ArrayProto.push,
+      slice = ArrayProto.slice,
+      toString = ObjProto.toString,
+      hasOwnProperty = ObjProto.hasOwnProperty;
+
+  // All **ECMAScript 5** native function implementations that we hope to use
+  // are declared here.
+  var nativeIsArray = Array.isArray,
+      nativeKeys = Object.keys,
+      nativeBind = FuncProto.bind,
+      nativeCreate = Object.create;
+
+  // Naked function reference for surrogate-prototype-swapping.
+  var Ctor = function () {};
+
+  // Create a safe reference to the Underscore object for use below.
+  var _ = function (obj) {
+    if (obj instanceof _) return obj;
+    if (!(this instanceof _)) return new _(obj);
+    this._wrapped = obj;
+  };
+
+  // Export the Underscore object for **Node.js**, with
+  // backwards-compatibility for the old `require()` API. If we're in
+  // the browser, add `_` as a global object.
+  if (true) {
+    if (typeof module !== 'undefined' && module.exports) {
+      exports = module.exports = _;
+    }
+    exports._ = _;
+  } else {
+    root._ = _;
+  }
+
+  // Current version.
+  _.VERSION = '1.8.3';
+
+  // Internal function that returns an efficient (for current engines) version
+  // of the passed-in callback, to be repeatedly applied in other Underscore
+  // functions.
+  var optimizeCb = function (func, context, argCount) {
+    if (context === void 0) return func;
+    switch (argCount == null ? 3 : argCount) {
+      case 1:
+        return function (value) {
+          return func.call(context, value);
+        };
+      case 2:
+        return function (value, other) {
+          return func.call(context, value, other);
+        };
+      case 3:
+        return function (value, index, collection) {
+          return func.call(context, value, index, collection);
+        };
+      case 4:
+        return function (accumulator, value, index, collection) {
+          return func.call(context, accumulator, value, index, collection);
+        };
+    }
+    return function () {
+      return func.apply(context, arguments);
+    };
+  };
+
+  // A mostly-internal function to generate callbacks that can be applied
+  // to each element in a collection, returning the desired result — either
+  // identity, an arbitrary callback, a property matcher, or a property accessor.
+  var cb = function (value, context, argCount) {
+    if (value == null) return _.identity;
+    if (_.isFunction(value)) return optimizeCb(value, context, argCount);
+    if (_.isObject(value)) return _.matcher(value);
+    return _.property(value);
+  };
+  _.iteratee = function (value, context) {
+    return cb(value, context, Infinity);
+  };
+
+  // An internal function for creating assigner functions.
+  var createAssigner = function (keysFunc, undefinedOnly) {
+    return function (obj) {
+      var length = arguments.length;
+      if (length < 2 || obj == null) return obj;
+      for (var index = 1; index < length; index++) {
+        var source = arguments[index],
+            keys = keysFunc(source),
+            l = keys.length;
+        for (var i = 0; i < l; i++) {
+          var key = keys[i];
+          if (!undefinedOnly || obj[key] === void 0) obj[key] = source[key];
+        }
+      }
+      return obj;
+    };
+  };
+
+  // An internal function for creating a new object that inherits from another.
+  var baseCreate = function (prototype) {
+    if (!_.isObject(prototype)) return {};
+    if (nativeCreate) return nativeCreate(prototype);
+    Ctor.prototype = prototype;
+    var result = new Ctor();
+    Ctor.prototype = null;
+    return result;
+  };
+
+  var property = function (key) {
+    return function (obj) {
+      return obj == null ? void 0 : obj[key];
+    };
+  };
+
+  // Helper for collection methods to determine whether a collection
+  // should be iterated as an array or as an object
+  // Related: http://people.mozilla.org/~jorendorff/es6-draft.html#sec-tolength
+  // Avoids a very nasty iOS 8 JIT bug on ARM-64. #2094
+  var MAX_ARRAY_INDEX = Math.pow(2, 53) - 1;
+  var getLength = property('length');
+  var isArrayLike = function (collection) {
+    var length = getLength(collection);
+    return typeof length == 'number' && length >= 0 && length <= MAX_ARRAY_INDEX;
+  };
+
+  // Collection Functions
+  // --------------------
+
+  // The cornerstone, an `each` implementation, aka `forEach`.
+  // Handles raw objects in addition to array-likes. Treats all
+  // sparse array-likes as if they were dense.
+  _.each = _.forEach = function (obj, iteratee, context) {
+    iteratee = optimizeCb(iteratee, context);
+    var i, length;
+    if (isArrayLike(obj)) {
+      for (i = 0, length = obj.length; i < length; i++) {
+        iteratee(obj[i], i, obj);
+      }
+    } else {
+      var keys = _.keys(obj);
+      for (i = 0, length = keys.length; i < length; i++) {
+        iteratee(obj[keys[i]], keys[i], obj);
+      }
+    }
+    return obj;
+  };
+
+  // Return the results of applying the iteratee to each element.
+  _.map = _.collect = function (obj, iteratee, context) {
+    iteratee = cb(iteratee, context);
+    var keys = !isArrayLike(obj) && _.keys(obj),
+        length = (keys || obj).length,
+        results = Array(length);
+    for (var index = 0; index < length; index++) {
+      var currentKey = keys ? keys[index] : index;
+      results[index] = iteratee(obj[currentKey], currentKey, obj);
+    }
+    return results;
+  };
+
+  // Create a reducing function iterating left or right.
+  function createReduce(dir) {
+    // Optimized iterator function as using arguments.length
+    // in the main function will deoptimize the, see #1991.
+    function iterator(obj, iteratee, memo, keys, index, length) {
+      for (; index >= 0 && index < length; index += dir) {
+        var currentKey = keys ? keys[index] : index;
+        memo = iteratee(memo, obj[currentKey], currentKey, obj);
+      }
+      return memo;
+    }
+
+    return function (obj, iteratee, memo, context) {
+      iteratee = optimizeCb(iteratee, context, 4);
+      var keys = !isArrayLike(obj) && _.keys(obj),
+          length = (keys || obj).length,
+          index = dir > 0 ? 0 : length - 1;
+      // Determine the initial value if none is provided.
+      if (arguments.length < 3) {
+        memo = obj[keys ? keys[index] : index];
+        index += dir;
+      }
+      return iterator(obj, iteratee, memo, keys, index, length);
+    };
+  }
+
+  // **Reduce** builds up a single result from a list of values, aka `inject`,
+  // or `foldl`.
+  _.reduce = _.foldl = _.inject = createReduce(1);
+
+  // The right-associative version of reduce, also known as `foldr`.
+  _.reduceRight = _.foldr = createReduce(-1);
+
+  // Return the first value which passes a truth test. Aliased as `detect`.
+  _.find = _.detect = function (obj, predicate, context) {
+    var key;
+    if (isArrayLike(obj)) {
+      key = _.findIndex(obj, predicate, context);
+    } else {
+      key = _.findKey(obj, predicate, context);
+    }
+    if (key !== void 0 && key !== -1) return obj[key];
+  };
+
+  // Return all the elements that pass a truth test.
+  // Aliased as `select`.
+  _.filter = _.select = function (obj, predicate, context) {
+    var results = [];
+    predicate = cb(predicate, context);
+    _.each(obj, function (value, index, list) {
+      if (predicate(value, index, list)) results.push(value);
+    });
+    return results;
+  };
+
+  // Return all the elements for which a truth test fails.
+  _.reject = function (obj, predicate, context) {
+    return _.filter(obj, _.negate(cb(predicate)), context);
+  };
+
+  // Determine whether all of the elements match a truth test.
+  // Aliased as `all`.
+  _.every = _.all = function (obj, predicate, context) {
+    predicate = cb(predicate, context);
+    var keys = !isArrayLike(obj) && _.keys(obj),
+        length = (keys || obj).length;
+    for (var index = 0; index < length; index++) {
+      var currentKey = keys ? keys[index] : index;
+      if (!predicate(obj[currentKey], currentKey, obj)) return false;
+    }
+    return true;
+  };
+
+  // Determine if at least one element in the object matches a truth test.
+  // Aliased as `any`.
+  _.some = _.any = function (obj, predicate, context) {
+    predicate = cb(predicate, context);
+    var keys = !isArrayLike(obj) && _.keys(obj),
+        length = (keys || obj).length;
+    for (var index = 0; index < length; index++) {
+      var currentKey = keys ? keys[index] : index;
+      if (predicate(obj[currentKey], currentKey, obj)) return true;
+    }
+    return false;
+  };
+
+  // Determine if the array or object contains a given item (using `===`).
+  // Aliased as `includes` and `include`.
+  _.contains = _.includes = _.include = function (obj, item, fromIndex, guard) {
+    if (!isArrayLike(obj)) obj = _.values(obj);
+    if (typeof fromIndex != 'number' || guard) fromIndex = 0;
+    return _.indexOf(obj, item, fromIndex) >= 0;
+  };
+
+  // Invoke a method (with arguments) on every item in a collection.
+  _.invoke = function (obj, method) {
+    var args = slice.call(arguments, 2);
+    var isFunc = _.isFunction(method);
+    return _.map(obj, function (value) {
+      var func = isFunc ? method : value[method];
+      return func == null ? func : func.apply(value, args);
+    });
+  };
+
+  // Convenience version of a common use case of `map`: fetching a property.
+  _.pluck = function (obj, key) {
+    return _.map(obj, _.property(key));
+  };
+
+  // Convenience version of a common use case of `filter`: selecting only objects
+  // containing specific `key:value` pairs.
+  _.where = function (obj, attrs) {
+    return _.filter(obj, _.matcher(attrs));
+  };
+
+  // Convenience version of a common use case of `find`: getting the first object
+  // containing specific `key:value` pairs.
+  _.findWhere = function (obj, attrs) {
+    return _.find(obj, _.matcher(attrs));
+  };
+
+  // Return the maximum element (or element-based computation).
+  _.max = function (obj, iteratee, context) {
+    var result = -Infinity,
+        lastComputed = -Infinity,
+        value,
+        computed;
+    if (iteratee == null && obj != null) {
+      obj = isArrayLike(obj) ? obj : _.values(obj);
+      for (var i = 0, length = obj.length; i < length; i++) {
+        value = obj[i];
+        if (value > result) {
+          result = value;
+        }
+      }
+    } else {
+      iteratee = cb(iteratee, context);
+      _.each(obj, function (value, index, list) {
+        computed = iteratee(value, index, list);
+        if (computed > lastComputed || computed === -Infinity && result === -Infinity) {
+          result = value;
+          lastComputed = computed;
+        }
+      });
+    }
+    return result;
+  };
+
+  // Return the minimum element (or element-based computation).
+  _.min = function (obj, iteratee, context) {
+    var result = Infinity,
+        lastComputed = Infinity,
+        value,
+        computed;
+    if (iteratee == null && obj != null) {
+      obj = isArrayLike(obj) ? obj : _.values(obj);
+      for (var i = 0, length = obj.length; i < length; i++) {
+        value = obj[i];
+        if (value < result) {
+          result = value;
+        }
+      }
+    } else {
+      iteratee = cb(iteratee, context);
+      _.each(obj, function (value, index, list) {
+        computed = iteratee(value, index, list);
+        if (computed < lastComputed || computed === Infinity && result === Infinity) {
+          result = value;
+          lastComputed = computed;
+        }
+      });
+    }
+    return result;
+  };
+
+  // Shuffle a collection, using the modern version of the
+  // [Fisher-Yates shuffle](http://en.wikipedia.org/wiki/Fisher–Yates_shuffle).
+  _.shuffle = function (obj) {
+    var set = isArrayLike(obj) ? obj : _.values(obj);
+    var length = set.length;
+    var shuffled = Array(length);
+    for (var index = 0, rand; index < length; index++) {
+      rand = _.random(0, index);
+      if (rand !== index) shuffled[index] = shuffled[rand];
+      shuffled[rand] = set[index];
+    }
+    return shuffled;
+  };
+
+  // Sample **n** random values from a collection.
+  // If **n** is not specified, returns a single random element.
+  // The internal `guard` argument allows it to work with `map`.
+  _.sample = function (obj, n, guard) {
+    if (n == null || guard) {
+      if (!isArrayLike(obj)) obj = _.values(obj);
+      return obj[_.random(obj.length - 1)];
+    }
+    return _.shuffle(obj).slice(0, Math.max(0, n));
+  };
+
+  // Sort the object's values by a criterion produced by an iteratee.
+  _.sortBy = function (obj, iteratee, context) {
+    iteratee = cb(iteratee, context);
+    return _.pluck(_.map(obj, function (value, index, list) {
+      return {
+        value: value,
+        index: index,
+        criteria: iteratee(value, index, list)
+      };
+    }).sort(function (left, right) {
+      var a = left.criteria;
+      var b = right.criteria;
+      if (a !== b) {
+        if (a > b || a === void 0) return 1;
+        if (a < b || b === void 0) return -1;
+      }
+      return left.index - right.index;
+    }), 'value');
+  };
+
+  // An internal function used for aggregate "group by" operations.
+  var group = function (behavior) {
+    return function (obj, iteratee, context) {
+      var result = {};
+      iteratee = cb(iteratee, context);
+      _.each(obj, function (value, index) {
+        var key = iteratee(value, index, obj);
+        behavior(result, value, key);
+      });
+      return result;
+    };
+  };
+
+  // Groups the object's values by a criterion. Pass either a string attribute
+  // to group by, or a function that returns the criterion.
+  _.groupBy = group(function (result, value, key) {
+    if (_.has(result, key)) result[key].push(value);else result[key] = [value];
+  });
+
+  // Indexes the object's values by a criterion, similar to `groupBy`, but for
+  // when you know that your index values will be unique.
+  _.indexBy = group(function (result, value, key) {
+    result[key] = value;
+  });
+
+  // Counts instances of an object that group by a certain criterion. Pass
+  // either a string attribute to count by, or a function that returns the
+  // criterion.
+  _.countBy = group(function (result, value, key) {
+    if (_.has(result, key)) result[key]++;else result[key] = 1;
+  });
+
+  // Safely create a real, live array from anything iterable.
+  _.toArray = function (obj) {
+    if (!obj) return [];
+    if (_.isArray(obj)) return slice.call(obj);
+    if (isArrayLike(obj)) return _.map(obj, _.identity);
+    return _.values(obj);
+  };
+
+  // Return the number of elements in an object.
+  _.size = function (obj) {
+    if (obj == null) return 0;
+    return isArrayLike(obj) ? obj.length : _.keys(obj).length;
+  };
+
+  // Split a collection into two arrays: one whose elements all satisfy the given
+  // predicate, and one whose elements all do not satisfy the predicate.
+  _.partition = function (obj, predicate, context) {
+    predicate = cb(predicate, context);
+    var pass = [],
+        fail = [];
+    _.each(obj, function (value, key, obj) {
+      (predicate(value, key, obj) ? pass : fail).push(value);
+    });
+    return [pass, fail];
+  };
+
+  // Array Functions
+  // ---------------
+
+  // Get the first element of an array. Passing **n** will return the first N
+  // values in the array. Aliased as `head` and `take`. The **guard** check
+  // allows it to work with `_.map`.
+  _.first = _.head = _.take = function (array, n, guard) {
+    if (array == null) return void 0;
+    if (n == null || guard) return array[0];
+    return _.initial(array, array.length - n);
+  };
+
+  // Returns everything but the last entry of the array. Especially useful on
+  // the arguments object. Passing **n** will return all the values in
+  // the array, excluding the last N.
+  _.initial = function (array, n, guard) {
+    return slice.call(array, 0, Math.max(0, array.length - (n == null || guard ? 1 : n)));
+  };
+
+  // Get the last element of an array. Passing **n** will return the last N
+  // values in the array.
+  _.last = function (array, n, guard) {
+    if (array == null) return void 0;
+    if (n == null || guard) return array[array.length - 1];
+    return _.rest(array, Math.max(0, array.length - n));
+  };
+
+  // Returns everything but the first entry of the array. Aliased as `tail` and `drop`.
+  // Especially useful on the arguments object. Passing an **n** will return
+  // the rest N values in the array.
+  _.rest = _.tail = _.drop = function (array, n, guard) {
+    return slice.call(array, n == null || guard ? 1 : n);
+  };
+
+  // Trim out all falsy values from an array.
+  _.compact = function (array) {
+    return _.filter(array, _.identity);
+  };
+
+  // Internal implementation of a recursive `flatten` function.
+  var flatten = function (input, shallow, strict, startIndex) {
+    var output = [],
+        idx = 0;
+    for (var i = startIndex || 0, length = getLength(input); i < length; i++) {
+      var value = input[i];
+      if (isArrayLike(value) && (_.isArray(value) || _.isArguments(value))) {
+        //flatten current level of array or arguments object
+        if (!shallow) value = flatten(value, shallow, strict);
+        var j = 0,
+            len = value.length;
+        output.length += len;
+        while (j < len) {
+          output[idx++] = value[j++];
+        }
+      } else if (!strict) {
+        output[idx++] = value;
+      }
+    }
+    return output;
+  };
+
+  // Flatten out an array, either recursively (by default), or just one level.
+  _.flatten = function (array, shallow) {
+    return flatten(array, shallow, false);
+  };
+
+  // Return a version of the array that does not contain the specified value(s).
+  _.without = function (array) {
+    return _.difference(array, slice.call(arguments, 1));
+  };
+
+  // Produce a duplicate-free version of the array. If the array has already
+  // been sorted, you have the option of using a faster algorithm.
+  // Aliased as `unique`.
+  _.uniq = _.unique = function (array, isSorted, iteratee, context) {
+    if (!_.isBoolean(isSorted)) {
+      context = iteratee;
+      iteratee = isSorted;
+      isSorted = false;
+    }
+    if (iteratee != null) iteratee = cb(iteratee, context);
+    var result = [];
+    var seen = [];
+    for (var i = 0, length = getLength(array); i < length; i++) {
+      var value = array[i],
+          computed = iteratee ? iteratee(value, i, array) : value;
+      if (isSorted) {
+        if (!i || seen !== computed) result.push(value);
+        seen = computed;
+      } else if (iteratee) {
+        if (!_.contains(seen, computed)) {
+          seen.push(computed);
+          result.push(value);
+        }
+      } else if (!_.contains(result, value)) {
+        result.push(value);
+      }
+    }
+    return result;
+  };
+
+  // Produce an array that contains the union: each distinct element from all of
+  // the passed-in arrays.
+  _.union = function () {
+    return _.uniq(flatten(arguments, true, true));
+  };
+
+  // Produce an array that contains every item shared between all the
+  // passed-in arrays.
+  _.intersection = function (array) {
+    var result = [];
+    var argsLength = arguments.length;
+    for (var i = 0, length = getLength(array); i < length; i++) {
+      var item = array[i];
+      if (_.contains(result, item)) continue;
+      for (var j = 1; j < argsLength; j++) {
+        if (!_.contains(arguments[j], item)) break;
+      }
+      if (j === argsLength) result.push(item);
+    }
+    return result;
+  };
+
+  // Take the difference between one array and a number of other arrays.
+  // Only the elements present in just the first array will remain.
+  _.difference = function (array) {
+    var rest = flatten(arguments, true, true, 1);
+    return _.filter(array, function (value) {
+      return !_.contains(rest, value);
+    });
+  };
+
+  // Zip together multiple lists into a single array -- elements that share
+  // an index go together.
+  _.zip = function () {
+    return _.unzip(arguments);
+  };
+
+  // Complement of _.zip. Unzip accepts an array of arrays and groups
+  // each array's elements on shared indices
+  _.unzip = function (array) {
+    var length = array && _.max(array, getLength).length || 0;
+    var result = Array(length);
+
+    for (var index = 0; index < length; index++) {
+      result[index] = _.pluck(array, index);
+    }
+    return result;
+  };
+
+  // Converts lists into objects. Pass either a single array of `[key, value]`
+  // pairs, or two parallel arrays of the same length -- one of keys, and one of
+  // the corresponding values.
+  _.object = function (list, values) {
+    var result = {};
+    for (var i = 0, length = getLength(list); i < length; i++) {
+      if (values) {
+        result[list[i]] = values[i];
+      } else {
+        result[list[i][0]] = list[i][1];
+      }
+    }
+    return result;
+  };
+
+  // Generator function to create the findIndex and findLastIndex functions
+  function createPredicateIndexFinder(dir) {
+    return function (array, predicate, context) {
+      predicate = cb(predicate, context);
+      var length = getLength(array);
+      var index = dir > 0 ? 0 : length - 1;
+      for (; index >= 0 && index < length; index += dir) {
+        if (predicate(array[index], index, array)) return index;
+      }
+      return -1;
+    };
+  }
+
+  // Returns the first index on an array-like that passes a predicate test
+  _.findIndex = createPredicateIndexFinder(1);
+  _.findLastIndex = createPredicateIndexFinder(-1);
+
+  // Use a comparator function to figure out the smallest index at which
+  // an object should be inserted so as to maintain order. Uses binary search.
+  _.sortedIndex = function (array, obj, iteratee, context) {
+    iteratee = cb(iteratee, context, 1);
+    var value = iteratee(obj);
+    var low = 0,
+        high = getLength(array);
+    while (low < high) {
+      var mid = Math.floor((low + high) / 2);
+      if (iteratee(array[mid]) < value) low = mid + 1;else high = mid;
+    }
+    return low;
+  };
+
+  // Generator function to create the indexOf and lastIndexOf functions
+  function createIndexFinder(dir, predicateFind, sortedIndex) {
+    return function (array, item, idx) {
+      var i = 0,
+          length = getLength(array);
+      if (typeof idx == 'number') {
+        if (dir > 0) {
+          i = idx >= 0 ? idx : Math.max(idx + length, i);
+        } else {
+          length = idx >= 0 ? Math.min(idx + 1, length) : idx + length + 1;
+        }
+      } else if (sortedIndex && idx && length) {
+        idx = sortedIndex(array, item);
+        return array[idx] === item ? idx : -1;
+      }
+      if (item !== item) {
+        idx = predicateFind(slice.call(array, i, length), _.isNaN);
+        return idx >= 0 ? idx + i : -1;
+      }
+      for (idx = dir > 0 ? i : length - 1; idx >= 0 && idx < length; idx += dir) {
+        if (array[idx] === item) return idx;
+      }
+      return -1;
+    };
+  }
+
+  // Return the position of the first occurrence of an item in an array,
+  // or -1 if the item is not included in the array.
+  // If the array is large and already in sort order, pass `true`
+  // for **isSorted** to use binary search.
+  _.indexOf = createIndexFinder(1, _.findIndex, _.sortedIndex);
+  _.lastIndexOf = createIndexFinder(-1, _.findLastIndex);
+
+  // Generate an integer Array containing an arithmetic progression. A port of
+  // the native Python `range()` function. See
+  // [the Python documentation](http://docs.python.org/library/functions.html#range).
+  _.range = function (start, stop, step) {
+    if (stop == null) {
+      stop = start || 0;
+      start = 0;
+    }
+    step = step || 1;
+
+    var length = Math.max(Math.ceil((stop - start) / step), 0);
+    var range = Array(length);
+
+    for (var idx = 0; idx < length; idx++, start += step) {
+      range[idx] = start;
+    }
+
+    return range;
+  };
+
+  // Function (ahem) Functions
+  // ------------------
+
+  // Determines whether to execute a function as a constructor
+  // or a normal function with the provided arguments
+  var executeBound = function (sourceFunc, boundFunc, context, callingContext, args) {
+    if (!(callingContext instanceof boundFunc)) return sourceFunc.apply(context, args);
+    var self = baseCreate(sourceFunc.prototype);
+    var result = sourceFunc.apply(self, args);
+    if (_.isObject(result)) return result;
+    return self;
+  };
+
+  // Create a function bound to a given object (assigning `this`, and arguments,
+  // optionally). Delegates to **ECMAScript 5**'s native `Function.bind` if
+  // available.
+  _.bind = function (func, context) {
+    if (nativeBind && func.bind === nativeBind) return nativeBind.apply(func, slice.call(arguments, 1));
+    if (!_.isFunction(func)) throw new TypeError('Bind must be called on a function');
+    var args = slice.call(arguments, 2);
+    var bound = function () {
+      return executeBound(func, bound, context, this, args.concat(slice.call(arguments)));
+    };
+    return bound;
+  };
+
+  // Partially apply a function by creating a version that has had some of its
+  // arguments pre-filled, without changing its dynamic `this` context. _ acts
+  // as a placeholder, allowing any combination of arguments to be pre-filled.
+  _.partial = function (func) {
+    var boundArgs = slice.call(arguments, 1);
+    var bound = function () {
+      var position = 0,
+          length = boundArgs.length;
+      var args = Array(length);
+      for (var i = 0; i < length; i++) {
+        args[i] = boundArgs[i] === _ ? arguments[position++] : boundArgs[i];
+      }
+      while (position < arguments.length) args.push(arguments[position++]);
+      return executeBound(func, bound, this, this, args);
+    };
+    return bound;
+  };
+
+  // Bind a number of an object's methods to that object. Remaining arguments
+  // are the method names to be bound. Useful for ensuring that all callbacks
+  // defined on an object belong to it.
+  _.bindAll = function (obj) {
+    var i,
+        length = arguments.length,
+        key;
+    if (length <= 1) throw new Error('bindAll must be passed function names');
+    for (i = 1; i < length; i++) {
+      key = arguments[i];
+      obj[key] = _.bind(obj[key], obj);
+    }
+    return obj;
+  };
+
+  // Memoize an expensive function by storing its results.
+  _.memoize = function (func, hasher) {
+    var memoize = function (key) {
+      var cache = memoize.cache;
+      var address = '' + (hasher ? hasher.apply(this, arguments) : key);
+      if (!_.has(cache, address)) cache[address] = func.apply(this, arguments);
+      return cache[address];
+    };
+    memoize.cache = {};
+    return memoize;
+  };
+
+  // Delays a function for the given number of milliseconds, and then calls
+  // it with the arguments supplied.
+  _.delay = function (func, wait) {
+    var args = slice.call(arguments, 2);
+    return setTimeout(function () {
+      return func.apply(null, args);
+    }, wait);
+  };
+
+  // Defers a function, scheduling it to run after the current call stack has
+  // cleared.
+  _.defer = _.partial(_.delay, _, 1);
+
+  // Returns a function, that, when invoked, will only be triggered at most once
+  // during a given window of time. Normally, the throttled function will run
+  // as much as it can, without ever going more than once per `wait` duration;
+  // but if you'd like to disable the execution on the leading edge, pass
+  // `{leading: false}`. To disable execution on the trailing edge, ditto.
+  _.throttle = function (func, wait, options) {
+    var context, args, result;
+    var timeout = null;
+    var previous = 0;
+    if (!options) options = {};
+    var later = function () {
+      previous = options.leading === false ? 0 : _.now();
+      timeout = null;
+      result = func.apply(context, args);
+      if (!timeout) context = args = null;
+    };
+    return function () {
+      var now = _.now();
+      if (!previous && options.leading === false) previous = now;
+      var remaining = wait - (now - previous);
+      context = this;
+      args = arguments;
+      if (remaining <= 0 || remaining > wait) {
+        if (timeout) {
+          clearTimeout(timeout);
+          timeout = null;
+        }
+        previous = now;
+        result = func.apply(context, args);
+        if (!timeout) context = args = null;
+      } else if (!timeout && options.trailing !== false) {
+        timeout = setTimeout(later, remaining);
+      }
+      return result;
+    };
+  };
+
+  // Returns a function, that, as long as it continues to be invoked, will not
+  // be triggered. The function will be called after it stops being called for
+  // N milliseconds. If `immediate` is passed, trigger the function on the
+  // leading edge, instead of the trailing.
+  _.debounce = function (func, wait, immediate) {
+    var timeout, args, context, timestamp, result;
+
+    var later = function () {
+      var last = _.now() - timestamp;
+
+      if (last < wait && last >= 0) {
+        timeout = setTimeout(later, wait - last);
+      } else {
+        timeout = null;
+        if (!immediate) {
+          result = func.apply(context, args);
+          if (!timeout) context = args = null;
+        }
+      }
+    };
+
+    return function () {
+      context = this;
+      args = arguments;
+      timestamp = _.now();
+      var callNow = immediate && !timeout;
+      if (!timeout) timeout = setTimeout(later, wait);
+      if (callNow) {
+        result = func.apply(context, args);
+        context = args = null;
+      }
+
+      return result;
+    };
+  };
+
+  // Returns the first function passed as an argument to the second,
+  // allowing you to adjust arguments, run code before and after, and
+  // conditionally execute the original function.
+  _.wrap = function (func, wrapper) {
+    return _.partial(wrapper, func);
+  };
+
+  // Returns a negated version of the passed-in predicate.
+  _.negate = function (predicate) {
+    return function () {
+      return !predicate.apply(this, arguments);
+    };
+  };
+
+  // Returns a function that is the composition of a list of functions, each
+  // consuming the return value of the function that follows.
+  _.compose = function () {
+    var args = arguments;
+    var start = args.length - 1;
+    return function () {
+      var i = start;
+      var result = args[start].apply(this, arguments);
+      while (i--) result = args[i].call(this, result);
+      return result;
+    };
+  };
+
+  // Returns a function that will only be executed on and after the Nth call.
+  _.after = function (times, func) {
+    return function () {
+      if (--times < 1) {
+        return func.apply(this, arguments);
+      }
+    };
+  };
+
+  // Returns a function that will only be executed up to (but not including) the Nth call.
+  _.before = function (times, func) {
+    var memo;
+    return function () {
+      if (--times > 0) {
+        memo = func.apply(this, arguments);
+      }
+      if (times <= 1) func = null;
+      return memo;
+    };
+  };
+
+  // Returns a function that will be executed at most one time, no matter how
+  // often you call it. Useful for lazy initialization.
+  _.once = _.partial(_.before, 2);
+
+  // Object Functions
+  // ----------------
+
+  // Keys in IE < 9 that won't be iterated by `for key in ...` and thus missed.
+  var hasEnumBug = !{ toString: null }.propertyIsEnumerable('toString');
+  var nonEnumerableProps = ['valueOf', 'isPrototypeOf', 'toString', 'propertyIsEnumerable', 'hasOwnProperty', 'toLocaleString'];
+
+  function collectNonEnumProps(obj, keys) {
+    var nonEnumIdx = nonEnumerableProps.length;
+    var constructor = obj.constructor;
+    var proto = _.isFunction(constructor) && constructor.prototype || ObjProto;
+
+    // Constructor is a special case.
+    var prop = 'constructor';
+    if (_.has(obj, prop) && !_.contains(keys, prop)) keys.push(prop);
+
+    while (nonEnumIdx--) {
+      prop = nonEnumerableProps[nonEnumIdx];
+      if (prop in obj && obj[prop] !== proto[prop] && !_.contains(keys, prop)) {
+        keys.push(prop);
+      }
+    }
+  }
+
+  // Retrieve the names of an object's own properties.
+  // Delegates to **ECMAScript 5**'s native `Object.keys`
+  _.keys = function (obj) {
+    if (!_.isObject(obj)) return [];
+    if (nativeKeys) return nativeKeys(obj);
+    var keys = [];
+    for (var key in obj) if (_.has(obj, key)) keys.push(key);
+    // Ahem, IE < 9.
+    if (hasEnumBug) collectNonEnumProps(obj, keys);
+    return keys;
+  };
+
+  // Retrieve all the property names of an object.
+  _.allKeys = function (obj) {
+    if (!_.isObject(obj)) return [];
+    var keys = [];
+    for (var key in obj) keys.push(key);
+    // Ahem, IE < 9.
+    if (hasEnumBug) collectNonEnumProps(obj, keys);
+    return keys;
+  };
+
+  // Retrieve the values of an object's properties.
+  _.values = function (obj) {
+    var keys = _.keys(obj);
+    var length = keys.length;
+    var values = Array(length);
+    for (var i = 0; i < length; i++) {
+      values[i] = obj[keys[i]];
+    }
+    return values;
+  };
+
+  // Returns the results of applying the iteratee to each element of the object
+  // In contrast to _.map it returns an object
+  _.mapObject = function (obj, iteratee, context) {
+    iteratee = cb(iteratee, context);
+    var keys = _.keys(obj),
+        length = keys.length,
+        results = {},
+        currentKey;
+    for (var index = 0; index < length; index++) {
+      currentKey = keys[index];
+      results[currentKey] = iteratee(obj[currentKey], currentKey, obj);
+    }
+    return results;
+  };
+
+  // Convert an object into a list of `[key, value]` pairs.
+  _.pairs = function (obj) {
+    var keys = _.keys(obj);
+    var length = keys.length;
+    var pairs = Array(length);
+    for (var i = 0; i < length; i++) {
+      pairs[i] = [keys[i], obj[keys[i]]];
+    }
+    return pairs;
+  };
+
+  // Invert the keys and values of an object. The values must be serializable.
+  _.invert = function (obj) {
+    var result = {};
+    var keys = _.keys(obj);
+    for (var i = 0, length = keys.length; i < length; i++) {
+      result[obj[keys[i]]] = keys[i];
+    }
+    return result;
+  };
+
+  // Return a sorted list of the function names available on the object.
+  // Aliased as `methods`
+  _.functions = _.methods = function (obj) {
+    var names = [];
+    for (var key in obj) {
+      if (_.isFunction(obj[key])) names.push(key);
+    }
+    return names.sort();
+  };
+
+  // Extend a given object with all the properties in passed-in object(s).
+  _.extend = createAssigner(_.allKeys);
+
+  // Assigns a given object with all the own properties in the passed-in object(s)
+  // (https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object/assign)
+  _.extendOwn = _.assign = createAssigner(_.keys);
+
+  // Returns the first key on an object that passes a predicate test
+  _.findKey = function (obj, predicate, context) {
+    predicate = cb(predicate, context);
+    var keys = _.keys(obj),
+        key;
+    for (var i = 0, length = keys.length; i < length; i++) {
+      key = keys[i];
+      if (predicate(obj[key], key, obj)) return key;
+    }
+  };
+
+  // Return a copy of the object only containing the whitelisted properties.
+  _.pick = function (object, oiteratee, context) {
+    var result = {},
+        obj = object,
+        iteratee,
+        keys;
+    if (obj == null) return result;
+    if (_.isFunction(oiteratee)) {
+      keys = _.allKeys(obj);
+      iteratee = optimizeCb(oiteratee, context);
+    } else {
+      keys = flatten(arguments, false, false, 1);
+      iteratee = function (value, key, obj) {
+        return key in obj;
+      };
+      obj = Object(obj);
+    }
+    for (var i = 0, length = keys.length; i < length; i++) {
+      var key = keys[i];
+      var value = obj[key];
+      if (iteratee(value, key, obj)) result[key] = value;
+    }
+    return result;
+  };
+
+  // Return a copy of the object without the blacklisted properties.
+  _.omit = function (obj, iteratee, context) {
+    if (_.isFunction(iteratee)) {
+      iteratee = _.negate(iteratee);
+    } else {
+      var keys = _.map(flatten(arguments, false, false, 1), String);
+      iteratee = function (value, key) {
+        return !_.contains(keys, key);
+      };
+    }
+    return _.pick(obj, iteratee, context);
+  };
+
+  // Fill in a given object with default properties.
+  _.defaults = createAssigner(_.allKeys, true);
+
+  // Creates an object that inherits from the given prototype object.
+  // If additional properties are provided then they will be added to the
+  // created object.
+  _.create = function (prototype, props) {
+    var result = baseCreate(prototype);
+    if (props) _.extendOwn(result, props);
+    return result;
+  };
+
+  // Create a (shallow-cloned) duplicate of an object.
+  _.clone = function (obj) {
+    if (!_.isObject(obj)) return obj;
+    return _.isArray(obj) ? obj.slice() : _.extend({}, obj);
+  };
+
+  // Invokes interceptor with the obj, and then returns obj.
+  // The primary purpose of this method is to "tap into" a method chain, in
+  // order to perform operations on intermediate results within the chain.
+  _.tap = function (obj, interceptor) {
+    interceptor(obj);
+    return obj;
+  };
+
+  // Returns whether an object has a given set of `key:value` pairs.
+  _.isMatch = function (object, attrs) {
+    var keys = _.keys(attrs),
+        length = keys.length;
+    if (object == null) return !length;
+    var obj = Object(object);
+    for (var i = 0; i < length; i++) {
+      var key = keys[i];
+      if (attrs[key] !== obj[key] || !(key in obj)) return false;
+    }
+    return true;
+  };
+
+  // Internal recursive comparison function for `isEqual`.
+  var eq = function (a, b, aStack, bStack) {
+    // Identical objects are equal. `0 === -0`, but they aren't identical.
+    // See the [Harmony `egal` proposal](http://wiki.ecmascript.org/doku.php?id=harmony:egal).
+    if (a === b) return a !== 0 || 1 / a === 1 / b;
+    // A strict comparison is necessary because `null == undefined`.
+    if (a == null || b == null) return a === b;
+    // Unwrap any wrapped objects.
+    if (a instanceof _) a = a._wrapped;
+    if (b instanceof _) b = b._wrapped;
+    // Compare `[[Class]]` names.
+    var className = toString.call(a);
+    if (className !== toString.call(b)) return false;
+    switch (className) {
+      // Strings, numbers, regular expressions, dates, and booleans are compared by value.
+      case '[object RegExp]':
+      // RegExps are coerced to strings for comparison (Note: '' + /a/i === '/a/i')
+      case '[object String]':
+        // Primitives and their corresponding object wrappers are equivalent; thus, `"5"` is
+        // equivalent to `new String("5")`.
+        return '' + a === '' + b;
+      case '[object Number]':
+        // `NaN`s are equivalent, but non-reflexive.
+        // Object(NaN) is equivalent to NaN
+        if (+a !== +a) return +b !== +b;
+        // An `egal` comparison is performed for other numeric values.
+        return +a === 0 ? 1 / +a === 1 / b : +a === +b;
+      case '[object Date]':
+      case '[object Boolean]':
+        // Coerce dates and booleans to numeric primitive values. Dates are compared by their
+        // millisecond representations. Note that invalid dates with millisecond representations
+        // of `NaN` are not equivalent.
+        return +a === +b;
+    }
+
+    var areArrays = className === '[object Array]';
+    if (!areArrays) {
+      if (typeof a != 'object' || typeof b != 'object') return false;
+
+      // Objects with different constructors are not equivalent, but `Object`s or `Array`s
+      // from different frames are.
+      var aCtor = a.constructor,
+          bCtor = b.constructor;
+      if (aCtor !== bCtor && !(_.isFunction(aCtor) && aCtor instanceof aCtor && _.isFunction(bCtor) && bCtor instanceof bCtor) && 'constructor' in a && 'constructor' in b) {
+        return false;
+      }
+    }
+    // Assume equality for cyclic structures. The algorithm for detecting cyclic
+    // structures is adapted from ES 5.1 section 15.12.3, abstract operation `JO`.
+
+    // Initializing stack of traversed objects.
+    // It's done here since we only need them for objects and arrays comparison.
+    aStack = aStack || [];
+    bStack = bStack || [];
+    var length = aStack.length;
+    while (length--) {
+      // Linear search. Performance is inversely proportional to the number of
+      // unique nested structures.
+      if (aStack[length] === a) return bStack[length] === b;
+    }
+
+    // Add the first object to the stack of traversed objects.
+    aStack.push(a);
+    bStack.push(b);
+
+    // Recursively compare objects and arrays.
+    if (areArrays) {
+      // Compare array lengths to determine if a deep comparison is necessary.
+      length = a.length;
+      if (length !== b.length) return false;
+      // Deep compare the contents, ignoring non-numeric properties.
+      while (length--) {
+        if (!eq(a[length], b[length], aStack, bStack)) return false;
+      }
+    } else {
+      // Deep compare objects.
+      var keys = _.keys(a),
+          key;
+      length = keys.length;
+      // Ensure that both objects contain the same number of properties before comparing deep equality.
+      if (_.keys(b).length !== length) return false;
+      while (length--) {
+        // Deep compare each member
+        key = keys[length];
+        if (!(_.has(b, key) && eq(a[key], b[key], aStack, bStack))) return false;
+      }
+    }
+    // Remove the first object from the stack of traversed objects.
+    aStack.pop();
+    bStack.pop();
+    return true;
+  };
+
+  // Perform a deep comparison to check if two objects are equal.
+  _.isEqual = function (a, b) {
+    return eq(a, b);
+  };
+
+  // Is a given array, string, or object empty?
+  // An "empty" object has no enumerable own-properties.
+  _.isEmpty = function (obj) {
+    if (obj == null) return true;
+    if (isArrayLike(obj) && (_.isArray(obj) || _.isString(obj) || _.isArguments(obj))) return obj.length === 0;
+    return _.keys(obj).length === 0;
+  };
+
+  // Is a given value a DOM element?
+  _.isElement = function (obj) {
+    return !!(obj && obj.nodeType === 1);
+  };
+
+  // Is a given value an array?
+  // Delegates to ECMA5's native Array.isArray
+  _.isArray = nativeIsArray || function (obj) {
+    return toString.call(obj) === '[object Array]';
+  };
+
+  // Is a given variable an object?
+  _.isObject = function (obj) {
+    var type = typeof obj;
+    return type === 'function' || type === 'object' && !!obj;
+  };
+
+  // Add some isType methods: isArguments, isFunction, isString, isNumber, isDate, isRegExp, isError.
+  _.each(['Arguments', 'Function', 'String', 'Number', 'Date', 'RegExp', 'Error'], function (name) {
+    _['is' + name] = function (obj) {
+      return toString.call(obj) === '[object ' + name + ']';
+    };
+  });
+
+  // Define a fallback version of the method in browsers (ahem, IE < 9), where
+  // there isn't any inspectable "Arguments" type.
+  if (!_.isArguments(arguments)) {
+    _.isArguments = function (obj) {
+      return _.has(obj, 'callee');
+    };
+  }
+
+  // Optimize `isFunction` if appropriate. Work around some typeof bugs in old v8,
+  // IE 11 (#1621), and in Safari 8 (#1929).
+  if (typeof /./ != 'function' && typeof Int8Array != 'object') {
+    _.isFunction = function (obj) {
+      return typeof obj == 'function' || false;
+    };
+  }
+
+  // Is a given object a finite number?
+  _.isFinite = function (obj) {
+    return isFinite(obj) && !isNaN(parseFloat(obj));
+  };
+
+  // Is the given value `NaN`? (NaN is the only number which does not equal itself).
+  _.isNaN = function (obj) {
+    return _.isNumber(obj) && obj !== +obj;
+  };
+
+  // Is a given value a boolean?
+  _.isBoolean = function (obj) {
+    return obj === true || obj === false || toString.call(obj) === '[object Boolean]';
+  };
+
+  // Is a given value equal to null?
+  _.isNull = function (obj) {
+    return obj === null;
+  };
+
+  // Is a given variable undefined?
+  _.isUndefined = function (obj) {
+    return obj === void 0;
+  };
+
+  // Shortcut function for checking if an object has a given property directly
+  // on itself (in other words, not on a prototype).
+  _.has = function (obj, key) {
+    return obj != null && hasOwnProperty.call(obj, key);
+  };
+
+  // Utility Functions
+  // -----------------
+
+  // Run Underscore.js in *noConflict* mode, returning the `_` variable to its
+  // previous owner. Returns a reference to the Underscore object.
+  _.noConflict = function () {
+    root._ = previousUnderscore;
+    return this;
+  };
+
+  // Keep the identity function around for default iteratees.
+  _.identity = function (value) {
+    return value;
+  };
+
+  // Predicate-generating functions. Often useful outside of Underscore.
+  _.constant = function (value) {
+    return function () {
+      return value;
+    };
+  };
+
+  _.noop = function () {};
+
+  _.property = property;
+
+  // Generates a function for a given object that returns a given property.
+  _.propertyOf = function (obj) {
+    return obj == null ? function () {} : function (key) {
+      return obj[key];
+    };
+  };
+
+  // Returns a predicate for checking whether an object has a given set of
+  // `key:value` pairs.
+  _.matcher = _.matches = function (attrs) {
+    attrs = _.extendOwn({}, attrs);
+    return function (obj) {
+      return _.isMatch(obj, attrs);
+    };
+  };
+
+  // Run a function **n** times.
+  _.times = function (n, iteratee, context) {
+    var accum = Array(Math.max(0, n));
+    iteratee = optimizeCb(iteratee, context, 1);
+    for (var i = 0; i < n; i++) accum[i] = iteratee(i);
+    return accum;
+  };
+
+  // Return a random integer between min and max (inclusive).
+  _.random = function (min, max) {
+    if (max == null) {
+      max = min;
+      min = 0;
+    }
+    return min + Math.floor(Math.random() * (max - min + 1));
+  };
+
+  // A (possibly faster) way to get the current timestamp as an integer.
+  _.now = Date.now || function () {
+    return new Date().getTime();
+  };
+
+  // List of HTML entities for escaping.
+  var escapeMap = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#x27;',
+    '`': '&#x60;'
+  };
+  var unescapeMap = _.invert(escapeMap);
+
+  // Functions for escaping and unescaping strings to/from HTML interpolation.
+  var createEscaper = function (map) {
+    var escaper = function (match) {
+      return map[match];
+    };
+    // Regexes for identifying a key that needs to be escaped
+    var source = '(?:' + _.keys(map).join('|') + ')';
+    var testRegexp = RegExp(source);
+    var replaceRegexp = RegExp(source, 'g');
+    return function (string) {
+      string = string == null ? '' : '' + string;
+      return testRegexp.test(string) ? string.replace(replaceRegexp, escaper) : string;
+    };
+  };
+  _.escape = createEscaper(escapeMap);
+  _.unescape = createEscaper(unescapeMap);
+
+  // If the value of the named `property` is a function then invoke it with the
+  // `object` as context; otherwise, return it.
+  _.result = function (object, property, fallback) {
+    var value = object == null ? void 0 : object[property];
+    if (value === void 0) {
+      value = fallback;
+    }
+    return _.isFunction(value) ? value.call(object) : value;
+  };
+
+  // Generate a unique integer id (unique within the entire client session).
+  // Useful for temporary DOM ids.
+  var idCounter = 0;
+  _.uniqueId = function (prefix) {
+    var id = ++idCounter + '';
+    return prefix ? prefix + id : id;
+  };
+
+  // By default, Underscore uses ERB-style template delimiters, change the
+  // following template settings to use alternative delimiters.
+  _.templateSettings = {
+    evaluate: /<%([\s\S]+?)%>/g,
+    interpolate: /<%=([\s\S]+?)%>/g,
+    escape: /<%-([\s\S]+?)%>/g
+  };
+
+  // When customizing `templateSettings`, if you don't want to define an
+  // interpolation, evaluation or escaping regex, we need one that is
+  // guaranteed not to match.
+  var noMatch = /(.)^/;
+
+  // Certain characters need to be escaped so that they can be put into a
+  // string literal.
+  var escapes = {
+    "'": "'",
+    '\\': '\\',
+    '\r': 'r',
+    '\n': 'n',
+    '\u2028': 'u2028',
+    '\u2029': 'u2029'
+  };
+
+  var escaper = /\\|'|\r|\n|\u2028|\u2029/g;
+
+  var escapeChar = function (match) {
+    return '\\' + escapes[match];
+  };
+
+  // JavaScript micro-templating, similar to John Resig's implementation.
+  // Underscore templating handles arbitrary delimiters, preserves whitespace,
+  // and correctly escapes quotes within interpolated code.
+  // NB: `oldSettings` only exists for backwards compatibility.
+  _.template = function (text, settings, oldSettings) {
+    if (!settings && oldSettings) settings = oldSettings;
+    settings = _.defaults({}, settings, _.templateSettings);
+
+    // Combine delimiters into one regular expression via alternation.
+    var matcher = RegExp([(settings.escape || noMatch).source, (settings.interpolate || noMatch).source, (settings.evaluate || noMatch).source].join('|') + '|$', 'g');
+
+    // Compile the template source, escaping string literals appropriately.
+    var index = 0;
+    var source = "__p+='";
+    text.replace(matcher, function (match, escape, interpolate, evaluate, offset) {
+      source += text.slice(index, offset).replace(escaper, escapeChar);
+      index = offset + match.length;
+
+      if (escape) {
+        source += "'+\n((__t=(" + escape + "))==null?'':_.escape(__t))+\n'";
+      } else if (interpolate) {
+        source += "'+\n((__t=(" + interpolate + "))==null?'':__t)+\n'";
+      } else if (evaluate) {
+        source += "';\n" + evaluate + "\n__p+='";
+      }
+
+      // Adobe VMs need the match returned to produce the correct offest.
+      return match;
+    });
+    source += "';\n";
+
+    // If a variable is not specified, place data values in local scope.
+    if (!settings.variable) source = 'with(obj||{}){\n' + source + '}\n';
+
+    source = "var __t,__p='',__j=Array.prototype.join," + "print=function(){__p+=__j.call(arguments,'');};\n" + source + 'return __p;\n';
+
+    try {
+      var render = new Function(settings.variable || 'obj', '_', source);
+    } catch (e) {
+      e.source = source;
+      throw e;
+    }
+
+    var template = function (data) {
+      return render.call(this, data, _);
+    };
+
+    // Provide the compiled source as a convenience for precompilation.
+    var argument = settings.variable || 'obj';
+    template.source = 'function(' + argument + '){\n' + source + '}';
+
+    return template;
+  };
+
+  // Add a "chain" function. Start chaining a wrapped Underscore object.
+  _.chain = function (obj) {
+    var instance = _(obj);
+    instance._chain = true;
+    return instance;
+  };
+
+  // OOP
+  // ---------------
+  // If Underscore is called as a function, it returns a wrapped object that
+  // can be used OO-style. This wrapper holds altered versions of all the
+  // underscore functions. Wrapped objects may be chained.
+
+  // Helper function to continue chaining intermediate results.
+  var result = function (instance, obj) {
+    return instance._chain ? _(obj).chain() : obj;
+  };
+
+  // Add your own custom functions to the Underscore object.
+  _.mixin = function (obj) {
+    _.each(_.functions(obj), function (name) {
+      var func = _[name] = obj[name];
+      _.prototype[name] = function () {
+        var args = [this._wrapped];
+        push.apply(args, arguments);
+        return result(this, func.apply(_, args));
+      };
+    });
+  };
+
+  // Add all of the Underscore functions to the wrapper object.
+  _.mixin(_);
+
+  // Add all mutator Array functions to the wrapper.
+  _.each(['pop', 'push', 'reverse', 'shift', 'sort', 'splice', 'unshift'], function (name) {
+    var method = ArrayProto[name];
+    _.prototype[name] = function () {
+      var obj = this._wrapped;
+      method.apply(obj, arguments);
+      if ((name === 'shift' || name === 'splice') && obj.length === 0) delete obj[0];
+      return result(this, obj);
+    };
+  });
+
+  // Add all accessor Array functions to the wrapper.
+  _.each(['concat', 'join', 'slice'], function (name) {
+    var method = ArrayProto[name];
+    _.prototype[name] = function () {
+      return result(this, method.apply(this._wrapped, arguments));
+    };
+  });
+
+  // Extracts the result from a wrapped and chained object.
+  _.prototype.value = function () {
+    return this._wrapped;
+  };
+
+  // Provide unwrapping proxy for some methods used in engine operations
+  // such as arithmetic and JSON stringification.
+  _.prototype.valueOf = _.prototype.toJSON = _.prototype.value;
+
+  _.prototype.toString = function () {
+    return '' + this._wrapped;
+  };
+
+  // AMD registration happens at the end for compatibility with AMD loaders
+  // that may not enforce next-turn semantics on modules. Even though general
+  // practice for AMD registration is to be anonymous, underscore registers
+  // as a named module because, like jQuery, it is a base library that is
+  // popular enough to be bundled in a third party lib, but not be part of
+  // an AMD load request. Those cases could generate an error when an
+  // anonymous define() is called outside of a loader request.
+  if (true) {
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = (function () {
+      return _;
+    }).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  }
+}).call(this);
+
+/***/ }),
+/* 27 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(global) {/*!
+ * The buffer module from node.js, for the browser.
+ *
+ * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
+ * @license  MIT
+ */
+/* eslint-disable no-proto */
+
+
+
+var base64 = __webpack_require__(116);
+var ieee754 = __webpack_require__(117);
+var isArray = __webpack_require__(118);
+
+exports.Buffer = Buffer;
+exports.SlowBuffer = SlowBuffer;
+exports.INSPECT_MAX_BYTES = 50;
+
+/**
+ * If `Buffer.TYPED_ARRAY_SUPPORT`:
+ *   === true    Use Uint8Array implementation (fastest)
+ *   === false   Use Object implementation (most compatible, even IE6)
+ *
+ * Browsers that support typed arrays are IE 10+, Firefox 4+, Chrome 7+, Safari 5.1+,
+ * Opera 11.6+, iOS 4.2+.
+ *
+ * Due to various browser bugs, sometimes the Object implementation will be used even
+ * when the browser supports typed arrays.
+ *
+ * Note:
+ *
+ *   - Firefox 4-29 lacks support for adding new properties to `Uint8Array` instances,
+ *     See: https://bugzilla.mozilla.org/show_bug.cgi?id=695438.
+ *
+ *   - Chrome 9-10 is missing the `TypedArray.prototype.subarray` function.
+ *
+ *   - IE10 has a broken `TypedArray.prototype.subarray` function which returns arrays of
+ *     incorrect length in some situations.
+
+ * We detect these buggy browsers and set `Buffer.TYPED_ARRAY_SUPPORT` to `false` so they
+ * get the Object implementation, which is slower but behaves correctly.
+ */
+Buffer.TYPED_ARRAY_SUPPORT = global.TYPED_ARRAY_SUPPORT !== undefined ? global.TYPED_ARRAY_SUPPORT : typedArraySupport();
+
+/*
+ * Export kMaxLength after typed array support is determined.
+ */
+exports.kMaxLength = kMaxLength();
+
+function typedArraySupport() {
+  try {
+    var arr = new Uint8Array(1);
+    arr.__proto__ = { __proto__: Uint8Array.prototype, foo: function () {
+        return 42;
+      } };
+    return arr.foo() === 42 && // typed array instances can be augmented
+    typeof arr.subarray === 'function' && // chrome 9-10 lack `subarray`
+    arr.subarray(1, 1).byteLength === 0; // ie10 has broken `subarray`
+  } catch (e) {
+    return false;
+  }
+}
+
+function kMaxLength() {
+  return Buffer.TYPED_ARRAY_SUPPORT ? 0x7fffffff : 0x3fffffff;
+}
+
+function createBuffer(that, length) {
+  if (kMaxLength() < length) {
+    throw new RangeError('Invalid typed array length');
+  }
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    // Return an augmented `Uint8Array` instance, for best performance
+    that = new Uint8Array(length);
+    that.__proto__ = Buffer.prototype;
+  } else {
+    // Fallback: Return an object instance of the Buffer class
+    if (that === null) {
+      that = new Buffer(length);
+    }
+    that.length = length;
+  }
+
+  return that;
+}
+
+/**
+ * The Buffer constructor returns instances of `Uint8Array` that have their
+ * prototype changed to `Buffer.prototype`. Furthermore, `Buffer` is a subclass of
+ * `Uint8Array`, so the returned instances will have all the node `Buffer` methods
+ * and the `Uint8Array` methods. Square bracket notation works as expected -- it
+ * returns a single octet.
+ *
+ * The `Uint8Array` prototype remains unmodified.
+ */
+
+function Buffer(arg, encodingOrOffset, length) {
+  if (!Buffer.TYPED_ARRAY_SUPPORT && !(this instanceof Buffer)) {
+    return new Buffer(arg, encodingOrOffset, length);
+  }
+
+  // Common case.
+  if (typeof arg === 'number') {
+    if (typeof encodingOrOffset === 'string') {
+      throw new Error('If encoding is specified then the first argument must be a string');
+    }
+    return allocUnsafe(this, arg);
+  }
+  return from(this, arg, encodingOrOffset, length);
+}
+
+Buffer.poolSize = 8192; // not used by this implementation
+
+// TODO: Legacy, not needed anymore. Remove in next major version.
+Buffer._augment = function (arr) {
+  arr.__proto__ = Buffer.prototype;
+  return arr;
+};
+
+function from(that, value, encodingOrOffset, length) {
+  if (typeof value === 'number') {
+    throw new TypeError('"value" argument must not be a number');
+  }
+
+  if (typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer) {
+    return fromArrayBuffer(that, value, encodingOrOffset, length);
+  }
+
+  if (typeof value === 'string') {
+    return fromString(that, value, encodingOrOffset);
+  }
+
+  return fromObject(that, value);
+}
+
+/**
+ * Functionally equivalent to Buffer(arg, encoding) but throws a TypeError
+ * if value is a number.
+ * Buffer.from(str[, encoding])
+ * Buffer.from(array)
+ * Buffer.from(buffer)
+ * Buffer.from(arrayBuffer[, byteOffset[, length]])
+ **/
+Buffer.from = function (value, encodingOrOffset, length) {
+  return from(null, value, encodingOrOffset, length);
+};
+
+if (Buffer.TYPED_ARRAY_SUPPORT) {
+  Buffer.prototype.__proto__ = Uint8Array.prototype;
+  Buffer.__proto__ = Uint8Array;
+  if (typeof Symbol !== 'undefined' && Symbol.species && Buffer[Symbol.species] === Buffer) {
+    // Fix subarray() in ES2016. See: https://github.com/feross/buffer/pull/97
+    Object.defineProperty(Buffer, Symbol.species, {
+      value: null,
+      configurable: true
+    });
+  }
+}
+
+function assertSize(size) {
+  if (typeof size !== 'number') {
+    throw new TypeError('"size" argument must be a number');
+  } else if (size < 0) {
+    throw new RangeError('"size" argument must not be negative');
+  }
+}
+
+function alloc(that, size, fill, encoding) {
+  assertSize(size);
+  if (size <= 0) {
+    return createBuffer(that, size);
+  }
+  if (fill !== undefined) {
+    // Only pay attention to encoding if it's a string. This
+    // prevents accidentally sending in a number that would
+    // be interpretted as a start offset.
+    return typeof encoding === 'string' ? createBuffer(that, size).fill(fill, encoding) : createBuffer(that, size).fill(fill);
+  }
+  return createBuffer(that, size);
+}
+
+/**
+ * Creates a new filled Buffer instance.
+ * alloc(size[, fill[, encoding]])
+ **/
+Buffer.alloc = function (size, fill, encoding) {
+  return alloc(null, size, fill, encoding);
+};
+
+function allocUnsafe(that, size) {
+  assertSize(size);
+  that = createBuffer(that, size < 0 ? 0 : checked(size) | 0);
+  if (!Buffer.TYPED_ARRAY_SUPPORT) {
+    for (var i = 0; i < size; ++i) {
+      that[i] = 0;
+    }
+  }
+  return that;
+}
+
+/**
+ * Equivalent to Buffer(num), by default creates a non-zero-filled Buffer instance.
+ * */
+Buffer.allocUnsafe = function (size) {
+  return allocUnsafe(null, size);
+};
+/**
+ * Equivalent to SlowBuffer(num), by default creates a non-zero-filled Buffer instance.
+ */
+Buffer.allocUnsafeSlow = function (size) {
+  return allocUnsafe(null, size);
+};
+
+function fromString(that, string, encoding) {
+  if (typeof encoding !== 'string' || encoding === '') {
+    encoding = 'utf8';
+  }
+
+  if (!Buffer.isEncoding(encoding)) {
+    throw new TypeError('"encoding" must be a valid string encoding');
+  }
+
+  var length = byteLength(string, encoding) | 0;
+  that = createBuffer(that, length);
+
+  var actual = that.write(string, encoding);
+
+  if (actual !== length) {
+    // Writing a hex string, for example, that contains invalid characters will
+    // cause everything after the first invalid character to be ignored. (e.g.
+    // 'abxxcd' will be treated as 'ab')
+    that = that.slice(0, actual);
+  }
+
+  return that;
+}
+
+function fromArrayLike(that, array) {
+  var length = array.length < 0 ? 0 : checked(array.length) | 0;
+  that = createBuffer(that, length);
+  for (var i = 0; i < length; i += 1) {
+    that[i] = array[i] & 255;
+  }
+  return that;
+}
+
+function fromArrayBuffer(that, array, byteOffset, length) {
+  array.byteLength; // this throws if `array` is not a valid ArrayBuffer
+
+  if (byteOffset < 0 || array.byteLength < byteOffset) {
+    throw new RangeError('\'offset\' is out of bounds');
+  }
+
+  if (array.byteLength < byteOffset + (length || 0)) {
+    throw new RangeError('\'length\' is out of bounds');
+  }
+
+  if (byteOffset === undefined && length === undefined) {
+    array = new Uint8Array(array);
+  } else if (length === undefined) {
+    array = new Uint8Array(array, byteOffset);
+  } else {
+    array = new Uint8Array(array, byteOffset, length);
+  }
+
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    // Return an augmented `Uint8Array` instance, for best performance
+    that = array;
+    that.__proto__ = Buffer.prototype;
+  } else {
+    // Fallback: Return an object instance of the Buffer class
+    that = fromArrayLike(that, array);
+  }
+  return that;
+}
+
+function fromObject(that, obj) {
+  if (Buffer.isBuffer(obj)) {
+    var len = checked(obj.length) | 0;
+    that = createBuffer(that, len);
+
+    if (that.length === 0) {
+      return that;
+    }
+
+    obj.copy(that, 0, 0, len);
+    return that;
+  }
+
+  if (obj) {
+    if (typeof ArrayBuffer !== 'undefined' && obj.buffer instanceof ArrayBuffer || 'length' in obj) {
+      if (typeof obj.length !== 'number' || isnan(obj.length)) {
+        return createBuffer(that, 0);
+      }
+      return fromArrayLike(that, obj);
+    }
+
+    if (obj.type === 'Buffer' && isArray(obj.data)) {
+      return fromArrayLike(that, obj.data);
+    }
+  }
+
+  throw new TypeError('First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.');
+}
+
+function checked(length) {
+  // Note: cannot use `length < kMaxLength()` here because that fails when
+  // length is NaN (which is otherwise coerced to zero.)
+  if (length >= kMaxLength()) {
+    throw new RangeError('Attempt to allocate Buffer larger than maximum ' + 'size: 0x' + kMaxLength().toString(16) + ' bytes');
+  }
+  return length | 0;
+}
+
+function SlowBuffer(length) {
+  if (+length != length) {
+    // eslint-disable-line eqeqeq
+    length = 0;
+  }
+  return Buffer.alloc(+length);
+}
+
+Buffer.isBuffer = function isBuffer(b) {
+  return !!(b != null && b._isBuffer);
+};
+
+Buffer.compare = function compare(a, b) {
+  if (!Buffer.isBuffer(a) || !Buffer.isBuffer(b)) {
+    throw new TypeError('Arguments must be Buffers');
+  }
+
+  if (a === b) return 0;
+
+  var x = a.length;
+  var y = b.length;
+
+  for (var i = 0, len = Math.min(x, y); i < len; ++i) {
+    if (a[i] !== b[i]) {
+      x = a[i];
+      y = b[i];
+      break;
+    }
+  }
+
+  if (x < y) return -1;
+  if (y < x) return 1;
+  return 0;
+};
+
+Buffer.isEncoding = function isEncoding(encoding) {
+  switch (String(encoding).toLowerCase()) {
+    case 'hex':
+    case 'utf8':
+    case 'utf-8':
+    case 'ascii':
+    case 'latin1':
+    case 'binary':
+    case 'base64':
+    case 'ucs2':
+    case 'ucs-2':
+    case 'utf16le':
+    case 'utf-16le':
+      return true;
+    default:
+      return false;
+  }
+};
+
+Buffer.concat = function concat(list, length) {
+  if (!isArray(list)) {
+    throw new TypeError('"list" argument must be an Array of Buffers');
+  }
+
+  if (list.length === 0) {
+    return Buffer.alloc(0);
+  }
+
+  var i;
+  if (length === undefined) {
+    length = 0;
+    for (i = 0; i < list.length; ++i) {
+      length += list[i].length;
+    }
+  }
+
+  var buffer = Buffer.allocUnsafe(length);
+  var pos = 0;
+  for (i = 0; i < list.length; ++i) {
+    var buf = list[i];
+    if (!Buffer.isBuffer(buf)) {
+      throw new TypeError('"list" argument must be an Array of Buffers');
+    }
+    buf.copy(buffer, pos);
+    pos += buf.length;
+  }
+  return buffer;
+};
+
+function byteLength(string, encoding) {
+  if (Buffer.isBuffer(string)) {
+    return string.length;
+  }
+  if (typeof ArrayBuffer !== 'undefined' && typeof ArrayBuffer.isView === 'function' && (ArrayBuffer.isView(string) || string instanceof ArrayBuffer)) {
+    return string.byteLength;
+  }
+  if (typeof string !== 'string') {
+    string = '' + string;
+  }
+
+  var len = string.length;
+  if (len === 0) return 0;
+
+  // Use a for loop to avoid recursion
+  var loweredCase = false;
+  for (;;) {
+    switch (encoding) {
+      case 'ascii':
+      case 'latin1':
+      case 'binary':
+        return len;
+      case 'utf8':
+      case 'utf-8':
+      case undefined:
+        return utf8ToBytes(string).length;
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return len * 2;
+      case 'hex':
+        return len >>> 1;
+      case 'base64':
+        return base64ToBytes(string).length;
+      default:
+        if (loweredCase) return utf8ToBytes(string).length; // assume utf8
+        encoding = ('' + encoding).toLowerCase();
+        loweredCase = true;
+    }
+  }
+}
+Buffer.byteLength = byteLength;
+
+function slowToString(encoding, start, end) {
+  var loweredCase = false;
+
+  // No need to verify that "this.length <= MAX_UINT32" since it's a read-only
+  // property of a typed array.
+
+  // This behaves neither like String nor Uint8Array in that we set start/end
+  // to their upper/lower bounds if the value passed is out of range.
+  // undefined is handled specially as per ECMA-262 6th Edition,
+  // Section 13.3.3.7 Runtime Semantics: KeyedBindingInitialization.
+  if (start === undefined || start < 0) {
+    start = 0;
+  }
+  // Return early if start > this.length. Done here to prevent potential uint32
+  // coercion fail below.
+  if (start > this.length) {
+    return '';
+  }
+
+  if (end === undefined || end > this.length) {
+    end = this.length;
+  }
+
+  if (end <= 0) {
+    return '';
+  }
+
+  // Force coersion to uint32. This will also coerce falsey/NaN values to 0.
+  end >>>= 0;
+  start >>>= 0;
+
+  if (end <= start) {
+    return '';
+  }
+
+  if (!encoding) encoding = 'utf8';
+
+  while (true) {
+    switch (encoding) {
+      case 'hex':
+        return hexSlice(this, start, end);
+
+      case 'utf8':
+      case 'utf-8':
+        return utf8Slice(this, start, end);
+
+      case 'ascii':
+        return asciiSlice(this, start, end);
+
+      case 'latin1':
+      case 'binary':
+        return latin1Slice(this, start, end);
+
+      case 'base64':
+        return base64Slice(this, start, end);
+
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return utf16leSlice(this, start, end);
+
+      default:
+        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding);
+        encoding = (encoding + '').toLowerCase();
+        loweredCase = true;
+    }
+  }
+}
+
+// The property is used by `Buffer.isBuffer` and `is-buffer` (in Safari 5-7) to detect
+// Buffer instances.
+Buffer.prototype._isBuffer = true;
+
+function swap(b, n, m) {
+  var i = b[n];
+  b[n] = b[m];
+  b[m] = i;
+}
+
+Buffer.prototype.swap16 = function swap16() {
+  var len = this.length;
+  if (len % 2 !== 0) {
+    throw new RangeError('Buffer size must be a multiple of 16-bits');
+  }
+  for (var i = 0; i < len; i += 2) {
+    swap(this, i, i + 1);
+  }
+  return this;
+};
+
+Buffer.prototype.swap32 = function swap32() {
+  var len = this.length;
+  if (len % 4 !== 0) {
+    throw new RangeError('Buffer size must be a multiple of 32-bits');
+  }
+  for (var i = 0; i < len; i += 4) {
+    swap(this, i, i + 3);
+    swap(this, i + 1, i + 2);
+  }
+  return this;
+};
+
+Buffer.prototype.swap64 = function swap64() {
+  var len = this.length;
+  if (len % 8 !== 0) {
+    throw new RangeError('Buffer size must be a multiple of 64-bits');
+  }
+  for (var i = 0; i < len; i += 8) {
+    swap(this, i, i + 7);
+    swap(this, i + 1, i + 6);
+    swap(this, i + 2, i + 5);
+    swap(this, i + 3, i + 4);
+  }
+  return this;
+};
+
+Buffer.prototype.toString = function toString() {
+  var length = this.length | 0;
+  if (length === 0) return '';
+  if (arguments.length === 0) return utf8Slice(this, 0, length);
+  return slowToString.apply(this, arguments);
+};
+
+Buffer.prototype.equals = function equals(b) {
+  if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer');
+  if (this === b) return true;
+  return Buffer.compare(this, b) === 0;
+};
+
+Buffer.prototype.inspect = function inspect() {
+  var str = '';
+  var max = exports.INSPECT_MAX_BYTES;
+  if (this.length > 0) {
+    str = this.toString('hex', 0, max).match(/.{2}/g).join(' ');
+    if (this.length > max) str += ' ... ';
+  }
+  return '<Buffer ' + str + '>';
+};
+
+Buffer.prototype.compare = function compare(target, start, end, thisStart, thisEnd) {
+  if (!Buffer.isBuffer(target)) {
+    throw new TypeError('Argument must be a Buffer');
+  }
+
+  if (start === undefined) {
+    start = 0;
+  }
+  if (end === undefined) {
+    end = target ? target.length : 0;
+  }
+  if (thisStart === undefined) {
+    thisStart = 0;
+  }
+  if (thisEnd === undefined) {
+    thisEnd = this.length;
+  }
+
+  if (start < 0 || end > target.length || thisStart < 0 || thisEnd > this.length) {
+    throw new RangeError('out of range index');
+  }
+
+  if (thisStart >= thisEnd && start >= end) {
+    return 0;
+  }
+  if (thisStart >= thisEnd) {
+    return -1;
+  }
+  if (start >= end) {
+    return 1;
+  }
+
+  start >>>= 0;
+  end >>>= 0;
+  thisStart >>>= 0;
+  thisEnd >>>= 0;
+
+  if (this === target) return 0;
+
+  var x = thisEnd - thisStart;
+  var y = end - start;
+  var len = Math.min(x, y);
+
+  var thisCopy = this.slice(thisStart, thisEnd);
+  var targetCopy = target.slice(start, end);
+
+  for (var i = 0; i < len; ++i) {
+    if (thisCopy[i] !== targetCopy[i]) {
+      x = thisCopy[i];
+      y = targetCopy[i];
+      break;
+    }
+  }
+
+  if (x < y) return -1;
+  if (y < x) return 1;
+  return 0;
+};
+
+// Finds either the first index of `val` in `buffer` at offset >= `byteOffset`,
+// OR the last index of `val` in `buffer` at offset <= `byteOffset`.
+//
+// Arguments:
+// - buffer - a Buffer to search
+// - val - a string, Buffer, or number
+// - byteOffset - an index into `buffer`; will be clamped to an int32
+// - encoding - an optional encoding, relevant is val is a string
+// - dir - true for indexOf, false for lastIndexOf
+function bidirectionalIndexOf(buffer, val, byteOffset, encoding, dir) {
+  // Empty buffer means no match
+  if (buffer.length === 0) return -1;
+
+  // Normalize byteOffset
+  if (typeof byteOffset === 'string') {
+    encoding = byteOffset;
+    byteOffset = 0;
+  } else if (byteOffset > 0x7fffffff) {
+    byteOffset = 0x7fffffff;
+  } else if (byteOffset < -0x80000000) {
+    byteOffset = -0x80000000;
+  }
+  byteOffset = +byteOffset; // Coerce to Number.
+  if (isNaN(byteOffset)) {
+    // byteOffset: it it's undefined, null, NaN, "foo", etc, search whole buffer
+    byteOffset = dir ? 0 : buffer.length - 1;
+  }
+
+  // Normalize byteOffset: negative offsets start from the end of the buffer
+  if (byteOffset < 0) byteOffset = buffer.length + byteOffset;
+  if (byteOffset >= buffer.length) {
+    if (dir) return -1;else byteOffset = buffer.length - 1;
+  } else if (byteOffset < 0) {
+    if (dir) byteOffset = 0;else return -1;
+  }
+
+  // Normalize val
+  if (typeof val === 'string') {
+    val = Buffer.from(val, encoding);
+  }
+
+  // Finally, search either indexOf (if dir is true) or lastIndexOf
+  if (Buffer.isBuffer(val)) {
+    // Special case: looking for empty string/buffer always fails
+    if (val.length === 0) {
+      return -1;
+    }
+    return arrayIndexOf(buffer, val, byteOffset, encoding, dir);
+  } else if (typeof val === 'number') {
+    val = val & 0xFF; // Search for a byte value [0-255]
+    if (Buffer.TYPED_ARRAY_SUPPORT && typeof Uint8Array.prototype.indexOf === 'function') {
+      if (dir) {
+        return Uint8Array.prototype.indexOf.call(buffer, val, byteOffset);
+      } else {
+        return Uint8Array.prototype.lastIndexOf.call(buffer, val, byteOffset);
+      }
+    }
+    return arrayIndexOf(buffer, [val], byteOffset, encoding, dir);
+  }
+
+  throw new TypeError('val must be string, number or Buffer');
+}
+
+function arrayIndexOf(arr, val, byteOffset, encoding, dir) {
+  var indexSize = 1;
+  var arrLength = arr.length;
+  var valLength = val.length;
+
+  if (encoding !== undefined) {
+    encoding = String(encoding).toLowerCase();
+    if (encoding === 'ucs2' || encoding === 'ucs-2' || encoding === 'utf16le' || encoding === 'utf-16le') {
+      if (arr.length < 2 || val.length < 2) {
+        return -1;
+      }
+      indexSize = 2;
+      arrLength /= 2;
+      valLength /= 2;
+      byteOffset /= 2;
+    }
+  }
+
+  function read(buf, i) {
+    if (indexSize === 1) {
+      return buf[i];
+    } else {
+      return buf.readUInt16BE(i * indexSize);
+    }
+  }
+
+  var i;
+  if (dir) {
+    var foundIndex = -1;
+    for (i = byteOffset; i < arrLength; i++) {
+      if (read(arr, i) === read(val, foundIndex === -1 ? 0 : i - foundIndex)) {
+        if (foundIndex === -1) foundIndex = i;
+        if (i - foundIndex + 1 === valLength) return foundIndex * indexSize;
+      } else {
+        if (foundIndex !== -1) i -= i - foundIndex;
+        foundIndex = -1;
+      }
+    }
+  } else {
+    if (byteOffset + valLength > arrLength) byteOffset = arrLength - valLength;
+    for (i = byteOffset; i >= 0; i--) {
+      var found = true;
+      for (var j = 0; j < valLength; j++) {
+        if (read(arr, i + j) !== read(val, j)) {
+          found = false;
+          break;
+        }
+      }
+      if (found) return i;
+    }
+  }
+
+  return -1;
+}
+
+Buffer.prototype.includes = function includes(val, byteOffset, encoding) {
+  return this.indexOf(val, byteOffset, encoding) !== -1;
+};
+
+Buffer.prototype.indexOf = function indexOf(val, byteOffset, encoding) {
+  return bidirectionalIndexOf(this, val, byteOffset, encoding, true);
+};
+
+Buffer.prototype.lastIndexOf = function lastIndexOf(val, byteOffset, encoding) {
+  return bidirectionalIndexOf(this, val, byteOffset, encoding, false);
+};
+
+function hexWrite(buf, string, offset, length) {
+  offset = Number(offset) || 0;
+  var remaining = buf.length - offset;
+  if (!length) {
+    length = remaining;
+  } else {
+    length = Number(length);
+    if (length > remaining) {
+      length = remaining;
+    }
+  }
+
+  // must be an even number of digits
+  var strLen = string.length;
+  if (strLen % 2 !== 0) throw new TypeError('Invalid hex string');
+
+  if (length > strLen / 2) {
+    length = strLen / 2;
+  }
+  for (var i = 0; i < length; ++i) {
+    var parsed = parseInt(string.substr(i * 2, 2), 16);
+    if (isNaN(parsed)) return i;
+    buf[offset + i] = parsed;
+  }
+  return i;
+}
+
+function utf8Write(buf, string, offset, length) {
+  return blitBuffer(utf8ToBytes(string, buf.length - offset), buf, offset, length);
+}
+
+function asciiWrite(buf, string, offset, length) {
+  return blitBuffer(asciiToBytes(string), buf, offset, length);
+}
+
+function latin1Write(buf, string, offset, length) {
+  return asciiWrite(buf, string, offset, length);
+}
+
+function base64Write(buf, string, offset, length) {
+  return blitBuffer(base64ToBytes(string), buf, offset, length);
+}
+
+function ucs2Write(buf, string, offset, length) {
+  return blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length);
+}
+
+Buffer.prototype.write = function write(string, offset, length, encoding) {
+  // Buffer#write(string)
+  if (offset === undefined) {
+    encoding = 'utf8';
+    length = this.length;
+    offset = 0;
+    // Buffer#write(string, encoding)
+  } else if (length === undefined && typeof offset === 'string') {
+    encoding = offset;
+    length = this.length;
+    offset = 0;
+    // Buffer#write(string, offset[, length][, encoding])
+  } else if (isFinite(offset)) {
+    offset = offset | 0;
+    if (isFinite(length)) {
+      length = length | 0;
+      if (encoding === undefined) encoding = 'utf8';
+    } else {
+      encoding = length;
+      length = undefined;
+    }
+    // legacy write(string, encoding, offset, length) - remove in v0.13
+  } else {
+    throw new Error('Buffer.write(string, encoding, offset[, length]) is no longer supported');
+  }
+
+  var remaining = this.length - offset;
+  if (length === undefined || length > remaining) length = remaining;
+
+  if (string.length > 0 && (length < 0 || offset < 0) || offset > this.length) {
+    throw new RangeError('Attempt to write outside buffer bounds');
+  }
+
+  if (!encoding) encoding = 'utf8';
+
+  var loweredCase = false;
+  for (;;) {
+    switch (encoding) {
+      case 'hex':
+        return hexWrite(this, string, offset, length);
+
+      case 'utf8':
+      case 'utf-8':
+        return utf8Write(this, string, offset, length);
+
+      case 'ascii':
+        return asciiWrite(this, string, offset, length);
+
+      case 'latin1':
+      case 'binary':
+        return latin1Write(this, string, offset, length);
+
+      case 'base64':
+        // Warning: maxLength not taken into account in base64Write
+        return base64Write(this, string, offset, length);
+
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return ucs2Write(this, string, offset, length);
+
+      default:
+        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding);
+        encoding = ('' + encoding).toLowerCase();
+        loweredCase = true;
+    }
+  }
+};
+
+Buffer.prototype.toJSON = function toJSON() {
+  return {
+    type: 'Buffer',
+    data: Array.prototype.slice.call(this._arr || this, 0)
+  };
+};
+
+function base64Slice(buf, start, end) {
+  if (start === 0 && end === buf.length) {
+    return base64.fromByteArray(buf);
+  } else {
+    return base64.fromByteArray(buf.slice(start, end));
+  }
+}
+
+function utf8Slice(buf, start, end) {
+  end = Math.min(buf.length, end);
+  var res = [];
+
+  var i = start;
+  while (i < end) {
+    var firstByte = buf[i];
+    var codePoint = null;
+    var bytesPerSequence = firstByte > 0xEF ? 4 : firstByte > 0xDF ? 3 : firstByte > 0xBF ? 2 : 1;
+
+    if (i + bytesPerSequence <= end) {
+      var secondByte, thirdByte, fourthByte, tempCodePoint;
+
+      switch (bytesPerSequence) {
+        case 1:
+          if (firstByte < 0x80) {
+            codePoint = firstByte;
+          }
+          break;
+        case 2:
+          secondByte = buf[i + 1];
+          if ((secondByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0x1F) << 0x6 | secondByte & 0x3F;
+            if (tempCodePoint > 0x7F) {
+              codePoint = tempCodePoint;
+            }
+          }
+          break;
+        case 3:
+          secondByte = buf[i + 1];
+          thirdByte = buf[i + 2];
+          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0xF) << 0xC | (secondByte & 0x3F) << 0x6 | thirdByte & 0x3F;
+            if (tempCodePoint > 0x7FF && (tempCodePoint < 0xD800 || tempCodePoint > 0xDFFF)) {
+              codePoint = tempCodePoint;
+            }
+          }
+          break;
+        case 4:
+          secondByte = buf[i + 1];
+          thirdByte = buf[i + 2];
+          fourthByte = buf[i + 3];
+          if ((secondByte & 0xC0) === 0x80 && (thirdByte & 0xC0) === 0x80 && (fourthByte & 0xC0) === 0x80) {
+            tempCodePoint = (firstByte & 0xF) << 0x12 | (secondByte & 0x3F) << 0xC | (thirdByte & 0x3F) << 0x6 | fourthByte & 0x3F;
+            if (tempCodePoint > 0xFFFF && tempCodePoint < 0x110000) {
+              codePoint = tempCodePoint;
+            }
+          }
+      }
+    }
+
+    if (codePoint === null) {
+      // we did not generate a valid codePoint so insert a
+      // replacement char (U+FFFD) and advance only 1 byte
+      codePoint = 0xFFFD;
+      bytesPerSequence = 1;
+    } else if (codePoint > 0xFFFF) {
+      // encode to utf16 (surrogate pair dance)
+      codePoint -= 0x10000;
+      res.push(codePoint >>> 10 & 0x3FF | 0xD800);
+      codePoint = 0xDC00 | codePoint & 0x3FF;
+    }
+
+    res.push(codePoint);
+    i += bytesPerSequence;
+  }
+
+  return decodeCodePointsArray(res);
+}
+
+// Based on http://stackoverflow.com/a/22747272/680742, the browser with
+// the lowest limit is Chrome, with 0x10000 args.
+// We go 1 magnitude less, for safety
+var MAX_ARGUMENTS_LENGTH = 0x1000;
+
+function decodeCodePointsArray(codePoints) {
+  var len = codePoints.length;
+  if (len <= MAX_ARGUMENTS_LENGTH) {
+    return String.fromCharCode.apply(String, codePoints); // avoid extra slice()
+  }
+
+  // Decode in chunks to avoid "call stack size exceeded".
+  var res = '';
+  var i = 0;
+  while (i < len) {
+    res += String.fromCharCode.apply(String, codePoints.slice(i, i += MAX_ARGUMENTS_LENGTH));
+  }
+  return res;
+}
+
+function asciiSlice(buf, start, end) {
+  var ret = '';
+  end = Math.min(buf.length, end);
+
+  for (var i = start; i < end; ++i) {
+    ret += String.fromCharCode(buf[i] & 0x7F);
+  }
+  return ret;
+}
+
+function latin1Slice(buf, start, end) {
+  var ret = '';
+  end = Math.min(buf.length, end);
+
+  for (var i = start; i < end; ++i) {
+    ret += String.fromCharCode(buf[i]);
+  }
+  return ret;
+}
+
+function hexSlice(buf, start, end) {
+  var len = buf.length;
+
+  if (!start || start < 0) start = 0;
+  if (!end || end < 0 || end > len) end = len;
+
+  var out = '';
+  for (var i = start; i < end; ++i) {
+    out += toHex(buf[i]);
+  }
+  return out;
+}
+
+function utf16leSlice(buf, start, end) {
+  var bytes = buf.slice(start, end);
+  var res = '';
+  for (var i = 0; i < bytes.length; i += 2) {
+    res += String.fromCharCode(bytes[i] + bytes[i + 1] * 256);
+  }
+  return res;
+}
+
+Buffer.prototype.slice = function slice(start, end) {
+  var len = this.length;
+  start = ~~start;
+  end = end === undefined ? len : ~~end;
+
+  if (start < 0) {
+    start += len;
+    if (start < 0) start = 0;
+  } else if (start > len) {
+    start = len;
+  }
+
+  if (end < 0) {
+    end += len;
+    if (end < 0) end = 0;
+  } else if (end > len) {
+    end = len;
+  }
+
+  if (end < start) end = start;
+
+  var newBuf;
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    newBuf = this.subarray(start, end);
+    newBuf.__proto__ = Buffer.prototype;
+  } else {
+    var sliceLen = end - start;
+    newBuf = new Buffer(sliceLen, undefined);
+    for (var i = 0; i < sliceLen; ++i) {
+      newBuf[i] = this[i + start];
+    }
+  }
+
+  return newBuf;
+};
+
+/*
+ * Need to make sure that buffer isn't trying to write out of bounds.
+ */
+function checkOffset(offset, ext, length) {
+  if (offset % 1 !== 0 || offset < 0) throw new RangeError('offset is not uint');
+  if (offset + ext > length) throw new RangeError('Trying to access beyond buffer length');
+}
+
+Buffer.prototype.readUIntLE = function readUIntLE(offset, byteLength, noAssert) {
+  offset = offset | 0;
+  byteLength = byteLength | 0;
+  if (!noAssert) checkOffset(offset, byteLength, this.length);
+
+  var val = this[offset];
+  var mul = 1;
+  var i = 0;
+  while (++i < byteLength && (mul *= 0x100)) {
+    val += this[offset + i] * mul;
+  }
+
+  return val;
+};
+
+Buffer.prototype.readUIntBE = function readUIntBE(offset, byteLength, noAssert) {
+  offset = offset | 0;
+  byteLength = byteLength | 0;
+  if (!noAssert) {
+    checkOffset(offset, byteLength, this.length);
+  }
+
+  var val = this[offset + --byteLength];
+  var mul = 1;
+  while (byteLength > 0 && (mul *= 0x100)) {
+    val += this[offset + --byteLength] * mul;
+  }
+
+  return val;
+};
+
+Buffer.prototype.readUInt8 = function readUInt8(offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 1, this.length);
+  return this[offset];
+};
+
+Buffer.prototype.readUInt16LE = function readUInt16LE(offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length);
+  return this[offset] | this[offset + 1] << 8;
+};
+
+Buffer.prototype.readUInt16BE = function readUInt16BE(offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length);
+  return this[offset] << 8 | this[offset + 1];
+};
+
+Buffer.prototype.readUInt32LE = function readUInt32LE(offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length);
+
+  return (this[offset] | this[offset + 1] << 8 | this[offset + 2] << 16) + this[offset + 3] * 0x1000000;
+};
+
+Buffer.prototype.readUInt32BE = function readUInt32BE(offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length);
+
+  return this[offset] * 0x1000000 + (this[offset + 1] << 16 | this[offset + 2] << 8 | this[offset + 3]);
+};
+
+Buffer.prototype.readIntLE = function readIntLE(offset, byteLength, noAssert) {
+  offset = offset | 0;
+  byteLength = byteLength | 0;
+  if (!noAssert) checkOffset(offset, byteLength, this.length);
+
+  var val = this[offset];
+  var mul = 1;
+  var i = 0;
+  while (++i < byteLength && (mul *= 0x100)) {
+    val += this[offset + i] * mul;
+  }
+  mul *= 0x80;
+
+  if (val >= mul) val -= Math.pow(2, 8 * byteLength);
+
+  return val;
+};
+
+Buffer.prototype.readIntBE = function readIntBE(offset, byteLength, noAssert) {
+  offset = offset | 0;
+  byteLength = byteLength | 0;
+  if (!noAssert) checkOffset(offset, byteLength, this.length);
+
+  var i = byteLength;
+  var mul = 1;
+  var val = this[offset + --i];
+  while (i > 0 && (mul *= 0x100)) {
+    val += this[offset + --i] * mul;
+  }
+  mul *= 0x80;
+
+  if (val >= mul) val -= Math.pow(2, 8 * byteLength);
+
+  return val;
+};
+
+Buffer.prototype.readInt8 = function readInt8(offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 1, this.length);
+  if (!(this[offset] & 0x80)) return this[offset];
+  return (0xff - this[offset] + 1) * -1;
+};
+
+Buffer.prototype.readInt16LE = function readInt16LE(offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length);
+  var val = this[offset] | this[offset + 1] << 8;
+  return val & 0x8000 ? val | 0xFFFF0000 : val;
+};
+
+Buffer.prototype.readInt16BE = function readInt16BE(offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length);
+  var val = this[offset + 1] | this[offset] << 8;
+  return val & 0x8000 ? val | 0xFFFF0000 : val;
+};
+
+Buffer.prototype.readInt32LE = function readInt32LE(offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length);
+
+  return this[offset] | this[offset + 1] << 8 | this[offset + 2] << 16 | this[offset + 3] << 24;
+};
+
+Buffer.prototype.readInt32BE = function readInt32BE(offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length);
+
+  return this[offset] << 24 | this[offset + 1] << 16 | this[offset + 2] << 8 | this[offset + 3];
+};
+
+Buffer.prototype.readFloatLE = function readFloatLE(offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length);
+  return ieee754.read(this, offset, true, 23, 4);
+};
+
+Buffer.prototype.readFloatBE = function readFloatBE(offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length);
+  return ieee754.read(this, offset, false, 23, 4);
+};
+
+Buffer.prototype.readDoubleLE = function readDoubleLE(offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 8, this.length);
+  return ieee754.read(this, offset, true, 52, 8);
+};
+
+Buffer.prototype.readDoubleBE = function readDoubleBE(offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 8, this.length);
+  return ieee754.read(this, offset, false, 52, 8);
+};
+
+function checkInt(buf, value, offset, ext, max, min) {
+  if (!Buffer.isBuffer(buf)) throw new TypeError('"buffer" argument must be a Buffer instance');
+  if (value > max || value < min) throw new RangeError('"value" argument is out of bounds');
+  if (offset + ext > buf.length) throw new RangeError('Index out of range');
+}
+
+Buffer.prototype.writeUIntLE = function writeUIntLE(value, offset, byteLength, noAssert) {
+  value = +value;
+  offset = offset | 0;
+  byteLength = byteLength | 0;
+  if (!noAssert) {
+    var maxBytes = Math.pow(2, 8 * byteLength) - 1;
+    checkInt(this, value, offset, byteLength, maxBytes, 0);
+  }
+
+  var mul = 1;
+  var i = 0;
+  this[offset] = value & 0xFF;
+  while (++i < byteLength && (mul *= 0x100)) {
+    this[offset + i] = value / mul & 0xFF;
+  }
+
+  return offset + byteLength;
+};
+
+Buffer.prototype.writeUIntBE = function writeUIntBE(value, offset, byteLength, noAssert) {
+  value = +value;
+  offset = offset | 0;
+  byteLength = byteLength | 0;
+  if (!noAssert) {
+    var maxBytes = Math.pow(2, 8 * byteLength) - 1;
+    checkInt(this, value, offset, byteLength, maxBytes, 0);
+  }
+
+  var i = byteLength - 1;
+  var mul = 1;
+  this[offset + i] = value & 0xFF;
+  while (--i >= 0 && (mul *= 0x100)) {
+    this[offset + i] = value / mul & 0xFF;
+  }
+
+  return offset + byteLength;
+};
+
+Buffer.prototype.writeUInt8 = function writeUInt8(value, offset, noAssert) {
+  value = +value;
+  offset = offset | 0;
+  if (!noAssert) checkInt(this, value, offset, 1, 0xff, 0);
+  if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value);
+  this[offset] = value & 0xff;
+  return offset + 1;
+};
+
+function objectWriteUInt16(buf, value, offset, littleEndian) {
+  if (value < 0) value = 0xffff + value + 1;
+  for (var i = 0, j = Math.min(buf.length - offset, 2); i < j; ++i) {
+    buf[offset + i] = (value & 0xff << 8 * (littleEndian ? i : 1 - i)) >>> (littleEndian ? i : 1 - i) * 8;
+  }
+}
+
+Buffer.prototype.writeUInt16LE = function writeUInt16LE(value, offset, noAssert) {
+  value = +value;
+  offset = offset | 0;
+  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0);
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = value & 0xff;
+    this[offset + 1] = value >>> 8;
+  } else {
+    objectWriteUInt16(this, value, offset, true);
+  }
+  return offset + 2;
+};
+
+Buffer.prototype.writeUInt16BE = function writeUInt16BE(value, offset, noAssert) {
+  value = +value;
+  offset = offset | 0;
+  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0);
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = value >>> 8;
+    this[offset + 1] = value & 0xff;
+  } else {
+    objectWriteUInt16(this, value, offset, false);
+  }
+  return offset + 2;
+};
+
+function objectWriteUInt32(buf, value, offset, littleEndian) {
+  if (value < 0) value = 0xffffffff + value + 1;
+  for (var i = 0, j = Math.min(buf.length - offset, 4); i < j; ++i) {
+    buf[offset + i] = value >>> (littleEndian ? i : 3 - i) * 8 & 0xff;
+  }
+}
+
+Buffer.prototype.writeUInt32LE = function writeUInt32LE(value, offset, noAssert) {
+  value = +value;
+  offset = offset | 0;
+  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0);
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset + 3] = value >>> 24;
+    this[offset + 2] = value >>> 16;
+    this[offset + 1] = value >>> 8;
+    this[offset] = value & 0xff;
+  } else {
+    objectWriteUInt32(this, value, offset, true);
+  }
+  return offset + 4;
+};
+
+Buffer.prototype.writeUInt32BE = function writeUInt32BE(value, offset, noAssert) {
+  value = +value;
+  offset = offset | 0;
+  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0);
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = value >>> 24;
+    this[offset + 1] = value >>> 16;
+    this[offset + 2] = value >>> 8;
+    this[offset + 3] = value & 0xff;
+  } else {
+    objectWriteUInt32(this, value, offset, false);
+  }
+  return offset + 4;
+};
+
+Buffer.prototype.writeIntLE = function writeIntLE(value, offset, byteLength, noAssert) {
+  value = +value;
+  offset = offset | 0;
+  if (!noAssert) {
+    var limit = Math.pow(2, 8 * byteLength - 1);
+
+    checkInt(this, value, offset, byteLength, limit - 1, -limit);
+  }
+
+  var i = 0;
+  var mul = 1;
+  var sub = 0;
+  this[offset] = value & 0xFF;
+  while (++i < byteLength && (mul *= 0x100)) {
+    if (value < 0 && sub === 0 && this[offset + i - 1] !== 0) {
+      sub = 1;
+    }
+    this[offset + i] = (value / mul >> 0) - sub & 0xFF;
+  }
+
+  return offset + byteLength;
+};
+
+Buffer.prototype.writeIntBE = function writeIntBE(value, offset, byteLength, noAssert) {
+  value = +value;
+  offset = offset | 0;
+  if (!noAssert) {
+    var limit = Math.pow(2, 8 * byteLength - 1);
+
+    checkInt(this, value, offset, byteLength, limit - 1, -limit);
+  }
+
+  var i = byteLength - 1;
+  var mul = 1;
+  var sub = 0;
+  this[offset + i] = value & 0xFF;
+  while (--i >= 0 && (mul *= 0x100)) {
+    if (value < 0 && sub === 0 && this[offset + i + 1] !== 0) {
+      sub = 1;
+    }
+    this[offset + i] = (value / mul >> 0) - sub & 0xFF;
+  }
+
+  return offset + byteLength;
+};
+
+Buffer.prototype.writeInt8 = function writeInt8(value, offset, noAssert) {
+  value = +value;
+  offset = offset | 0;
+  if (!noAssert) checkInt(this, value, offset, 1, 0x7f, -0x80);
+  if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value);
+  if (value < 0) value = 0xff + value + 1;
+  this[offset] = value & 0xff;
+  return offset + 1;
+};
+
+Buffer.prototype.writeInt16LE = function writeInt16LE(value, offset, noAssert) {
+  value = +value;
+  offset = offset | 0;
+  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000);
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = value & 0xff;
+    this[offset + 1] = value >>> 8;
+  } else {
+    objectWriteUInt16(this, value, offset, true);
+  }
+  return offset + 2;
+};
+
+Buffer.prototype.writeInt16BE = function writeInt16BE(value, offset, noAssert) {
+  value = +value;
+  offset = offset | 0;
+  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000);
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = value >>> 8;
+    this[offset + 1] = value & 0xff;
+  } else {
+    objectWriteUInt16(this, value, offset, false);
+  }
+  return offset + 2;
+};
+
+Buffer.prototype.writeInt32LE = function writeInt32LE(value, offset, noAssert) {
+  value = +value;
+  offset = offset | 0;
+  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000);
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = value & 0xff;
+    this[offset + 1] = value >>> 8;
+    this[offset + 2] = value >>> 16;
+    this[offset + 3] = value >>> 24;
+  } else {
+    objectWriteUInt32(this, value, offset, true);
+  }
+  return offset + 4;
+};
+
+Buffer.prototype.writeInt32BE = function writeInt32BE(value, offset, noAssert) {
+  value = +value;
+  offset = offset | 0;
+  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000);
+  if (value < 0) value = 0xffffffff + value + 1;
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = value >>> 24;
+    this[offset + 1] = value >>> 16;
+    this[offset + 2] = value >>> 8;
+    this[offset + 3] = value & 0xff;
+  } else {
+    objectWriteUInt32(this, value, offset, false);
+  }
+  return offset + 4;
+};
+
+function checkIEEE754(buf, value, offset, ext, max, min) {
+  if (offset + ext > buf.length) throw new RangeError('Index out of range');
+  if (offset < 0) throw new RangeError('Index out of range');
+}
+
+function writeFloat(buf, value, offset, littleEndian, noAssert) {
+  if (!noAssert) {
+    checkIEEE754(buf, value, offset, 4, 3.4028234663852886e+38, -3.4028234663852886e+38);
+  }
+  ieee754.write(buf, value, offset, littleEndian, 23, 4);
+  return offset + 4;
+}
+
+Buffer.prototype.writeFloatLE = function writeFloatLE(value, offset, noAssert) {
+  return writeFloat(this, value, offset, true, noAssert);
+};
+
+Buffer.prototype.writeFloatBE = function writeFloatBE(value, offset, noAssert) {
+  return writeFloat(this, value, offset, false, noAssert);
+};
+
+function writeDouble(buf, value, offset, littleEndian, noAssert) {
+  if (!noAssert) {
+    checkIEEE754(buf, value, offset, 8, 1.7976931348623157E+308, -1.7976931348623157E+308);
+  }
+  ieee754.write(buf, value, offset, littleEndian, 52, 8);
+  return offset + 8;
+}
+
+Buffer.prototype.writeDoubleLE = function writeDoubleLE(value, offset, noAssert) {
+  return writeDouble(this, value, offset, true, noAssert);
+};
+
+Buffer.prototype.writeDoubleBE = function writeDoubleBE(value, offset, noAssert) {
+  return writeDouble(this, value, offset, false, noAssert);
+};
+
+// copy(targetBuffer, targetStart=0, sourceStart=0, sourceEnd=buffer.length)
+Buffer.prototype.copy = function copy(target, targetStart, start, end) {
+  if (!start) start = 0;
+  if (!end && end !== 0) end = this.length;
+  if (targetStart >= target.length) targetStart = target.length;
+  if (!targetStart) targetStart = 0;
+  if (end > 0 && end < start) end = start;
+
+  // Copy 0 bytes; we're done
+  if (end === start) return 0;
+  if (target.length === 0 || this.length === 0) return 0;
+
+  // Fatal error conditions
+  if (targetStart < 0) {
+    throw new RangeError('targetStart out of bounds');
+  }
+  if (start < 0 || start >= this.length) throw new RangeError('sourceStart out of bounds');
+  if (end < 0) throw new RangeError('sourceEnd out of bounds');
+
+  // Are we oob?
+  if (end > this.length) end = this.length;
+  if (target.length - targetStart < end - start) {
+    end = target.length - targetStart + start;
+  }
+
+  var len = end - start;
+  var i;
+
+  if (this === target && start < targetStart && targetStart < end) {
+    // descending copy from end
+    for (i = len - 1; i >= 0; --i) {
+      target[i + targetStart] = this[i + start];
+    }
+  } else if (len < 1000 || !Buffer.TYPED_ARRAY_SUPPORT) {
+    // ascending copy from start
+    for (i = 0; i < len; ++i) {
+      target[i + targetStart] = this[i + start];
+    }
+  } else {
+    Uint8Array.prototype.set.call(target, this.subarray(start, start + len), targetStart);
+  }
+
+  return len;
+};
+
+// Usage:
+//    buffer.fill(number[, offset[, end]])
+//    buffer.fill(buffer[, offset[, end]])
+//    buffer.fill(string[, offset[, end]][, encoding])
+Buffer.prototype.fill = function fill(val, start, end, encoding) {
+  // Handle string cases:
+  if (typeof val === 'string') {
+    if (typeof start === 'string') {
+      encoding = start;
+      start = 0;
+      end = this.length;
+    } else if (typeof end === 'string') {
+      encoding = end;
+      end = this.length;
+    }
+    if (val.length === 1) {
+      var code = val.charCodeAt(0);
+      if (code < 256) {
+        val = code;
+      }
+    }
+    if (encoding !== undefined && typeof encoding !== 'string') {
+      throw new TypeError('encoding must be a string');
+    }
+    if (typeof encoding === 'string' && !Buffer.isEncoding(encoding)) {
+      throw new TypeError('Unknown encoding: ' + encoding);
+    }
+  } else if (typeof val === 'number') {
+    val = val & 255;
+  }
+
+  // Invalid ranges are not set to a default, so can range check early.
+  if (start < 0 || this.length < start || this.length < end) {
+    throw new RangeError('Out of range index');
+  }
+
+  if (end <= start) {
+    return this;
+  }
+
+  start = start >>> 0;
+  end = end === undefined ? this.length : end >>> 0;
+
+  if (!val) val = 0;
+
+  var i;
+  if (typeof val === 'number') {
+    for (i = start; i < end; ++i) {
+      this[i] = val;
+    }
+  } else {
+    var bytes = Buffer.isBuffer(val) ? val : utf8ToBytes(new Buffer(val, encoding).toString());
+    var len = bytes.length;
+    for (i = 0; i < end - start; ++i) {
+      this[i + start] = bytes[i % len];
+    }
+  }
+
+  return this;
+};
+
+// HELPER FUNCTIONS
+// ================
+
+var INVALID_BASE64_RE = /[^+\/0-9A-Za-z-_]/g;
+
+function base64clean(str) {
+  // Node strips out invalid characters like \n and \t from the string, base64-js does not
+  str = stringtrim(str).replace(INVALID_BASE64_RE, '');
+  // Node converts strings with length < 2 to ''
+  if (str.length < 2) return '';
+  // Node allows for non-padded base64 strings (missing trailing ===), base64-js does not
+  while (str.length % 4 !== 0) {
+    str = str + '=';
+  }
+  return str;
+}
+
+function stringtrim(str) {
+  if (str.trim) return str.trim();
+  return str.replace(/^\s+|\s+$/g, '');
+}
+
+function toHex(n) {
+  if (n < 16) return '0' + n.toString(16);
+  return n.toString(16);
+}
+
+function utf8ToBytes(string, units) {
+  units = units || Infinity;
+  var codePoint;
+  var length = string.length;
+  var leadSurrogate = null;
+  var bytes = [];
+
+  for (var i = 0; i < length; ++i) {
+    codePoint = string.charCodeAt(i);
+
+    // is surrogate component
+    if (codePoint > 0xD7FF && codePoint < 0xE000) {
+      // last char was a lead
+      if (!leadSurrogate) {
+        // no lead yet
+        if (codePoint > 0xDBFF) {
+          // unexpected trail
+          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD);
+          continue;
+        } else if (i + 1 === length) {
+          // unpaired lead
+          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD);
+          continue;
+        }
+
+        // valid lead
+        leadSurrogate = codePoint;
+
+        continue;
+      }
+
+      // 2 leads in a row
+      if (codePoint < 0xDC00) {
+        if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD);
+        leadSurrogate = codePoint;
+        continue;
+      }
+
+      // valid surrogate pair
+      codePoint = (leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00) + 0x10000;
+    } else if (leadSurrogate) {
+      // valid bmp char, but last char was a lead
+      if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD);
+    }
+
+    leadSurrogate = null;
+
+    // encode utf8
+    if (codePoint < 0x80) {
+      if ((units -= 1) < 0) break;
+      bytes.push(codePoint);
+    } else if (codePoint < 0x800) {
+      if ((units -= 2) < 0) break;
+      bytes.push(codePoint >> 0x6 | 0xC0, codePoint & 0x3F | 0x80);
+    } else if (codePoint < 0x10000) {
+      if ((units -= 3) < 0) break;
+      bytes.push(codePoint >> 0xC | 0xE0, codePoint >> 0x6 & 0x3F | 0x80, codePoint & 0x3F | 0x80);
+    } else if (codePoint < 0x110000) {
+      if ((units -= 4) < 0) break;
+      bytes.push(codePoint >> 0x12 | 0xF0, codePoint >> 0xC & 0x3F | 0x80, codePoint >> 0x6 & 0x3F | 0x80, codePoint & 0x3F | 0x80);
+    } else {
+      throw new Error('Invalid code point');
+    }
+  }
+
+  return bytes;
+}
+
+function asciiToBytes(str) {
+  var byteArray = [];
+  for (var i = 0; i < str.length; ++i) {
+    // Node's code seems to be doing this and not & 0x7F..
+    byteArray.push(str.charCodeAt(i) & 0xFF);
+  }
+  return byteArray;
+}
+
+function utf16leToBytes(str, units) {
+  var c, hi, lo;
+  var byteArray = [];
+  for (var i = 0; i < str.length; ++i) {
+    if ((units -= 2) < 0) break;
+
+    c = str.charCodeAt(i);
+    hi = c >> 8;
+    lo = c % 256;
+    byteArray.push(lo);
+    byteArray.push(hi);
+  }
+
+  return byteArray;
+}
+
+function base64ToBytes(str) {
+  return base64.toByteArray(base64clean(str));
+}
+
+function blitBuffer(src, dst, offset, length) {
+  for (var i = 0; i < length; ++i) {
+    if (i + offset >= dst.length || i >= src.length) break;
+    dst[i + offset] = src[i];
+  }
+  return i;
+}
+
+function isnan(val) {
+  return val !== val; // eslint-disable-line no-self-compare
+}
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
+
+/***/ }),
+/* 28 */
 /***/ (function(module, exports) {
 
 /*
@@ -27921,7 +31261,7 @@ Jsonrpc.prototype.toBatchPayload = function (messages) {
 module.exports = Jsonrpc;
 
 /***/ }),
-/* 26 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -28075,7 +31415,7 @@ SolidityParam.encodeList = function (params) {
 module.exports = SolidityParam;
 
 /***/ }),
-/* 27 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -28101,11 +31441,11 @@ module.exports = SolidityParam;
  */
 
 var utils = __webpack_require__(1);
-var coder = __webpack_require__(22);
+var coder = __webpack_require__(23);
 var formatters = __webpack_require__(5);
-var sha3 = __webpack_require__(18);
-var Filter = __webpack_require__(20);
-var watches = __webpack_require__(21);
+var sha3 = __webpack_require__(19);
+var Filter = __webpack_require__(21);
+var watches = __webpack_require__(22);
 
 /**
  * This prototype should be used to create event filters
@@ -28288,7 +31628,7 @@ SolidityEvent.prototype.attachToContract = function (contract) {
 module.exports = SolidityEvent;
 
 /***/ }),
-/* 28 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory) {
@@ -28484,13 +31824,13 @@ module.exports = SolidityEvent;
 });
 
 /***/ }),
-/* 29 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
 	if (true) {
 		// CommonJS
-		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(19));
+		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(20));
 	} else if (typeof define === "function" && define.amd) {
 		// AMD
 		define(["./core", "./x64-core"], factory);
@@ -28762,13 +32102,13 @@ module.exports = SolidityEvent;
 });
 
 /***/ }),
-/* 30 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
 	if (true) {
 		// CommonJS
-		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(19));
+		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(20));
 	} else if (typeof define === "function" && define.amd) {
 		// AMD
 		define(["./core", "./x64-core"], factory);
@@ -29076,41 +32416,3901 @@ module.exports = SolidityEvent;
 });
 
 /***/ }),
-/* 31 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(32);
-module.exports = __webpack_require__(105);
+var BN = __webpack_require__(119);
+var stripHexPrefix = __webpack_require__(120);
+
+/**
+ * Returns a BN object, converts a number value to a BN
+ * @param {String|Number|Object} `arg` input a string number, hex string number, number, BigNumber or BN object
+ * @return {Object} `output` BN object of the number
+ * @throws if the argument is not an array, object that isn't a bignumber, not a string number or number
+ */
+module.exports = function numberToBN(arg) {
+  if (typeof arg === 'string' || typeof arg === 'number') {
+    var multiplier = new BN(1); // eslint-disable-line
+    var formattedString = String(arg).toLowerCase().trim();
+    var isHexPrefixed = formattedString.substr(0, 2) === '0x' || formattedString.substr(0, 3) === '-0x';
+    var stringArg = stripHexPrefix(formattedString); // eslint-disable-line
+    if (stringArg.substr(0, 1) === '-') {
+      stringArg = stripHexPrefix(stringArg.slice(1));
+      multiplier = new BN(-1, 10);
+    }
+    stringArg = stringArg === '' ? '0' : stringArg;
+
+    if (!stringArg.match(/^-?[0-9]+$/) && stringArg.match(/^[0-9A-Fa-f]+$/) || stringArg.match(/^[a-fA-F]+$/) || isHexPrefixed === true && stringArg.match(/^[0-9A-Fa-f]+$/)) {
+      return new BN(stringArg, 16).mul(multiplier);
+    }
+
+    if ((stringArg.match(/^-?[0-9]+$/) || stringArg === '') && isHexPrefixed === false) {
+      return new BN(stringArg, 10).mul(multiplier);
+    }
+  } else if (typeof arg === 'object' && arg.toString && !arg.pop && !arg.push) {
+    if (arg.toString(10).match(/^-?[0-9]+$/) && (arg.mul || arg.dividedToIntegerBy)) {
+      return new BN(arg.toString(10), 10);
+    }
+  }
+
+  throw new Error('[number-to-bn] while converting number ' + JSON.stringify(arg) + ' to BN.js instance, error: invalid number value. Value must be an integer, hex string, BN or BigNumber instance. Note, decimals are not supported.');
+};
+
+/***/ }),
+/* 35 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+ This file is part of web3.js.
+
+ web3.js is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ web3.js is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public License
+ along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/**
+ * @file utils.js
+ * @author Fabian Vogelsteller <fabian@ethereum.org>
+ * @date 2017
+ */
+
+var _ = __webpack_require__(26);
+var BN = __webpack_require__(36);
+var numberToBN = __webpack_require__(34);
+var utf8 = __webpack_require__(122);
+var Hash = __webpack_require__(123);
+
+/**
+ * Returns true if object is BN, otherwise false
+ *
+ * @method isBN
+ * @param {Object} object
+ * @return {Boolean}
+ */
+var isBN = function (object) {
+    return object instanceof BN || object && object.constructor && object.constructor.name === 'BN';
+};
+
+/**
+ * Returns true if object is BigNumber, otherwise false
+ *
+ * @method isBigNumber
+ * @param {Object} object
+ * @return {Boolean}
+ */
+var isBigNumber = function (object) {
+    return object && object.constructor && object.constructor.name === 'BigNumber';
+};
+
+/**
+ * Takes an input and transforms it into an BN
+ *
+ * @method toBN
+ * @param {Number|String|BN} number, string, HEX string or BN
+ * @return {BN} BN
+ */
+var toBN = function (number) {
+    try {
+        return numberToBN.apply(null, arguments);
+    } catch (e) {
+        throw new Error(e + ' Given value: "' + number + '"');
+    }
+};
+
+/**
+ * Takes and input transforms it into BN and if it is negative value, into two's complement
+ *
+ * @method toTwosComplement
+ * @param {Number|String|BN} number
+ * @return {String}
+ */
+var toTwosComplement = function (number) {
+    return '0x' + toBN(number).toTwos(256).toString(16, 64);
+};
+
+/**
+ * Checks if the given string is an address
+ *
+ * @method isAddress
+ * @param {String} address the given HEX address
+ * @return {Boolean}
+ */
+var isAddress = function (address) {
+    // check if it has the basic requirements of an address
+    if (!/^(0x)?[0-9a-f]{40}$/i.test(address)) {
+        return false;
+        // If it's ALL lowercase or ALL upppercase
+    } else if (/^(0x|0X)?[0-9a-f]{40}$/.test(address) || /^(0x|0X)?[0-9A-F]{40}$/.test(address)) {
+        return true;
+        // Otherwise check each case
+    } else {
+        return checkAddressChecksum(address);
+    }
+};
+
+/**
+ * Checks if the given string is a checksummed address
+ *
+ * @method checkAddressChecksum
+ * @param {String} address the given HEX address
+ * @return {Boolean}
+ */
+var checkAddressChecksum = function (address) {
+    // Check each case
+    address = address.replace(/^0x/i, '');
+    var addressHash = sha3(address.toLowerCase()).replace(/^0x/i, '');
+
+    for (var i = 0; i < 40; i++) {
+        // the nth letter should be uppercase if the nth digit of casemap is 1
+        if (parseInt(addressHash[i], 16) > 7 && address[i].toUpperCase() !== address[i] || parseInt(addressHash[i], 16) <= 7 && address[i].toLowerCase() !== address[i]) {
+            return false;
+        }
+    }
+    return true;
+};
+
+/**
+ * Should be called to pad string to expected length
+ *
+ * @method leftPad
+ * @param {String} string to be padded
+ * @param {Number} chars that result string should have
+ * @param {String} sign, by default 0
+ * @returns {String} right aligned string
+ */
+var leftPad = function (string, chars, sign) {
+    var hasPrefix = /^0x/i.test(string) || typeof string === 'number';
+    string = string.toString(16).replace(/^0x/i, '');
+
+    var padding = chars - string.length + 1 >= 0 ? chars - string.length + 1 : 0;
+
+    return (hasPrefix ? '0x' : '') + new Array(padding).join(sign ? sign : "0") + string;
+};
+
+/**
+ * Should be called to pad string to expected length
+ *
+ * @method rightPad
+ * @param {String} string to be padded
+ * @param {Number} chars that result string should have
+ * @param {String} sign, by default 0
+ * @returns {String} right aligned string
+ */
+var rightPad = function (string, chars, sign) {
+    var hasPrefix = /^0x/i.test(string) || typeof string === 'number';
+    string = string.toString(16).replace(/^0x/i, '');
+
+    var padding = chars - string.length + 1 >= 0 ? chars - string.length + 1 : 0;
+
+    return (hasPrefix ? '0x' : '') + string + new Array(padding).join(sign ? sign : "0");
+};
+
+/**
+ * Should be called to get hex representation (prefixed by 0x) of utf8 string
+ *
+ * @method utf8ToHex
+ * @param {String} str
+ * @returns {String} hex representation of input string
+ */
+var utf8ToHex = function (str) {
+    str = utf8.encode(str);
+    var hex = "";
+
+    // remove \u0000 padding from either side
+    str = str.replace(/^(?:\u0000)*/, '');
+    str = str.split("").reverse().join("");
+    str = str.replace(/^(?:\u0000)*/, '');
+    str = str.split("").reverse().join("");
+
+    for (var i = 0; i < str.length; i++) {
+        var code = str.charCodeAt(i);
+        // if (code !== 0) {
+        var n = code.toString(16);
+        hex += n.length < 2 ? '0' + n : n;
+        // }
+    }
+
+    return "0x" + hex;
+};
+
+/**
+ * Should be called to get utf8 from it's hex representation
+ *
+ * @method hexToUtf8
+ * @param {String} hex
+ * @returns {String} ascii string representation of hex value
+ */
+var hexToUtf8 = function (hex) {
+    if (!isHexStrict(hex)) throw new Error('The parameter "' + hex + '" must be a valid HEX string.');
+
+    var str = "";
+    var code = 0;
+    hex = hex.replace(/^0x/i, '');
+
+    // remove 00 padding from either side
+    hex = hex.replace(/^(?:00)*/, '');
+    hex = hex.split("").reverse().join("");
+    hex = hex.replace(/^(?:00)*/, '');
+    hex = hex.split("").reverse().join("");
+
+    var l = hex.length;
+
+    for (var i = 0; i < l; i += 2) {
+        code = parseInt(hex.substr(i, 2), 16);
+        // if (code !== 0) {
+        str += String.fromCharCode(code);
+        // }
+    }
+
+    return utf8.decode(str);
+};
+
+/**
+ * Converts value to it's number representation
+ *
+ * @method hexToNumber
+ * @param {String|Number|BN} value
+ * @return {String}
+ */
+var hexToNumber = function (value) {
+    if (!value) {
+        return value;
+    }
+
+    return toBN(value).toNumber();
+};
+
+/**
+ * Converts value to it's decimal representation in string
+ *
+ * @method hexToNumberString
+ * @param {String|Number|BN} value
+ * @return {String}
+ */
+var hexToNumberString = function (value) {
+    if (!value) return value;
+
+    return toBN(value).toString(10);
+};
+
+/**
+ * Converts value to it's hex representation
+ *
+ * @method numberToHex
+ * @param {String|Number|BN} value
+ * @return {String}
+ */
+var numberToHex = function (value) {
+    if (_.isNull(value) || _.isUndefined(value)) {
+        return value;
+    }
+
+    if (!isFinite(value) && !isHexStrict(value)) {
+        throw new Error('Given input "' + value + '" is not a number.');
+    }
+
+    var number = toBN(value);
+    var result = number.toString(16);
+
+    return number.lt(new BN(0)) ? '-0x' + result.substr(1) : '0x' + result;
+};
+
+/**
+ * Convert a byte array to a hex string
+ *
+ * Note: Implementation from crypto-js
+ *
+ * @method bytesToHex
+ * @param {Array} bytes
+ * @return {String} the hex string
+ */
+var bytesToHex = function (bytes) {
+    for (var hex = [], i = 0; i < bytes.length; i++) {
+        /* jshint ignore:start */
+        hex.push((bytes[i] >>> 4).toString(16));
+        hex.push((bytes[i] & 0xF).toString(16));
+        /* jshint ignore:end */
+    }
+    return '0x' + hex.join("");
+};
+
+/**
+ * Convert a hex string to a byte array
+ *
+ * Note: Implementation from crypto-js
+ *
+ * @method hexToBytes
+ * @param {string} hex
+ * @return {Array} the byte array
+ */
+var hexToBytes = function (hex) {
+    hex = hex.toString(16);
+
+    if (!isHexStrict(hex)) {
+        throw new Error('Given value "' + hex + '" is not a valid hex string.');
+    }
+
+    hex = hex.replace(/^0x/i, '');
+
+    for (var bytes = [], c = 0; c < hex.length; c += 2) bytes.push(parseInt(hex.substr(c, 2), 16));
+    return bytes;
+};
+
+/**
+ * Auto converts any given value into it's hex representation.
+ *
+ * And even stringifys objects before.
+ *
+ * @method toHex
+ * @param {String|Number|BN|Object} value
+ * @param {Boolean} returnType
+ * @return {String}
+ */
+var toHex = function (value, returnType) {
+    /*jshint maxcomplexity: false */
+
+    if (isAddress(value)) {
+        return returnType ? 'address' : '0x' + value.toLowerCase().replace(/^0x/i, '');
+    }
+
+    if (_.isBoolean(value)) {
+        return returnType ? 'bool' : value ? '0x01' : '0x00';
+    }
+
+    if (_.isObject(value) && !isBigNumber(value) && !isBN(value)) {
+        return returnType ? 'string' : utf8ToHex(JSON.stringify(value));
+    }
+
+    // if its a negative number, pass it through numberToHex
+    if (_.isString(value)) {
+        if (value.indexOf('-0x') === 0 || value.indexOf('-0X') === 0) {
+            return returnType ? 'int256' : numberToHex(value);
+        } else if (value.indexOf('0x') === 0 || value.indexOf('0X') === 0) {
+            return returnType ? 'bytes' : value;
+        } else if (!isFinite(value)) {
+            return returnType ? 'string' : utf8ToHex(value);
+        }
+    }
+
+    return returnType ? value < 0 ? 'int256' : 'uint256' : numberToHex(value);
+};
+
+/**
+ * Check if string is HEX, requires a 0x in front
+ *
+ * @method isHexStrict
+ * @param {String} hex to be checked
+ * @returns {Boolean}
+ */
+var isHexStrict = function (hex) {
+    return (_.isString(hex) || _.isNumber(hex)) && /^(-)?0x[0-9a-f]*$/i.test(hex);
+};
+
+/**
+ * Check if string is HEX
+ *
+ * @method isHex
+ * @param {String} hex to be checked
+ * @returns {Boolean}
+ */
+var isHex = function (hex) {
+    return (_.isString(hex) || _.isNumber(hex)) && /^(-0x|0x)?[0-9a-f]*$/i.test(hex);
+};
+
+/**
+ * Returns true if given string is a valid Ethereum block header bloom.
+ *
+ * TODO UNDOCUMENTED
+ *
+ * @method isBloom
+ * @param {String} hex encoded bloom filter
+ * @return {Boolean}
+ */
+var isBloom = function (bloom) {
+    if (!/^(0x)?[0-9a-f]{512}$/i.test(bloom)) {
+        return false;
+    } else if (/^(0x)?[0-9a-f]{512}$/.test(bloom) || /^(0x)?[0-9A-F]{512}$/.test(bloom)) {
+        return true;
+    }
+    return false;
+};
+
+/**
+ * Returns true if given string is a valid log topic.
+ *
+ * TODO UNDOCUMENTED
+ *
+ * @method isTopic
+ * @param {String} hex encoded topic
+ * @return {Boolean}
+ */
+var isTopic = function (topic) {
+    if (!/^(0x)?[0-9a-f]{64}$/i.test(topic)) {
+        return false;
+    } else if (/^(0x)?[0-9a-f]{64}$/.test(topic) || /^(0x)?[0-9A-F]{64}$/.test(topic)) {
+        return true;
+    }
+    return false;
+};
+
+/**
+ * Hashes values to a sha3 hash using keccak 256
+ *
+ * To hash a HEX string the hex must have 0x in front.
+ *
+ * @method sha3
+ * @return {String} the sha3 string
+ */
+var SHA3_NULL_S = '0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470';
+
+var sha3 = function (value) {
+    if (isHexStrict(value) && /^0x/i.test(value.toString())) {
+        value = hexToBytes(value);
+    }
+
+    var returnValue = Hash.keccak256(value); // jshint ignore:line
+
+    if (returnValue === SHA3_NULL_S) {
+        return null;
+    } else {
+        return returnValue;
+    }
+};
+// expose the under the hood keccak256
+sha3._Hash = Hash;
+
+module.exports = {
+    BN: BN,
+    isBN: isBN,
+    isBigNumber: isBigNumber,
+    toBN: toBN,
+    isAddress: isAddress,
+    isBloom: isBloom, // TODO UNDOCUMENTED
+    isTopic: isTopic, // TODO UNDOCUMENTED
+    checkAddressChecksum: checkAddressChecksum,
+    utf8ToHex: utf8ToHex,
+    hexToUtf8: hexToUtf8,
+    hexToNumber: hexToNumber,
+    hexToNumberString: hexToNumberString,
+    numberToHex: numberToHex,
+    toHex: toHex,
+    hexToBytes: hexToBytes,
+    bytesToHex: bytesToHex,
+    isHex: isHex,
+    isHexStrict: isHexStrict,
+    leftPad: leftPad,
+    rightPad: rightPad,
+    toTwosComplement: toTwosComplement,
+    sha3: sha3
+};
+
+/***/ }),
+/* 36 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(module) {(function (module, exports) {
+  'use strict';
+
+  // Utils
+
+  function assert(val, msg) {
+    if (!val) throw new Error(msg || 'Assertion failed');
+  }
+
+  // Could use `inherits` module, but don't want to move from single file
+  // architecture yet.
+  function inherits(ctor, superCtor) {
+    ctor.super_ = superCtor;
+    var TempCtor = function () {};
+    TempCtor.prototype = superCtor.prototype;
+    ctor.prototype = new TempCtor();
+    ctor.prototype.constructor = ctor;
+  }
+
+  // BN
+
+  function BN(number, base, endian) {
+    if (BN.isBN(number)) {
+      return number;
+    }
+
+    this.negative = 0;
+    this.words = null;
+    this.length = 0;
+
+    // Reduction context
+    this.red = null;
+
+    if (number !== null) {
+      if (base === 'le' || base === 'be') {
+        endian = base;
+        base = 10;
+      }
+
+      this._init(number || 0, base || 10, endian || 'be');
+    }
+  }
+  if (typeof module === 'object') {
+    module.exports = BN;
+  } else {
+    exports.BN = BN;
+  }
+
+  BN.BN = BN;
+  BN.wordSize = 26;
+
+  var Buffer;
+  try {
+    Buffer = __webpack_require__(27).Buffer;
+  } catch (e) {}
+
+  BN.isBN = function isBN(num) {
+    if (num instanceof BN) {
+      return true;
+    }
+
+    return num !== null && typeof num === 'object' && num.constructor.wordSize === BN.wordSize && Array.isArray(num.words);
+  };
+
+  BN.max = function max(left, right) {
+    if (left.cmp(right) > 0) return left;
+    return right;
+  };
+
+  BN.min = function min(left, right) {
+    if (left.cmp(right) < 0) return left;
+    return right;
+  };
+
+  BN.prototype._init = function init(number, base, endian) {
+    if (typeof number === 'number') {
+      return this._initNumber(number, base, endian);
+    }
+
+    if (typeof number === 'object') {
+      return this._initArray(number, base, endian);
+    }
+
+    if (base === 'hex') {
+      base = 16;
+    }
+    assert(base === (base | 0) && base >= 2 && base <= 36);
+
+    number = number.toString().replace(/\s+/g, '');
+    var start = 0;
+    if (number[0] === '-') {
+      start++;
+    }
+
+    if (base === 16) {
+      this._parseHex(number, start);
+    } else {
+      this._parseBase(number, base, start);
+    }
+
+    if (number[0] === '-') {
+      this.negative = 1;
+    }
+
+    this.strip();
+
+    if (endian !== 'le') return;
+
+    this._initArray(this.toArray(), base, endian);
+  };
+
+  BN.prototype._initNumber = function _initNumber(number, base, endian) {
+    if (number < 0) {
+      this.negative = 1;
+      number = -number;
+    }
+    if (number < 0x4000000) {
+      this.words = [number & 0x3ffffff];
+      this.length = 1;
+    } else if (number < 0x10000000000000) {
+      this.words = [number & 0x3ffffff, number / 0x4000000 & 0x3ffffff];
+      this.length = 2;
+    } else {
+      assert(number < 0x20000000000000); // 2 ^ 53 (unsafe)
+      this.words = [number & 0x3ffffff, number / 0x4000000 & 0x3ffffff, 1];
+      this.length = 3;
+    }
+
+    if (endian !== 'le') return;
+
+    // Reverse the bytes
+    this._initArray(this.toArray(), base, endian);
+  };
+
+  BN.prototype._initArray = function _initArray(number, base, endian) {
+    // Perhaps a Uint8Array
+    assert(typeof number.length === 'number');
+    if (number.length <= 0) {
+      this.words = [0];
+      this.length = 1;
+      return this;
+    }
+
+    this.length = Math.ceil(number.length / 3);
+    this.words = new Array(this.length);
+    for (var i = 0; i < this.length; i++) {
+      this.words[i] = 0;
+    }
+
+    var j, w;
+    var off = 0;
+    if (endian === 'be') {
+      for (i = number.length - 1, j = 0; i >= 0; i -= 3) {
+        w = number[i] | number[i - 1] << 8 | number[i - 2] << 16;
+        this.words[j] |= w << off & 0x3ffffff;
+        this.words[j + 1] = w >>> 26 - off & 0x3ffffff;
+        off += 24;
+        if (off >= 26) {
+          off -= 26;
+          j++;
+        }
+      }
+    } else if (endian === 'le') {
+      for (i = 0, j = 0; i < number.length; i += 3) {
+        w = number[i] | number[i + 1] << 8 | number[i + 2] << 16;
+        this.words[j] |= w << off & 0x3ffffff;
+        this.words[j + 1] = w >>> 26 - off & 0x3ffffff;
+        off += 24;
+        if (off >= 26) {
+          off -= 26;
+          j++;
+        }
+      }
+    }
+    return this.strip();
+  };
+
+  function parseHex(str, start, end) {
+    var r = 0;
+    var len = Math.min(str.length, end);
+    for (var i = start; i < len; i++) {
+      var c = str.charCodeAt(i) - 48;
+
+      r <<= 4;
+
+      // 'a' - 'f'
+      if (c >= 49 && c <= 54) {
+        r |= c - 49 + 0xa;
+
+        // 'A' - 'F'
+      } else if (c >= 17 && c <= 22) {
+        r |= c - 17 + 0xa;
+
+        // '0' - '9'
+      } else {
+        r |= c & 0xf;
+      }
+    }
+    return r;
+  }
+
+  BN.prototype._parseHex = function _parseHex(number, start) {
+    // Create possibly bigger array to ensure that it fits the number
+    this.length = Math.ceil((number.length - start) / 6);
+    this.words = new Array(this.length);
+    for (var i = 0; i < this.length; i++) {
+      this.words[i] = 0;
+    }
+
+    var j, w;
+    // Scan 24-bit chunks and add them to the number
+    var off = 0;
+    for (i = number.length - 6, j = 0; i >= start; i -= 6) {
+      w = parseHex(number, i, i + 6);
+      this.words[j] |= w << off & 0x3ffffff;
+      // NOTE: `0x3fffff` is intentional here, 26bits max shift + 24bit hex limb
+      this.words[j + 1] |= w >>> 26 - off & 0x3fffff;
+      off += 24;
+      if (off >= 26) {
+        off -= 26;
+        j++;
+      }
+    }
+    if (i + 6 !== start) {
+      w = parseHex(number, start, i + 6);
+      this.words[j] |= w << off & 0x3ffffff;
+      this.words[j + 1] |= w >>> 26 - off & 0x3fffff;
+    }
+    this.strip();
+  };
+
+  function parseBase(str, start, end, mul) {
+    var r = 0;
+    var len = Math.min(str.length, end);
+    for (var i = start; i < len; i++) {
+      var c = str.charCodeAt(i) - 48;
+
+      r *= mul;
+
+      // 'a'
+      if (c >= 49) {
+        r += c - 49 + 0xa;
+
+        // 'A'
+      } else if (c >= 17) {
+        r += c - 17 + 0xa;
+
+        // '0' - '9'
+      } else {
+        r += c;
+      }
+    }
+    return r;
+  }
+
+  BN.prototype._parseBase = function _parseBase(number, base, start) {
+    // Initialize as zero
+    this.words = [0];
+    this.length = 1;
+
+    // Find length of limb in base
+    for (var limbLen = 0, limbPow = 1; limbPow <= 0x3ffffff; limbPow *= base) {
+      limbLen++;
+    }
+    limbLen--;
+    limbPow = limbPow / base | 0;
+
+    var total = number.length - start;
+    var mod = total % limbLen;
+    var end = Math.min(total, total - mod) + start;
+
+    var word = 0;
+    for (var i = start; i < end; i += limbLen) {
+      word = parseBase(number, i, i + limbLen, base);
+
+      this.imuln(limbPow);
+      if (this.words[0] + word < 0x4000000) {
+        this.words[0] += word;
+      } else {
+        this._iaddn(word);
+      }
+    }
+
+    if (mod !== 0) {
+      var pow = 1;
+      word = parseBase(number, i, number.length, base);
+
+      for (i = 0; i < mod; i++) {
+        pow *= base;
+      }
+
+      this.imuln(pow);
+      if (this.words[0] + word < 0x4000000) {
+        this.words[0] += word;
+      } else {
+        this._iaddn(word);
+      }
+    }
+  };
+
+  BN.prototype.copy = function copy(dest) {
+    dest.words = new Array(this.length);
+    for (var i = 0; i < this.length; i++) {
+      dest.words[i] = this.words[i];
+    }
+    dest.length = this.length;
+    dest.negative = this.negative;
+    dest.red = this.red;
+  };
+
+  BN.prototype.clone = function clone() {
+    var r = new BN(null);
+    this.copy(r);
+    return r;
+  };
+
+  BN.prototype._expand = function _expand(size) {
+    while (this.length < size) {
+      this.words[this.length++] = 0;
+    }
+    return this;
+  };
+
+  // Remove leading `0` from `this`
+  BN.prototype.strip = function strip() {
+    while (this.length > 1 && this.words[this.length - 1] === 0) {
+      this.length--;
+    }
+    return this._normSign();
+  };
+
+  BN.prototype._normSign = function _normSign() {
+    // -0 = 0
+    if (this.length === 1 && this.words[0] === 0) {
+      this.negative = 0;
+    }
+    return this;
+  };
+
+  BN.prototype.inspect = function inspect() {
+    return (this.red ? '<BN-R: ' : '<BN: ') + this.toString(16) + '>';
+  };
+
+  /*
+   var zeros = [];
+  var groupSizes = [];
+  var groupBases = [];
+   var s = '';
+  var i = -1;
+  while (++i < BN.wordSize) {
+    zeros[i] = s;
+    s += '0';
+  }
+  groupSizes[0] = 0;
+  groupSizes[1] = 0;
+  groupBases[0] = 0;
+  groupBases[1] = 0;
+  var base = 2 - 1;
+  while (++base < 36 + 1) {
+    var groupSize = 0;
+    var groupBase = 1;
+    while (groupBase < (1 << BN.wordSize) / base) {
+      groupBase *= base;
+      groupSize += 1;
+    }
+    groupSizes[base] = groupSize;
+    groupBases[base] = groupBase;
+  }
+   */
+
+  var zeros = ['', '0', '00', '000', '0000', '00000', '000000', '0000000', '00000000', '000000000', '0000000000', '00000000000', '000000000000', '0000000000000', '00000000000000', '000000000000000', '0000000000000000', '00000000000000000', '000000000000000000', '0000000000000000000', '00000000000000000000', '000000000000000000000', '0000000000000000000000', '00000000000000000000000', '000000000000000000000000', '0000000000000000000000000'];
+
+  var groupSizes = [0, 0, 25, 16, 12, 11, 10, 9, 8, 8, 7, 7, 7, 7, 6, 6, 6, 6, 6, 6, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
+
+  var groupBases = [0, 0, 33554432, 43046721, 16777216, 48828125, 60466176, 40353607, 16777216, 43046721, 10000000, 19487171, 35831808, 62748517, 7529536, 11390625, 16777216, 24137569, 34012224, 47045881, 64000000, 4084101, 5153632, 6436343, 7962624, 9765625, 11881376, 14348907, 17210368, 20511149, 24300000, 28629151, 33554432, 39135393, 45435424, 52521875, 60466176];
+
+  BN.prototype.toString = function toString(base, padding) {
+    base = base || 10;
+    padding = padding | 0 || 1;
+
+    var out;
+    if (base === 16 || base === 'hex') {
+      out = '';
+      var off = 0;
+      var carry = 0;
+      for (var i = 0; i < this.length; i++) {
+        var w = this.words[i];
+        var word = ((w << off | carry) & 0xffffff).toString(16);
+        carry = w >>> 24 - off & 0xffffff;
+        if (carry !== 0 || i !== this.length - 1) {
+          out = zeros[6 - word.length] + word + out;
+        } else {
+          out = word + out;
+        }
+        off += 2;
+        if (off >= 26) {
+          off -= 26;
+          i--;
+        }
+      }
+      if (carry !== 0) {
+        out = carry.toString(16) + out;
+      }
+      while (out.length % padding !== 0) {
+        out = '0' + out;
+      }
+      if (this.negative !== 0) {
+        out = '-' + out;
+      }
+      return out;
+    }
+
+    if (base === (base | 0) && base >= 2 && base <= 36) {
+      // var groupSize = Math.floor(BN.wordSize * Math.LN2 / Math.log(base));
+      var groupSize = groupSizes[base];
+      // var groupBase = Math.pow(base, groupSize);
+      var groupBase = groupBases[base];
+      out = '';
+      var c = this.clone();
+      c.negative = 0;
+      while (!c.isZero()) {
+        var r = c.modn(groupBase).toString(base);
+        c = c.idivn(groupBase);
+
+        if (!c.isZero()) {
+          out = zeros[groupSize - r.length] + r + out;
+        } else {
+          out = r + out;
+        }
+      }
+      if (this.isZero()) {
+        out = '0' + out;
+      }
+      while (out.length % padding !== 0) {
+        out = '0' + out;
+      }
+      if (this.negative !== 0) {
+        out = '-' + out;
+      }
+      return out;
+    }
+
+    assert(false, 'Base should be between 2 and 36');
+  };
+
+  BN.prototype.toNumber = function toNumber() {
+    var ret = this.words[0];
+    if (this.length === 2) {
+      ret += this.words[1] * 0x4000000;
+    } else if (this.length === 3 && this.words[2] === 0x01) {
+      // NOTE: at this stage it is known that the top bit is set
+      ret += 0x10000000000000 + this.words[1] * 0x4000000;
+    } else if (this.length > 2) {
+      assert(false, 'Number can only safely store up to 53 bits');
+    }
+    return this.negative !== 0 ? -ret : ret;
+  };
+
+  BN.prototype.toJSON = function toJSON() {
+    return this.toString(16);
+  };
+
+  BN.prototype.toBuffer = function toBuffer(endian, length) {
+    assert(typeof Buffer !== 'undefined');
+    return this.toArrayLike(Buffer, endian, length);
+  };
+
+  BN.prototype.toArray = function toArray(endian, length) {
+    return this.toArrayLike(Array, endian, length);
+  };
+
+  BN.prototype.toArrayLike = function toArrayLike(ArrayType, endian, length) {
+    var byteLength = this.byteLength();
+    var reqLength = length || Math.max(1, byteLength);
+    assert(byteLength <= reqLength, 'byte array longer than desired length');
+    assert(reqLength > 0, 'Requested array length <= 0');
+
+    this.strip();
+    var littleEndian = endian === 'le';
+    var res = new ArrayType(reqLength);
+
+    var b, i;
+    var q = this.clone();
+    if (!littleEndian) {
+      // Assume big-endian
+      for (i = 0; i < reqLength - byteLength; i++) {
+        res[i] = 0;
+      }
+
+      for (i = 0; !q.isZero(); i++) {
+        b = q.andln(0xff);
+        q.iushrn(8);
+
+        res[reqLength - i - 1] = b;
+      }
+    } else {
+      for (i = 0; !q.isZero(); i++) {
+        b = q.andln(0xff);
+        q.iushrn(8);
+
+        res[i] = b;
+      }
+
+      for (; i < reqLength; i++) {
+        res[i] = 0;
+      }
+    }
+
+    return res;
+  };
+
+  if (Math.clz32) {
+    BN.prototype._countBits = function _countBits(w) {
+      return 32 - Math.clz32(w);
+    };
+  } else {
+    BN.prototype._countBits = function _countBits(w) {
+      var t = w;
+      var r = 0;
+      if (t >= 0x1000) {
+        r += 13;
+        t >>>= 13;
+      }
+      if (t >= 0x40) {
+        r += 7;
+        t >>>= 7;
+      }
+      if (t >= 0x8) {
+        r += 4;
+        t >>>= 4;
+      }
+      if (t >= 0x02) {
+        r += 2;
+        t >>>= 2;
+      }
+      return r + t;
+    };
+  }
+
+  BN.prototype._zeroBits = function _zeroBits(w) {
+    // Short-cut
+    if (w === 0) return 26;
+
+    var t = w;
+    var r = 0;
+    if ((t & 0x1fff) === 0) {
+      r += 13;
+      t >>>= 13;
+    }
+    if ((t & 0x7f) === 0) {
+      r += 7;
+      t >>>= 7;
+    }
+    if ((t & 0xf) === 0) {
+      r += 4;
+      t >>>= 4;
+    }
+    if ((t & 0x3) === 0) {
+      r += 2;
+      t >>>= 2;
+    }
+    if ((t & 0x1) === 0) {
+      r++;
+    }
+    return r;
+  };
+
+  // Return number of used bits in a BN
+  BN.prototype.bitLength = function bitLength() {
+    var w = this.words[this.length - 1];
+    var hi = this._countBits(w);
+    return (this.length - 1) * 26 + hi;
+  };
+
+  function toBitArray(num) {
+    var w = new Array(num.bitLength());
+
+    for (var bit = 0; bit < w.length; bit++) {
+      var off = bit / 26 | 0;
+      var wbit = bit % 26;
+
+      w[bit] = (num.words[off] & 1 << wbit) >>> wbit;
+    }
+
+    return w;
+  }
+
+  // Number of trailing zero bits
+  BN.prototype.zeroBits = function zeroBits() {
+    if (this.isZero()) return 0;
+
+    var r = 0;
+    for (var i = 0; i < this.length; i++) {
+      var b = this._zeroBits(this.words[i]);
+      r += b;
+      if (b !== 26) break;
+    }
+    return r;
+  };
+
+  BN.prototype.byteLength = function byteLength() {
+    return Math.ceil(this.bitLength() / 8);
+  };
+
+  BN.prototype.toTwos = function toTwos(width) {
+    if (this.negative !== 0) {
+      return this.abs().inotn(width).iaddn(1);
+    }
+    return this.clone();
+  };
+
+  BN.prototype.fromTwos = function fromTwos(width) {
+    if (this.testn(width - 1)) {
+      return this.notn(width).iaddn(1).ineg();
+    }
+    return this.clone();
+  };
+
+  BN.prototype.isNeg = function isNeg() {
+    return this.negative !== 0;
+  };
+
+  // Return negative clone of `this`
+  BN.prototype.neg = function neg() {
+    return this.clone().ineg();
+  };
+
+  BN.prototype.ineg = function ineg() {
+    if (!this.isZero()) {
+      this.negative ^= 1;
+    }
+
+    return this;
+  };
+
+  // Or `num` with `this` in-place
+  BN.prototype.iuor = function iuor(num) {
+    while (this.length < num.length) {
+      this.words[this.length++] = 0;
+    }
+
+    for (var i = 0; i < num.length; i++) {
+      this.words[i] = this.words[i] | num.words[i];
+    }
+
+    return this.strip();
+  };
+
+  BN.prototype.ior = function ior(num) {
+    assert((this.negative | num.negative) === 0);
+    return this.iuor(num);
+  };
+
+  // Or `num` with `this`
+  BN.prototype.or = function or(num) {
+    if (this.length > num.length) return this.clone().ior(num);
+    return num.clone().ior(this);
+  };
+
+  BN.prototype.uor = function uor(num) {
+    if (this.length > num.length) return this.clone().iuor(num);
+    return num.clone().iuor(this);
+  };
+
+  // And `num` with `this` in-place
+  BN.prototype.iuand = function iuand(num) {
+    // b = min-length(num, this)
+    var b;
+    if (this.length > num.length) {
+      b = num;
+    } else {
+      b = this;
+    }
+
+    for (var i = 0; i < b.length; i++) {
+      this.words[i] = this.words[i] & num.words[i];
+    }
+
+    this.length = b.length;
+
+    return this.strip();
+  };
+
+  BN.prototype.iand = function iand(num) {
+    assert((this.negative | num.negative) === 0);
+    return this.iuand(num);
+  };
+
+  // And `num` with `this`
+  BN.prototype.and = function and(num) {
+    if (this.length > num.length) return this.clone().iand(num);
+    return num.clone().iand(this);
+  };
+
+  BN.prototype.uand = function uand(num) {
+    if (this.length > num.length) return this.clone().iuand(num);
+    return num.clone().iuand(this);
+  };
+
+  // Xor `num` with `this` in-place
+  BN.prototype.iuxor = function iuxor(num) {
+    // a.length > b.length
+    var a;
+    var b;
+    if (this.length > num.length) {
+      a = this;
+      b = num;
+    } else {
+      a = num;
+      b = this;
+    }
+
+    for (var i = 0; i < b.length; i++) {
+      this.words[i] = a.words[i] ^ b.words[i];
+    }
+
+    if (this !== a) {
+      for (; i < a.length; i++) {
+        this.words[i] = a.words[i];
+      }
+    }
+
+    this.length = a.length;
+
+    return this.strip();
+  };
+
+  BN.prototype.ixor = function ixor(num) {
+    assert((this.negative | num.negative) === 0);
+    return this.iuxor(num);
+  };
+
+  // Xor `num` with `this`
+  BN.prototype.xor = function xor(num) {
+    if (this.length > num.length) return this.clone().ixor(num);
+    return num.clone().ixor(this);
+  };
+
+  BN.prototype.uxor = function uxor(num) {
+    if (this.length > num.length) return this.clone().iuxor(num);
+    return num.clone().iuxor(this);
+  };
+
+  // Not ``this`` with ``width`` bitwidth
+  BN.prototype.inotn = function inotn(width) {
+    assert(typeof width === 'number' && width >= 0);
+
+    var bytesNeeded = Math.ceil(width / 26) | 0;
+    var bitsLeft = width % 26;
+
+    // Extend the buffer with leading zeroes
+    this._expand(bytesNeeded);
+
+    if (bitsLeft > 0) {
+      bytesNeeded--;
+    }
+
+    // Handle complete words
+    for (var i = 0; i < bytesNeeded; i++) {
+      this.words[i] = ~this.words[i] & 0x3ffffff;
+    }
+
+    // Handle the residue
+    if (bitsLeft > 0) {
+      this.words[i] = ~this.words[i] & 0x3ffffff >> 26 - bitsLeft;
+    }
+
+    // And remove leading zeroes
+    return this.strip();
+  };
+
+  BN.prototype.notn = function notn(width) {
+    return this.clone().inotn(width);
+  };
+
+  // Set `bit` of `this`
+  BN.prototype.setn = function setn(bit, val) {
+    assert(typeof bit === 'number' && bit >= 0);
+
+    var off = bit / 26 | 0;
+    var wbit = bit % 26;
+
+    this._expand(off + 1);
+
+    if (val) {
+      this.words[off] = this.words[off] | 1 << wbit;
+    } else {
+      this.words[off] = this.words[off] & ~(1 << wbit);
+    }
+
+    return this.strip();
+  };
+
+  // Add `num` to `this` in-place
+  BN.prototype.iadd = function iadd(num) {
+    var r;
+
+    // negative + positive
+    if (this.negative !== 0 && num.negative === 0) {
+      this.negative = 0;
+      r = this.isub(num);
+      this.negative ^= 1;
+      return this._normSign();
+
+      // positive + negative
+    } else if (this.negative === 0 && num.negative !== 0) {
+      num.negative = 0;
+      r = this.isub(num);
+      num.negative = 1;
+      return r._normSign();
+    }
+
+    // a.length > b.length
+    var a, b;
+    if (this.length > num.length) {
+      a = this;
+      b = num;
+    } else {
+      a = num;
+      b = this;
+    }
+
+    var carry = 0;
+    for (var i = 0; i < b.length; i++) {
+      r = (a.words[i] | 0) + (b.words[i] | 0) + carry;
+      this.words[i] = r & 0x3ffffff;
+      carry = r >>> 26;
+    }
+    for (; carry !== 0 && i < a.length; i++) {
+      r = (a.words[i] | 0) + carry;
+      this.words[i] = r & 0x3ffffff;
+      carry = r >>> 26;
+    }
+
+    this.length = a.length;
+    if (carry !== 0) {
+      this.words[this.length] = carry;
+      this.length++;
+      // Copy the rest of the words
+    } else if (a !== this) {
+      for (; i < a.length; i++) {
+        this.words[i] = a.words[i];
+      }
+    }
+
+    return this;
+  };
+
+  // Add `num` to `this`
+  BN.prototype.add = function add(num) {
+    var res;
+    if (num.negative !== 0 && this.negative === 0) {
+      num.negative = 0;
+      res = this.sub(num);
+      num.negative ^= 1;
+      return res;
+    } else if (num.negative === 0 && this.negative !== 0) {
+      this.negative = 0;
+      res = num.sub(this);
+      this.negative = 1;
+      return res;
+    }
+
+    if (this.length > num.length) return this.clone().iadd(num);
+
+    return num.clone().iadd(this);
+  };
+
+  // Subtract `num` from `this` in-place
+  BN.prototype.isub = function isub(num) {
+    // this - (-num) = this + num
+    if (num.negative !== 0) {
+      num.negative = 0;
+      var r = this.iadd(num);
+      num.negative = 1;
+      return r._normSign();
+
+      // -this - num = -(this + num)
+    } else if (this.negative !== 0) {
+      this.negative = 0;
+      this.iadd(num);
+      this.negative = 1;
+      return this._normSign();
+    }
+
+    // At this point both numbers are positive
+    var cmp = this.cmp(num);
+
+    // Optimization - zeroify
+    if (cmp === 0) {
+      this.negative = 0;
+      this.length = 1;
+      this.words[0] = 0;
+      return this;
+    }
+
+    // a > b
+    var a, b;
+    if (cmp > 0) {
+      a = this;
+      b = num;
+    } else {
+      a = num;
+      b = this;
+    }
+
+    var carry = 0;
+    for (var i = 0; i < b.length; i++) {
+      r = (a.words[i] | 0) - (b.words[i] | 0) + carry;
+      carry = r >> 26;
+      this.words[i] = r & 0x3ffffff;
+    }
+    for (; carry !== 0 && i < a.length; i++) {
+      r = (a.words[i] | 0) + carry;
+      carry = r >> 26;
+      this.words[i] = r & 0x3ffffff;
+    }
+
+    // Copy rest of the words
+    if (carry === 0 && i < a.length && a !== this) {
+      for (; i < a.length; i++) {
+        this.words[i] = a.words[i];
+      }
+    }
+
+    this.length = Math.max(this.length, i);
+
+    if (a !== this) {
+      this.negative = 1;
+    }
+
+    return this.strip();
+  };
+
+  // Subtract `num` from `this`
+  BN.prototype.sub = function sub(num) {
+    return this.clone().isub(num);
+  };
+
+  function smallMulTo(self, num, out) {
+    out.negative = num.negative ^ self.negative;
+    var len = self.length + num.length | 0;
+    out.length = len;
+    len = len - 1 | 0;
+
+    // Peel one iteration (compiler can't do it, because of code complexity)
+    var a = self.words[0] | 0;
+    var b = num.words[0] | 0;
+    var r = a * b;
+
+    var lo = r & 0x3ffffff;
+    var carry = r / 0x4000000 | 0;
+    out.words[0] = lo;
+
+    for (var k = 1; k < len; k++) {
+      // Sum all words with the same `i + j = k` and accumulate `ncarry`,
+      // note that ncarry could be >= 0x3ffffff
+      var ncarry = carry >>> 26;
+      var rword = carry & 0x3ffffff;
+      var maxJ = Math.min(k, num.length - 1);
+      for (var j = Math.max(0, k - self.length + 1); j <= maxJ; j++) {
+        var i = k - j | 0;
+        a = self.words[i] | 0;
+        b = num.words[j] | 0;
+        r = a * b + rword;
+        ncarry += r / 0x4000000 | 0;
+        rword = r & 0x3ffffff;
+      }
+      out.words[k] = rword | 0;
+      carry = ncarry | 0;
+    }
+    if (carry !== 0) {
+      out.words[k] = carry | 0;
+    } else {
+      out.length--;
+    }
+
+    return out.strip();
+  }
+
+  // TODO(indutny): it may be reasonable to omit it for users who don't need
+  // to work with 256-bit numbers, otherwise it gives 20% improvement for 256-bit
+  // multiplication (like elliptic secp256k1).
+  var comb10MulTo = function comb10MulTo(self, num, out) {
+    var a = self.words;
+    var b = num.words;
+    var o = out.words;
+    var c = 0;
+    var lo;
+    var mid;
+    var hi;
+    var a0 = a[0] | 0;
+    var al0 = a0 & 0x1fff;
+    var ah0 = a0 >>> 13;
+    var a1 = a[1] | 0;
+    var al1 = a1 & 0x1fff;
+    var ah1 = a1 >>> 13;
+    var a2 = a[2] | 0;
+    var al2 = a2 & 0x1fff;
+    var ah2 = a2 >>> 13;
+    var a3 = a[3] | 0;
+    var al3 = a3 & 0x1fff;
+    var ah3 = a3 >>> 13;
+    var a4 = a[4] | 0;
+    var al4 = a4 & 0x1fff;
+    var ah4 = a4 >>> 13;
+    var a5 = a[5] | 0;
+    var al5 = a5 & 0x1fff;
+    var ah5 = a5 >>> 13;
+    var a6 = a[6] | 0;
+    var al6 = a6 & 0x1fff;
+    var ah6 = a6 >>> 13;
+    var a7 = a[7] | 0;
+    var al7 = a7 & 0x1fff;
+    var ah7 = a7 >>> 13;
+    var a8 = a[8] | 0;
+    var al8 = a8 & 0x1fff;
+    var ah8 = a8 >>> 13;
+    var a9 = a[9] | 0;
+    var al9 = a9 & 0x1fff;
+    var ah9 = a9 >>> 13;
+    var b0 = b[0] | 0;
+    var bl0 = b0 & 0x1fff;
+    var bh0 = b0 >>> 13;
+    var b1 = b[1] | 0;
+    var bl1 = b1 & 0x1fff;
+    var bh1 = b1 >>> 13;
+    var b2 = b[2] | 0;
+    var bl2 = b2 & 0x1fff;
+    var bh2 = b2 >>> 13;
+    var b3 = b[3] | 0;
+    var bl3 = b3 & 0x1fff;
+    var bh3 = b3 >>> 13;
+    var b4 = b[4] | 0;
+    var bl4 = b4 & 0x1fff;
+    var bh4 = b4 >>> 13;
+    var b5 = b[5] | 0;
+    var bl5 = b5 & 0x1fff;
+    var bh5 = b5 >>> 13;
+    var b6 = b[6] | 0;
+    var bl6 = b6 & 0x1fff;
+    var bh6 = b6 >>> 13;
+    var b7 = b[7] | 0;
+    var bl7 = b7 & 0x1fff;
+    var bh7 = b7 >>> 13;
+    var b8 = b[8] | 0;
+    var bl8 = b8 & 0x1fff;
+    var bh8 = b8 >>> 13;
+    var b9 = b[9] | 0;
+    var bl9 = b9 & 0x1fff;
+    var bh9 = b9 >>> 13;
+
+    out.negative = self.negative ^ num.negative;
+    out.length = 19;
+    /* k = 0 */
+    lo = Math.imul(al0, bl0);
+    mid = Math.imul(al0, bh0);
+    mid = mid + Math.imul(ah0, bl0) | 0;
+    hi = Math.imul(ah0, bh0);
+    var w0 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w0 >>> 26) | 0;
+    w0 &= 0x3ffffff;
+    /* k = 1 */
+    lo = Math.imul(al1, bl0);
+    mid = Math.imul(al1, bh0);
+    mid = mid + Math.imul(ah1, bl0) | 0;
+    hi = Math.imul(ah1, bh0);
+    lo = lo + Math.imul(al0, bl1) | 0;
+    mid = mid + Math.imul(al0, bh1) | 0;
+    mid = mid + Math.imul(ah0, bl1) | 0;
+    hi = hi + Math.imul(ah0, bh1) | 0;
+    var w1 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w1 >>> 26) | 0;
+    w1 &= 0x3ffffff;
+    /* k = 2 */
+    lo = Math.imul(al2, bl0);
+    mid = Math.imul(al2, bh0);
+    mid = mid + Math.imul(ah2, bl0) | 0;
+    hi = Math.imul(ah2, bh0);
+    lo = lo + Math.imul(al1, bl1) | 0;
+    mid = mid + Math.imul(al1, bh1) | 0;
+    mid = mid + Math.imul(ah1, bl1) | 0;
+    hi = hi + Math.imul(ah1, bh1) | 0;
+    lo = lo + Math.imul(al0, bl2) | 0;
+    mid = mid + Math.imul(al0, bh2) | 0;
+    mid = mid + Math.imul(ah0, bl2) | 0;
+    hi = hi + Math.imul(ah0, bh2) | 0;
+    var w2 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w2 >>> 26) | 0;
+    w2 &= 0x3ffffff;
+    /* k = 3 */
+    lo = Math.imul(al3, bl0);
+    mid = Math.imul(al3, bh0);
+    mid = mid + Math.imul(ah3, bl0) | 0;
+    hi = Math.imul(ah3, bh0);
+    lo = lo + Math.imul(al2, bl1) | 0;
+    mid = mid + Math.imul(al2, bh1) | 0;
+    mid = mid + Math.imul(ah2, bl1) | 0;
+    hi = hi + Math.imul(ah2, bh1) | 0;
+    lo = lo + Math.imul(al1, bl2) | 0;
+    mid = mid + Math.imul(al1, bh2) | 0;
+    mid = mid + Math.imul(ah1, bl2) | 0;
+    hi = hi + Math.imul(ah1, bh2) | 0;
+    lo = lo + Math.imul(al0, bl3) | 0;
+    mid = mid + Math.imul(al0, bh3) | 0;
+    mid = mid + Math.imul(ah0, bl3) | 0;
+    hi = hi + Math.imul(ah0, bh3) | 0;
+    var w3 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w3 >>> 26) | 0;
+    w3 &= 0x3ffffff;
+    /* k = 4 */
+    lo = Math.imul(al4, bl0);
+    mid = Math.imul(al4, bh0);
+    mid = mid + Math.imul(ah4, bl0) | 0;
+    hi = Math.imul(ah4, bh0);
+    lo = lo + Math.imul(al3, bl1) | 0;
+    mid = mid + Math.imul(al3, bh1) | 0;
+    mid = mid + Math.imul(ah3, bl1) | 0;
+    hi = hi + Math.imul(ah3, bh1) | 0;
+    lo = lo + Math.imul(al2, bl2) | 0;
+    mid = mid + Math.imul(al2, bh2) | 0;
+    mid = mid + Math.imul(ah2, bl2) | 0;
+    hi = hi + Math.imul(ah2, bh2) | 0;
+    lo = lo + Math.imul(al1, bl3) | 0;
+    mid = mid + Math.imul(al1, bh3) | 0;
+    mid = mid + Math.imul(ah1, bl3) | 0;
+    hi = hi + Math.imul(ah1, bh3) | 0;
+    lo = lo + Math.imul(al0, bl4) | 0;
+    mid = mid + Math.imul(al0, bh4) | 0;
+    mid = mid + Math.imul(ah0, bl4) | 0;
+    hi = hi + Math.imul(ah0, bh4) | 0;
+    var w4 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w4 >>> 26) | 0;
+    w4 &= 0x3ffffff;
+    /* k = 5 */
+    lo = Math.imul(al5, bl0);
+    mid = Math.imul(al5, bh0);
+    mid = mid + Math.imul(ah5, bl0) | 0;
+    hi = Math.imul(ah5, bh0);
+    lo = lo + Math.imul(al4, bl1) | 0;
+    mid = mid + Math.imul(al4, bh1) | 0;
+    mid = mid + Math.imul(ah4, bl1) | 0;
+    hi = hi + Math.imul(ah4, bh1) | 0;
+    lo = lo + Math.imul(al3, bl2) | 0;
+    mid = mid + Math.imul(al3, bh2) | 0;
+    mid = mid + Math.imul(ah3, bl2) | 0;
+    hi = hi + Math.imul(ah3, bh2) | 0;
+    lo = lo + Math.imul(al2, bl3) | 0;
+    mid = mid + Math.imul(al2, bh3) | 0;
+    mid = mid + Math.imul(ah2, bl3) | 0;
+    hi = hi + Math.imul(ah2, bh3) | 0;
+    lo = lo + Math.imul(al1, bl4) | 0;
+    mid = mid + Math.imul(al1, bh4) | 0;
+    mid = mid + Math.imul(ah1, bl4) | 0;
+    hi = hi + Math.imul(ah1, bh4) | 0;
+    lo = lo + Math.imul(al0, bl5) | 0;
+    mid = mid + Math.imul(al0, bh5) | 0;
+    mid = mid + Math.imul(ah0, bl5) | 0;
+    hi = hi + Math.imul(ah0, bh5) | 0;
+    var w5 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w5 >>> 26) | 0;
+    w5 &= 0x3ffffff;
+    /* k = 6 */
+    lo = Math.imul(al6, bl0);
+    mid = Math.imul(al6, bh0);
+    mid = mid + Math.imul(ah6, bl0) | 0;
+    hi = Math.imul(ah6, bh0);
+    lo = lo + Math.imul(al5, bl1) | 0;
+    mid = mid + Math.imul(al5, bh1) | 0;
+    mid = mid + Math.imul(ah5, bl1) | 0;
+    hi = hi + Math.imul(ah5, bh1) | 0;
+    lo = lo + Math.imul(al4, bl2) | 0;
+    mid = mid + Math.imul(al4, bh2) | 0;
+    mid = mid + Math.imul(ah4, bl2) | 0;
+    hi = hi + Math.imul(ah4, bh2) | 0;
+    lo = lo + Math.imul(al3, bl3) | 0;
+    mid = mid + Math.imul(al3, bh3) | 0;
+    mid = mid + Math.imul(ah3, bl3) | 0;
+    hi = hi + Math.imul(ah3, bh3) | 0;
+    lo = lo + Math.imul(al2, bl4) | 0;
+    mid = mid + Math.imul(al2, bh4) | 0;
+    mid = mid + Math.imul(ah2, bl4) | 0;
+    hi = hi + Math.imul(ah2, bh4) | 0;
+    lo = lo + Math.imul(al1, bl5) | 0;
+    mid = mid + Math.imul(al1, bh5) | 0;
+    mid = mid + Math.imul(ah1, bl5) | 0;
+    hi = hi + Math.imul(ah1, bh5) | 0;
+    lo = lo + Math.imul(al0, bl6) | 0;
+    mid = mid + Math.imul(al0, bh6) | 0;
+    mid = mid + Math.imul(ah0, bl6) | 0;
+    hi = hi + Math.imul(ah0, bh6) | 0;
+    var w6 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w6 >>> 26) | 0;
+    w6 &= 0x3ffffff;
+    /* k = 7 */
+    lo = Math.imul(al7, bl0);
+    mid = Math.imul(al7, bh0);
+    mid = mid + Math.imul(ah7, bl0) | 0;
+    hi = Math.imul(ah7, bh0);
+    lo = lo + Math.imul(al6, bl1) | 0;
+    mid = mid + Math.imul(al6, bh1) | 0;
+    mid = mid + Math.imul(ah6, bl1) | 0;
+    hi = hi + Math.imul(ah6, bh1) | 0;
+    lo = lo + Math.imul(al5, bl2) | 0;
+    mid = mid + Math.imul(al5, bh2) | 0;
+    mid = mid + Math.imul(ah5, bl2) | 0;
+    hi = hi + Math.imul(ah5, bh2) | 0;
+    lo = lo + Math.imul(al4, bl3) | 0;
+    mid = mid + Math.imul(al4, bh3) | 0;
+    mid = mid + Math.imul(ah4, bl3) | 0;
+    hi = hi + Math.imul(ah4, bh3) | 0;
+    lo = lo + Math.imul(al3, bl4) | 0;
+    mid = mid + Math.imul(al3, bh4) | 0;
+    mid = mid + Math.imul(ah3, bl4) | 0;
+    hi = hi + Math.imul(ah3, bh4) | 0;
+    lo = lo + Math.imul(al2, bl5) | 0;
+    mid = mid + Math.imul(al2, bh5) | 0;
+    mid = mid + Math.imul(ah2, bl5) | 0;
+    hi = hi + Math.imul(ah2, bh5) | 0;
+    lo = lo + Math.imul(al1, bl6) | 0;
+    mid = mid + Math.imul(al1, bh6) | 0;
+    mid = mid + Math.imul(ah1, bl6) | 0;
+    hi = hi + Math.imul(ah1, bh6) | 0;
+    lo = lo + Math.imul(al0, bl7) | 0;
+    mid = mid + Math.imul(al0, bh7) | 0;
+    mid = mid + Math.imul(ah0, bl7) | 0;
+    hi = hi + Math.imul(ah0, bh7) | 0;
+    var w7 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w7 >>> 26) | 0;
+    w7 &= 0x3ffffff;
+    /* k = 8 */
+    lo = Math.imul(al8, bl0);
+    mid = Math.imul(al8, bh0);
+    mid = mid + Math.imul(ah8, bl0) | 0;
+    hi = Math.imul(ah8, bh0);
+    lo = lo + Math.imul(al7, bl1) | 0;
+    mid = mid + Math.imul(al7, bh1) | 0;
+    mid = mid + Math.imul(ah7, bl1) | 0;
+    hi = hi + Math.imul(ah7, bh1) | 0;
+    lo = lo + Math.imul(al6, bl2) | 0;
+    mid = mid + Math.imul(al6, bh2) | 0;
+    mid = mid + Math.imul(ah6, bl2) | 0;
+    hi = hi + Math.imul(ah6, bh2) | 0;
+    lo = lo + Math.imul(al5, bl3) | 0;
+    mid = mid + Math.imul(al5, bh3) | 0;
+    mid = mid + Math.imul(ah5, bl3) | 0;
+    hi = hi + Math.imul(ah5, bh3) | 0;
+    lo = lo + Math.imul(al4, bl4) | 0;
+    mid = mid + Math.imul(al4, bh4) | 0;
+    mid = mid + Math.imul(ah4, bl4) | 0;
+    hi = hi + Math.imul(ah4, bh4) | 0;
+    lo = lo + Math.imul(al3, bl5) | 0;
+    mid = mid + Math.imul(al3, bh5) | 0;
+    mid = mid + Math.imul(ah3, bl5) | 0;
+    hi = hi + Math.imul(ah3, bh5) | 0;
+    lo = lo + Math.imul(al2, bl6) | 0;
+    mid = mid + Math.imul(al2, bh6) | 0;
+    mid = mid + Math.imul(ah2, bl6) | 0;
+    hi = hi + Math.imul(ah2, bh6) | 0;
+    lo = lo + Math.imul(al1, bl7) | 0;
+    mid = mid + Math.imul(al1, bh7) | 0;
+    mid = mid + Math.imul(ah1, bl7) | 0;
+    hi = hi + Math.imul(ah1, bh7) | 0;
+    lo = lo + Math.imul(al0, bl8) | 0;
+    mid = mid + Math.imul(al0, bh8) | 0;
+    mid = mid + Math.imul(ah0, bl8) | 0;
+    hi = hi + Math.imul(ah0, bh8) | 0;
+    var w8 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w8 >>> 26) | 0;
+    w8 &= 0x3ffffff;
+    /* k = 9 */
+    lo = Math.imul(al9, bl0);
+    mid = Math.imul(al9, bh0);
+    mid = mid + Math.imul(ah9, bl0) | 0;
+    hi = Math.imul(ah9, bh0);
+    lo = lo + Math.imul(al8, bl1) | 0;
+    mid = mid + Math.imul(al8, bh1) | 0;
+    mid = mid + Math.imul(ah8, bl1) | 0;
+    hi = hi + Math.imul(ah8, bh1) | 0;
+    lo = lo + Math.imul(al7, bl2) | 0;
+    mid = mid + Math.imul(al7, bh2) | 0;
+    mid = mid + Math.imul(ah7, bl2) | 0;
+    hi = hi + Math.imul(ah7, bh2) | 0;
+    lo = lo + Math.imul(al6, bl3) | 0;
+    mid = mid + Math.imul(al6, bh3) | 0;
+    mid = mid + Math.imul(ah6, bl3) | 0;
+    hi = hi + Math.imul(ah6, bh3) | 0;
+    lo = lo + Math.imul(al5, bl4) | 0;
+    mid = mid + Math.imul(al5, bh4) | 0;
+    mid = mid + Math.imul(ah5, bl4) | 0;
+    hi = hi + Math.imul(ah5, bh4) | 0;
+    lo = lo + Math.imul(al4, bl5) | 0;
+    mid = mid + Math.imul(al4, bh5) | 0;
+    mid = mid + Math.imul(ah4, bl5) | 0;
+    hi = hi + Math.imul(ah4, bh5) | 0;
+    lo = lo + Math.imul(al3, bl6) | 0;
+    mid = mid + Math.imul(al3, bh6) | 0;
+    mid = mid + Math.imul(ah3, bl6) | 0;
+    hi = hi + Math.imul(ah3, bh6) | 0;
+    lo = lo + Math.imul(al2, bl7) | 0;
+    mid = mid + Math.imul(al2, bh7) | 0;
+    mid = mid + Math.imul(ah2, bl7) | 0;
+    hi = hi + Math.imul(ah2, bh7) | 0;
+    lo = lo + Math.imul(al1, bl8) | 0;
+    mid = mid + Math.imul(al1, bh8) | 0;
+    mid = mid + Math.imul(ah1, bl8) | 0;
+    hi = hi + Math.imul(ah1, bh8) | 0;
+    lo = lo + Math.imul(al0, bl9) | 0;
+    mid = mid + Math.imul(al0, bh9) | 0;
+    mid = mid + Math.imul(ah0, bl9) | 0;
+    hi = hi + Math.imul(ah0, bh9) | 0;
+    var w9 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w9 >>> 26) | 0;
+    w9 &= 0x3ffffff;
+    /* k = 10 */
+    lo = Math.imul(al9, bl1);
+    mid = Math.imul(al9, bh1);
+    mid = mid + Math.imul(ah9, bl1) | 0;
+    hi = Math.imul(ah9, bh1);
+    lo = lo + Math.imul(al8, bl2) | 0;
+    mid = mid + Math.imul(al8, bh2) | 0;
+    mid = mid + Math.imul(ah8, bl2) | 0;
+    hi = hi + Math.imul(ah8, bh2) | 0;
+    lo = lo + Math.imul(al7, bl3) | 0;
+    mid = mid + Math.imul(al7, bh3) | 0;
+    mid = mid + Math.imul(ah7, bl3) | 0;
+    hi = hi + Math.imul(ah7, bh3) | 0;
+    lo = lo + Math.imul(al6, bl4) | 0;
+    mid = mid + Math.imul(al6, bh4) | 0;
+    mid = mid + Math.imul(ah6, bl4) | 0;
+    hi = hi + Math.imul(ah6, bh4) | 0;
+    lo = lo + Math.imul(al5, bl5) | 0;
+    mid = mid + Math.imul(al5, bh5) | 0;
+    mid = mid + Math.imul(ah5, bl5) | 0;
+    hi = hi + Math.imul(ah5, bh5) | 0;
+    lo = lo + Math.imul(al4, bl6) | 0;
+    mid = mid + Math.imul(al4, bh6) | 0;
+    mid = mid + Math.imul(ah4, bl6) | 0;
+    hi = hi + Math.imul(ah4, bh6) | 0;
+    lo = lo + Math.imul(al3, bl7) | 0;
+    mid = mid + Math.imul(al3, bh7) | 0;
+    mid = mid + Math.imul(ah3, bl7) | 0;
+    hi = hi + Math.imul(ah3, bh7) | 0;
+    lo = lo + Math.imul(al2, bl8) | 0;
+    mid = mid + Math.imul(al2, bh8) | 0;
+    mid = mid + Math.imul(ah2, bl8) | 0;
+    hi = hi + Math.imul(ah2, bh8) | 0;
+    lo = lo + Math.imul(al1, bl9) | 0;
+    mid = mid + Math.imul(al1, bh9) | 0;
+    mid = mid + Math.imul(ah1, bl9) | 0;
+    hi = hi + Math.imul(ah1, bh9) | 0;
+    var w10 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w10 >>> 26) | 0;
+    w10 &= 0x3ffffff;
+    /* k = 11 */
+    lo = Math.imul(al9, bl2);
+    mid = Math.imul(al9, bh2);
+    mid = mid + Math.imul(ah9, bl2) | 0;
+    hi = Math.imul(ah9, bh2);
+    lo = lo + Math.imul(al8, bl3) | 0;
+    mid = mid + Math.imul(al8, bh3) | 0;
+    mid = mid + Math.imul(ah8, bl3) | 0;
+    hi = hi + Math.imul(ah8, bh3) | 0;
+    lo = lo + Math.imul(al7, bl4) | 0;
+    mid = mid + Math.imul(al7, bh4) | 0;
+    mid = mid + Math.imul(ah7, bl4) | 0;
+    hi = hi + Math.imul(ah7, bh4) | 0;
+    lo = lo + Math.imul(al6, bl5) | 0;
+    mid = mid + Math.imul(al6, bh5) | 0;
+    mid = mid + Math.imul(ah6, bl5) | 0;
+    hi = hi + Math.imul(ah6, bh5) | 0;
+    lo = lo + Math.imul(al5, bl6) | 0;
+    mid = mid + Math.imul(al5, bh6) | 0;
+    mid = mid + Math.imul(ah5, bl6) | 0;
+    hi = hi + Math.imul(ah5, bh6) | 0;
+    lo = lo + Math.imul(al4, bl7) | 0;
+    mid = mid + Math.imul(al4, bh7) | 0;
+    mid = mid + Math.imul(ah4, bl7) | 0;
+    hi = hi + Math.imul(ah4, bh7) | 0;
+    lo = lo + Math.imul(al3, bl8) | 0;
+    mid = mid + Math.imul(al3, bh8) | 0;
+    mid = mid + Math.imul(ah3, bl8) | 0;
+    hi = hi + Math.imul(ah3, bh8) | 0;
+    lo = lo + Math.imul(al2, bl9) | 0;
+    mid = mid + Math.imul(al2, bh9) | 0;
+    mid = mid + Math.imul(ah2, bl9) | 0;
+    hi = hi + Math.imul(ah2, bh9) | 0;
+    var w11 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w11 >>> 26) | 0;
+    w11 &= 0x3ffffff;
+    /* k = 12 */
+    lo = Math.imul(al9, bl3);
+    mid = Math.imul(al9, bh3);
+    mid = mid + Math.imul(ah9, bl3) | 0;
+    hi = Math.imul(ah9, bh3);
+    lo = lo + Math.imul(al8, bl4) | 0;
+    mid = mid + Math.imul(al8, bh4) | 0;
+    mid = mid + Math.imul(ah8, bl4) | 0;
+    hi = hi + Math.imul(ah8, bh4) | 0;
+    lo = lo + Math.imul(al7, bl5) | 0;
+    mid = mid + Math.imul(al7, bh5) | 0;
+    mid = mid + Math.imul(ah7, bl5) | 0;
+    hi = hi + Math.imul(ah7, bh5) | 0;
+    lo = lo + Math.imul(al6, bl6) | 0;
+    mid = mid + Math.imul(al6, bh6) | 0;
+    mid = mid + Math.imul(ah6, bl6) | 0;
+    hi = hi + Math.imul(ah6, bh6) | 0;
+    lo = lo + Math.imul(al5, bl7) | 0;
+    mid = mid + Math.imul(al5, bh7) | 0;
+    mid = mid + Math.imul(ah5, bl7) | 0;
+    hi = hi + Math.imul(ah5, bh7) | 0;
+    lo = lo + Math.imul(al4, bl8) | 0;
+    mid = mid + Math.imul(al4, bh8) | 0;
+    mid = mid + Math.imul(ah4, bl8) | 0;
+    hi = hi + Math.imul(ah4, bh8) | 0;
+    lo = lo + Math.imul(al3, bl9) | 0;
+    mid = mid + Math.imul(al3, bh9) | 0;
+    mid = mid + Math.imul(ah3, bl9) | 0;
+    hi = hi + Math.imul(ah3, bh9) | 0;
+    var w12 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w12 >>> 26) | 0;
+    w12 &= 0x3ffffff;
+    /* k = 13 */
+    lo = Math.imul(al9, bl4);
+    mid = Math.imul(al9, bh4);
+    mid = mid + Math.imul(ah9, bl4) | 0;
+    hi = Math.imul(ah9, bh4);
+    lo = lo + Math.imul(al8, bl5) | 0;
+    mid = mid + Math.imul(al8, bh5) | 0;
+    mid = mid + Math.imul(ah8, bl5) | 0;
+    hi = hi + Math.imul(ah8, bh5) | 0;
+    lo = lo + Math.imul(al7, bl6) | 0;
+    mid = mid + Math.imul(al7, bh6) | 0;
+    mid = mid + Math.imul(ah7, bl6) | 0;
+    hi = hi + Math.imul(ah7, bh6) | 0;
+    lo = lo + Math.imul(al6, bl7) | 0;
+    mid = mid + Math.imul(al6, bh7) | 0;
+    mid = mid + Math.imul(ah6, bl7) | 0;
+    hi = hi + Math.imul(ah6, bh7) | 0;
+    lo = lo + Math.imul(al5, bl8) | 0;
+    mid = mid + Math.imul(al5, bh8) | 0;
+    mid = mid + Math.imul(ah5, bl8) | 0;
+    hi = hi + Math.imul(ah5, bh8) | 0;
+    lo = lo + Math.imul(al4, bl9) | 0;
+    mid = mid + Math.imul(al4, bh9) | 0;
+    mid = mid + Math.imul(ah4, bl9) | 0;
+    hi = hi + Math.imul(ah4, bh9) | 0;
+    var w13 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w13 >>> 26) | 0;
+    w13 &= 0x3ffffff;
+    /* k = 14 */
+    lo = Math.imul(al9, bl5);
+    mid = Math.imul(al9, bh5);
+    mid = mid + Math.imul(ah9, bl5) | 0;
+    hi = Math.imul(ah9, bh5);
+    lo = lo + Math.imul(al8, bl6) | 0;
+    mid = mid + Math.imul(al8, bh6) | 0;
+    mid = mid + Math.imul(ah8, bl6) | 0;
+    hi = hi + Math.imul(ah8, bh6) | 0;
+    lo = lo + Math.imul(al7, bl7) | 0;
+    mid = mid + Math.imul(al7, bh7) | 0;
+    mid = mid + Math.imul(ah7, bl7) | 0;
+    hi = hi + Math.imul(ah7, bh7) | 0;
+    lo = lo + Math.imul(al6, bl8) | 0;
+    mid = mid + Math.imul(al6, bh8) | 0;
+    mid = mid + Math.imul(ah6, bl8) | 0;
+    hi = hi + Math.imul(ah6, bh8) | 0;
+    lo = lo + Math.imul(al5, bl9) | 0;
+    mid = mid + Math.imul(al5, bh9) | 0;
+    mid = mid + Math.imul(ah5, bl9) | 0;
+    hi = hi + Math.imul(ah5, bh9) | 0;
+    var w14 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w14 >>> 26) | 0;
+    w14 &= 0x3ffffff;
+    /* k = 15 */
+    lo = Math.imul(al9, bl6);
+    mid = Math.imul(al9, bh6);
+    mid = mid + Math.imul(ah9, bl6) | 0;
+    hi = Math.imul(ah9, bh6);
+    lo = lo + Math.imul(al8, bl7) | 0;
+    mid = mid + Math.imul(al8, bh7) | 0;
+    mid = mid + Math.imul(ah8, bl7) | 0;
+    hi = hi + Math.imul(ah8, bh7) | 0;
+    lo = lo + Math.imul(al7, bl8) | 0;
+    mid = mid + Math.imul(al7, bh8) | 0;
+    mid = mid + Math.imul(ah7, bl8) | 0;
+    hi = hi + Math.imul(ah7, bh8) | 0;
+    lo = lo + Math.imul(al6, bl9) | 0;
+    mid = mid + Math.imul(al6, bh9) | 0;
+    mid = mid + Math.imul(ah6, bl9) | 0;
+    hi = hi + Math.imul(ah6, bh9) | 0;
+    var w15 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w15 >>> 26) | 0;
+    w15 &= 0x3ffffff;
+    /* k = 16 */
+    lo = Math.imul(al9, bl7);
+    mid = Math.imul(al9, bh7);
+    mid = mid + Math.imul(ah9, bl7) | 0;
+    hi = Math.imul(ah9, bh7);
+    lo = lo + Math.imul(al8, bl8) | 0;
+    mid = mid + Math.imul(al8, bh8) | 0;
+    mid = mid + Math.imul(ah8, bl8) | 0;
+    hi = hi + Math.imul(ah8, bh8) | 0;
+    lo = lo + Math.imul(al7, bl9) | 0;
+    mid = mid + Math.imul(al7, bh9) | 0;
+    mid = mid + Math.imul(ah7, bl9) | 0;
+    hi = hi + Math.imul(ah7, bh9) | 0;
+    var w16 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w16 >>> 26) | 0;
+    w16 &= 0x3ffffff;
+    /* k = 17 */
+    lo = Math.imul(al9, bl8);
+    mid = Math.imul(al9, bh8);
+    mid = mid + Math.imul(ah9, bl8) | 0;
+    hi = Math.imul(ah9, bh8);
+    lo = lo + Math.imul(al8, bl9) | 0;
+    mid = mid + Math.imul(al8, bh9) | 0;
+    mid = mid + Math.imul(ah8, bl9) | 0;
+    hi = hi + Math.imul(ah8, bh9) | 0;
+    var w17 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w17 >>> 26) | 0;
+    w17 &= 0x3ffffff;
+    /* k = 18 */
+    lo = Math.imul(al9, bl9);
+    mid = Math.imul(al9, bh9);
+    mid = mid + Math.imul(ah9, bl9) | 0;
+    hi = Math.imul(ah9, bh9);
+    var w18 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w18 >>> 26) | 0;
+    w18 &= 0x3ffffff;
+    o[0] = w0;
+    o[1] = w1;
+    o[2] = w2;
+    o[3] = w3;
+    o[4] = w4;
+    o[5] = w5;
+    o[6] = w6;
+    o[7] = w7;
+    o[8] = w8;
+    o[9] = w9;
+    o[10] = w10;
+    o[11] = w11;
+    o[12] = w12;
+    o[13] = w13;
+    o[14] = w14;
+    o[15] = w15;
+    o[16] = w16;
+    o[17] = w17;
+    o[18] = w18;
+    if (c !== 0) {
+      o[19] = c;
+      out.length++;
+    }
+    return out;
+  };
+
+  // Polyfill comb
+  if (!Math.imul) {
+    comb10MulTo = smallMulTo;
+  }
+
+  function bigMulTo(self, num, out) {
+    out.negative = num.negative ^ self.negative;
+    out.length = self.length + num.length;
+
+    var carry = 0;
+    var hncarry = 0;
+    for (var k = 0; k < out.length - 1; k++) {
+      // Sum all words with the same `i + j = k` and accumulate `ncarry`,
+      // note that ncarry could be >= 0x3ffffff
+      var ncarry = hncarry;
+      hncarry = 0;
+      var rword = carry & 0x3ffffff;
+      var maxJ = Math.min(k, num.length - 1);
+      for (var j = Math.max(0, k - self.length + 1); j <= maxJ; j++) {
+        var i = k - j;
+        var a = self.words[i] | 0;
+        var b = num.words[j] | 0;
+        var r = a * b;
+
+        var lo = r & 0x3ffffff;
+        ncarry = ncarry + (r / 0x4000000 | 0) | 0;
+        lo = lo + rword | 0;
+        rword = lo & 0x3ffffff;
+        ncarry = ncarry + (lo >>> 26) | 0;
+
+        hncarry += ncarry >>> 26;
+        ncarry &= 0x3ffffff;
+      }
+      out.words[k] = rword;
+      carry = ncarry;
+      ncarry = hncarry;
+    }
+    if (carry !== 0) {
+      out.words[k] = carry;
+    } else {
+      out.length--;
+    }
+
+    return out.strip();
+  }
+
+  function jumboMulTo(self, num, out) {
+    var fftm = new FFTM();
+    return fftm.mulp(self, num, out);
+  }
+
+  BN.prototype.mulTo = function mulTo(num, out) {
+    var res;
+    var len = this.length + num.length;
+    if (this.length === 10 && num.length === 10) {
+      res = comb10MulTo(this, num, out);
+    } else if (len < 63) {
+      res = smallMulTo(this, num, out);
+    } else if (len < 1024) {
+      res = bigMulTo(this, num, out);
+    } else {
+      res = jumboMulTo(this, num, out);
+    }
+
+    return res;
+  };
+
+  // Cooley-Tukey algorithm for FFT
+  // slightly revisited to rely on looping instead of recursion
+
+  function FFTM(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+
+  FFTM.prototype.makeRBT = function makeRBT(N) {
+    var t = new Array(N);
+    var l = BN.prototype._countBits(N) - 1;
+    for (var i = 0; i < N; i++) {
+      t[i] = this.revBin(i, l, N);
+    }
+
+    return t;
+  };
+
+  // Returns binary-reversed representation of `x`
+  FFTM.prototype.revBin = function revBin(x, l, N) {
+    if (x === 0 || x === N - 1) return x;
+
+    var rb = 0;
+    for (var i = 0; i < l; i++) {
+      rb |= (x & 1) << l - i - 1;
+      x >>= 1;
+    }
+
+    return rb;
+  };
+
+  // Performs "tweedling" phase, therefore 'emulating'
+  // behaviour of the recursive algorithm
+  FFTM.prototype.permute = function permute(rbt, rws, iws, rtws, itws, N) {
+    for (var i = 0; i < N; i++) {
+      rtws[i] = rws[rbt[i]];
+      itws[i] = iws[rbt[i]];
+    }
+  };
+
+  FFTM.prototype.transform = function transform(rws, iws, rtws, itws, N, rbt) {
+    this.permute(rbt, rws, iws, rtws, itws, N);
+
+    for (var s = 1; s < N; s <<= 1) {
+      var l = s << 1;
+
+      var rtwdf = Math.cos(2 * Math.PI / l);
+      var itwdf = Math.sin(2 * Math.PI / l);
+
+      for (var p = 0; p < N; p += l) {
+        var rtwdf_ = rtwdf;
+        var itwdf_ = itwdf;
+
+        for (var j = 0; j < s; j++) {
+          var re = rtws[p + j];
+          var ie = itws[p + j];
+
+          var ro = rtws[p + j + s];
+          var io = itws[p + j + s];
+
+          var rx = rtwdf_ * ro - itwdf_ * io;
+
+          io = rtwdf_ * io + itwdf_ * ro;
+          ro = rx;
+
+          rtws[p + j] = re + ro;
+          itws[p + j] = ie + io;
+
+          rtws[p + j + s] = re - ro;
+          itws[p + j + s] = ie - io;
+
+          /* jshint maxdepth : false */
+          if (j !== l) {
+            rx = rtwdf * rtwdf_ - itwdf * itwdf_;
+
+            itwdf_ = rtwdf * itwdf_ + itwdf * rtwdf_;
+            rtwdf_ = rx;
+          }
+        }
+      }
+    }
+  };
+
+  FFTM.prototype.guessLen13b = function guessLen13b(n, m) {
+    var N = Math.max(m, n) | 1;
+    var odd = N & 1;
+    var i = 0;
+    for (N = N / 2 | 0; N; N = N >>> 1) {
+      i++;
+    }
+
+    return 1 << i + 1 + odd;
+  };
+
+  FFTM.prototype.conjugate = function conjugate(rws, iws, N) {
+    if (N <= 1) return;
+
+    for (var i = 0; i < N / 2; i++) {
+      var t = rws[i];
+
+      rws[i] = rws[N - i - 1];
+      rws[N - i - 1] = t;
+
+      t = iws[i];
+
+      iws[i] = -iws[N - i - 1];
+      iws[N - i - 1] = -t;
+    }
+  };
+
+  FFTM.prototype.normalize13b = function normalize13b(ws, N) {
+    var carry = 0;
+    for (var i = 0; i < N / 2; i++) {
+      var w = Math.round(ws[2 * i + 1] / N) * 0x2000 + Math.round(ws[2 * i] / N) + carry;
+
+      ws[i] = w & 0x3ffffff;
+
+      if (w < 0x4000000) {
+        carry = 0;
+      } else {
+        carry = w / 0x4000000 | 0;
+      }
+    }
+
+    return ws;
+  };
+
+  FFTM.prototype.convert13b = function convert13b(ws, len, rws, N) {
+    var carry = 0;
+    for (var i = 0; i < len; i++) {
+      carry = carry + (ws[i] | 0);
+
+      rws[2 * i] = carry & 0x1fff;carry = carry >>> 13;
+      rws[2 * i + 1] = carry & 0x1fff;carry = carry >>> 13;
+    }
+
+    // Pad with zeroes
+    for (i = 2 * len; i < N; ++i) {
+      rws[i] = 0;
+    }
+
+    assert(carry === 0);
+    assert((carry & ~0x1fff) === 0);
+  };
+
+  FFTM.prototype.stub = function stub(N) {
+    var ph = new Array(N);
+    for (var i = 0; i < N; i++) {
+      ph[i] = 0;
+    }
+
+    return ph;
+  };
+
+  FFTM.prototype.mulp = function mulp(x, y, out) {
+    var N = 2 * this.guessLen13b(x.length, y.length);
+
+    var rbt = this.makeRBT(N);
+
+    var _ = this.stub(N);
+
+    var rws = new Array(N);
+    var rwst = new Array(N);
+    var iwst = new Array(N);
+
+    var nrws = new Array(N);
+    var nrwst = new Array(N);
+    var niwst = new Array(N);
+
+    var rmws = out.words;
+    rmws.length = N;
+
+    this.convert13b(x.words, x.length, rws, N);
+    this.convert13b(y.words, y.length, nrws, N);
+
+    this.transform(rws, _, rwst, iwst, N, rbt);
+    this.transform(nrws, _, nrwst, niwst, N, rbt);
+
+    for (var i = 0; i < N; i++) {
+      var rx = rwst[i] * nrwst[i] - iwst[i] * niwst[i];
+      iwst[i] = rwst[i] * niwst[i] + iwst[i] * nrwst[i];
+      rwst[i] = rx;
+    }
+
+    this.conjugate(rwst, iwst, N);
+    this.transform(rwst, iwst, rmws, _, N, rbt);
+    this.conjugate(rmws, _, N);
+    this.normalize13b(rmws, N);
+
+    out.negative = x.negative ^ y.negative;
+    out.length = x.length + y.length;
+    return out.strip();
+  };
+
+  // Multiply `this` by `num`
+  BN.prototype.mul = function mul(num) {
+    var out = new BN(null);
+    out.words = new Array(this.length + num.length);
+    return this.mulTo(num, out);
+  };
+
+  // Multiply employing FFT
+  BN.prototype.mulf = function mulf(num) {
+    var out = new BN(null);
+    out.words = new Array(this.length + num.length);
+    return jumboMulTo(this, num, out);
+  };
+
+  // In-place Multiplication
+  BN.prototype.imul = function imul(num) {
+    return this.clone().mulTo(num, this);
+  };
+
+  BN.prototype.imuln = function imuln(num) {
+    assert(typeof num === 'number');
+    assert(num < 0x4000000);
+
+    // Carry
+    var carry = 0;
+    for (var i = 0; i < this.length; i++) {
+      var w = (this.words[i] | 0) * num;
+      var lo = (w & 0x3ffffff) + (carry & 0x3ffffff);
+      carry >>= 26;
+      carry += w / 0x4000000 | 0;
+      // NOTE: lo is 27bit maximum
+      carry += lo >>> 26;
+      this.words[i] = lo & 0x3ffffff;
+    }
+
+    if (carry !== 0) {
+      this.words[i] = carry;
+      this.length++;
+    }
+
+    return this;
+  };
+
+  BN.prototype.muln = function muln(num) {
+    return this.clone().imuln(num);
+  };
+
+  // `this` * `this`
+  BN.prototype.sqr = function sqr() {
+    return this.mul(this);
+  };
+
+  // `this` * `this` in-place
+  BN.prototype.isqr = function isqr() {
+    return this.imul(this.clone());
+  };
+
+  // Math.pow(`this`, `num`)
+  BN.prototype.pow = function pow(num) {
+    var w = toBitArray(num);
+    if (w.length === 0) return new BN(1);
+
+    // Skip leading zeroes
+    var res = this;
+    for (var i = 0; i < w.length; i++, res = res.sqr()) {
+      if (w[i] !== 0) break;
+    }
+
+    if (++i < w.length) {
+      for (var q = res.sqr(); i < w.length; i++, q = q.sqr()) {
+        if (w[i] === 0) continue;
+
+        res = res.mul(q);
+      }
+    }
+
+    return res;
+  };
+
+  // Shift-left in-place
+  BN.prototype.iushln = function iushln(bits) {
+    assert(typeof bits === 'number' && bits >= 0);
+    var r = bits % 26;
+    var s = (bits - r) / 26;
+    var carryMask = 0x3ffffff >>> 26 - r << 26 - r;
+    var i;
+
+    if (r !== 0) {
+      var carry = 0;
+
+      for (i = 0; i < this.length; i++) {
+        var newCarry = this.words[i] & carryMask;
+        var c = (this.words[i] | 0) - newCarry << r;
+        this.words[i] = c | carry;
+        carry = newCarry >>> 26 - r;
+      }
+
+      if (carry) {
+        this.words[i] = carry;
+        this.length++;
+      }
+    }
+
+    if (s !== 0) {
+      for (i = this.length - 1; i >= 0; i--) {
+        this.words[i + s] = this.words[i];
+      }
+
+      for (i = 0; i < s; i++) {
+        this.words[i] = 0;
+      }
+
+      this.length += s;
+    }
+
+    return this.strip();
+  };
+
+  BN.prototype.ishln = function ishln(bits) {
+    // TODO(indutny): implement me
+    assert(this.negative === 0);
+    return this.iushln(bits);
+  };
+
+  // Shift-right in-place
+  // NOTE: `hint` is a lowest bit before trailing zeroes
+  // NOTE: if `extended` is present - it will be filled with destroyed bits
+  BN.prototype.iushrn = function iushrn(bits, hint, extended) {
+    assert(typeof bits === 'number' && bits >= 0);
+    var h;
+    if (hint) {
+      h = (hint - hint % 26) / 26;
+    } else {
+      h = 0;
+    }
+
+    var r = bits % 26;
+    var s = Math.min((bits - r) / 26, this.length);
+    var mask = 0x3ffffff ^ 0x3ffffff >>> r << r;
+    var maskedWords = extended;
+
+    h -= s;
+    h = Math.max(0, h);
+
+    // Extended mode, copy masked part
+    if (maskedWords) {
+      for (var i = 0; i < s; i++) {
+        maskedWords.words[i] = this.words[i];
+      }
+      maskedWords.length = s;
+    }
+
+    if (s === 0) {
+      // No-op, we should not move anything at all
+    } else if (this.length > s) {
+      this.length -= s;
+      for (i = 0; i < this.length; i++) {
+        this.words[i] = this.words[i + s];
+      }
+    } else {
+      this.words[0] = 0;
+      this.length = 1;
+    }
+
+    var carry = 0;
+    for (i = this.length - 1; i >= 0 && (carry !== 0 || i >= h); i--) {
+      var word = this.words[i] | 0;
+      this.words[i] = carry << 26 - r | word >>> r;
+      carry = word & mask;
+    }
+
+    // Push carried bits as a mask
+    if (maskedWords && carry !== 0) {
+      maskedWords.words[maskedWords.length++] = carry;
+    }
+
+    if (this.length === 0) {
+      this.words[0] = 0;
+      this.length = 1;
+    }
+
+    return this.strip();
+  };
+
+  BN.prototype.ishrn = function ishrn(bits, hint, extended) {
+    // TODO(indutny): implement me
+    assert(this.negative === 0);
+    return this.iushrn(bits, hint, extended);
+  };
+
+  // Shift-left
+  BN.prototype.shln = function shln(bits) {
+    return this.clone().ishln(bits);
+  };
+
+  BN.prototype.ushln = function ushln(bits) {
+    return this.clone().iushln(bits);
+  };
+
+  // Shift-right
+  BN.prototype.shrn = function shrn(bits) {
+    return this.clone().ishrn(bits);
+  };
+
+  BN.prototype.ushrn = function ushrn(bits) {
+    return this.clone().iushrn(bits);
+  };
+
+  // Test if n bit is set
+  BN.prototype.testn = function testn(bit) {
+    assert(typeof bit === 'number' && bit >= 0);
+    var r = bit % 26;
+    var s = (bit - r) / 26;
+    var q = 1 << r;
+
+    // Fast case: bit is much higher than all existing words
+    if (this.length <= s) return false;
+
+    // Check bit and return
+    var w = this.words[s];
+
+    return !!(w & q);
+  };
+
+  // Return only lowers bits of number (in-place)
+  BN.prototype.imaskn = function imaskn(bits) {
+    assert(typeof bits === 'number' && bits >= 0);
+    var r = bits % 26;
+    var s = (bits - r) / 26;
+
+    assert(this.negative === 0, 'imaskn works only with positive numbers');
+
+    if (this.length <= s) {
+      return this;
+    }
+
+    if (r !== 0) {
+      s++;
+    }
+    this.length = Math.min(s, this.length);
+
+    if (r !== 0) {
+      var mask = 0x3ffffff ^ 0x3ffffff >>> r << r;
+      this.words[this.length - 1] &= mask;
+    }
+
+    return this.strip();
+  };
+
+  // Return only lowers bits of number
+  BN.prototype.maskn = function maskn(bits) {
+    return this.clone().imaskn(bits);
+  };
+
+  // Add plain number `num` to `this`
+  BN.prototype.iaddn = function iaddn(num) {
+    assert(typeof num === 'number');
+    assert(num < 0x4000000);
+    if (num < 0) return this.isubn(-num);
+
+    // Possible sign change
+    if (this.negative !== 0) {
+      if (this.length === 1 && (this.words[0] | 0) < num) {
+        this.words[0] = num - (this.words[0] | 0);
+        this.negative = 0;
+        return this;
+      }
+
+      this.negative = 0;
+      this.isubn(num);
+      this.negative = 1;
+      return this;
+    }
+
+    // Add without checks
+    return this._iaddn(num);
+  };
+
+  BN.prototype._iaddn = function _iaddn(num) {
+    this.words[0] += num;
+
+    // Carry
+    for (var i = 0; i < this.length && this.words[i] >= 0x4000000; i++) {
+      this.words[i] -= 0x4000000;
+      if (i === this.length - 1) {
+        this.words[i + 1] = 1;
+      } else {
+        this.words[i + 1]++;
+      }
+    }
+    this.length = Math.max(this.length, i + 1);
+
+    return this;
+  };
+
+  // Subtract plain number `num` from `this`
+  BN.prototype.isubn = function isubn(num) {
+    assert(typeof num === 'number');
+    assert(num < 0x4000000);
+    if (num < 0) return this.iaddn(-num);
+
+    if (this.negative !== 0) {
+      this.negative = 0;
+      this.iaddn(num);
+      this.negative = 1;
+      return this;
+    }
+
+    this.words[0] -= num;
+
+    if (this.length === 1 && this.words[0] < 0) {
+      this.words[0] = -this.words[0];
+      this.negative = 1;
+    } else {
+      // Carry
+      for (var i = 0; i < this.length && this.words[i] < 0; i++) {
+        this.words[i] += 0x4000000;
+        this.words[i + 1] -= 1;
+      }
+    }
+
+    return this.strip();
+  };
+
+  BN.prototype.addn = function addn(num) {
+    return this.clone().iaddn(num);
+  };
+
+  BN.prototype.subn = function subn(num) {
+    return this.clone().isubn(num);
+  };
+
+  BN.prototype.iabs = function iabs() {
+    this.negative = 0;
+
+    return this;
+  };
+
+  BN.prototype.abs = function abs() {
+    return this.clone().iabs();
+  };
+
+  BN.prototype._ishlnsubmul = function _ishlnsubmul(num, mul, shift) {
+    var len = num.length + shift;
+    var i;
+
+    this._expand(len);
+
+    var w;
+    var carry = 0;
+    for (i = 0; i < num.length; i++) {
+      w = (this.words[i + shift] | 0) + carry;
+      var right = (num.words[i] | 0) * mul;
+      w -= right & 0x3ffffff;
+      carry = (w >> 26) - (right / 0x4000000 | 0);
+      this.words[i + shift] = w & 0x3ffffff;
+    }
+    for (; i < this.length - shift; i++) {
+      w = (this.words[i + shift] | 0) + carry;
+      carry = w >> 26;
+      this.words[i + shift] = w & 0x3ffffff;
+    }
+
+    if (carry === 0) return this.strip();
+
+    // Subtraction overflow
+    assert(carry === -1);
+    carry = 0;
+    for (i = 0; i < this.length; i++) {
+      w = -(this.words[i] | 0) + carry;
+      carry = w >> 26;
+      this.words[i] = w & 0x3ffffff;
+    }
+    this.negative = 1;
+
+    return this.strip();
+  };
+
+  BN.prototype._wordDiv = function _wordDiv(num, mode) {
+    var shift = this.length - num.length;
+
+    var a = this.clone();
+    var b = num;
+
+    // Normalize
+    var bhi = b.words[b.length - 1] | 0;
+    var bhiBits = this._countBits(bhi);
+    shift = 26 - bhiBits;
+    if (shift !== 0) {
+      b = b.ushln(shift);
+      a.iushln(shift);
+      bhi = b.words[b.length - 1] | 0;
+    }
+
+    // Initialize quotient
+    var m = a.length - b.length;
+    var q;
+
+    if (mode !== 'mod') {
+      q = new BN(null);
+      q.length = m + 1;
+      q.words = new Array(q.length);
+      for (var i = 0; i < q.length; i++) {
+        q.words[i] = 0;
+      }
+    }
+
+    var diff = a.clone()._ishlnsubmul(b, 1, m);
+    if (diff.negative === 0) {
+      a = diff;
+      if (q) {
+        q.words[m] = 1;
+      }
+    }
+
+    for (var j = m - 1; j >= 0; j--) {
+      var qj = (a.words[b.length + j] | 0) * 0x4000000 + (a.words[b.length + j - 1] | 0);
+
+      // NOTE: (qj / bhi) is (0x3ffffff * 0x4000000 + 0x3ffffff) / 0x2000000 max
+      // (0x7ffffff)
+      qj = Math.min(qj / bhi | 0, 0x3ffffff);
+
+      a._ishlnsubmul(b, qj, j);
+      while (a.negative !== 0) {
+        qj--;
+        a.negative = 0;
+        a._ishlnsubmul(b, 1, j);
+        if (!a.isZero()) {
+          a.negative ^= 1;
+        }
+      }
+      if (q) {
+        q.words[j] = qj;
+      }
+    }
+    if (q) {
+      q.strip();
+    }
+    a.strip();
+
+    // Denormalize
+    if (mode !== 'div' && shift !== 0) {
+      a.iushrn(shift);
+    }
+
+    return {
+      div: q || null,
+      mod: a
+    };
+  };
+
+  // NOTE: 1) `mode` can be set to `mod` to request mod only,
+  //       to `div` to request div only, or be absent to
+  //       request both div & mod
+  //       2) `positive` is true if unsigned mod is requested
+  BN.prototype.divmod = function divmod(num, mode, positive) {
+    assert(!num.isZero());
+
+    if (this.isZero()) {
+      return {
+        div: new BN(0),
+        mod: new BN(0)
+      };
+    }
+
+    var div, mod, res;
+    if (this.negative !== 0 && num.negative === 0) {
+      res = this.neg().divmod(num, mode);
+
+      if (mode !== 'mod') {
+        div = res.div.neg();
+      }
+
+      if (mode !== 'div') {
+        mod = res.mod.neg();
+        if (positive && mod.negative !== 0) {
+          mod.iadd(num);
+        }
+      }
+
+      return {
+        div: div,
+        mod: mod
+      };
+    }
+
+    if (this.negative === 0 && num.negative !== 0) {
+      res = this.divmod(num.neg(), mode);
+
+      if (mode !== 'mod') {
+        div = res.div.neg();
+      }
+
+      return {
+        div: div,
+        mod: res.mod
+      };
+    }
+
+    if ((this.negative & num.negative) !== 0) {
+      res = this.neg().divmod(num.neg(), mode);
+
+      if (mode !== 'div') {
+        mod = res.mod.neg();
+        if (positive && mod.negative !== 0) {
+          mod.isub(num);
+        }
+      }
+
+      return {
+        div: res.div,
+        mod: mod
+      };
+    }
+
+    // Both numbers are positive at this point
+
+    // Strip both numbers to approximate shift value
+    if (num.length > this.length || this.cmp(num) < 0) {
+      return {
+        div: new BN(0),
+        mod: this
+      };
+    }
+
+    // Very short reduction
+    if (num.length === 1) {
+      if (mode === 'div') {
+        return {
+          div: this.divn(num.words[0]),
+          mod: null
+        };
+      }
+
+      if (mode === 'mod') {
+        return {
+          div: null,
+          mod: new BN(this.modn(num.words[0]))
+        };
+      }
+
+      return {
+        div: this.divn(num.words[0]),
+        mod: new BN(this.modn(num.words[0]))
+      };
+    }
+
+    return this._wordDiv(num, mode);
+  };
+
+  // Find `this` / `num`
+  BN.prototype.div = function div(num) {
+    return this.divmod(num, 'div', false).div;
+  };
+
+  // Find `this` % `num`
+  BN.prototype.mod = function mod(num) {
+    return this.divmod(num, 'mod', false).mod;
+  };
+
+  BN.prototype.umod = function umod(num) {
+    return this.divmod(num, 'mod', true).mod;
+  };
+
+  // Find Round(`this` / `num`)
+  BN.prototype.divRound = function divRound(num) {
+    var dm = this.divmod(num);
+
+    // Fast case - exact division
+    if (dm.mod.isZero()) return dm.div;
+
+    var mod = dm.div.negative !== 0 ? dm.mod.isub(num) : dm.mod;
+
+    var half = num.ushrn(1);
+    var r2 = num.andln(1);
+    var cmp = mod.cmp(half);
+
+    // Round down
+    if (cmp < 0 || r2 === 1 && cmp === 0) return dm.div;
+
+    // Round up
+    return dm.div.negative !== 0 ? dm.div.isubn(1) : dm.div.iaddn(1);
+  };
+
+  BN.prototype.modn = function modn(num) {
+    assert(num <= 0x3ffffff);
+    var p = (1 << 26) % num;
+
+    var acc = 0;
+    for (var i = this.length - 1; i >= 0; i--) {
+      acc = (p * acc + (this.words[i] | 0)) % num;
+    }
+
+    return acc;
+  };
+
+  // In-place division by number
+  BN.prototype.idivn = function idivn(num) {
+    assert(num <= 0x3ffffff);
+
+    var carry = 0;
+    for (var i = this.length - 1; i >= 0; i--) {
+      var w = (this.words[i] | 0) + carry * 0x4000000;
+      this.words[i] = w / num | 0;
+      carry = w % num;
+    }
+
+    return this.strip();
+  };
+
+  BN.prototype.divn = function divn(num) {
+    return this.clone().idivn(num);
+  };
+
+  BN.prototype.egcd = function egcd(p) {
+    assert(p.negative === 0);
+    assert(!p.isZero());
+
+    var x = this;
+    var y = p.clone();
+
+    if (x.negative !== 0) {
+      x = x.umod(p);
+    } else {
+      x = x.clone();
+    }
+
+    // A * x + B * y = x
+    var A = new BN(1);
+    var B = new BN(0);
+
+    // C * x + D * y = y
+    var C = new BN(0);
+    var D = new BN(1);
+
+    var g = 0;
+
+    while (x.isEven() && y.isEven()) {
+      x.iushrn(1);
+      y.iushrn(1);
+      ++g;
+    }
+
+    var yp = y.clone();
+    var xp = x.clone();
+
+    while (!x.isZero()) {
+      for (var i = 0, im = 1; (x.words[0] & im) === 0 && i < 26; ++i, im <<= 1);
+      if (i > 0) {
+        x.iushrn(i);
+        while (i-- > 0) {
+          if (A.isOdd() || B.isOdd()) {
+            A.iadd(yp);
+            B.isub(xp);
+          }
+
+          A.iushrn(1);
+          B.iushrn(1);
+        }
+      }
+
+      for (var j = 0, jm = 1; (y.words[0] & jm) === 0 && j < 26; ++j, jm <<= 1);
+      if (j > 0) {
+        y.iushrn(j);
+        while (j-- > 0) {
+          if (C.isOdd() || D.isOdd()) {
+            C.iadd(yp);
+            D.isub(xp);
+          }
+
+          C.iushrn(1);
+          D.iushrn(1);
+        }
+      }
+
+      if (x.cmp(y) >= 0) {
+        x.isub(y);
+        A.isub(C);
+        B.isub(D);
+      } else {
+        y.isub(x);
+        C.isub(A);
+        D.isub(B);
+      }
+    }
+
+    return {
+      a: C,
+      b: D,
+      gcd: y.iushln(g)
+    };
+  };
+
+  // This is reduced incarnation of the binary EEA
+  // above, designated to invert members of the
+  // _prime_ fields F(p) at a maximal speed
+  BN.prototype._invmp = function _invmp(p) {
+    assert(p.negative === 0);
+    assert(!p.isZero());
+
+    var a = this;
+    var b = p.clone();
+
+    if (a.negative !== 0) {
+      a = a.umod(p);
+    } else {
+      a = a.clone();
+    }
+
+    var x1 = new BN(1);
+    var x2 = new BN(0);
+
+    var delta = b.clone();
+
+    while (a.cmpn(1) > 0 && b.cmpn(1) > 0) {
+      for (var i = 0, im = 1; (a.words[0] & im) === 0 && i < 26; ++i, im <<= 1);
+      if (i > 0) {
+        a.iushrn(i);
+        while (i-- > 0) {
+          if (x1.isOdd()) {
+            x1.iadd(delta);
+          }
+
+          x1.iushrn(1);
+        }
+      }
+
+      for (var j = 0, jm = 1; (b.words[0] & jm) === 0 && j < 26; ++j, jm <<= 1);
+      if (j > 0) {
+        b.iushrn(j);
+        while (j-- > 0) {
+          if (x2.isOdd()) {
+            x2.iadd(delta);
+          }
+
+          x2.iushrn(1);
+        }
+      }
+
+      if (a.cmp(b) >= 0) {
+        a.isub(b);
+        x1.isub(x2);
+      } else {
+        b.isub(a);
+        x2.isub(x1);
+      }
+    }
+
+    var res;
+    if (a.cmpn(1) === 0) {
+      res = x1;
+    } else {
+      res = x2;
+    }
+
+    if (res.cmpn(0) < 0) {
+      res.iadd(p);
+    }
+
+    return res;
+  };
+
+  BN.prototype.gcd = function gcd(num) {
+    if (this.isZero()) return num.abs();
+    if (num.isZero()) return this.abs();
+
+    var a = this.clone();
+    var b = num.clone();
+    a.negative = 0;
+    b.negative = 0;
+
+    // Remove common factor of two
+    for (var shift = 0; a.isEven() && b.isEven(); shift++) {
+      a.iushrn(1);
+      b.iushrn(1);
+    }
+
+    do {
+      while (a.isEven()) {
+        a.iushrn(1);
+      }
+      while (b.isEven()) {
+        b.iushrn(1);
+      }
+
+      var r = a.cmp(b);
+      if (r < 0) {
+        // Swap `a` and `b` to make `a` always bigger than `b`
+        var t = a;
+        a = b;
+        b = t;
+      } else if (r === 0 || b.cmpn(1) === 0) {
+        break;
+      }
+
+      a.isub(b);
+    } while (true);
+
+    return b.iushln(shift);
+  };
+
+  // Invert number in the field F(num)
+  BN.prototype.invm = function invm(num) {
+    return this.egcd(num).a.umod(num);
+  };
+
+  BN.prototype.isEven = function isEven() {
+    return (this.words[0] & 1) === 0;
+  };
+
+  BN.prototype.isOdd = function isOdd() {
+    return (this.words[0] & 1) === 1;
+  };
+
+  // And first word and num
+  BN.prototype.andln = function andln(num) {
+    return this.words[0] & num;
+  };
+
+  // Increment at the bit position in-line
+  BN.prototype.bincn = function bincn(bit) {
+    assert(typeof bit === 'number');
+    var r = bit % 26;
+    var s = (bit - r) / 26;
+    var q = 1 << r;
+
+    // Fast case: bit is much higher than all existing words
+    if (this.length <= s) {
+      this._expand(s + 1);
+      this.words[s] |= q;
+      return this;
+    }
+
+    // Add bit and propagate, if needed
+    var carry = q;
+    for (var i = s; carry !== 0 && i < this.length; i++) {
+      var w = this.words[i] | 0;
+      w += carry;
+      carry = w >>> 26;
+      w &= 0x3ffffff;
+      this.words[i] = w;
+    }
+    if (carry !== 0) {
+      this.words[i] = carry;
+      this.length++;
+    }
+    return this;
+  };
+
+  BN.prototype.isZero = function isZero() {
+    return this.length === 1 && this.words[0] === 0;
+  };
+
+  BN.prototype.cmpn = function cmpn(num) {
+    var negative = num < 0;
+
+    if (this.negative !== 0 && !negative) return -1;
+    if (this.negative === 0 && negative) return 1;
+
+    this.strip();
+
+    var res;
+    if (this.length > 1) {
+      res = 1;
+    } else {
+      if (negative) {
+        num = -num;
+      }
+
+      assert(num <= 0x3ffffff, 'Number is too big');
+
+      var w = this.words[0] | 0;
+      res = w === num ? 0 : w < num ? -1 : 1;
+    }
+    if (this.negative !== 0) return -res | 0;
+    return res;
+  };
+
+  // Compare two numbers and return:
+  // 1 - if `this` > `num`
+  // 0 - if `this` == `num`
+  // -1 - if `this` < `num`
+  BN.prototype.cmp = function cmp(num) {
+    if (this.negative !== 0 && num.negative === 0) return -1;
+    if (this.negative === 0 && num.negative !== 0) return 1;
+
+    var res = this.ucmp(num);
+    if (this.negative !== 0) return -res | 0;
+    return res;
+  };
+
+  // Unsigned comparison
+  BN.prototype.ucmp = function ucmp(num) {
+    // At this point both numbers have the same sign
+    if (this.length > num.length) return 1;
+    if (this.length < num.length) return -1;
+
+    var res = 0;
+    for (var i = this.length - 1; i >= 0; i--) {
+      var a = this.words[i] | 0;
+      var b = num.words[i] | 0;
+
+      if (a === b) continue;
+      if (a < b) {
+        res = -1;
+      } else if (a > b) {
+        res = 1;
+      }
+      break;
+    }
+    return res;
+  };
+
+  BN.prototype.gtn = function gtn(num) {
+    return this.cmpn(num) === 1;
+  };
+
+  BN.prototype.gt = function gt(num) {
+    return this.cmp(num) === 1;
+  };
+
+  BN.prototype.gten = function gten(num) {
+    return this.cmpn(num) >= 0;
+  };
+
+  BN.prototype.gte = function gte(num) {
+    return this.cmp(num) >= 0;
+  };
+
+  BN.prototype.ltn = function ltn(num) {
+    return this.cmpn(num) === -1;
+  };
+
+  BN.prototype.lt = function lt(num) {
+    return this.cmp(num) === -1;
+  };
+
+  BN.prototype.lten = function lten(num) {
+    return this.cmpn(num) <= 0;
+  };
+
+  BN.prototype.lte = function lte(num) {
+    return this.cmp(num) <= 0;
+  };
+
+  BN.prototype.eqn = function eqn(num) {
+    return this.cmpn(num) === 0;
+  };
+
+  BN.prototype.eq = function eq(num) {
+    return this.cmp(num) === 0;
+  };
+
+  //
+  // A reduce context, could be using montgomery or something better, depending
+  // on the `m` itself.
+  //
+  BN.red = function red(num) {
+    return new Red(num);
+  };
+
+  BN.prototype.toRed = function toRed(ctx) {
+    assert(!this.red, 'Already a number in reduction context');
+    assert(this.negative === 0, 'red works only with positives');
+    return ctx.convertTo(this)._forceRed(ctx);
+  };
+
+  BN.prototype.fromRed = function fromRed() {
+    assert(this.red, 'fromRed works only with numbers in reduction context');
+    return this.red.convertFrom(this);
+  };
+
+  BN.prototype._forceRed = function _forceRed(ctx) {
+    this.red = ctx;
+    return this;
+  };
+
+  BN.prototype.forceRed = function forceRed(ctx) {
+    assert(!this.red, 'Already a number in reduction context');
+    return this._forceRed(ctx);
+  };
+
+  BN.prototype.redAdd = function redAdd(num) {
+    assert(this.red, 'redAdd works only with red numbers');
+    return this.red.add(this, num);
+  };
+
+  BN.prototype.redIAdd = function redIAdd(num) {
+    assert(this.red, 'redIAdd works only with red numbers');
+    return this.red.iadd(this, num);
+  };
+
+  BN.prototype.redSub = function redSub(num) {
+    assert(this.red, 'redSub works only with red numbers');
+    return this.red.sub(this, num);
+  };
+
+  BN.prototype.redISub = function redISub(num) {
+    assert(this.red, 'redISub works only with red numbers');
+    return this.red.isub(this, num);
+  };
+
+  BN.prototype.redShl = function redShl(num) {
+    assert(this.red, 'redShl works only with red numbers');
+    return this.red.shl(this, num);
+  };
+
+  BN.prototype.redMul = function redMul(num) {
+    assert(this.red, 'redMul works only with red numbers');
+    this.red._verify2(this, num);
+    return this.red.mul(this, num);
+  };
+
+  BN.prototype.redIMul = function redIMul(num) {
+    assert(this.red, 'redMul works only with red numbers');
+    this.red._verify2(this, num);
+    return this.red.imul(this, num);
+  };
+
+  BN.prototype.redSqr = function redSqr() {
+    assert(this.red, 'redSqr works only with red numbers');
+    this.red._verify1(this);
+    return this.red.sqr(this);
+  };
+
+  BN.prototype.redISqr = function redISqr() {
+    assert(this.red, 'redISqr works only with red numbers');
+    this.red._verify1(this);
+    return this.red.isqr(this);
+  };
+
+  // Square root over p
+  BN.prototype.redSqrt = function redSqrt() {
+    assert(this.red, 'redSqrt works only with red numbers');
+    this.red._verify1(this);
+    return this.red.sqrt(this);
+  };
+
+  BN.prototype.redInvm = function redInvm() {
+    assert(this.red, 'redInvm works only with red numbers');
+    this.red._verify1(this);
+    return this.red.invm(this);
+  };
+
+  // Return negative clone of `this` % `red modulo`
+  BN.prototype.redNeg = function redNeg() {
+    assert(this.red, 'redNeg works only with red numbers');
+    this.red._verify1(this);
+    return this.red.neg(this);
+  };
+
+  BN.prototype.redPow = function redPow(num) {
+    assert(this.red && !num.red, 'redPow(normalNum)');
+    this.red._verify1(this);
+    return this.red.pow(this, num);
+  };
+
+  // Prime numbers with efficient reduction
+  var primes = {
+    k256: null,
+    p224: null,
+    p192: null,
+    p25519: null
+  };
+
+  // Pseudo-Mersenne prime
+  function MPrime(name, p) {
+    // P = 2 ^ N - K
+    this.name = name;
+    this.p = new BN(p, 16);
+    this.n = this.p.bitLength();
+    this.k = new BN(1).iushln(this.n).isub(this.p);
+
+    this.tmp = this._tmp();
+  }
+
+  MPrime.prototype._tmp = function _tmp() {
+    var tmp = new BN(null);
+    tmp.words = new Array(Math.ceil(this.n / 13));
+    return tmp;
+  };
+
+  MPrime.prototype.ireduce = function ireduce(num) {
+    // Assumes that `num` is less than `P^2`
+    // num = HI * (2 ^ N - K) + HI * K + LO = HI * K + LO (mod P)
+    var r = num;
+    var rlen;
+
+    do {
+      this.split(r, this.tmp);
+      r = this.imulK(r);
+      r = r.iadd(this.tmp);
+      rlen = r.bitLength();
+    } while (rlen > this.n);
+
+    var cmp = rlen < this.n ? -1 : r.ucmp(this.p);
+    if (cmp === 0) {
+      r.words[0] = 0;
+      r.length = 1;
+    } else if (cmp > 0) {
+      r.isub(this.p);
+    } else {
+      r.strip();
+    }
+
+    return r;
+  };
+
+  MPrime.prototype.split = function split(input, out) {
+    input.iushrn(this.n, 0, out);
+  };
+
+  MPrime.prototype.imulK = function imulK(num) {
+    return num.imul(this.k);
+  };
+
+  function K256() {
+    MPrime.call(this, 'k256', 'ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff fffffffe fffffc2f');
+  }
+  inherits(K256, MPrime);
+
+  K256.prototype.split = function split(input, output) {
+    // 256 = 9 * 26 + 22
+    var mask = 0x3fffff;
+
+    var outLen = Math.min(input.length, 9);
+    for (var i = 0; i < outLen; i++) {
+      output.words[i] = input.words[i];
+    }
+    output.length = outLen;
+
+    if (input.length <= 9) {
+      input.words[0] = 0;
+      input.length = 1;
+      return;
+    }
+
+    // Shift by 9 limbs
+    var prev = input.words[9];
+    output.words[output.length++] = prev & mask;
+
+    for (i = 10; i < input.length; i++) {
+      var next = input.words[i] | 0;
+      input.words[i - 10] = (next & mask) << 4 | prev >>> 22;
+      prev = next;
+    }
+    prev >>>= 22;
+    input.words[i - 10] = prev;
+    if (prev === 0 && input.length > 10) {
+      input.length -= 10;
+    } else {
+      input.length -= 9;
+    }
+  };
+
+  K256.prototype.imulK = function imulK(num) {
+    // K = 0x1000003d1 = [ 0x40, 0x3d1 ]
+    num.words[num.length] = 0;
+    num.words[num.length + 1] = 0;
+    num.length += 2;
+
+    // bounded at: 0x40 * 0x3ffffff + 0x3d0 = 0x100000390
+    var lo = 0;
+    for (var i = 0; i < num.length; i++) {
+      var w = num.words[i] | 0;
+      lo += w * 0x3d1;
+      num.words[i] = lo & 0x3ffffff;
+      lo = w * 0x40 + (lo / 0x4000000 | 0);
+    }
+
+    // Fast length reduction
+    if (num.words[num.length - 1] === 0) {
+      num.length--;
+      if (num.words[num.length - 1] === 0) {
+        num.length--;
+      }
+    }
+    return num;
+  };
+
+  function P224() {
+    MPrime.call(this, 'p224', 'ffffffff ffffffff ffffffff ffffffff 00000000 00000000 00000001');
+  }
+  inherits(P224, MPrime);
+
+  function P192() {
+    MPrime.call(this, 'p192', 'ffffffff ffffffff ffffffff fffffffe ffffffff ffffffff');
+  }
+  inherits(P192, MPrime);
+
+  function P25519() {
+    // 2 ^ 255 - 19
+    MPrime.call(this, '25519', '7fffffffffffffff ffffffffffffffff ffffffffffffffff ffffffffffffffed');
+  }
+  inherits(P25519, MPrime);
+
+  P25519.prototype.imulK = function imulK(num) {
+    // K = 0x13
+    var carry = 0;
+    for (var i = 0; i < num.length; i++) {
+      var hi = (num.words[i] | 0) * 0x13 + carry;
+      var lo = hi & 0x3ffffff;
+      hi >>>= 26;
+
+      num.words[i] = lo;
+      carry = hi;
+    }
+    if (carry !== 0) {
+      num.words[num.length++] = carry;
+    }
+    return num;
+  };
+
+  // Exported mostly for testing purposes, use plain name instead
+  BN._prime = function prime(name) {
+    // Cached version of prime
+    if (primes[name]) return primes[name];
+
+    var prime;
+    if (name === 'k256') {
+      prime = new K256();
+    } else if (name === 'p224') {
+      prime = new P224();
+    } else if (name === 'p192') {
+      prime = new P192();
+    } else if (name === 'p25519') {
+      prime = new P25519();
+    } else {
+      throw new Error('Unknown prime ' + name);
+    }
+    primes[name] = prime;
+
+    return prime;
+  };
+
+  //
+  // Base reduction engine
+  //
+  function Red(m) {
+    if (typeof m === 'string') {
+      var prime = BN._prime(m);
+      this.m = prime.p;
+      this.prime = prime;
+    } else {
+      assert(m.gtn(1), 'modulus must be greater than 1');
+      this.m = m;
+      this.prime = null;
+    }
+  }
+
+  Red.prototype._verify1 = function _verify1(a) {
+    assert(a.negative === 0, 'red works only with positives');
+    assert(a.red, 'red works only with red numbers');
+  };
+
+  Red.prototype._verify2 = function _verify2(a, b) {
+    assert((a.negative | b.negative) === 0, 'red works only with positives');
+    assert(a.red && a.red === b.red, 'red works only with red numbers');
+  };
+
+  Red.prototype.imod = function imod(a) {
+    if (this.prime) return this.prime.ireduce(a)._forceRed(this);
+    return a.umod(this.m)._forceRed(this);
+  };
+
+  Red.prototype.neg = function neg(a) {
+    if (a.isZero()) {
+      return a.clone();
+    }
+
+    return this.m.sub(a)._forceRed(this);
+  };
+
+  Red.prototype.add = function add(a, b) {
+    this._verify2(a, b);
+
+    var res = a.add(b);
+    if (res.cmp(this.m) >= 0) {
+      res.isub(this.m);
+    }
+    return res._forceRed(this);
+  };
+
+  Red.prototype.iadd = function iadd(a, b) {
+    this._verify2(a, b);
+
+    var res = a.iadd(b);
+    if (res.cmp(this.m) >= 0) {
+      res.isub(this.m);
+    }
+    return res;
+  };
+
+  Red.prototype.sub = function sub(a, b) {
+    this._verify2(a, b);
+
+    var res = a.sub(b);
+    if (res.cmpn(0) < 0) {
+      res.iadd(this.m);
+    }
+    return res._forceRed(this);
+  };
+
+  Red.prototype.isub = function isub(a, b) {
+    this._verify2(a, b);
+
+    var res = a.isub(b);
+    if (res.cmpn(0) < 0) {
+      res.iadd(this.m);
+    }
+    return res;
+  };
+
+  Red.prototype.shl = function shl(a, num) {
+    this._verify1(a);
+    return this.imod(a.ushln(num));
+  };
+
+  Red.prototype.imul = function imul(a, b) {
+    this._verify2(a, b);
+    return this.imod(a.imul(b));
+  };
+
+  Red.prototype.mul = function mul(a, b) {
+    this._verify2(a, b);
+    return this.imod(a.mul(b));
+  };
+
+  Red.prototype.isqr = function isqr(a) {
+    return this.imul(a, a.clone());
+  };
+
+  Red.prototype.sqr = function sqr(a) {
+    return this.mul(a, a);
+  };
+
+  Red.prototype.sqrt = function sqrt(a) {
+    if (a.isZero()) return a.clone();
+
+    var mod3 = this.m.andln(3);
+    assert(mod3 % 2 === 1);
+
+    // Fast case
+    if (mod3 === 3) {
+      var pow = this.m.add(new BN(1)).iushrn(2);
+      return this.pow(a, pow);
+    }
+
+    // Tonelli-Shanks algorithm (Totally unoptimized and slow)
+    //
+    // Find Q and S, that Q * 2 ^ S = (P - 1)
+    var q = this.m.subn(1);
+    var s = 0;
+    while (!q.isZero() && q.andln(1) === 0) {
+      s++;
+      q.iushrn(1);
+    }
+    assert(!q.isZero());
+
+    var one = new BN(1).toRed(this);
+    var nOne = one.redNeg();
+
+    // Find quadratic non-residue
+    // NOTE: Max is such because of generalized Riemann hypothesis.
+    var lpow = this.m.subn(1).iushrn(1);
+    var z = this.m.bitLength();
+    z = new BN(2 * z * z).toRed(this);
+
+    while (this.pow(z, lpow).cmp(nOne) !== 0) {
+      z.redIAdd(nOne);
+    }
+
+    var c = this.pow(z, q);
+    var r = this.pow(a, q.addn(1).iushrn(1));
+    var t = this.pow(a, q);
+    var m = s;
+    while (t.cmp(one) !== 0) {
+      var tmp = t;
+      for (var i = 0; tmp.cmp(one) !== 0; i++) {
+        tmp = tmp.redSqr();
+      }
+      assert(i < m);
+      var b = this.pow(c, new BN(1).iushln(m - i - 1));
+
+      r = r.redMul(b);
+      c = b.redSqr();
+      t = t.redMul(c);
+      m = i;
+    }
+
+    return r;
+  };
+
+  Red.prototype.invm = function invm(a) {
+    var inv = a._invmp(this.m);
+    if (inv.negative !== 0) {
+      inv.negative = 0;
+      return this.imod(inv).redNeg();
+    } else {
+      return this.imod(inv);
+    }
+  };
+
+  Red.prototype.pow = function pow(a, num) {
+    if (num.isZero()) return new BN(1);
+    if (num.cmpn(1) === 0) return a.clone();
+
+    var windowSize = 4;
+    var wnd = new Array(1 << windowSize);
+    wnd[0] = new BN(1).toRed(this);
+    wnd[1] = a;
+    for (var i = 2; i < wnd.length; i++) {
+      wnd[i] = this.mul(wnd[i - 1], a);
+    }
+
+    var res = wnd[0];
+    var current = 0;
+    var currentLen = 0;
+    var start = num.bitLength() % 26;
+    if (start === 0) {
+      start = 26;
+    }
+
+    for (i = num.length - 1; i >= 0; i--) {
+      var word = num.words[i];
+      for (var j = start - 1; j >= 0; j--) {
+        var bit = word >> j & 1;
+        if (res !== wnd[0]) {
+          res = this.sqr(res);
+        }
+
+        if (bit === 0 && current === 0) {
+          currentLen = 0;
+          continue;
+        }
+
+        current <<= 1;
+        current |= bit;
+        currentLen++;
+        if (currentLen !== windowSize && (i !== 0 || j !== 0)) continue;
+
+        res = this.mul(res, wnd[current]);
+        currentLen = 0;
+        current = 0;
+      }
+      start = 26;
+    }
+
+    return res;
+  };
+
+  Red.prototype.convertTo = function convertTo(num) {
+    var r = num.umod(this.m);
+
+    return r === num ? r.clone() : r;
+  };
+
+  Red.prototype.convertFrom = function convertFrom(num) {
+    var res = num.clone();
+    res.red = null;
+    return res;
+  };
+
+  //
+  // Montgomery method engine
+  //
+
+  BN.mont = function mont(num) {
+    return new Mont(num);
+  };
+
+  function Mont(m) {
+    Red.call(this, m);
+
+    this.shift = this.m.bitLength();
+    if (this.shift % 26 !== 0) {
+      this.shift += 26 - this.shift % 26;
+    }
+
+    this.r = new BN(1).iushln(this.shift);
+    this.r2 = this.imod(this.r.sqr());
+    this.rinv = this.r._invmp(this.m);
+
+    this.minv = this.rinv.mul(this.r).isubn(1).div(this.m);
+    this.minv = this.minv.umod(this.r);
+    this.minv = this.r.sub(this.minv);
+  }
+  inherits(Mont, Red);
+
+  Mont.prototype.convertTo = function convertTo(num) {
+    return this.imod(num.ushln(this.shift));
+  };
+
+  Mont.prototype.convertFrom = function convertFrom(num) {
+    var r = this.imod(num.mul(this.rinv));
+    r.red = null;
+    return r;
+  };
+
+  Mont.prototype.imul = function imul(a, b) {
+    if (a.isZero() || b.isZero()) {
+      a.words[0] = 0;
+      a.length = 1;
+      return a;
+    }
+
+    var t = a.imul(b);
+    var c = t.maskn(this.shift).mul(this.minv).imaskn(this.shift).mul(this.m);
+    var u = t.isub(c).iushrn(this.shift);
+    var res = u;
+
+    if (u.cmp(this.m) >= 0) {
+      res = u.isub(this.m);
+    } else if (u.cmpn(0) < 0) {
+      res = u.iadd(this.m);
+    }
+
+    return res._forceRed(this);
+  };
+
+  Mont.prototype.mul = function mul(a, b) {
+    if (a.isZero() || b.isZero()) return new BN(0)._forceRed(this);
+
+    var t = a.mul(b);
+    var c = t.maskn(this.shift).mul(this.minv).imaskn(this.shift).mul(this.m);
+    var u = t.isub(c).iushrn(this.shift);
+    var res = u;
+    if (u.cmp(this.m) >= 0) {
+      res = u.isub(this.m);
+    } else if (u.cmpn(0) < 0) {
+      res = u.iadd(this.m);
+    }
+
+    return res._forceRed(this);
+  };
+
+  Mont.prototype.invm = function invm(a) {
+    // (AR)^-1 * R^2 = (A^-1 * R^-1) * R^2 = A^-1 * R
+    var res = this.imod(a._invmp(this.m).mul(this.r2));
+    return res._forceRed(this);
+  };
+})(typeof module === 'undefined' || module, this);
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)(module)))
+
+/***/ }),
+/* 37 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(38);
+module.exports = __webpack_require__(130);
 
 
 /***/ }),
-/* 32 */
+/* 38 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__img_0xbitcoin_png__ = __webpack_require__(33);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__img_0xbitcoin_png__ = __webpack_require__(39);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__img_0xbitcoin_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__img_0xbitcoin_png__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__img_GitHub_Mark_64px_png__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__img_GitHub_Mark_64px_png__ = __webpack_require__(40);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__img_GitHub_Mark_64px_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__img_GitHub_Mark_64px_png__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__img_reddit_mark_64px_png__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__img_reddit_mark_64px_png__ = __webpack_require__(41);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__img_reddit_mark_64px_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__img_reddit_mark_64px_png__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_vue__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__home_dashboard__ = __webpack_require__(39);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__wallet_dashboard__ = __webpack_require__(40);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__alert_renderer__ = __webpack_require__(41);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__dashboard_renderer__ = __webpack_require__(42);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__home_renderer__ = __webpack_require__(43);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__ethhelper__ = __webpack_require__(45);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__img_0xbrute_png__ = __webpack_require__(42);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__img_0xbrute_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__img_0xbrute_png__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__img_tokenminingpool_png__ = __webpack_require__(43);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__img_tokenminingpool_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__img_tokenminingpool_png__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__img_0xpool_png__ = __webpack_require__(44);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__img_0xpool_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__img_0xpool_png__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_vue__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__alert_renderer__ = __webpack_require__(48);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__home_renderer__ = __webpack_require__(49);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__ethhelper__ = __webpack_require__(54);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__home_dashboard__ = __webpack_require__(128);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__wallet_dashboard__ = __webpack_require__(129);
 
-const $ = __webpack_require__(9);
-
-
-
-
-
-
-
+const $ = __webpack_require__(6);
 
 
 
@@ -29119,17 +36319,25 @@ const $ = __webpack_require__(9);
 
 
 
-//var web3 = this.connectWeb3();
+
+
+
+
+
+
+
+
+
+
 
 var homeRenderer = new __WEBPACK_IMPORTED_MODULE_8__home_renderer__["a" /* default */]();
-var dashboardRenderer = new __WEBPACK_IMPORTED_MODULE_7__dashboard_renderer__["a" /* default */]();
-var alertRenderer = new __WEBPACK_IMPORTED_MODULE_6__alert_renderer__["a" /* default */]();
+
+var alertRenderer = new __WEBPACK_IMPORTED_MODULE_7__alert_renderer__["a" /* default */]();
 var ethHelper = new __WEBPACK_IMPORTED_MODULE_9__ethhelper__["a" /* default */]();
 
-var home = new __WEBPACK_IMPORTED_MODULE_4__home_dashboard__["a" /* default */]();
-var wallet = new __WEBPACK_IMPORTED_MODULE_5__wallet_dashboard__["a" /* default */]();
+var wallet = new __WEBPACK_IMPORTED_MODULE_11__wallet_dashboard__["a" /* default */]();
 
-var navbar = new __WEBPACK_IMPORTED_MODULE_3_vue__["a" /* default */]({
+var navbar = new __WEBPACK_IMPORTED_MODULE_6_vue__["a" /* default */]({
   el: '#navbar',
   data: {
     brandImageUrl: __WEBPACK_IMPORTED_MODULE_0__img_0xbitcoin_png___default.a,
@@ -29140,22 +36348,14 @@ var navbar = new __WEBPACK_IMPORTED_MODULE_3_vue__["a" /* default */]({
 
 $(document).ready(function () {
 
-  console.log("loading page..");
-
   if ($("#home").length > 0) {
-
-    console.log("loading home..");
-
     var web3 = ethHelper.init(alertRenderer);
 
-    home.init(ethHelper, web3, dashboardRenderer);
-
-    homeRenderer.init();
+    homeRenderer.init(ethHelper);
   }
 
   if ($("#wallet").length > 0) {
-
-    console.log("loading wallet..");
+    // var web3 = ethHelper.init( alertRenderer);
 
     wallet.init(alertRenderer, ethHelper);
   }
@@ -29164,25 +36364,43 @@ $(document).ready(function () {
 //dashboardRenderer.hide();
 
 /***/ }),
-/* 33 */
+/* 39 */
 /***/ (function(module, exports) {
 
 module.exports = "/app/assets/img/0xbitcoin.png";
 
 /***/ }),
-/* 34 */
+/* 40 */
 /***/ (function(module, exports) {
 
 module.exports = "/app/assets/img/GitHub-Mark-64px.png";
 
 /***/ }),
-/* 35 */
+/* 41 */
 /***/ (function(module, exports) {
 
 module.exports = "/app/assets/img/reddit-mark-64px.png";
 
 /***/ }),
-/* 36 */
+/* 42 */
+/***/ (function(module, exports) {
+
+module.exports = "/app/assets/img/0xbrute.png";
+
+/***/ }),
+/* 43 */
+/***/ (function(module, exports) {
+
+module.exports = "/app/assets/img/tokenminingpool.png";
+
+/***/ }),
+/* 44 */
+/***/ (function(module, exports) {
+
+module.exports = "/app/assets/img/0xpool.png";
+
+/***/ }),
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var apply = Function.prototype.apply;
@@ -29233,16 +36451,16 @@ exports._unrefActive = exports.active = function (item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(37);
+__webpack_require__(46);
 // On some exotic environments, it's not clear which object `setimmeidate` was
 // able to install onto.  Search each possibility in the same order as the
 // `setimmediate` library.
 exports.setImmediate = typeof self !== "undefined" && self.setImmediate || typeof global !== "undefined" && global.setImmediate || this && this.setImmediate;
 exports.clearImmediate = typeof self !== "undefined" && self.clearImmediate || typeof global !== "undefined" && global.clearImmediate || this && this.clearImmediate;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
 
 /***/ }),
-/* 37 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -29427,10 +36645,10 @@ exports.clearImmediate = typeof self !== "undefined" && self.clearImmediate || t
     attachTo.setImmediate = setImmediate;
     attachTo.clearImmediate = clearImmediate;
 })(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13), __webpack_require__(38)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7), __webpack_require__(47)))
 
 /***/ }),
-/* 38 */
+/* 47 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -29620,192 +36838,19 @@ process.umask = function () {
 };
 
 /***/ }),
-/* 39 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-
-const $ = __webpack_require__(9);
-
-class HomeDashboard {
-
-  init(ethHelper, web3, dashboardRenderer) {
-    setInterval(function () {
-      console.log("updating contract data");
-
-      ethHelper.connectToContract(web3, dashboardRenderer, function (contractData) {
-
-        dashboardRenderer.update(contractData);
-      });
-    }, 30 * 1000);
-
-    ethHelper.connectToContract(web3, dashboardRenderer, function (contractData) {
-
-      dashboardRenderer.init(contractData);
-    });
-  }
-
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = HomeDashboard;
-
-
-/***/ }),
-/* 40 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(12);
-
-const $ = __webpack_require__(9);
-
-
-
-var balanceText;
-var accountAddress;
-
-class WalletDashboard {
-
-  async init(alertRenderer, ethHelper) {
-    this.alertRenderer = alertRenderer;
-    this.ethHelper = ethHelper;
-
-    $(".transfer-form-fields").hide();
-
-    this.web3 = this.detectInjectedWeb3();
-
-    await this.updateWalletRender();
-
-    console.log(accountAddress);
-
-    var app = new __WEBPACK_IMPORTED_MODULE_0_vue__["a" /* default */]({
-      el: '#wallet-titlebar',
-      data: { account: accountAddress,
-        balance: balanceText,
-        errorMessage: alertRenderer.alertMessage },
-
-      methods: {
-        update: function () {}
-      }
-    });
-
-    var transfer = new __WEBPACK_IMPORTED_MODULE_0_vue__["a" /* default */]({
-      el: '#transfer-form',
-      data: { amount: 0,
-        recipient_address: null },
-
-      methods: {
-        update: function () {}
-      }
-    });
-
-    if (this.web3 != null) {
-      $(".transfer-form-fields").show();
-
-      var self = this;
-
-      $(".start-transfer-button").on('click', function () {
-
-        self.startTransfer(transfer.amount, transfer.recipient_address, function (error, response) {
-
-          console.log(response);
-        });
-      });
-    }
-  }
-
-  detectInjectedWeb3() {
-
-    console.log('detect');
-    if (typeof web3 !== 'undefined') {
-      web3 = new Web3(web3.currentProvider);
-
-      console.log(web3);
-
-      if (typeof web3.eth !== 'undefined' && typeof web3.eth.accounts[0] !== 'undefined') {
-
-        return web3;
-      } else {
-
-        console.log(web3.eth);
-        console.log(web3.eth.accounts[0]);
-
-        this.alertRenderer.renderError("No Web3 interface found.  Please login to Metamask or an Ethereum enabled browser.");
-      }
-    } else {
-      // set the provider you want from Web3.providers
-      //web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-      this.alertRenderer.renderError("No Web3 interface found.  Please install Metamask or use an Ethereum enabled browser.");
-    }
-
-    return null;
-  }
-
-  async updateWalletRender() {
-    if (this.web3 != null) {
-      console.log('loading wallet data ');
-
-      var activeAccount = web3.eth.accounts[0];
-
-      accountAddress = activeAccount;
-
-      console.log(accountAddress);
-
-      var contract = this.ethHelper.getWeb3ContractInstance(this.web3);
-
-      let getDecimals = new Promise(resolve => {
-        contract.decimals(function (error, response) {
-          resolve(response.toNumber());
-        });
-      });
-
-      let getTokenBalance = new Promise(resolve => {
-        contract.balanceOf(activeAccount, function (error, response) {
-          resolve(response.toNumber());
-        });
-      });
-
-      var decimals = await getDecimals;
-      var tokenBalance = await getTokenBalance;
-
-      balanceText = tokenBalance / Math.pow(10, decimals);
-    }
-  }
-
-  async startTransfer(amountRaw, recipient, callback) {
-
-    var contract = this.ethHelper.getWeb3ContractInstance(this.web3);
-
-    let getDecimals = new Promise(resolve => {
-      contract.decimals(function (error, response) {
-        resolve(response.toNumber());
-      });
-    });
-
-    var decimals = await getDecimals;
-
-    var amount = amountRaw * Math.pow(10, decimals);
-
-    console.log('start transfer', amount, recipient);
-
-    contract.transfer.sendTransaction(recipient, amount, callback);
-  }
-
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = WalletDashboard;
-
-
-/***/ }),
-/* 41 */
+/* 48 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 class AlertRenderer {
 
   renderError(message) {
+    console.log('render error', message);
     this.alertMessage = message;
   }
 
   renderHelp(message) {
+    console.log('render help', message);
     this.alertMessage = message;
   }
 
@@ -29818,66 +36863,19 @@ class AlertRenderer {
 
 
 /***/ }),
-/* 42 */
+/* 49 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(12);
-
-const $ = __webpack_require__(9);
-
-
-var app;
-var dashboardData;
-
-class DashboardRenderer {
-
-  init(renderData) {
-
-    console.log('rd1', renderData);
-    dashboardData = renderData;
-
-    app = new __WEBPACK_IMPORTED_MODULE_0_vue__["a" /* default */]({
-      el: '#dashboard',
-      data: dashboardData
-    });
-
-    this.show();
-  }
-
-  update(renderData) {
-    console.log('rd2', renderData);
-    dashboardData = renderData;
-
-    //  app.data =   renderData;
-
-    //vm.$forceUpdate();
-
-    this.show();
-  }
-
-  hide() {
-    $('#dashboard').hide();
-  }
-
-  show() {
-    $('#dashboard').show();
-  }
-
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = DashboardRenderer;
-
-
-/***/ }),
-/* 43 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_typed_js__ = __webpack_require__(44);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_typed_js__ = __webpack_require__(50);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_typed_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_typed_js__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_slick_carousel__ = __webpack_require__(51);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_slick_carousel___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_slick_carousel__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__dashboard_renderer__ = __webpack_require__(52);
 
-const $ = __webpack_require__(9);
+const $ = __webpack_require__(6);
+
 
 
 
@@ -29885,9 +36883,25 @@ const $ = __webpack_require__(9);
 //require('owl.carousel')
 
 
+
+var dashboardRenderer = new __WEBPACK_IMPORTED_MODULE_3__dashboard_renderer__["a" /* default */]();
+
 class HomeRenderer {
 
-    init() {
+    init(ethHelper) {
+
+        setInterval(function () {
+
+            ethHelper.connectToContract(web3, dashboardRenderer, function (contractData) {
+
+                dashboardRenderer.update(contractData);
+            });
+        }, 3000);
+
+        ethHelper.connectToContract(web3, dashboardRenderer, function (contractData) {
+
+            dashboardRenderer.init(contractData);
+        });
 
         $(window).on('load', function () {
             $("#loading-center-page").fadeOut();
@@ -29901,22 +36915,9 @@ class HomeRenderer {
             typeSpeed: 40,
             loop: true,
             backSpeed: 0
+        };
 
-            /*    var options = {
-                    strings: [
-                      "<i>First</i> sentence.",
-                     "&amp; a second sentence."
-                     , "&amp; a second sentence."
-                     , "&amp; a second sentence."
-                   ],
-                    typeSpeed: 40,
-                     startDelay: 500,
-                     loop: true,
-                    backSpeed: 0,
-                  }
-            */
-
-        };var typed = new __WEBPACK_IMPORTED_MODULE_1_typed_js___default.a(".code-terminal", options);
+        var typed = new __WEBPACK_IMPORTED_MODULE_1_typed_js___default.a(".code-terminal", options);
 
         /*
             $('.testimonial-carousel').slick({
@@ -30027,7 +37028,7 @@ class HomeRenderer {
 
 
 /***/ }),
-/* 44 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*!
@@ -31114,17 +38115,2878 @@ class HomeRenderer {
 ;
 
 /***/ }),
-/* 45 */
+/* 51 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*
+     _ _      _       _
+ ___| (_) ___| | __  (_)___
+/ __| | |/ __| |/ /  | / __|
+\__ \ | | (__|   < _ | \__ \
+|___/_|_|\___|_|\_(_)/ |___/
+                   |__/
+
+ Version: 1.8.1
+  Author: Ken Wheeler
+ Website: http://kenwheeler.github.io
+    Docs: http://kenwheeler.github.io/slick
+    Repo: http://github.com/kenwheeler/slick
+  Issues: http://github.com/kenwheeler/slick/issues
+
+ */
+/* global window, document, define, jQuery, setInterval, clearInterval */
+;(function (factory) {
+    'use strict';
+
+    if (true) {
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(6)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+    } else if (typeof exports !== 'undefined') {
+        module.exports = factory(require('jquery'));
+    } else {
+        factory(jQuery);
+    }
+})(function ($) {
+    'use strict';
+
+    var Slick = window.Slick || {};
+
+    Slick = function () {
+
+        var instanceUid = 0;
+
+        function Slick(element, settings) {
+
+            var _ = this,
+                dataSettings;
+
+            _.defaults = {
+                accessibility: true,
+                adaptiveHeight: false,
+                appendArrows: $(element),
+                appendDots: $(element),
+                arrows: true,
+                asNavFor: null,
+                prevArrow: '<button class="slick-prev" aria-label="Previous" type="button">Previous</button>',
+                nextArrow: '<button class="slick-next" aria-label="Next" type="button">Next</button>',
+                autoplay: false,
+                autoplaySpeed: 3000,
+                centerMode: false,
+                centerPadding: '50px',
+                cssEase: 'ease',
+                customPaging: function (slider, i) {
+                    return $('<button type="button" />').text(i + 1);
+                },
+                dots: false,
+                dotsClass: 'slick-dots',
+                draggable: true,
+                easing: 'linear',
+                edgeFriction: 0.35,
+                fade: false,
+                focusOnSelect: false,
+                focusOnChange: false,
+                infinite: true,
+                initialSlide: 0,
+                lazyLoad: 'ondemand',
+                mobileFirst: false,
+                pauseOnHover: true,
+                pauseOnFocus: true,
+                pauseOnDotsHover: false,
+                respondTo: 'window',
+                responsive: null,
+                rows: 1,
+                rtl: false,
+                slide: '',
+                slidesPerRow: 1,
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                speed: 500,
+                swipe: true,
+                swipeToSlide: false,
+                touchMove: true,
+                touchThreshold: 5,
+                useCSS: true,
+                useTransform: true,
+                variableWidth: false,
+                vertical: false,
+                verticalSwiping: false,
+                waitForAnimate: true,
+                zIndex: 1000
+            };
+
+            _.initials = {
+                animating: false,
+                dragging: false,
+                autoPlayTimer: null,
+                currentDirection: 0,
+                currentLeft: null,
+                currentSlide: 0,
+                direction: 1,
+                $dots: null,
+                listWidth: null,
+                listHeight: null,
+                loadIndex: 0,
+                $nextArrow: null,
+                $prevArrow: null,
+                scrolling: false,
+                slideCount: null,
+                slideWidth: null,
+                $slideTrack: null,
+                $slides: null,
+                sliding: false,
+                slideOffset: 0,
+                swipeLeft: null,
+                swiping: false,
+                $list: null,
+                touchObject: {},
+                transformsEnabled: false,
+                unslicked: false
+            };
+
+            $.extend(_, _.initials);
+
+            _.activeBreakpoint = null;
+            _.animType = null;
+            _.animProp = null;
+            _.breakpoints = [];
+            _.breakpointSettings = [];
+            _.cssTransitions = false;
+            _.focussed = false;
+            _.interrupted = false;
+            _.hidden = 'hidden';
+            _.paused = true;
+            _.positionProp = null;
+            _.respondTo = null;
+            _.rowCount = 1;
+            _.shouldClick = true;
+            _.$slider = $(element);
+            _.$slidesCache = null;
+            _.transformType = null;
+            _.transitionType = null;
+            _.visibilityChange = 'visibilitychange';
+            _.windowWidth = 0;
+            _.windowTimer = null;
+
+            dataSettings = $(element).data('slick') || {};
+
+            _.options = $.extend({}, _.defaults, settings, dataSettings);
+
+            _.currentSlide = _.options.initialSlide;
+
+            _.originalSettings = _.options;
+
+            if (typeof document.mozHidden !== 'undefined') {
+                _.hidden = 'mozHidden';
+                _.visibilityChange = 'mozvisibilitychange';
+            } else if (typeof document.webkitHidden !== 'undefined') {
+                _.hidden = 'webkitHidden';
+                _.visibilityChange = 'webkitvisibilitychange';
+            }
+
+            _.autoPlay = $.proxy(_.autoPlay, _);
+            _.autoPlayClear = $.proxy(_.autoPlayClear, _);
+            _.autoPlayIterator = $.proxy(_.autoPlayIterator, _);
+            _.changeSlide = $.proxy(_.changeSlide, _);
+            _.clickHandler = $.proxy(_.clickHandler, _);
+            _.selectHandler = $.proxy(_.selectHandler, _);
+            _.setPosition = $.proxy(_.setPosition, _);
+            _.swipeHandler = $.proxy(_.swipeHandler, _);
+            _.dragHandler = $.proxy(_.dragHandler, _);
+            _.keyHandler = $.proxy(_.keyHandler, _);
+
+            _.instanceUid = instanceUid++;
+
+            // A simple way to check for HTML strings
+            // Strict HTML recognition (must start with <)
+            // Extracted from jQuery v1.11 source
+            _.htmlExpr = /^(?:\s*(<[\w\W]+>)[^>]*)$/;
+
+            _.registerBreakpoints();
+            _.init(true);
+        }
+
+        return Slick;
+    }();
+
+    Slick.prototype.activateADA = function () {
+        var _ = this;
+
+        _.$slideTrack.find('.slick-active').attr({
+            'aria-hidden': 'false'
+        }).find('a, input, button, select').attr({
+            'tabindex': '0'
+        });
+    };
+
+    Slick.prototype.addSlide = Slick.prototype.slickAdd = function (markup, index, addBefore) {
+
+        var _ = this;
+
+        if (typeof index === 'boolean') {
+            addBefore = index;
+            index = null;
+        } else if (index < 0 || index >= _.slideCount) {
+            return false;
+        }
+
+        _.unload();
+
+        if (typeof index === 'number') {
+            if (index === 0 && _.$slides.length === 0) {
+                $(markup).appendTo(_.$slideTrack);
+            } else if (addBefore) {
+                $(markup).insertBefore(_.$slides.eq(index));
+            } else {
+                $(markup).insertAfter(_.$slides.eq(index));
+            }
+        } else {
+            if (addBefore === true) {
+                $(markup).prependTo(_.$slideTrack);
+            } else {
+                $(markup).appendTo(_.$slideTrack);
+            }
+        }
+
+        _.$slides = _.$slideTrack.children(this.options.slide);
+
+        _.$slideTrack.children(this.options.slide).detach();
+
+        _.$slideTrack.append(_.$slides);
+
+        _.$slides.each(function (index, element) {
+            $(element).attr('data-slick-index', index);
+        });
+
+        _.$slidesCache = _.$slides;
+
+        _.reinit();
+    };
+
+    Slick.prototype.animateHeight = function () {
+        var _ = this;
+        if (_.options.slidesToShow === 1 && _.options.adaptiveHeight === true && _.options.vertical === false) {
+            var targetHeight = _.$slides.eq(_.currentSlide).outerHeight(true);
+            _.$list.animate({
+                height: targetHeight
+            }, _.options.speed);
+        }
+    };
+
+    Slick.prototype.animateSlide = function (targetLeft, callback) {
+
+        var animProps = {},
+            _ = this;
+
+        _.animateHeight();
+
+        if (_.options.rtl === true && _.options.vertical === false) {
+            targetLeft = -targetLeft;
+        }
+        if (_.transformsEnabled === false) {
+            if (_.options.vertical === false) {
+                _.$slideTrack.animate({
+                    left: targetLeft
+                }, _.options.speed, _.options.easing, callback);
+            } else {
+                _.$slideTrack.animate({
+                    top: targetLeft
+                }, _.options.speed, _.options.easing, callback);
+            }
+        } else {
+
+            if (_.cssTransitions === false) {
+                if (_.options.rtl === true) {
+                    _.currentLeft = -_.currentLeft;
+                }
+                $({
+                    animStart: _.currentLeft
+                }).animate({
+                    animStart: targetLeft
+                }, {
+                    duration: _.options.speed,
+                    easing: _.options.easing,
+                    step: function (now) {
+                        now = Math.ceil(now);
+                        if (_.options.vertical === false) {
+                            animProps[_.animType] = 'translate(' + now + 'px, 0px)';
+                            _.$slideTrack.css(animProps);
+                        } else {
+                            animProps[_.animType] = 'translate(0px,' + now + 'px)';
+                            _.$slideTrack.css(animProps);
+                        }
+                    },
+                    complete: function () {
+                        if (callback) {
+                            callback.call();
+                        }
+                    }
+                });
+            } else {
+
+                _.applyTransition();
+                targetLeft = Math.ceil(targetLeft);
+
+                if (_.options.vertical === false) {
+                    animProps[_.animType] = 'translate3d(' + targetLeft + 'px, 0px, 0px)';
+                } else {
+                    animProps[_.animType] = 'translate3d(0px,' + targetLeft + 'px, 0px)';
+                }
+                _.$slideTrack.css(animProps);
+
+                if (callback) {
+                    setTimeout(function () {
+
+                        _.disableTransition();
+
+                        callback.call();
+                    }, _.options.speed);
+                }
+            }
+        }
+    };
+
+    Slick.prototype.getNavTarget = function () {
+
+        var _ = this,
+            asNavFor = _.options.asNavFor;
+
+        if (asNavFor && asNavFor !== null) {
+            asNavFor = $(asNavFor).not(_.$slider);
+        }
+
+        return asNavFor;
+    };
+
+    Slick.prototype.asNavFor = function (index) {
+
+        var _ = this,
+            asNavFor = _.getNavTarget();
+
+        if (asNavFor !== null && typeof asNavFor === 'object') {
+            asNavFor.each(function () {
+                var target = $(this).slick('getSlick');
+                if (!target.unslicked) {
+                    target.slideHandler(index, true);
+                }
+            });
+        }
+    };
+
+    Slick.prototype.applyTransition = function (slide) {
+
+        var _ = this,
+            transition = {};
+
+        if (_.options.fade === false) {
+            transition[_.transitionType] = _.transformType + ' ' + _.options.speed + 'ms ' + _.options.cssEase;
+        } else {
+            transition[_.transitionType] = 'opacity ' + _.options.speed + 'ms ' + _.options.cssEase;
+        }
+
+        if (_.options.fade === false) {
+            _.$slideTrack.css(transition);
+        } else {
+            _.$slides.eq(slide).css(transition);
+        }
+    };
+
+    Slick.prototype.autoPlay = function () {
+
+        var _ = this;
+
+        _.autoPlayClear();
+
+        if (_.slideCount > _.options.slidesToShow) {
+            _.autoPlayTimer = setInterval(_.autoPlayIterator, _.options.autoplaySpeed);
+        }
+    };
+
+    Slick.prototype.autoPlayClear = function () {
+
+        var _ = this;
+
+        if (_.autoPlayTimer) {
+            clearInterval(_.autoPlayTimer);
+        }
+    };
+
+    Slick.prototype.autoPlayIterator = function () {
+
+        var _ = this,
+            slideTo = _.currentSlide + _.options.slidesToScroll;
+
+        if (!_.paused && !_.interrupted && !_.focussed) {
+
+            if (_.options.infinite === false) {
+
+                if (_.direction === 1 && _.currentSlide + 1 === _.slideCount - 1) {
+                    _.direction = 0;
+                } else if (_.direction === 0) {
+
+                    slideTo = _.currentSlide - _.options.slidesToScroll;
+
+                    if (_.currentSlide - 1 === 0) {
+                        _.direction = 1;
+                    }
+                }
+            }
+
+            _.slideHandler(slideTo);
+        }
+    };
+
+    Slick.prototype.buildArrows = function () {
+
+        var _ = this;
+
+        if (_.options.arrows === true) {
+
+            _.$prevArrow = $(_.options.prevArrow).addClass('slick-arrow');
+            _.$nextArrow = $(_.options.nextArrow).addClass('slick-arrow');
+
+            if (_.slideCount > _.options.slidesToShow) {
+
+                _.$prevArrow.removeClass('slick-hidden').removeAttr('aria-hidden tabindex');
+                _.$nextArrow.removeClass('slick-hidden').removeAttr('aria-hidden tabindex');
+
+                if (_.htmlExpr.test(_.options.prevArrow)) {
+                    _.$prevArrow.prependTo(_.options.appendArrows);
+                }
+
+                if (_.htmlExpr.test(_.options.nextArrow)) {
+                    _.$nextArrow.appendTo(_.options.appendArrows);
+                }
+
+                if (_.options.infinite !== true) {
+                    _.$prevArrow.addClass('slick-disabled').attr('aria-disabled', 'true');
+                }
+            } else {
+
+                _.$prevArrow.add(_.$nextArrow).addClass('slick-hidden').attr({
+                    'aria-disabled': 'true',
+                    'tabindex': '-1'
+                });
+            }
+        }
+    };
+
+    Slick.prototype.buildDots = function () {
+
+        var _ = this,
+            i,
+            dot;
+
+        if (_.options.dots === true && _.slideCount > _.options.slidesToShow) {
+
+            _.$slider.addClass('slick-dotted');
+
+            dot = $('<ul />').addClass(_.options.dotsClass);
+
+            for (i = 0; i <= _.getDotCount(); i += 1) {
+                dot.append($('<li />').append(_.options.customPaging.call(this, _, i)));
+            }
+
+            _.$dots = dot.appendTo(_.options.appendDots);
+
+            _.$dots.find('li').first().addClass('slick-active');
+        }
+    };
+
+    Slick.prototype.buildOut = function () {
+
+        var _ = this;
+
+        _.$slides = _.$slider.children(_.options.slide + ':not(.slick-cloned)').addClass('slick-slide');
+
+        _.slideCount = _.$slides.length;
+
+        _.$slides.each(function (index, element) {
+            $(element).attr('data-slick-index', index).data('originalStyling', $(element).attr('style') || '');
+        });
+
+        _.$slider.addClass('slick-slider');
+
+        _.$slideTrack = _.slideCount === 0 ? $('<div class="slick-track"/>').appendTo(_.$slider) : _.$slides.wrapAll('<div class="slick-track"/>').parent();
+
+        _.$list = _.$slideTrack.wrap('<div class="slick-list"/>').parent();
+        _.$slideTrack.css('opacity', 0);
+
+        if (_.options.centerMode === true || _.options.swipeToSlide === true) {
+            _.options.slidesToScroll = 1;
+        }
+
+        $('img[data-lazy]', _.$slider).not('[src]').addClass('slick-loading');
+
+        _.setupInfinite();
+
+        _.buildArrows();
+
+        _.buildDots();
+
+        _.updateDots();
+
+        _.setSlideClasses(typeof _.currentSlide === 'number' ? _.currentSlide : 0);
+
+        if (_.options.draggable === true) {
+            _.$list.addClass('draggable');
+        }
+    };
+
+    Slick.prototype.buildRows = function () {
+
+        var _ = this,
+            a,
+            b,
+            c,
+            newSlides,
+            numOfSlides,
+            originalSlides,
+            slidesPerSection;
+
+        newSlides = document.createDocumentFragment();
+        originalSlides = _.$slider.children();
+
+        if (_.options.rows > 0) {
+
+            slidesPerSection = _.options.slidesPerRow * _.options.rows;
+            numOfSlides = Math.ceil(originalSlides.length / slidesPerSection);
+
+            for (a = 0; a < numOfSlides; a++) {
+                var slide = document.createElement('div');
+                for (b = 0; b < _.options.rows; b++) {
+                    var row = document.createElement('div');
+                    for (c = 0; c < _.options.slidesPerRow; c++) {
+                        var target = a * slidesPerSection + (b * _.options.slidesPerRow + c);
+                        if (originalSlides.get(target)) {
+                            row.appendChild(originalSlides.get(target));
+                        }
+                    }
+                    slide.appendChild(row);
+                }
+                newSlides.appendChild(slide);
+            }
+
+            _.$slider.empty().append(newSlides);
+            _.$slider.children().children().children().css({
+                'width': 100 / _.options.slidesPerRow + '%',
+                'display': 'inline-block'
+            });
+        }
+    };
+
+    Slick.prototype.checkResponsive = function (initial, forceUpdate) {
+
+        var _ = this,
+            breakpoint,
+            targetBreakpoint,
+            respondToWidth,
+            triggerBreakpoint = false;
+        var sliderWidth = _.$slider.width();
+        var windowWidth = window.innerWidth || $(window).width();
+
+        if (_.respondTo === 'window') {
+            respondToWidth = windowWidth;
+        } else if (_.respondTo === 'slider') {
+            respondToWidth = sliderWidth;
+        } else if (_.respondTo === 'min') {
+            respondToWidth = Math.min(windowWidth, sliderWidth);
+        }
+
+        if (_.options.responsive && _.options.responsive.length && _.options.responsive !== null) {
+
+            targetBreakpoint = null;
+
+            for (breakpoint in _.breakpoints) {
+                if (_.breakpoints.hasOwnProperty(breakpoint)) {
+                    if (_.originalSettings.mobileFirst === false) {
+                        if (respondToWidth < _.breakpoints[breakpoint]) {
+                            targetBreakpoint = _.breakpoints[breakpoint];
+                        }
+                    } else {
+                        if (respondToWidth > _.breakpoints[breakpoint]) {
+                            targetBreakpoint = _.breakpoints[breakpoint];
+                        }
+                    }
+                }
+            }
+
+            if (targetBreakpoint !== null) {
+                if (_.activeBreakpoint !== null) {
+                    if (targetBreakpoint !== _.activeBreakpoint || forceUpdate) {
+                        _.activeBreakpoint = targetBreakpoint;
+                        if (_.breakpointSettings[targetBreakpoint] === 'unslick') {
+                            _.unslick(targetBreakpoint);
+                        } else {
+                            _.options = $.extend({}, _.originalSettings, _.breakpointSettings[targetBreakpoint]);
+                            if (initial === true) {
+                                _.currentSlide = _.options.initialSlide;
+                            }
+                            _.refresh(initial);
+                        }
+                        triggerBreakpoint = targetBreakpoint;
+                    }
+                } else {
+                    _.activeBreakpoint = targetBreakpoint;
+                    if (_.breakpointSettings[targetBreakpoint] === 'unslick') {
+                        _.unslick(targetBreakpoint);
+                    } else {
+                        _.options = $.extend({}, _.originalSettings, _.breakpointSettings[targetBreakpoint]);
+                        if (initial === true) {
+                            _.currentSlide = _.options.initialSlide;
+                        }
+                        _.refresh(initial);
+                    }
+                    triggerBreakpoint = targetBreakpoint;
+                }
+            } else {
+                if (_.activeBreakpoint !== null) {
+                    _.activeBreakpoint = null;
+                    _.options = _.originalSettings;
+                    if (initial === true) {
+                        _.currentSlide = _.options.initialSlide;
+                    }
+                    _.refresh(initial);
+                    triggerBreakpoint = targetBreakpoint;
+                }
+            }
+
+            // only trigger breakpoints during an actual break. not on initialize.
+            if (!initial && triggerBreakpoint !== false) {
+                _.$slider.trigger('breakpoint', [_, triggerBreakpoint]);
+            }
+        }
+    };
+
+    Slick.prototype.changeSlide = function (event, dontAnimate) {
+
+        var _ = this,
+            $target = $(event.currentTarget),
+            indexOffset,
+            slideOffset,
+            unevenOffset;
+
+        // If target is a link, prevent default action.
+        if ($target.is('a')) {
+            event.preventDefault();
+        }
+
+        // If target is not the <li> element (ie: a child), find the <li>.
+        if (!$target.is('li')) {
+            $target = $target.closest('li');
+        }
+
+        unevenOffset = _.slideCount % _.options.slidesToScroll !== 0;
+        indexOffset = unevenOffset ? 0 : (_.slideCount - _.currentSlide) % _.options.slidesToScroll;
+
+        switch (event.data.message) {
+
+            case 'previous':
+                slideOffset = indexOffset === 0 ? _.options.slidesToScroll : _.options.slidesToShow - indexOffset;
+                if (_.slideCount > _.options.slidesToShow) {
+                    _.slideHandler(_.currentSlide - slideOffset, false, dontAnimate);
+                }
+                break;
+
+            case 'next':
+                slideOffset = indexOffset === 0 ? _.options.slidesToScroll : indexOffset;
+                if (_.slideCount > _.options.slidesToShow) {
+                    _.slideHandler(_.currentSlide + slideOffset, false, dontAnimate);
+                }
+                break;
+
+            case 'index':
+                var index = event.data.index === 0 ? 0 : event.data.index || $target.index() * _.options.slidesToScroll;
+
+                _.slideHandler(_.checkNavigable(index), false, dontAnimate);
+                $target.children().trigger('focus');
+                break;
+
+            default:
+                return;
+        }
+    };
+
+    Slick.prototype.checkNavigable = function (index) {
+
+        var _ = this,
+            navigables,
+            prevNavigable;
+
+        navigables = _.getNavigableIndexes();
+        prevNavigable = 0;
+        if (index > navigables[navigables.length - 1]) {
+            index = navigables[navigables.length - 1];
+        } else {
+            for (var n in navigables) {
+                if (index < navigables[n]) {
+                    index = prevNavigable;
+                    break;
+                }
+                prevNavigable = navigables[n];
+            }
+        }
+
+        return index;
+    };
+
+    Slick.prototype.cleanUpEvents = function () {
+
+        var _ = this;
+
+        if (_.options.dots && _.$dots !== null) {
+
+            $('li', _.$dots).off('click.slick', _.changeSlide).off('mouseenter.slick', $.proxy(_.interrupt, _, true)).off('mouseleave.slick', $.proxy(_.interrupt, _, false));
+
+            if (_.options.accessibility === true) {
+                _.$dots.off('keydown.slick', _.keyHandler);
+            }
+        }
+
+        _.$slider.off('focus.slick blur.slick');
+
+        if (_.options.arrows === true && _.slideCount > _.options.slidesToShow) {
+            _.$prevArrow && _.$prevArrow.off('click.slick', _.changeSlide);
+            _.$nextArrow && _.$nextArrow.off('click.slick', _.changeSlide);
+
+            if (_.options.accessibility === true) {
+                _.$prevArrow && _.$prevArrow.off('keydown.slick', _.keyHandler);
+                _.$nextArrow && _.$nextArrow.off('keydown.slick', _.keyHandler);
+            }
+        }
+
+        _.$list.off('touchstart.slick mousedown.slick', _.swipeHandler);
+        _.$list.off('touchmove.slick mousemove.slick', _.swipeHandler);
+        _.$list.off('touchend.slick mouseup.slick', _.swipeHandler);
+        _.$list.off('touchcancel.slick mouseleave.slick', _.swipeHandler);
+
+        _.$list.off('click.slick', _.clickHandler);
+
+        $(document).off(_.visibilityChange, _.visibility);
+
+        _.cleanUpSlideEvents();
+
+        if (_.options.accessibility === true) {
+            _.$list.off('keydown.slick', _.keyHandler);
+        }
+
+        if (_.options.focusOnSelect === true) {
+            $(_.$slideTrack).children().off('click.slick', _.selectHandler);
+        }
+
+        $(window).off('orientationchange.slick.slick-' + _.instanceUid, _.orientationChange);
+
+        $(window).off('resize.slick.slick-' + _.instanceUid, _.resize);
+
+        $('[draggable!=true]', _.$slideTrack).off('dragstart', _.preventDefault);
+
+        $(window).off('load.slick.slick-' + _.instanceUid, _.setPosition);
+    };
+
+    Slick.prototype.cleanUpSlideEvents = function () {
+
+        var _ = this;
+
+        _.$list.off('mouseenter.slick', $.proxy(_.interrupt, _, true));
+        _.$list.off('mouseleave.slick', $.proxy(_.interrupt, _, false));
+    };
+
+    Slick.prototype.cleanUpRows = function () {
+
+        var _ = this,
+            originalSlides;
+
+        if (_.options.rows > 0) {
+            originalSlides = _.$slides.children().children();
+            originalSlides.removeAttr('style');
+            _.$slider.empty().append(originalSlides);
+        }
+    };
+
+    Slick.prototype.clickHandler = function (event) {
+
+        var _ = this;
+
+        if (_.shouldClick === false) {
+            event.stopImmediatePropagation();
+            event.stopPropagation();
+            event.preventDefault();
+        }
+    };
+
+    Slick.prototype.destroy = function (refresh) {
+
+        var _ = this;
+
+        _.autoPlayClear();
+
+        _.touchObject = {};
+
+        _.cleanUpEvents();
+
+        $('.slick-cloned', _.$slider).detach();
+
+        if (_.$dots) {
+            _.$dots.remove();
+        }
+
+        if (_.$prevArrow && _.$prevArrow.length) {
+
+            _.$prevArrow.removeClass('slick-disabled slick-arrow slick-hidden').removeAttr('aria-hidden aria-disabled tabindex').css('display', '');
+
+            if (_.htmlExpr.test(_.options.prevArrow)) {
+                _.$prevArrow.remove();
+            }
+        }
+
+        if (_.$nextArrow && _.$nextArrow.length) {
+
+            _.$nextArrow.removeClass('slick-disabled slick-arrow slick-hidden').removeAttr('aria-hidden aria-disabled tabindex').css('display', '');
+
+            if (_.htmlExpr.test(_.options.nextArrow)) {
+                _.$nextArrow.remove();
+            }
+        }
+
+        if (_.$slides) {
+
+            _.$slides.removeClass('slick-slide slick-active slick-center slick-visible slick-current').removeAttr('aria-hidden').removeAttr('data-slick-index').each(function () {
+                $(this).attr('style', $(this).data('originalStyling'));
+            });
+
+            _.$slideTrack.children(this.options.slide).detach();
+
+            _.$slideTrack.detach();
+
+            _.$list.detach();
+
+            _.$slider.append(_.$slides);
+        }
+
+        _.cleanUpRows();
+
+        _.$slider.removeClass('slick-slider');
+        _.$slider.removeClass('slick-initialized');
+        _.$slider.removeClass('slick-dotted');
+
+        _.unslicked = true;
+
+        if (!refresh) {
+            _.$slider.trigger('destroy', [_]);
+        }
+    };
+
+    Slick.prototype.disableTransition = function (slide) {
+
+        var _ = this,
+            transition = {};
+
+        transition[_.transitionType] = '';
+
+        if (_.options.fade === false) {
+            _.$slideTrack.css(transition);
+        } else {
+            _.$slides.eq(slide).css(transition);
+        }
+    };
+
+    Slick.prototype.fadeSlide = function (slideIndex, callback) {
+
+        var _ = this;
+
+        if (_.cssTransitions === false) {
+
+            _.$slides.eq(slideIndex).css({
+                zIndex: _.options.zIndex
+            });
+
+            _.$slides.eq(slideIndex).animate({
+                opacity: 1
+            }, _.options.speed, _.options.easing, callback);
+        } else {
+
+            _.applyTransition(slideIndex);
+
+            _.$slides.eq(slideIndex).css({
+                opacity: 1,
+                zIndex: _.options.zIndex
+            });
+
+            if (callback) {
+                setTimeout(function () {
+
+                    _.disableTransition(slideIndex);
+
+                    callback.call();
+                }, _.options.speed);
+            }
+        }
+    };
+
+    Slick.prototype.fadeSlideOut = function (slideIndex) {
+
+        var _ = this;
+
+        if (_.cssTransitions === false) {
+
+            _.$slides.eq(slideIndex).animate({
+                opacity: 0,
+                zIndex: _.options.zIndex - 2
+            }, _.options.speed, _.options.easing);
+        } else {
+
+            _.applyTransition(slideIndex);
+
+            _.$slides.eq(slideIndex).css({
+                opacity: 0,
+                zIndex: _.options.zIndex - 2
+            });
+        }
+    };
+
+    Slick.prototype.filterSlides = Slick.prototype.slickFilter = function (filter) {
+
+        var _ = this;
+
+        if (filter !== null) {
+
+            _.$slidesCache = _.$slides;
+
+            _.unload();
+
+            _.$slideTrack.children(this.options.slide).detach();
+
+            _.$slidesCache.filter(filter).appendTo(_.$slideTrack);
+
+            _.reinit();
+        }
+    };
+
+    Slick.prototype.focusHandler = function () {
+
+        var _ = this;
+
+        _.$slider.off('focus.slick blur.slick').on('focus.slick blur.slick', '*', function (event) {
+
+            event.stopImmediatePropagation();
+            var $sf = $(this);
+
+            setTimeout(function () {
+
+                if (_.options.pauseOnFocus) {
+                    _.focussed = $sf.is(':focus');
+                    _.autoPlay();
+                }
+            }, 0);
+        });
+    };
+
+    Slick.prototype.getCurrent = Slick.prototype.slickCurrentSlide = function () {
+
+        var _ = this;
+        return _.currentSlide;
+    };
+
+    Slick.prototype.getDotCount = function () {
+
+        var _ = this;
+
+        var breakPoint = 0;
+        var counter = 0;
+        var pagerQty = 0;
+
+        if (_.options.infinite === true) {
+            if (_.slideCount <= _.options.slidesToShow) {
+                ++pagerQty;
+            } else {
+                while (breakPoint < _.slideCount) {
+                    ++pagerQty;
+                    breakPoint = counter + _.options.slidesToScroll;
+                    counter += _.options.slidesToScroll <= _.options.slidesToShow ? _.options.slidesToScroll : _.options.slidesToShow;
+                }
+            }
+        } else if (_.options.centerMode === true) {
+            pagerQty = _.slideCount;
+        } else if (!_.options.asNavFor) {
+            pagerQty = 1 + Math.ceil((_.slideCount - _.options.slidesToShow) / _.options.slidesToScroll);
+        } else {
+            while (breakPoint < _.slideCount) {
+                ++pagerQty;
+                breakPoint = counter + _.options.slidesToScroll;
+                counter += _.options.slidesToScroll <= _.options.slidesToShow ? _.options.slidesToScroll : _.options.slidesToShow;
+            }
+        }
+
+        return pagerQty - 1;
+    };
+
+    Slick.prototype.getLeft = function (slideIndex) {
+
+        var _ = this,
+            targetLeft,
+            verticalHeight,
+            verticalOffset = 0,
+            targetSlide,
+            coef;
+
+        _.slideOffset = 0;
+        verticalHeight = _.$slides.first().outerHeight(true);
+
+        if (_.options.infinite === true) {
+            if (_.slideCount > _.options.slidesToShow) {
+                _.slideOffset = _.slideWidth * _.options.slidesToShow * -1;
+                coef = -1;
+
+                if (_.options.vertical === true && _.options.centerMode === true) {
+                    if (_.options.slidesToShow === 2) {
+                        coef = -1.5;
+                    } else if (_.options.slidesToShow === 1) {
+                        coef = -2;
+                    }
+                }
+                verticalOffset = verticalHeight * _.options.slidesToShow * coef;
+            }
+            if (_.slideCount % _.options.slidesToScroll !== 0) {
+                if (slideIndex + _.options.slidesToScroll > _.slideCount && _.slideCount > _.options.slidesToShow) {
+                    if (slideIndex > _.slideCount) {
+                        _.slideOffset = (_.options.slidesToShow - (slideIndex - _.slideCount)) * _.slideWidth * -1;
+                        verticalOffset = (_.options.slidesToShow - (slideIndex - _.slideCount)) * verticalHeight * -1;
+                    } else {
+                        _.slideOffset = _.slideCount % _.options.slidesToScroll * _.slideWidth * -1;
+                        verticalOffset = _.slideCount % _.options.slidesToScroll * verticalHeight * -1;
+                    }
+                }
+            }
+        } else {
+            if (slideIndex + _.options.slidesToShow > _.slideCount) {
+                _.slideOffset = (slideIndex + _.options.slidesToShow - _.slideCount) * _.slideWidth;
+                verticalOffset = (slideIndex + _.options.slidesToShow - _.slideCount) * verticalHeight;
+            }
+        }
+
+        if (_.slideCount <= _.options.slidesToShow) {
+            _.slideOffset = 0;
+            verticalOffset = 0;
+        }
+
+        if (_.options.centerMode === true && _.slideCount <= _.options.slidesToShow) {
+            _.slideOffset = _.slideWidth * Math.floor(_.options.slidesToShow) / 2 - _.slideWidth * _.slideCount / 2;
+        } else if (_.options.centerMode === true && _.options.infinite === true) {
+            _.slideOffset += _.slideWidth * Math.floor(_.options.slidesToShow / 2) - _.slideWidth;
+        } else if (_.options.centerMode === true) {
+            _.slideOffset = 0;
+            _.slideOffset += _.slideWidth * Math.floor(_.options.slidesToShow / 2);
+        }
+
+        if (_.options.vertical === false) {
+            targetLeft = slideIndex * _.slideWidth * -1 + _.slideOffset;
+        } else {
+            targetLeft = slideIndex * verticalHeight * -1 + verticalOffset;
+        }
+
+        if (_.options.variableWidth === true) {
+
+            if (_.slideCount <= _.options.slidesToShow || _.options.infinite === false) {
+                targetSlide = _.$slideTrack.children('.slick-slide').eq(slideIndex);
+            } else {
+                targetSlide = _.$slideTrack.children('.slick-slide').eq(slideIndex + _.options.slidesToShow);
+            }
+
+            if (_.options.rtl === true) {
+                if (targetSlide[0]) {
+                    targetLeft = (_.$slideTrack.width() - targetSlide[0].offsetLeft - targetSlide.width()) * -1;
+                } else {
+                    targetLeft = 0;
+                }
+            } else {
+                targetLeft = targetSlide[0] ? targetSlide[0].offsetLeft * -1 : 0;
+            }
+
+            if (_.options.centerMode === true) {
+                if (_.slideCount <= _.options.slidesToShow || _.options.infinite === false) {
+                    targetSlide = _.$slideTrack.children('.slick-slide').eq(slideIndex);
+                } else {
+                    targetSlide = _.$slideTrack.children('.slick-slide').eq(slideIndex + _.options.slidesToShow + 1);
+                }
+
+                if (_.options.rtl === true) {
+                    if (targetSlide[0]) {
+                        targetLeft = (_.$slideTrack.width() - targetSlide[0].offsetLeft - targetSlide.width()) * -1;
+                    } else {
+                        targetLeft = 0;
+                    }
+                } else {
+                    targetLeft = targetSlide[0] ? targetSlide[0].offsetLeft * -1 : 0;
+                }
+
+                targetLeft += (_.$list.width() - targetSlide.outerWidth()) / 2;
+            }
+        }
+
+        return targetLeft;
+    };
+
+    Slick.prototype.getOption = Slick.prototype.slickGetOption = function (option) {
+
+        var _ = this;
+
+        return _.options[option];
+    };
+
+    Slick.prototype.getNavigableIndexes = function () {
+
+        var _ = this,
+            breakPoint = 0,
+            counter = 0,
+            indexes = [],
+            max;
+
+        if (_.options.infinite === false) {
+            max = _.slideCount;
+        } else {
+            breakPoint = _.options.slidesToScroll * -1;
+            counter = _.options.slidesToScroll * -1;
+            max = _.slideCount * 2;
+        }
+
+        while (breakPoint < max) {
+            indexes.push(breakPoint);
+            breakPoint = counter + _.options.slidesToScroll;
+            counter += _.options.slidesToScroll <= _.options.slidesToShow ? _.options.slidesToScroll : _.options.slidesToShow;
+        }
+
+        return indexes;
+    };
+
+    Slick.prototype.getSlick = function () {
+
+        return this;
+    };
+
+    Slick.prototype.getSlideCount = function () {
+
+        var _ = this,
+            slidesTraversed,
+            swipedSlide,
+            centerOffset;
+
+        centerOffset = _.options.centerMode === true ? _.slideWidth * Math.floor(_.options.slidesToShow / 2) : 0;
+
+        if (_.options.swipeToSlide === true) {
+            _.$slideTrack.find('.slick-slide').each(function (index, slide) {
+                if (slide.offsetLeft - centerOffset + $(slide).outerWidth() / 2 > _.swipeLeft * -1) {
+                    swipedSlide = slide;
+                    return false;
+                }
+            });
+
+            slidesTraversed = Math.abs($(swipedSlide).attr('data-slick-index') - _.currentSlide) || 1;
+
+            return slidesTraversed;
+        } else {
+            return _.options.slidesToScroll;
+        }
+    };
+
+    Slick.prototype.goTo = Slick.prototype.slickGoTo = function (slide, dontAnimate) {
+
+        var _ = this;
+
+        _.changeSlide({
+            data: {
+                message: 'index',
+                index: parseInt(slide)
+            }
+        }, dontAnimate);
+    };
+
+    Slick.prototype.init = function (creation) {
+
+        var _ = this;
+
+        if (!$(_.$slider).hasClass('slick-initialized')) {
+
+            $(_.$slider).addClass('slick-initialized');
+
+            _.buildRows();
+            _.buildOut();
+            _.setProps();
+            _.startLoad();
+            _.loadSlider();
+            _.initializeEvents();
+            _.updateArrows();
+            _.updateDots();
+            _.checkResponsive(true);
+            _.focusHandler();
+        }
+
+        if (creation) {
+            _.$slider.trigger('init', [_]);
+        }
+
+        if (_.options.accessibility === true) {
+            _.initADA();
+        }
+
+        if (_.options.autoplay) {
+
+            _.paused = false;
+            _.autoPlay();
+        }
+    };
+
+    Slick.prototype.initADA = function () {
+        var _ = this,
+            numDotGroups = Math.ceil(_.slideCount / _.options.slidesToShow),
+            tabControlIndexes = _.getNavigableIndexes().filter(function (val) {
+            return val >= 0 && val < _.slideCount;
+        });
+
+        _.$slides.add(_.$slideTrack.find('.slick-cloned')).attr({
+            'aria-hidden': 'true',
+            'tabindex': '-1'
+        }).find('a, input, button, select').attr({
+            'tabindex': '-1'
+        });
+
+        if (_.$dots !== null) {
+            _.$slides.not(_.$slideTrack.find('.slick-cloned')).each(function (i) {
+                var slideControlIndex = tabControlIndexes.indexOf(i);
+
+                $(this).attr({
+                    'role': 'tabpanel',
+                    'id': 'slick-slide' + _.instanceUid + i,
+                    'tabindex': -1
+                });
+
+                if (slideControlIndex !== -1) {
+                    var ariaButtonControl = 'slick-slide-control' + _.instanceUid + slideControlIndex;
+                    if ($('#' + ariaButtonControl).length) {
+                        $(this).attr({
+                            'aria-describedby': ariaButtonControl
+                        });
+                    }
+                }
+            });
+
+            _.$dots.attr('role', 'tablist').find('li').each(function (i) {
+                var mappedSlideIndex = tabControlIndexes[i];
+
+                $(this).attr({
+                    'role': 'presentation'
+                });
+
+                $(this).find('button').first().attr({
+                    'role': 'tab',
+                    'id': 'slick-slide-control' + _.instanceUid + i,
+                    'aria-controls': 'slick-slide' + _.instanceUid + mappedSlideIndex,
+                    'aria-label': i + 1 + ' of ' + numDotGroups,
+                    'aria-selected': null,
+                    'tabindex': '-1'
+                });
+            }).eq(_.currentSlide).find('button').attr({
+                'aria-selected': 'true',
+                'tabindex': '0'
+            }).end();
+        }
+
+        for (var i = _.currentSlide, max = i + _.options.slidesToShow; i < max; i++) {
+            if (_.options.focusOnChange) {
+                _.$slides.eq(i).attr({ 'tabindex': '0' });
+            } else {
+                _.$slides.eq(i).removeAttr('tabindex');
+            }
+        }
+
+        _.activateADA();
+    };
+
+    Slick.prototype.initArrowEvents = function () {
+
+        var _ = this;
+
+        if (_.options.arrows === true && _.slideCount > _.options.slidesToShow) {
+            _.$prevArrow.off('click.slick').on('click.slick', {
+                message: 'previous'
+            }, _.changeSlide);
+            _.$nextArrow.off('click.slick').on('click.slick', {
+                message: 'next'
+            }, _.changeSlide);
+
+            if (_.options.accessibility === true) {
+                _.$prevArrow.on('keydown.slick', _.keyHandler);
+                _.$nextArrow.on('keydown.slick', _.keyHandler);
+            }
+        }
+    };
+
+    Slick.prototype.initDotEvents = function () {
+
+        var _ = this;
+
+        if (_.options.dots === true && _.slideCount > _.options.slidesToShow) {
+            $('li', _.$dots).on('click.slick', {
+                message: 'index'
+            }, _.changeSlide);
+
+            if (_.options.accessibility === true) {
+                _.$dots.on('keydown.slick', _.keyHandler);
+            }
+        }
+
+        if (_.options.dots === true && _.options.pauseOnDotsHover === true && _.slideCount > _.options.slidesToShow) {
+
+            $('li', _.$dots).on('mouseenter.slick', $.proxy(_.interrupt, _, true)).on('mouseleave.slick', $.proxy(_.interrupt, _, false));
+        }
+    };
+
+    Slick.prototype.initSlideEvents = function () {
+
+        var _ = this;
+
+        if (_.options.pauseOnHover) {
+
+            _.$list.on('mouseenter.slick', $.proxy(_.interrupt, _, true));
+            _.$list.on('mouseleave.slick', $.proxy(_.interrupt, _, false));
+        }
+    };
+
+    Slick.prototype.initializeEvents = function () {
+
+        var _ = this;
+
+        _.initArrowEvents();
+
+        _.initDotEvents();
+        _.initSlideEvents();
+
+        _.$list.on('touchstart.slick mousedown.slick', {
+            action: 'start'
+        }, _.swipeHandler);
+        _.$list.on('touchmove.slick mousemove.slick', {
+            action: 'move'
+        }, _.swipeHandler);
+        _.$list.on('touchend.slick mouseup.slick', {
+            action: 'end'
+        }, _.swipeHandler);
+        _.$list.on('touchcancel.slick mouseleave.slick', {
+            action: 'end'
+        }, _.swipeHandler);
+
+        _.$list.on('click.slick', _.clickHandler);
+
+        $(document).on(_.visibilityChange, $.proxy(_.visibility, _));
+
+        if (_.options.accessibility === true) {
+            _.$list.on('keydown.slick', _.keyHandler);
+        }
+
+        if (_.options.focusOnSelect === true) {
+            $(_.$slideTrack).children().on('click.slick', _.selectHandler);
+        }
+
+        $(window).on('orientationchange.slick.slick-' + _.instanceUid, $.proxy(_.orientationChange, _));
+
+        $(window).on('resize.slick.slick-' + _.instanceUid, $.proxy(_.resize, _));
+
+        $('[draggable!=true]', _.$slideTrack).on('dragstart', _.preventDefault);
+
+        $(window).on('load.slick.slick-' + _.instanceUid, _.setPosition);
+        $(_.setPosition);
+    };
+
+    Slick.prototype.initUI = function () {
+
+        var _ = this;
+
+        if (_.options.arrows === true && _.slideCount > _.options.slidesToShow) {
+
+            _.$prevArrow.show();
+            _.$nextArrow.show();
+        }
+
+        if (_.options.dots === true && _.slideCount > _.options.slidesToShow) {
+
+            _.$dots.show();
+        }
+    };
+
+    Slick.prototype.keyHandler = function (event) {
+
+        var _ = this;
+        //Dont slide if the cursor is inside the form fields and arrow keys are pressed
+        if (!event.target.tagName.match('TEXTAREA|INPUT|SELECT')) {
+            if (event.keyCode === 37 && _.options.accessibility === true) {
+                _.changeSlide({
+                    data: {
+                        message: _.options.rtl === true ? 'next' : 'previous'
+                    }
+                });
+            } else if (event.keyCode === 39 && _.options.accessibility === true) {
+                _.changeSlide({
+                    data: {
+                        message: _.options.rtl === true ? 'previous' : 'next'
+                    }
+                });
+            }
+        }
+    };
+
+    Slick.prototype.lazyLoad = function () {
+
+        var _ = this,
+            loadRange,
+            cloneRange,
+            rangeStart,
+            rangeEnd;
+
+        function loadImages(imagesScope) {
+
+            $('img[data-lazy]', imagesScope).each(function () {
+
+                var image = $(this),
+                    imageSource = $(this).attr('data-lazy'),
+                    imageSrcSet = $(this).attr('data-srcset'),
+                    imageSizes = $(this).attr('data-sizes') || _.$slider.attr('data-sizes'),
+                    imageToLoad = document.createElement('img');
+
+                imageToLoad.onload = function () {
+
+                    image.animate({ opacity: 0 }, 100, function () {
+
+                        if (imageSrcSet) {
+                            image.attr('srcset', imageSrcSet);
+
+                            if (imageSizes) {
+                                image.attr('sizes', imageSizes);
+                            }
+                        }
+
+                        image.attr('src', imageSource).animate({ opacity: 1 }, 200, function () {
+                            image.removeAttr('data-lazy data-srcset data-sizes').removeClass('slick-loading');
+                        });
+                        _.$slider.trigger('lazyLoaded', [_, image, imageSource]);
+                    });
+                };
+
+                imageToLoad.onerror = function () {
+
+                    image.removeAttr('data-lazy').removeClass('slick-loading').addClass('slick-lazyload-error');
+
+                    _.$slider.trigger('lazyLoadError', [_, image, imageSource]);
+                };
+
+                imageToLoad.src = imageSource;
+            });
+        }
+
+        if (_.options.centerMode === true) {
+            if (_.options.infinite === true) {
+                rangeStart = _.currentSlide + (_.options.slidesToShow / 2 + 1);
+                rangeEnd = rangeStart + _.options.slidesToShow + 2;
+            } else {
+                rangeStart = Math.max(0, _.currentSlide - (_.options.slidesToShow / 2 + 1));
+                rangeEnd = 2 + (_.options.slidesToShow / 2 + 1) + _.currentSlide;
+            }
+        } else {
+            rangeStart = _.options.infinite ? _.options.slidesToShow + _.currentSlide : _.currentSlide;
+            rangeEnd = Math.ceil(rangeStart + _.options.slidesToShow);
+            if (_.options.fade === true) {
+                if (rangeStart > 0) rangeStart--;
+                if (rangeEnd <= _.slideCount) rangeEnd++;
+            }
+        }
+
+        loadRange = _.$slider.find('.slick-slide').slice(rangeStart, rangeEnd);
+
+        if (_.options.lazyLoad === 'anticipated') {
+            var prevSlide = rangeStart - 1,
+                nextSlide = rangeEnd,
+                $slides = _.$slider.find('.slick-slide');
+
+            for (var i = 0; i < _.options.slidesToScroll; i++) {
+                if (prevSlide < 0) prevSlide = _.slideCount - 1;
+                loadRange = loadRange.add($slides.eq(prevSlide));
+                loadRange = loadRange.add($slides.eq(nextSlide));
+                prevSlide--;
+                nextSlide++;
+            }
+        }
+
+        loadImages(loadRange);
+
+        if (_.slideCount <= _.options.slidesToShow) {
+            cloneRange = _.$slider.find('.slick-slide');
+            loadImages(cloneRange);
+        } else if (_.currentSlide >= _.slideCount - _.options.slidesToShow) {
+            cloneRange = _.$slider.find('.slick-cloned').slice(0, _.options.slidesToShow);
+            loadImages(cloneRange);
+        } else if (_.currentSlide === 0) {
+            cloneRange = _.$slider.find('.slick-cloned').slice(_.options.slidesToShow * -1);
+            loadImages(cloneRange);
+        }
+    };
+
+    Slick.prototype.loadSlider = function () {
+
+        var _ = this;
+
+        _.setPosition();
+
+        _.$slideTrack.css({
+            opacity: 1
+        });
+
+        _.$slider.removeClass('slick-loading');
+
+        _.initUI();
+
+        if (_.options.lazyLoad === 'progressive') {
+            _.progressiveLazyLoad();
+        }
+    };
+
+    Slick.prototype.next = Slick.prototype.slickNext = function () {
+
+        var _ = this;
+
+        _.changeSlide({
+            data: {
+                message: 'next'
+            }
+        });
+    };
+
+    Slick.prototype.orientationChange = function () {
+
+        var _ = this;
+
+        _.checkResponsive();
+        _.setPosition();
+    };
+
+    Slick.prototype.pause = Slick.prototype.slickPause = function () {
+
+        var _ = this;
+
+        _.autoPlayClear();
+        _.paused = true;
+    };
+
+    Slick.prototype.play = Slick.prototype.slickPlay = function () {
+
+        var _ = this;
+
+        _.autoPlay();
+        _.options.autoplay = true;
+        _.paused = false;
+        _.focussed = false;
+        _.interrupted = false;
+    };
+
+    Slick.prototype.postSlide = function (index) {
+
+        var _ = this;
+
+        if (!_.unslicked) {
+
+            _.$slider.trigger('afterChange', [_, index]);
+
+            _.animating = false;
+
+            if (_.slideCount > _.options.slidesToShow) {
+                _.setPosition();
+            }
+
+            _.swipeLeft = null;
+
+            if (_.options.autoplay) {
+                _.autoPlay();
+            }
+
+            if (_.options.accessibility === true) {
+                _.initADA();
+
+                if (_.options.focusOnChange) {
+                    var $currentSlide = $(_.$slides.get(_.currentSlide));
+                    $currentSlide.attr('tabindex', 0).focus();
+                }
+            }
+        }
+    };
+
+    Slick.prototype.prev = Slick.prototype.slickPrev = function () {
+
+        var _ = this;
+
+        _.changeSlide({
+            data: {
+                message: 'previous'
+            }
+        });
+    };
+
+    Slick.prototype.preventDefault = function (event) {
+
+        event.preventDefault();
+    };
+
+    Slick.prototype.progressiveLazyLoad = function (tryCount) {
+
+        tryCount = tryCount || 1;
+
+        var _ = this,
+            $imgsToLoad = $('img[data-lazy]', _.$slider),
+            image,
+            imageSource,
+            imageSrcSet,
+            imageSizes,
+            imageToLoad;
+
+        if ($imgsToLoad.length) {
+
+            image = $imgsToLoad.first();
+            imageSource = image.attr('data-lazy');
+            imageSrcSet = image.attr('data-srcset');
+            imageSizes = image.attr('data-sizes') || _.$slider.attr('data-sizes');
+            imageToLoad = document.createElement('img');
+
+            imageToLoad.onload = function () {
+
+                if (imageSrcSet) {
+                    image.attr('srcset', imageSrcSet);
+
+                    if (imageSizes) {
+                        image.attr('sizes', imageSizes);
+                    }
+                }
+
+                image.attr('src', imageSource).removeAttr('data-lazy data-srcset data-sizes').removeClass('slick-loading');
+
+                if (_.options.adaptiveHeight === true) {
+                    _.setPosition();
+                }
+
+                _.$slider.trigger('lazyLoaded', [_, image, imageSource]);
+                _.progressiveLazyLoad();
+            };
+
+            imageToLoad.onerror = function () {
+
+                if (tryCount < 3) {
+
+                    /**
+                     * try to load the image 3 times,
+                     * leave a slight delay so we don't get
+                     * servers blocking the request.
+                     */
+                    setTimeout(function () {
+                        _.progressiveLazyLoad(tryCount + 1);
+                    }, 500);
+                } else {
+
+                    image.removeAttr('data-lazy').removeClass('slick-loading').addClass('slick-lazyload-error');
+
+                    _.$slider.trigger('lazyLoadError', [_, image, imageSource]);
+
+                    _.progressiveLazyLoad();
+                }
+            };
+
+            imageToLoad.src = imageSource;
+        } else {
+
+            _.$slider.trigger('allImagesLoaded', [_]);
+        }
+    };
+
+    Slick.prototype.refresh = function (initializing) {
+
+        var _ = this,
+            currentSlide,
+            lastVisibleIndex;
+
+        lastVisibleIndex = _.slideCount - _.options.slidesToShow;
+
+        // in non-infinite sliders, we don't want to go past the
+        // last visible index.
+        if (!_.options.infinite && _.currentSlide > lastVisibleIndex) {
+            _.currentSlide = lastVisibleIndex;
+        }
+
+        // if less slides than to show, go to start.
+        if (_.slideCount <= _.options.slidesToShow) {
+            _.currentSlide = 0;
+        }
+
+        currentSlide = _.currentSlide;
+
+        _.destroy(true);
+
+        $.extend(_, _.initials, { currentSlide: currentSlide });
+
+        _.init();
+
+        if (!initializing) {
+
+            _.changeSlide({
+                data: {
+                    message: 'index',
+                    index: currentSlide
+                }
+            }, false);
+        }
+    };
+
+    Slick.prototype.registerBreakpoints = function () {
+
+        var _ = this,
+            breakpoint,
+            currentBreakpoint,
+            l,
+            responsiveSettings = _.options.responsive || null;
+
+        if ($.type(responsiveSettings) === 'array' && responsiveSettings.length) {
+
+            _.respondTo = _.options.respondTo || 'window';
+
+            for (breakpoint in responsiveSettings) {
+
+                l = _.breakpoints.length - 1;
+
+                if (responsiveSettings.hasOwnProperty(breakpoint)) {
+                    currentBreakpoint = responsiveSettings[breakpoint].breakpoint;
+
+                    // loop through the breakpoints and cut out any existing
+                    // ones with the same breakpoint number, we don't want dupes.
+                    while (l >= 0) {
+                        if (_.breakpoints[l] && _.breakpoints[l] === currentBreakpoint) {
+                            _.breakpoints.splice(l, 1);
+                        }
+                        l--;
+                    }
+
+                    _.breakpoints.push(currentBreakpoint);
+                    _.breakpointSettings[currentBreakpoint] = responsiveSettings[breakpoint].settings;
+                }
+            }
+
+            _.breakpoints.sort(function (a, b) {
+                return _.options.mobileFirst ? a - b : b - a;
+            });
+        }
+    };
+
+    Slick.prototype.reinit = function () {
+
+        var _ = this;
+
+        _.$slides = _.$slideTrack.children(_.options.slide).addClass('slick-slide');
+
+        _.slideCount = _.$slides.length;
+
+        if (_.currentSlide >= _.slideCount && _.currentSlide !== 0) {
+            _.currentSlide = _.currentSlide - _.options.slidesToScroll;
+        }
+
+        if (_.slideCount <= _.options.slidesToShow) {
+            _.currentSlide = 0;
+        }
+
+        _.registerBreakpoints();
+
+        _.setProps();
+        _.setupInfinite();
+        _.buildArrows();
+        _.updateArrows();
+        _.initArrowEvents();
+        _.buildDots();
+        _.updateDots();
+        _.initDotEvents();
+        _.cleanUpSlideEvents();
+        _.initSlideEvents();
+
+        _.checkResponsive(false, true);
+
+        if (_.options.focusOnSelect === true) {
+            $(_.$slideTrack).children().on('click.slick', _.selectHandler);
+        }
+
+        _.setSlideClasses(typeof _.currentSlide === 'number' ? _.currentSlide : 0);
+
+        _.setPosition();
+        _.focusHandler();
+
+        _.paused = !_.options.autoplay;
+        _.autoPlay();
+
+        _.$slider.trigger('reInit', [_]);
+    };
+
+    Slick.prototype.resize = function () {
+
+        var _ = this;
+
+        if ($(window).width() !== _.windowWidth) {
+            clearTimeout(_.windowDelay);
+            _.windowDelay = window.setTimeout(function () {
+                _.windowWidth = $(window).width();
+                _.checkResponsive();
+                if (!_.unslicked) {
+                    _.setPosition();
+                }
+            }, 50);
+        }
+    };
+
+    Slick.prototype.removeSlide = Slick.prototype.slickRemove = function (index, removeBefore, removeAll) {
+
+        var _ = this;
+
+        if (typeof index === 'boolean') {
+            removeBefore = index;
+            index = removeBefore === true ? 0 : _.slideCount - 1;
+        } else {
+            index = removeBefore === true ? --index : index;
+        }
+
+        if (_.slideCount < 1 || index < 0 || index > _.slideCount - 1) {
+            return false;
+        }
+
+        _.unload();
+
+        if (removeAll === true) {
+            _.$slideTrack.children().remove();
+        } else {
+            _.$slideTrack.children(this.options.slide).eq(index).remove();
+        }
+
+        _.$slides = _.$slideTrack.children(this.options.slide);
+
+        _.$slideTrack.children(this.options.slide).detach();
+
+        _.$slideTrack.append(_.$slides);
+
+        _.$slidesCache = _.$slides;
+
+        _.reinit();
+    };
+
+    Slick.prototype.setCSS = function (position) {
+
+        var _ = this,
+            positionProps = {},
+            x,
+            y;
+
+        if (_.options.rtl === true) {
+            position = -position;
+        }
+        x = _.positionProp == 'left' ? Math.ceil(position) + 'px' : '0px';
+        y = _.positionProp == 'top' ? Math.ceil(position) + 'px' : '0px';
+
+        positionProps[_.positionProp] = position;
+
+        if (_.transformsEnabled === false) {
+            _.$slideTrack.css(positionProps);
+        } else {
+            positionProps = {};
+            if (_.cssTransitions === false) {
+                positionProps[_.animType] = 'translate(' + x + ', ' + y + ')';
+                _.$slideTrack.css(positionProps);
+            } else {
+                positionProps[_.animType] = 'translate3d(' + x + ', ' + y + ', 0px)';
+                _.$slideTrack.css(positionProps);
+            }
+        }
+    };
+
+    Slick.prototype.setDimensions = function () {
+
+        var _ = this;
+
+        if (_.options.vertical === false) {
+            if (_.options.centerMode === true) {
+                _.$list.css({
+                    padding: '0px ' + _.options.centerPadding
+                });
+            }
+        } else {
+            _.$list.height(_.$slides.first().outerHeight(true) * _.options.slidesToShow);
+            if (_.options.centerMode === true) {
+                _.$list.css({
+                    padding: _.options.centerPadding + ' 0px'
+                });
+            }
+        }
+
+        _.listWidth = _.$list.width();
+        _.listHeight = _.$list.height();
+
+        if (_.options.vertical === false && _.options.variableWidth === false) {
+            _.slideWidth = Math.ceil(_.listWidth / _.options.slidesToShow);
+            _.$slideTrack.width(Math.ceil(_.slideWidth * _.$slideTrack.children('.slick-slide').length));
+        } else if (_.options.variableWidth === true) {
+            _.$slideTrack.width(5000 * _.slideCount);
+        } else {
+            _.slideWidth = Math.ceil(_.listWidth);
+            _.$slideTrack.height(Math.ceil(_.$slides.first().outerHeight(true) * _.$slideTrack.children('.slick-slide').length));
+        }
+
+        var offset = _.$slides.first().outerWidth(true) - _.$slides.first().width();
+        if (_.options.variableWidth === false) _.$slideTrack.children('.slick-slide').width(_.slideWidth - offset);
+    };
+
+    Slick.prototype.setFade = function () {
+
+        var _ = this,
+            targetLeft;
+
+        _.$slides.each(function (index, element) {
+            targetLeft = _.slideWidth * index * -1;
+            if (_.options.rtl === true) {
+                $(element).css({
+                    position: 'relative',
+                    right: targetLeft,
+                    top: 0,
+                    zIndex: _.options.zIndex - 2,
+                    opacity: 0
+                });
+            } else {
+                $(element).css({
+                    position: 'relative',
+                    left: targetLeft,
+                    top: 0,
+                    zIndex: _.options.zIndex - 2,
+                    opacity: 0
+                });
+            }
+        });
+
+        _.$slides.eq(_.currentSlide).css({
+            zIndex: _.options.zIndex - 1,
+            opacity: 1
+        });
+    };
+
+    Slick.prototype.setHeight = function () {
+
+        var _ = this;
+
+        if (_.options.slidesToShow === 1 && _.options.adaptiveHeight === true && _.options.vertical === false) {
+            var targetHeight = _.$slides.eq(_.currentSlide).outerHeight(true);
+            _.$list.css('height', targetHeight);
+        }
+    };
+
+    Slick.prototype.setOption = Slick.prototype.slickSetOption = function () {
+
+        /**
+         * accepts arguments in format of:
+         *
+         *  - for changing a single option's value:
+         *     .slick("setOption", option, value, refresh )
+         *
+         *  - for changing a set of responsive options:
+         *     .slick("setOption", 'responsive', [{}, ...], refresh )
+         *
+         *  - for updating multiple values at once (not responsive)
+         *     .slick("setOption", { 'option': value, ... }, refresh )
+         */
+
+        var _ = this,
+            l,
+            item,
+            option,
+            value,
+            refresh = false,
+            type;
+
+        if ($.type(arguments[0]) === 'object') {
+
+            option = arguments[0];
+            refresh = arguments[1];
+            type = 'multiple';
+        } else if ($.type(arguments[0]) === 'string') {
+
+            option = arguments[0];
+            value = arguments[1];
+            refresh = arguments[2];
+
+            if (arguments[0] === 'responsive' && $.type(arguments[1]) === 'array') {
+
+                type = 'responsive';
+            } else if (typeof arguments[1] !== 'undefined') {
+
+                type = 'single';
+            }
+        }
+
+        if (type === 'single') {
+
+            _.options[option] = value;
+        } else if (type === 'multiple') {
+
+            $.each(option, function (opt, val) {
+
+                _.options[opt] = val;
+            });
+        } else if (type === 'responsive') {
+
+            for (item in value) {
+
+                if ($.type(_.options.responsive) !== 'array') {
+
+                    _.options.responsive = [value[item]];
+                } else {
+
+                    l = _.options.responsive.length - 1;
+
+                    // loop through the responsive object and splice out duplicates.
+                    while (l >= 0) {
+
+                        if (_.options.responsive[l].breakpoint === value[item].breakpoint) {
+
+                            _.options.responsive.splice(l, 1);
+                        }
+
+                        l--;
+                    }
+
+                    _.options.responsive.push(value[item]);
+                }
+            }
+        }
+
+        if (refresh) {
+
+            _.unload();
+            _.reinit();
+        }
+    };
+
+    Slick.prototype.setPosition = function () {
+
+        var _ = this;
+
+        _.setDimensions();
+
+        _.setHeight();
+
+        if (_.options.fade === false) {
+            _.setCSS(_.getLeft(_.currentSlide));
+        } else {
+            _.setFade();
+        }
+
+        _.$slider.trigger('setPosition', [_]);
+    };
+
+    Slick.prototype.setProps = function () {
+
+        var _ = this,
+            bodyStyle = document.body.style;
+
+        _.positionProp = _.options.vertical === true ? 'top' : 'left';
+
+        if (_.positionProp === 'top') {
+            _.$slider.addClass('slick-vertical');
+        } else {
+            _.$slider.removeClass('slick-vertical');
+        }
+
+        if (bodyStyle.WebkitTransition !== undefined || bodyStyle.MozTransition !== undefined || bodyStyle.msTransition !== undefined) {
+            if (_.options.useCSS === true) {
+                _.cssTransitions = true;
+            }
+        }
+
+        if (_.options.fade) {
+            if (typeof _.options.zIndex === 'number') {
+                if (_.options.zIndex < 3) {
+                    _.options.zIndex = 3;
+                }
+            } else {
+                _.options.zIndex = _.defaults.zIndex;
+            }
+        }
+
+        if (bodyStyle.OTransform !== undefined) {
+            _.animType = 'OTransform';
+            _.transformType = '-o-transform';
+            _.transitionType = 'OTransition';
+            if (bodyStyle.perspectiveProperty === undefined && bodyStyle.webkitPerspective === undefined) _.animType = false;
+        }
+        if (bodyStyle.MozTransform !== undefined) {
+            _.animType = 'MozTransform';
+            _.transformType = '-moz-transform';
+            _.transitionType = 'MozTransition';
+            if (bodyStyle.perspectiveProperty === undefined && bodyStyle.MozPerspective === undefined) _.animType = false;
+        }
+        if (bodyStyle.webkitTransform !== undefined) {
+            _.animType = 'webkitTransform';
+            _.transformType = '-webkit-transform';
+            _.transitionType = 'webkitTransition';
+            if (bodyStyle.perspectiveProperty === undefined && bodyStyle.webkitPerspective === undefined) _.animType = false;
+        }
+        if (bodyStyle.msTransform !== undefined) {
+            _.animType = 'msTransform';
+            _.transformType = '-ms-transform';
+            _.transitionType = 'msTransition';
+            if (bodyStyle.msTransform === undefined) _.animType = false;
+        }
+        if (bodyStyle.transform !== undefined && _.animType !== false) {
+            _.animType = 'transform';
+            _.transformType = 'transform';
+            _.transitionType = 'transition';
+        }
+        _.transformsEnabled = _.options.useTransform && _.animType !== null && _.animType !== false;
+    };
+
+    Slick.prototype.setSlideClasses = function (index) {
+
+        var _ = this,
+            centerOffset,
+            allSlides,
+            indexOffset,
+            remainder;
+
+        allSlides = _.$slider.find('.slick-slide').removeClass('slick-active slick-center slick-current').attr('aria-hidden', 'true');
+
+        _.$slides.eq(index).addClass('slick-current');
+
+        if (_.options.centerMode === true) {
+
+            var evenCoef = _.options.slidesToShow % 2 === 0 ? 1 : 0;
+
+            centerOffset = Math.floor(_.options.slidesToShow / 2);
+
+            if (_.options.infinite === true) {
+
+                if (index >= centerOffset && index <= _.slideCount - 1 - centerOffset) {
+                    _.$slides.slice(index - centerOffset + evenCoef, index + centerOffset + 1).addClass('slick-active').attr('aria-hidden', 'false');
+                } else {
+
+                    indexOffset = _.options.slidesToShow + index;
+                    allSlides.slice(indexOffset - centerOffset + 1 + evenCoef, indexOffset + centerOffset + 2).addClass('slick-active').attr('aria-hidden', 'false');
+                }
+
+                if (index === 0) {
+
+                    allSlides.eq(allSlides.length - 1 - _.options.slidesToShow).addClass('slick-center');
+                } else if (index === _.slideCount - 1) {
+
+                    allSlides.eq(_.options.slidesToShow).addClass('slick-center');
+                }
+            }
+
+            _.$slides.eq(index).addClass('slick-center');
+        } else {
+
+            if (index >= 0 && index <= _.slideCount - _.options.slidesToShow) {
+
+                _.$slides.slice(index, index + _.options.slidesToShow).addClass('slick-active').attr('aria-hidden', 'false');
+            } else if (allSlides.length <= _.options.slidesToShow) {
+
+                allSlides.addClass('slick-active').attr('aria-hidden', 'false');
+            } else {
+
+                remainder = _.slideCount % _.options.slidesToShow;
+                indexOffset = _.options.infinite === true ? _.options.slidesToShow + index : index;
+
+                if (_.options.slidesToShow == _.options.slidesToScroll && _.slideCount - index < _.options.slidesToShow) {
+
+                    allSlides.slice(indexOffset - (_.options.slidesToShow - remainder), indexOffset + remainder).addClass('slick-active').attr('aria-hidden', 'false');
+                } else {
+
+                    allSlides.slice(indexOffset, indexOffset + _.options.slidesToShow).addClass('slick-active').attr('aria-hidden', 'false');
+                }
+            }
+        }
+
+        if (_.options.lazyLoad === 'ondemand' || _.options.lazyLoad === 'anticipated') {
+            _.lazyLoad();
+        }
+    };
+
+    Slick.prototype.setupInfinite = function () {
+
+        var _ = this,
+            i,
+            slideIndex,
+            infiniteCount;
+
+        if (_.options.fade === true) {
+            _.options.centerMode = false;
+        }
+
+        if (_.options.infinite === true && _.options.fade === false) {
+
+            slideIndex = null;
+
+            if (_.slideCount > _.options.slidesToShow) {
+
+                if (_.options.centerMode === true) {
+                    infiniteCount = _.options.slidesToShow + 1;
+                } else {
+                    infiniteCount = _.options.slidesToShow;
+                }
+
+                for (i = _.slideCount; i > _.slideCount - infiniteCount; i -= 1) {
+                    slideIndex = i - 1;
+                    $(_.$slides[slideIndex]).clone(true).attr('id', '').attr('data-slick-index', slideIndex - _.slideCount).prependTo(_.$slideTrack).addClass('slick-cloned');
+                }
+                for (i = 0; i < infiniteCount + _.slideCount; i += 1) {
+                    slideIndex = i;
+                    $(_.$slides[slideIndex]).clone(true).attr('id', '').attr('data-slick-index', slideIndex + _.slideCount).appendTo(_.$slideTrack).addClass('slick-cloned');
+                }
+                _.$slideTrack.find('.slick-cloned').find('[id]').each(function () {
+                    $(this).attr('id', '');
+                });
+            }
+        }
+    };
+
+    Slick.prototype.interrupt = function (toggle) {
+
+        var _ = this;
+
+        if (!toggle) {
+            _.autoPlay();
+        }
+        _.interrupted = toggle;
+    };
+
+    Slick.prototype.selectHandler = function (event) {
+
+        var _ = this;
+
+        var targetElement = $(event.target).is('.slick-slide') ? $(event.target) : $(event.target).parents('.slick-slide');
+
+        var index = parseInt(targetElement.attr('data-slick-index'));
+
+        if (!index) index = 0;
+
+        if (_.slideCount <= _.options.slidesToShow) {
+
+            _.slideHandler(index, false, true);
+            return;
+        }
+
+        _.slideHandler(index);
+    };
+
+    Slick.prototype.slideHandler = function (index, sync, dontAnimate) {
+
+        var targetSlide,
+            animSlide,
+            oldSlide,
+            slideLeft,
+            targetLeft = null,
+            _ = this,
+            navTarget;
+
+        sync = sync || false;
+
+        if (_.animating === true && _.options.waitForAnimate === true) {
+            return;
+        }
+
+        if (_.options.fade === true && _.currentSlide === index) {
+            return;
+        }
+
+        if (sync === false) {
+            _.asNavFor(index);
+        }
+
+        targetSlide = index;
+        targetLeft = _.getLeft(targetSlide);
+        slideLeft = _.getLeft(_.currentSlide);
+
+        _.currentLeft = _.swipeLeft === null ? slideLeft : _.swipeLeft;
+
+        if (_.options.infinite === false && _.options.centerMode === false && (index < 0 || index > _.getDotCount() * _.options.slidesToScroll)) {
+            if (_.options.fade === false) {
+                targetSlide = _.currentSlide;
+                if (dontAnimate !== true && _.slideCount > _.options.slidesToShow) {
+                    _.animateSlide(slideLeft, function () {
+                        _.postSlide(targetSlide);
+                    });
+                } else {
+                    _.postSlide(targetSlide);
+                }
+            }
+            return;
+        } else if (_.options.infinite === false && _.options.centerMode === true && (index < 0 || index > _.slideCount - _.options.slidesToScroll)) {
+            if (_.options.fade === false) {
+                targetSlide = _.currentSlide;
+                if (dontAnimate !== true && _.slideCount > _.options.slidesToShow) {
+                    _.animateSlide(slideLeft, function () {
+                        _.postSlide(targetSlide);
+                    });
+                } else {
+                    _.postSlide(targetSlide);
+                }
+            }
+            return;
+        }
+
+        if (_.options.autoplay) {
+            clearInterval(_.autoPlayTimer);
+        }
+
+        if (targetSlide < 0) {
+            if (_.slideCount % _.options.slidesToScroll !== 0) {
+                animSlide = _.slideCount - _.slideCount % _.options.slidesToScroll;
+            } else {
+                animSlide = _.slideCount + targetSlide;
+            }
+        } else if (targetSlide >= _.slideCount) {
+            if (_.slideCount % _.options.slidesToScroll !== 0) {
+                animSlide = 0;
+            } else {
+                animSlide = targetSlide - _.slideCount;
+            }
+        } else {
+            animSlide = targetSlide;
+        }
+
+        _.animating = true;
+
+        _.$slider.trigger('beforeChange', [_, _.currentSlide, animSlide]);
+
+        oldSlide = _.currentSlide;
+        _.currentSlide = animSlide;
+
+        _.setSlideClasses(_.currentSlide);
+
+        if (_.options.asNavFor) {
+
+            navTarget = _.getNavTarget();
+            navTarget = navTarget.slick('getSlick');
+
+            if (navTarget.slideCount <= navTarget.options.slidesToShow) {
+                navTarget.setSlideClasses(_.currentSlide);
+            }
+        }
+
+        _.updateDots();
+        _.updateArrows();
+
+        if (_.options.fade === true) {
+            if (dontAnimate !== true) {
+
+                _.fadeSlideOut(oldSlide);
+
+                _.fadeSlide(animSlide, function () {
+                    _.postSlide(animSlide);
+                });
+            } else {
+                _.postSlide(animSlide);
+            }
+            _.animateHeight();
+            return;
+        }
+
+        if (dontAnimate !== true && _.slideCount > _.options.slidesToShow) {
+            _.animateSlide(targetLeft, function () {
+                _.postSlide(animSlide);
+            });
+        } else {
+            _.postSlide(animSlide);
+        }
+    };
+
+    Slick.prototype.startLoad = function () {
+
+        var _ = this;
+
+        if (_.options.arrows === true && _.slideCount > _.options.slidesToShow) {
+
+            _.$prevArrow.hide();
+            _.$nextArrow.hide();
+        }
+
+        if (_.options.dots === true && _.slideCount > _.options.slidesToShow) {
+
+            _.$dots.hide();
+        }
+
+        _.$slider.addClass('slick-loading');
+    };
+
+    Slick.prototype.swipeDirection = function () {
+
+        var xDist,
+            yDist,
+            r,
+            swipeAngle,
+            _ = this;
+
+        xDist = _.touchObject.startX - _.touchObject.curX;
+        yDist = _.touchObject.startY - _.touchObject.curY;
+        r = Math.atan2(yDist, xDist);
+
+        swipeAngle = Math.round(r * 180 / Math.PI);
+        if (swipeAngle < 0) {
+            swipeAngle = 360 - Math.abs(swipeAngle);
+        }
+
+        if (swipeAngle <= 45 && swipeAngle >= 0) {
+            return _.options.rtl === false ? 'left' : 'right';
+        }
+        if (swipeAngle <= 360 && swipeAngle >= 315) {
+            return _.options.rtl === false ? 'left' : 'right';
+        }
+        if (swipeAngle >= 135 && swipeAngle <= 225) {
+            return _.options.rtl === false ? 'right' : 'left';
+        }
+        if (_.options.verticalSwiping === true) {
+            if (swipeAngle >= 35 && swipeAngle <= 135) {
+                return 'down';
+            } else {
+                return 'up';
+            }
+        }
+
+        return 'vertical';
+    };
+
+    Slick.prototype.swipeEnd = function (event) {
+
+        var _ = this,
+            slideCount,
+            direction;
+
+        _.dragging = false;
+        _.swiping = false;
+
+        if (_.scrolling) {
+            _.scrolling = false;
+            return false;
+        }
+
+        _.interrupted = false;
+        _.shouldClick = _.touchObject.swipeLength > 10 ? false : true;
+
+        if (_.touchObject.curX === undefined) {
+            return false;
+        }
+
+        if (_.touchObject.edgeHit === true) {
+            _.$slider.trigger('edge', [_, _.swipeDirection()]);
+        }
+
+        if (_.touchObject.swipeLength >= _.touchObject.minSwipe) {
+
+            direction = _.swipeDirection();
+
+            switch (direction) {
+
+                case 'left':
+                case 'down':
+
+                    slideCount = _.options.swipeToSlide ? _.checkNavigable(_.currentSlide + _.getSlideCount()) : _.currentSlide + _.getSlideCount();
+
+                    _.currentDirection = 0;
+
+                    break;
+
+                case 'right':
+                case 'up':
+
+                    slideCount = _.options.swipeToSlide ? _.checkNavigable(_.currentSlide - _.getSlideCount()) : _.currentSlide - _.getSlideCount();
+
+                    _.currentDirection = 1;
+
+                    break;
+
+                default:
+
+            }
+
+            if (direction != 'vertical') {
+
+                _.slideHandler(slideCount);
+                _.touchObject = {};
+                _.$slider.trigger('swipe', [_, direction]);
+            }
+        } else {
+
+            if (_.touchObject.startX !== _.touchObject.curX) {
+
+                _.slideHandler(_.currentSlide);
+                _.touchObject = {};
+            }
+        }
+    };
+
+    Slick.prototype.swipeHandler = function (event) {
+
+        var _ = this;
+
+        if (_.options.swipe === false || 'ontouchend' in document && _.options.swipe === false) {
+            return;
+        } else if (_.options.draggable === false && event.type.indexOf('mouse') !== -1) {
+            return;
+        }
+
+        _.touchObject.fingerCount = event.originalEvent && event.originalEvent.touches !== undefined ? event.originalEvent.touches.length : 1;
+
+        _.touchObject.minSwipe = _.listWidth / _.options.touchThreshold;
+
+        if (_.options.verticalSwiping === true) {
+            _.touchObject.minSwipe = _.listHeight / _.options.touchThreshold;
+        }
+
+        switch (event.data.action) {
+
+            case 'start':
+                _.swipeStart(event);
+                break;
+
+            case 'move':
+                _.swipeMove(event);
+                break;
+
+            case 'end':
+                _.swipeEnd(event);
+                break;
+
+        }
+    };
+
+    Slick.prototype.swipeMove = function (event) {
+
+        var _ = this,
+            edgeWasHit = false,
+            curLeft,
+            swipeDirection,
+            swipeLength,
+            positionOffset,
+            touches,
+            verticalSwipeLength;
+
+        touches = event.originalEvent !== undefined ? event.originalEvent.touches : null;
+
+        if (!_.dragging || _.scrolling || touches && touches.length !== 1) {
+            return false;
+        }
+
+        curLeft = _.getLeft(_.currentSlide);
+
+        _.touchObject.curX = touches !== undefined ? touches[0].pageX : event.clientX;
+        _.touchObject.curY = touches !== undefined ? touches[0].pageY : event.clientY;
+
+        _.touchObject.swipeLength = Math.round(Math.sqrt(Math.pow(_.touchObject.curX - _.touchObject.startX, 2)));
+
+        verticalSwipeLength = Math.round(Math.sqrt(Math.pow(_.touchObject.curY - _.touchObject.startY, 2)));
+
+        if (!_.options.verticalSwiping && !_.swiping && verticalSwipeLength > 4) {
+            _.scrolling = true;
+            return false;
+        }
+
+        if (_.options.verticalSwiping === true) {
+            _.touchObject.swipeLength = verticalSwipeLength;
+        }
+
+        swipeDirection = _.swipeDirection();
+
+        if (event.originalEvent !== undefined && _.touchObject.swipeLength > 4) {
+            _.swiping = true;
+            event.preventDefault();
+        }
+
+        positionOffset = (_.options.rtl === false ? 1 : -1) * (_.touchObject.curX > _.touchObject.startX ? 1 : -1);
+        if (_.options.verticalSwiping === true) {
+            positionOffset = _.touchObject.curY > _.touchObject.startY ? 1 : -1;
+        }
+
+        swipeLength = _.touchObject.swipeLength;
+
+        _.touchObject.edgeHit = false;
+
+        if (_.options.infinite === false) {
+            if (_.currentSlide === 0 && swipeDirection === 'right' || _.currentSlide >= _.getDotCount() && swipeDirection === 'left') {
+                swipeLength = _.touchObject.swipeLength * _.options.edgeFriction;
+                _.touchObject.edgeHit = true;
+            }
+        }
+
+        if (_.options.vertical === false) {
+            _.swipeLeft = curLeft + swipeLength * positionOffset;
+        } else {
+            _.swipeLeft = curLeft + swipeLength * (_.$list.height() / _.listWidth) * positionOffset;
+        }
+        if (_.options.verticalSwiping === true) {
+            _.swipeLeft = curLeft + swipeLength * positionOffset;
+        }
+
+        if (_.options.fade === true || _.options.touchMove === false) {
+            return false;
+        }
+
+        if (_.animating === true) {
+            _.swipeLeft = null;
+            return false;
+        }
+
+        _.setCSS(_.swipeLeft);
+    };
+
+    Slick.prototype.swipeStart = function (event) {
+
+        var _ = this,
+            touches;
+
+        _.interrupted = true;
+
+        if (_.touchObject.fingerCount !== 1 || _.slideCount <= _.options.slidesToShow) {
+            _.touchObject = {};
+            return false;
+        }
+
+        if (event.originalEvent !== undefined && event.originalEvent.touches !== undefined) {
+            touches = event.originalEvent.touches[0];
+        }
+
+        _.touchObject.startX = _.touchObject.curX = touches !== undefined ? touches.pageX : event.clientX;
+        _.touchObject.startY = _.touchObject.curY = touches !== undefined ? touches.pageY : event.clientY;
+
+        _.dragging = true;
+    };
+
+    Slick.prototype.unfilterSlides = Slick.prototype.slickUnfilter = function () {
+
+        var _ = this;
+
+        if (_.$slidesCache !== null) {
+
+            _.unload();
+
+            _.$slideTrack.children(this.options.slide).detach();
+
+            _.$slidesCache.appendTo(_.$slideTrack);
+
+            _.reinit();
+        }
+    };
+
+    Slick.prototype.unload = function () {
+
+        var _ = this;
+
+        $('.slick-cloned', _.$slider).remove();
+
+        if (_.$dots) {
+            _.$dots.remove();
+        }
+
+        if (_.$prevArrow && _.htmlExpr.test(_.options.prevArrow)) {
+            _.$prevArrow.remove();
+        }
+
+        if (_.$nextArrow && _.htmlExpr.test(_.options.nextArrow)) {
+            _.$nextArrow.remove();
+        }
+
+        _.$slides.removeClass('slick-slide slick-active slick-visible slick-current').attr('aria-hidden', 'true').css('width', '');
+    };
+
+    Slick.prototype.unslick = function (fromBreakpoint) {
+
+        var _ = this;
+        _.$slider.trigger('unslick', [_, fromBreakpoint]);
+        _.destroy();
+    };
+
+    Slick.prototype.updateArrows = function () {
+
+        var _ = this,
+            centerOffset;
+
+        centerOffset = Math.floor(_.options.slidesToShow / 2);
+
+        if (_.options.arrows === true && _.slideCount > _.options.slidesToShow && !_.options.infinite) {
+
+            _.$prevArrow.removeClass('slick-disabled').attr('aria-disabled', 'false');
+            _.$nextArrow.removeClass('slick-disabled').attr('aria-disabled', 'false');
+
+            if (_.currentSlide === 0) {
+
+                _.$prevArrow.addClass('slick-disabled').attr('aria-disabled', 'true');
+                _.$nextArrow.removeClass('slick-disabled').attr('aria-disabled', 'false');
+            } else if (_.currentSlide >= _.slideCount - _.options.slidesToShow && _.options.centerMode === false) {
+
+                _.$nextArrow.addClass('slick-disabled').attr('aria-disabled', 'true');
+                _.$prevArrow.removeClass('slick-disabled').attr('aria-disabled', 'false');
+            } else if (_.currentSlide >= _.slideCount - 1 && _.options.centerMode === true) {
+
+                _.$nextArrow.addClass('slick-disabled').attr('aria-disabled', 'true');
+                _.$prevArrow.removeClass('slick-disabled').attr('aria-disabled', 'false');
+            }
+        }
+    };
+
+    Slick.prototype.updateDots = function () {
+
+        var _ = this;
+
+        if (_.$dots !== null) {
+
+            _.$dots.find('li').removeClass('slick-active').end();
+
+            _.$dots.find('li').eq(Math.floor(_.currentSlide / _.options.slidesToScroll)).addClass('slick-active');
+        }
+    };
+
+    Slick.prototype.visibility = function () {
+
+        var _ = this;
+
+        if (_.options.autoplay) {
+
+            if (document[_.hidden]) {
+
+                _.interrupted = true;
+            } else {
+
+                _.interrupted = false;
+            }
+        }
+    };
+
+    $.fn.slick = function () {
+        var _ = this,
+            opt = arguments[0],
+            args = Array.prototype.slice.call(arguments, 1),
+            l = _.length,
+            i,
+            ret;
+        for (i = 0; i < l; i++) {
+            if (typeof opt == 'object' || typeof opt == 'undefined') _[i].slick = new Slick(_[i], opt);else ret = _[i].slick[opt].apply(_[i].slick, args);
+            if (typeof ret != 'undefined') return ret;
+        }
+        return _;
+    };
+});
+
+/***/ }),
+/* 52 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(14);
+
+const $ = __webpack_require__(6);
+
+
+var app;
+var dashboardData;
+
+var poolList = __webpack_require__(53).list;
+
+var poolTiles;
+
+class DashboardRenderer {
+
+  init(renderData) {
+
+    dashboardData = renderData;
+
+    app = new __WEBPACK_IMPORTED_MODULE_0_vue__["a" /* default */]({
+      el: '#dashboard',
+      data: dashboardData
+    });
+
+    poolTiles = new __WEBPACK_IMPORTED_MODULE_0_vue__["a" /* default */]({
+      el: '#pooltiles',
+      data: { pools: { poolList: poolList } }
+    });
+
+    $('.pools-feature').slick({
+      dots: true,
+      arrows: false,
+      infinite: true,
+      speed: 300,
+      slidesToShow: 1,
+      slidesToScroll: 1,
+      responsive: [{
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          infinite: true,
+          dots: true
+        }
+
+        // You can unslick at a given breakpoint now by adding:
+        // settings: "unslick"
+        // instead of a settings object
+      }]
+    });
+
+    this.show();
+  }
+
+  update(renderData) {
+
+    dashboardData = renderData;
+
+    //  app.data =   renderData;
+
+    //vm.$forceUpdate();
+
+    this.show();
+  }
+
+  hide() {
+    $('#dashboard').hide();
+  }
+
+  show() {
+    $('#dashboard').show();
+  }
+
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = DashboardRenderer;
+
+
+/***/ }),
+/* 53 */
+/***/ (function(module, exports) {
+
+var list = { pools: [{ name: "Token Mining Pool",
+    url: "http://tokenminingpool.com",
+    image: "/app/assets/img/tokenminingpool.png"
+  }, { name: "0xPool",
+    url: "http://0xpool.io",
+    image: "/app/assets/img/0xpool.png"
+  }, { name: "0xBrute",
+    url: "http://0xbrute.com",
+    image: "/app/assets/img/0xbrute.png"
+  }] };
+
+exports.list = list;
+
+/***/ }),
+/* 54 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 var INFURA_ROPSTEN_URL = 'https://ropsten.infura.io/gmXEVo5luMPUGPqg6mhy';
 var INFURA_MAINNET_URL = 'https://mainnet.infura.io/gmXEVo5luMPUGPqg6mhy';
 
-var deployedContractInfo = __webpack_require__(46);
-var _0xBitcoinContract = __webpack_require__(47);
+var deployedContractInfo = __webpack_require__(55);
+var _0xBitcoinContract = __webpack_require__(56);
 
-var embeddedWeb3 = __webpack_require__(48);
+var embeddedWeb3 = __webpack_require__(57);
+
+var web3utils = __webpack_require__(113);
 
 class EthHelper {
 
@@ -31170,6 +41032,8 @@ class EthHelper {
 
     var lastRewardEthBlockNumber = await tokenContract.lastRewardEthBlockNumber();
 
+    var hashrateEstimate = this.estimateHashrateFromDifficulty(difficulty);
+
     var decimals = Math.pow(10, 8);
     var renderData = {
       contractUrl: 'https://etherscan.io/address/' + contractAddress,
@@ -31178,6 +41042,7 @@ class EthHelper {
       challenge_number: challenge_number,
       amountMined: parseInt(amountMined) / decimals,
       totalSupply: parseInt(totalSupply) / decimals,
+      hashrateEstimate: hashrateEstimate,
       lastRewardTo: lastRewardTo,
       lastRewardAmount: parseInt(lastRewardAmount) / decimals,
       lastRewardEthBlockNumber: lastRewardEthBlockNumber
@@ -31188,12 +41053,25 @@ class EthHelper {
     };callback(renderData);
   }
 
+  estimateHashrateFromDifficulty(difficulty) {
+
+    var timeToSolveABlock = 10 * 60; //seconds.. ten minutes
+
+    var hashrate = web3utils.toBN(difficulty).mul(web3utils.toBN(2).pow(web3utils.toBN(22))).div(web3utils.toBN(timeToSolveABlock));
+
+    var gigHashes = hashrate / parseFloat(web3utils.toBN(10).pow(web3utils.toBN(9)));
+
+    console.log('hashrate is ', hashrate);
+    return gigHashes.toFixed(2).toString() + " GH/s";
+  }
+
   getWeb3ContractInstance(web3, contract_address, contract_abi) {
     if (contract_address == null) {
-      var contract_address = this.getContractAddress();
+      contract_address = this.getContractAddress();
     }
+
     if (contract_abi == null) {
-      var contract_abi = this.getContractABI();
+      contract_abi = this.getContractABI();
     }
 
     return web3.eth.contract(contract_abi).at(contract_address);
@@ -31212,22 +41090,22 @@ class EthHelper {
 
 
 /***/ }),
-/* 46 */
+/* 55 */
 /***/ (function(module, exports) {
 
 module.exports = {"network-name":"MainNet","contracts":{"_0xbitcointoken":{"name":"0xBitcoinToken","blockchain_address":"0xb6ed7644c69416d67b522e20bc294a9a9b405b31"}}}
 
 /***/ }),
-/* 47 */
+/* 56 */
 /***/ (function(module, exports) {
 
 module.exports = {"contractName":"_0xBitcoinToken","abi":[{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"tokens","type":"uint256"}],"name":"approve","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"lastRewardEthBlockNumber","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getMiningDifficulty","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"nonce","type":"uint256"},{"name":"challenge_digest","type":"bytes32"}],"name":"mint","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"from","type":"address"},{"name":"to","type":"address"},{"name":"tokens","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"rewardEra","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getMiningTarget","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"_totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getMiningReward","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getChallengeNumber","outputs":[{"name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"maxSupplyForEra","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"tokensMinted","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"lastRewardTo","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"tokenOwner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"acceptOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"nonce","type":"uint256"},{"name":"challenge_digest","type":"bytes32"},{"name":"challenge_number","type":"bytes32"},{"name":"testDifficulty","type":"uint256"}],"name":"checkMintSolution","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"epochCount","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"_MAXIMUM_TARGET","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"miningTarget","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"challengeNumber","outputs":[{"name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"nonce","type":"uint256"},{"name":"challenge_digest","type":"bytes32"},{"name":"challenge_number","type":"bytes32"}],"name":"getMintDigest","outputs":[{"name":"digesttest","type":"bytes32"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"tokens","type":"uint256"}],"name":"transfer","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"_BLOCKS_PER_READJUSTMENT","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"lastRewardAmount","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"tokens","type":"uint256"},{"name":"data","type":"bytes"}],"name":"approveAndCall","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"latestDifficultyPeriodStarted","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"newOwner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"tokenAddress","type":"address"},{"name":"tokens","type":"uint256"}],"name":"transferAnyERC20Token","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"_MINIMUM_TARGET","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"tokenOwner","type":"address"},{"name":"spender","type":"address"}],"name":"allowance","outputs":[{"name":"remaining","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"payable":true,"stateMutability":"payable","type":"fallback"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":false,"name":"reward_amount","type":"uint256"},{"indexed":false,"name":"epochCount","type":"uint256"},{"indexed":false,"name":"newChallengeNumber","type":"bytes32"}],"name":"Mint","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_from","type":"address"},{"indexed":true,"name":"_to","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"tokens","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"tokenOwner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"tokens","type":"uint256"}],"name":"Approval","type":"event"}],"bytecode":"0x60606040526101006008556101006009557f0400000000000000000000000000000000000000000000000000000000000000600a5534156200004057600080fd5b336000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055506000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff16141515620000dc57600080fd5b6040805190810160405280600581526020017f307842544300000000000000000000000000000000000000000000000000000081525060029080519060200190620001299291906200045e565b506040805190810160405280600f81526020017f3078426974636f696e20546f6b656e000000000000000000000000000000000081525060039080519060200190620001779291906200045e565b506008600460006101000a81548160ff021916908360ff160217905550600460009054906101000a900460ff1660ff16600a0a6301406f400260058190555060006013819055506000600d81905550620001ec6002600554620002266401000000000262001d60179091906401000000009004565b600e81905550600a54600b8190555043600681905550620002206200024c6401000000000262001da0176401000000009004565b6200050d565b600080821115156200023757600080fd5b81838115156200024357fe5b04905092915050565b600e54601354101580156200026357506020600d54105b1562000276576001600d5401600d819055505b620002a36001600d540160020a600554620002266401000000000262001d60179091906401000000009004565b60055403600e819055506001430340600c8160001916905550620002e26001600754620003236401000000000262001d84179091906401000000009004565b6007819055506000600854600754811515620002fa57fe5b061415620003215762000320620003406401000000000262001e59176401000000009004565b5b565b600081830190508281101515156200033a57600080fd5b92915050565b6000806000600654430392506008549150603c8202905080831015620003b657620003aa6200038a6014600b54620002266401000000000262001d60179091906401000000009004565b600b54620004416401000000000262001e3d179091906401000000009004565b600b8190555062000407565b62000400620003e06014600b54620002266401000000000262001d60179091906401000000009004565b600b54620003236401000000000262001d84179091906401000000009004565b600b819055505b43600681905550600954600b5410156200042557600954600b819055505b600a54600b5411156200043c57600a54600b819055505b505050565b60008282111515156200045357600080fd5b818303905092915050565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f10620004a157805160ff1916838001178555620004d2565b82800160010185558215620004d2579182015b82811115620004d1578251825591602001919060010190620004b4565b5b509050620004e19190620004e5565b5090565b6200050a91905b8082111562000506576000816000905550600101620004ec565b5090565b90565b611f42806200051d6000396000f3006060604052600436106101c2576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff16806306fdde03146101c7578063095ea7b314610255578063163aa00d146102af57806317da485f146102d85780631801fbe51461030157806318160ddd1461034957806323b872dd146103725780632d38bf7a146103eb578063313ce5671461041457806332e99708146104435780633eaaf86b1461046c578063490203a7146104955780634ef37628146104be5780634fa972e1146104ef5780636de9f32b146105185780636fd396d61461054157806370a082311461059657806379ba5097146105e357806381269a56146105f8578063829965cc1461065657806387a2a9d61461067f5780638a769d35146106a85780638ae0368b146106d15780638da5cb5b1461070257806395d89b411461075757806397566aa0146107e5578063a9059cbb1461083e578063b5ade81b14610898578063bafedcaa146108c1578063cae9ca51146108ea578063cb9ae70714610987578063d4ee1d90146109b0578063dc39d06d14610a05578063dc6e9cf914610a5f578063dd62ed3e14610a88578063f2fde38b14610af4575b600080fd5b34156101d257600080fd5b6101da610b2d565b6040518080602001828103825283818151815260200191508051906020019080838360005b8381101561021a5780820151818401526020810190506101ff565b50505050905090810190601f1680156102475780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b341561026057600080fd5b610295600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091908035906020019091905050610bcb565b604051808215151515815260200191505060405180910390f35b34156102ba57600080fd5b6102c2610cbd565b6040518082815260200191505060405180910390f35b34156102e357600080fd5b6102eb610cc3565b6040518082815260200191505060405180910390f35b341561030c57600080fd5b61032f600480803590602001909190803560001916906020019091905050610ce1565b604051808215151515815260200191505060405180910390f35b341561035457600080fd5b61035c610f54565b6040518082815260200191505060405180910390f35b341561037d57600080fd5b6103d1600480803573ffffffffffffffffffffffffffffffffffffffff1690602001909190803573ffffffffffffffffffffffffffffffffffffffff16906020019091908035906020019091905050610f9f565b604051808215151515815260200191505060405180910390f35b34156103f657600080fd5b6103fe61124a565b6040518082815260200191505060405180910390f35b341561041f57600080fd5b610427611250565b604051808260ff1660ff16815260200191505060405180910390f35b341561044e57600080fd5b610456611263565b6040518082815260200191505060405180910390f35b341561047757600080fd5b61047f61126d565b6040518082815260200191505060405180910390f35b34156104a057600080fd5b6104a8611273565b6040518082815260200191505060405180910390f35b34156104c957600080fd5b6104d16112aa565b60405180826000191660001916815260200191505060405180910390f35b34156104fa57600080fd5b6105026112b4565b6040518082815260200191505060405180910390f35b341561052357600080fd5b61052b6112ba565b6040518082815260200191505060405180910390f35b341561054c57600080fd5b6105546112c0565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b34156105a157600080fd5b6105cd600480803573ffffffffffffffffffffffffffffffffffffffff169060200190919050506112e6565b6040518082815260200191505060405180910390f35b34156105ee57600080fd5b6105f661132f565b005b341561060357600080fd5b61063c600480803590602001909190803560001916906020019091908035600019169060200190919080359060200190919050506114ce565b604051808215151515815260200191505060405180910390f35b341561066157600080fd5b610669611577565b6040518082815260200191505060405180910390f35b341561068a57600080fd5b61069261157d565b6040518082815260200191505060405180910390f35b34156106b357600080fd5b6106bb611583565b6040518082815260200191505060405180910390f35b34156106dc57600080fd5b6106e4611589565b60405180826000191660001916815260200191505060405180910390f35b341561070d57600080fd5b61071561158f565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b341561076257600080fd5b61076a6115b4565b6040518080602001828103825283818151815260200191508051906020019080838360005b838110156107aa57808201518184015260208101905061078f565b50505050905090810190601f1680156107d75780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b34156107f057600080fd5b61082060048080359060200190919080356000191690602001909190803560001916906020019091905050611652565b60405180826000191660001916815260200191505060405180910390f35b341561084957600080fd5b61087e600480803573ffffffffffffffffffffffffffffffffffffffff169060200190919080359060200190919050506116cb565b604051808215151515815260200191505060405180910390f35b34156108a357600080fd5b6108ab611866565b6040518082815260200191505060405180910390f35b34156108cc57600080fd5b6108d461186c565b6040518082815260200191505060405180910390f35b34156108f557600080fd5b61096d600480803573ffffffffffffffffffffffffffffffffffffffff1690602001909190803590602001909190803590602001908201803590602001908080601f01602080910402602001604051908101604052809392919081815260200183838082843782019150505050505091905050611872565b604051808215151515815260200191505060405180910390f35b341561099257600080fd5b61099a611abc565b6040518082815260200191505060405180910390f35b34156109bb57600080fd5b6109c3611ac2565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b3415610a1057600080fd5b610a45600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091908035906020019091905050611ae8565b604051808215151515815260200191505060405180910390f35b3415610a6a57600080fd5b610a72611c34565b6040518082815260200191505060405180910390f35b3415610a9357600080fd5b610ade600480803573ffffffffffffffffffffffffffffffffffffffff1690602001909190803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050611c3a565b6040518082815260200191505060405180910390f35b3415610aff57600080fd5b610b2b600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050611cc1565b005b60038054600181600116156101000203166002900480601f016020809104026020016040519081016040528092919081815260200182805460018160011615610100020316600290048015610bc35780601f10610b9857610100808354040283529160200191610bc3565b820191906000526020600020905b815481529060010190602001808311610ba657829003601f168201915b505050505081565b600081601560003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055508273ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925846040518082815260200191505060405180910390a36001905092915050565b60115481565b6000610cdc600b54600a54611d6090919063ffffffff16565b905090565b600080600080610cef611273565b9250600c5433876040518084600019166000191681526020018373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166c0100000000000000000000000002815260140182815260200193505050506040518091039020915084600019168260001916141515610d7457600080fd5b600b5482600190041115610d8757600080fd5b60126000836000191660001916815260200190815260200160002054905060075460126000846000191660001916815260200190815260200160002081905550600081141515610dd657600080fd5b610e2883601460003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054611d8490919063ffffffff16565b601460003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002081905550610e8083601354611d8490919063ffffffff16565b60138190555033600f60006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055508260108190555043601181905550610edd611da0565b3373ffffffffffffffffffffffffffffffffffffffff167fcf6fbb9dcea7d07263ab4f5c3a92f53af33dffc421d9d121e1c74b307e68189d84600754600c54604051808481526020018381526020018260001916600019168152602001935050505060405180910390a26001935050505092915050565b6000601460008073ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000205460055403905090565b6000610ff382601460008773ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054611e3d90919063ffffffff16565b601460008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055506110c582601560008773ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054611e3d90919063ffffffff16565b601560008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000208190555061119782601460008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054611d8490919063ffffffff16565b601460008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055508273ffffffffffffffffffffffffffffffffffffffff168473ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef846040518082815260200191505060405180910390a3600190509392505050565b600d5481565b600460009054906101000a900460ff1681565b6000600b54905090565b60055481565b60006112a5600d5460020a600460009054906101000a900460ff1660ff16600a0a603202611d6090919063ffffffff16565b905090565b6000600c54905090565b600e5481565b60135481565b600f60009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b6000601460008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020549050919050565b600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614151561138b57600080fd5b600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff167f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e060405160405180910390a3600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff166000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055506000600160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550565b6000806000808492506114df611273565b91508533896040518084600019166000191681526020018373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166c01000000000000000000000000028152601401828152602001935050505060405180910390209050600b548160019004111561155f57600080fd5b86600019168160001916149350505050949350505050565b60075481565b600a5481565b600b5481565b600c5481565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60028054600181600116156101000203166002900480601f01602080910402602001604051908101604052809291908181526020018280546001816001161561010002031660029004801561164a5780601f1061161f5761010080835404028352916020019161164a565b820191906000526020600020905b81548152906001019060200180831161162d57829003601f168201915b505050505081565b6000808233866040518084600019166000191681526020018373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166c01000000000000000000000000028152601401828152602001935050505060405180910390209050809150509392505050565b600061171f82601460003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054611e3d90919063ffffffff16565b601460003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055506117b482601460008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054611d8490919063ffffffff16565b601460008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055508273ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef846040518082815260200191505060405180910390a36001905092915050565b60085481565b60105481565b600082601560003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055508373ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925856040518082815260200191505060405180910390a38373ffffffffffffffffffffffffffffffffffffffff16638f4ffcb1338530866040518563ffffffff167c0100000000000000000000000000000000000000000000000000000000028152600401808573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020018481526020018373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200180602001828103825283818151815260200191508051906020019080838360005b83811015611a4f578082015181840152602081019050611a34565b50505050905090810190601f168015611a7c5780820380516001836020036101000a031916815260200191505b5095505050505050600060405180830381600087803b1515611a9d57600080fd5b6102c65a03f11515611aae57600080fd5b505050600190509392505050565b60065481565b600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff16141515611b4557600080fd5b8273ffffffffffffffffffffffffffffffffffffffff1663a9059cbb6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff16846000604051602001526040518363ffffffff167c0100000000000000000000000000000000000000000000000000000000028152600401808373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200182815260200192505050602060405180830381600087803b1515611c1157600080fd5b6102c65a03f11515611c2257600080fd5b50505060405180519050905092915050565b60095481565b6000601560008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054905092915050565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff16141515611d1c57600080fd5b80600160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b60008082111515611d7057600080fd5b8183811515611d7b57fe5b04905092915050565b60008183019050828110151515611d9a57600080fd5b92915050565b600e5460135410158015611db657506020600d54105b15611dc8576001600d5401600d819055505b611de56001600d540160020a600554611d6090919063ffffffff16565b60055403600e819055506001430340600c8160001916905550611e146001600754611d8490919063ffffffff16565b6007819055506000600854600754811515611e2b57fe5b061415611e3b57611e3a611e59565b5b565b6000828211151515611e4e57600080fd5b818303905092915050565b6000806000600654430392506008549150603c8202905080831015611ead57611ea2611e916014600b54611d6090919063ffffffff16565b600b54611e3d90919063ffffffff16565b600b81905550611ede565b611ed7611ec66014600b54611d6090919063ffffffff16565b600b54611d8490919063ffffffff16565b600b819055505b43600681905550600954600b541015611efb57600954600b819055505b600a54600b541115611f1157600a54600b819055505b5050505600a165627a7a72305820d59f3473ee8072d3b732daa114aa23e8db3e168007f7eca216306713144505270029","deployedBytecode":"0x6060604052600436106101c2576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff16806306fdde03146101c7578063095ea7b314610255578063163aa00d146102af57806317da485f146102d85780631801fbe51461030157806318160ddd1461034957806323b872dd146103725780632d38bf7a146103eb578063313ce5671461041457806332e99708146104435780633eaaf86b1461046c578063490203a7146104955780634ef37628146104be5780634fa972e1146104ef5780636de9f32b146105185780636fd396d61461054157806370a082311461059657806379ba5097146105e357806381269a56146105f8578063829965cc1461065657806387a2a9d61461067f5780638a769d35146106a85780638ae0368b146106d15780638da5cb5b1461070257806395d89b411461075757806397566aa0146107e5578063a9059cbb1461083e578063b5ade81b14610898578063bafedcaa146108c1578063cae9ca51146108ea578063cb9ae70714610987578063d4ee1d90146109b0578063dc39d06d14610a05578063dc6e9cf914610a5f578063dd62ed3e14610a88578063f2fde38b14610af4575b600080fd5b34156101d257600080fd5b6101da610b2d565b6040518080602001828103825283818151815260200191508051906020019080838360005b8381101561021a5780820151818401526020810190506101ff565b50505050905090810190601f1680156102475780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b341561026057600080fd5b610295600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091908035906020019091905050610bcb565b604051808215151515815260200191505060405180910390f35b34156102ba57600080fd5b6102c2610cbd565b6040518082815260200191505060405180910390f35b34156102e357600080fd5b6102eb610cc3565b6040518082815260200191505060405180910390f35b341561030c57600080fd5b61032f600480803590602001909190803560001916906020019091905050610ce1565b604051808215151515815260200191505060405180910390f35b341561035457600080fd5b61035c610f54565b6040518082815260200191505060405180910390f35b341561037d57600080fd5b6103d1600480803573ffffffffffffffffffffffffffffffffffffffff1690602001909190803573ffffffffffffffffffffffffffffffffffffffff16906020019091908035906020019091905050610f9f565b604051808215151515815260200191505060405180910390f35b34156103f657600080fd5b6103fe61124a565b6040518082815260200191505060405180910390f35b341561041f57600080fd5b610427611250565b604051808260ff1660ff16815260200191505060405180910390f35b341561044e57600080fd5b610456611263565b6040518082815260200191505060405180910390f35b341561047757600080fd5b61047f61126d565b6040518082815260200191505060405180910390f35b34156104a057600080fd5b6104a8611273565b6040518082815260200191505060405180910390f35b34156104c957600080fd5b6104d16112aa565b60405180826000191660001916815260200191505060405180910390f35b34156104fa57600080fd5b6105026112b4565b6040518082815260200191505060405180910390f35b341561052357600080fd5b61052b6112ba565b6040518082815260200191505060405180910390f35b341561054c57600080fd5b6105546112c0565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b34156105a157600080fd5b6105cd600480803573ffffffffffffffffffffffffffffffffffffffff169060200190919050506112e6565b6040518082815260200191505060405180910390f35b34156105ee57600080fd5b6105f661132f565b005b341561060357600080fd5b61063c600480803590602001909190803560001916906020019091908035600019169060200190919080359060200190919050506114ce565b604051808215151515815260200191505060405180910390f35b341561066157600080fd5b610669611577565b6040518082815260200191505060405180910390f35b341561068a57600080fd5b61069261157d565b6040518082815260200191505060405180910390f35b34156106b357600080fd5b6106bb611583565b6040518082815260200191505060405180910390f35b34156106dc57600080fd5b6106e4611589565b60405180826000191660001916815260200191505060405180910390f35b341561070d57600080fd5b61071561158f565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b341561076257600080fd5b61076a6115b4565b6040518080602001828103825283818151815260200191508051906020019080838360005b838110156107aa57808201518184015260208101905061078f565b50505050905090810190601f1680156107d75780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b34156107f057600080fd5b61082060048080359060200190919080356000191690602001909190803560001916906020019091905050611652565b60405180826000191660001916815260200191505060405180910390f35b341561084957600080fd5b61087e600480803573ffffffffffffffffffffffffffffffffffffffff169060200190919080359060200190919050506116cb565b604051808215151515815260200191505060405180910390f35b34156108a357600080fd5b6108ab611866565b6040518082815260200191505060405180910390f35b34156108cc57600080fd5b6108d461186c565b6040518082815260200191505060405180910390f35b34156108f557600080fd5b61096d600480803573ffffffffffffffffffffffffffffffffffffffff1690602001909190803590602001909190803590602001908201803590602001908080601f01602080910402602001604051908101604052809392919081815260200183838082843782019150505050505091905050611872565b604051808215151515815260200191505060405180910390f35b341561099257600080fd5b61099a611abc565b6040518082815260200191505060405180910390f35b34156109bb57600080fd5b6109c3611ac2565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b3415610a1057600080fd5b610a45600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091908035906020019091905050611ae8565b604051808215151515815260200191505060405180910390f35b3415610a6a57600080fd5b610a72611c34565b6040518082815260200191505060405180910390f35b3415610a9357600080fd5b610ade600480803573ffffffffffffffffffffffffffffffffffffffff1690602001909190803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050611c3a565b6040518082815260200191505060405180910390f35b3415610aff57600080fd5b610b2b600480803573ffffffffffffffffffffffffffffffffffffffff16906020019091905050611cc1565b005b60038054600181600116156101000203166002900480601f016020809104026020016040519081016040528092919081815260200182805460018160011615610100020316600290048015610bc35780601f10610b9857610100808354040283529160200191610bc3565b820191906000526020600020905b815481529060010190602001808311610ba657829003601f168201915b505050505081565b600081601560003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055508273ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925846040518082815260200191505060405180910390a36001905092915050565b60115481565b6000610cdc600b54600a54611d6090919063ffffffff16565b905090565b600080600080610cef611273565b9250600c5433876040518084600019166000191681526020018373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166c0100000000000000000000000002815260140182815260200193505050506040518091039020915084600019168260001916141515610d7457600080fd5b600b5482600190041115610d8757600080fd5b60126000836000191660001916815260200190815260200160002054905060075460126000846000191660001916815260200190815260200160002081905550600081141515610dd657600080fd5b610e2883601460003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054611d8490919063ffffffff16565b601460003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002081905550610e8083601354611d8490919063ffffffff16565b60138190555033600f60006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055508260108190555043601181905550610edd611da0565b3373ffffffffffffffffffffffffffffffffffffffff167fcf6fbb9dcea7d07263ab4f5c3a92f53af33dffc421d9d121e1c74b307e68189d84600754600c54604051808481526020018381526020018260001916600019168152602001935050505060405180910390a26001935050505092915050565b6000601460008073ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000205460055403905090565b6000610ff382601460008773ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054611e3d90919063ffffffff16565b601460008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055506110c582601560008773ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054611e3d90919063ffffffff16565b601560008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000208190555061119782601460008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054611d8490919063ffffffff16565b601460008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055508273ffffffffffffffffffffffffffffffffffffffff168473ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef846040518082815260200191505060405180910390a3600190509392505050565b600d5481565b600460009054906101000a900460ff1681565b6000600b54905090565b60055481565b60006112a5600d5460020a600460009054906101000a900460ff1660ff16600a0a603202611d6090919063ffffffff16565b905090565b6000600c54905090565b600e5481565b60135481565b600f60009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b6000601460008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020549050919050565b600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614151561138b57600080fd5b600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff167f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e060405160405180910390a3600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff166000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055506000600160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550565b6000806000808492506114df611273565b91508533896040518084600019166000191681526020018373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166c01000000000000000000000000028152601401828152602001935050505060405180910390209050600b548160019004111561155f57600080fd5b86600019168160001916149350505050949350505050565b60075481565b600a5481565b600b5481565b600c5481565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60028054600181600116156101000203166002900480601f01602080910402602001604051908101604052809291908181526020018280546001816001161561010002031660029004801561164a5780601f1061161f5761010080835404028352916020019161164a565b820191906000526020600020905b81548152906001019060200180831161162d57829003601f168201915b505050505081565b6000808233866040518084600019166000191681526020018373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166c01000000000000000000000000028152601401828152602001935050505060405180910390209050809150509392505050565b600061171f82601460003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054611e3d90919063ffffffff16565b601460003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055506117b482601460008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054611d8490919063ffffffff16565b601460008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055508273ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef846040518082815260200191505060405180910390a36001905092915050565b60085481565b60105481565b600082601560003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020819055508373ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff167f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925856040518082815260200191505060405180910390a38373ffffffffffffffffffffffffffffffffffffffff16638f4ffcb1338530866040518563ffffffff167c0100000000000000000000000000000000000000000000000000000000028152600401808573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020018481526020018373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200180602001828103825283818151815260200191508051906020019080838360005b83811015611a4f578082015181840152602081019050611a34565b50505050905090810190601f168015611a7c5780820380516001836020036101000a031916815260200191505b5095505050505050600060405180830381600087803b1515611a9d57600080fd5b6102c65a03f11515611aae57600080fd5b505050600190509392505050565b60065481565b600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff16141515611b4557600080fd5b8273ffffffffffffffffffffffffffffffffffffffff1663a9059cbb6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff16846000604051602001526040518363ffffffff167c0100000000000000000000000000000000000000000000000000000000028152600401808373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200182815260200192505050602060405180830381600087803b1515611c1157600080fd5b6102c65a03f11515611c2257600080fd5b50505060405180519050905092915050565b60095481565b6000601560008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054905092915050565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff16141515611d1c57600080fd5b80600160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b60008082111515611d7057600080fd5b8183811515611d7b57fe5b04905092915050565b60008183019050828110151515611d9a57600080fd5b92915050565b600e5460135410158015611db657506020600d54105b15611dc8576001600d5401600d819055505b611de56001600d540160020a600554611d6090919063ffffffff16565b60055403600e819055506001430340600c8160001916905550611e146001600754611d8490919063ffffffff16565b6007819055506000600854600754811515611e2b57fe5b061415611e3b57611e3a611e59565b5b565b6000828211151515611e4e57600080fd5b818303905092915050565b6000806000600654430392506008549150603c8202905080831015611ead57611ea2611e916014600b54611d6090919063ffffffff16565b600b54611e3d90919063ffffffff16565b600b81905550611ede565b611ed7611ec66014600b54611d6090919063ffffffff16565b600b54611d8490919063ffffffff16565b600b819055505b43600681905550600954600b541015611efb57600954600b819055505b600a54600b541115611f1157600a54600b819055505b5050505600a165627a7a72305820d59f3473ee8072d3b732daa114aa23e8db3e168007f7eca216306713144505270029","sourceMap":"3478:11796:0:-;;;3927:3;3888:42;;4037:4;4006:35;;4101:6;4070:37;;4982:514;;;;;;;;2804:10;2796:5;;:18;;;;;;;;;;;;;;;;;;2881:5;;;;;;;;;;;2867:19;;:10;:19;;;2859:28;;;;;;;;5036:16;;;;;;;;;;;;;;;;;;:6;:16;;;;;;;;;;;;:::i;:::-;;5063:24;;;;;;;;;;;;;;;;;;:4;:24;;;;;;;;;;;;:::i;:::-;;5109:1;5098:8;;:12;;;;;;;;;;;;;;;;;;5156:8;;;;;;;;;;;5151:14;;5147:2;:18;5136:8;:29;5121:12;:44;;;;5190:1;5175:12;:16;;;;5214:1;5202:9;:13;;;;5243:19;5260:1;5243:12;;:16;;;;;;:19;;;;;:::i;:::-;5225:15;:37;;;;5288:15;;5273:12;:30;;;;5346:12;5314:29;:44;;;;5369:22;:20;;;;;:22;;;:::i;:::-;3478:11796;;916:113;968:6;999:1;995;:5;987:14;;;;;;;;1020:1;1016;:5;;;;;;;;1012:9;;916:113;;;;:::o;5502:821::-;5646:15;;5630:12;;:31;;:49;;;;;5677:2;5665:9;;:14;5630:49;5627:152;;;5769:1;5757:9;;:13;5745:9;:25;;;;5627:152;5884:37;5918:1;5906:9;;:13;5902:1;:18;5884:12;;:16;;;;;;:37;;;;;:::i;:::-;5869:12;;:52;5851:15;:70;;;;6096:1;6081:12;:16;6065:33;6047:15;:51;;;;;;;6121:17;6136:1;6121:10;;:14;;;;;;:17;;;;;:::i;:::-;6108:10;:30;;;;6265:1;6237:24;;6224:10;;:37;;;;;;;;:42;6221:93;;;6284:21;:19;;;;;:21;;;:::i;:::-;6221:93;5502:821::o;542:114::-;594:6;621:1;617;:5;613:9;;646:1;641;:6;;633:15;;;;;;;;542:114;;;;:::o;6547:1108::-;6599:39;6857:16;6917:28;6656:29;;6641:12;:44;6599:86;;6876:24;;6857:43;;6962:2;6948:11;:16;6917:47;;7127:23;7090:34;:60;7086:285;;;7215:38;7232:20;7249:2;7232:12;;:16;;;;;;:20;;;;;:::i;:::-;7215:12;;:16;;;;;;:38;;;;;:::i;:::-;7200:12;:53;;;;7086:285;;;7322:38;7339:20;7356:2;7339:12;;:16;;;;;;:20;;;;;:::i;:::-;7322:12;;:16;;;;;;:38;;;;;:::i;:::-;7307:12;:53;;;;7086:285;7415:12;7383:29;:44;;;;7456:15;;7441:12;;:30;7438:100;;;7512:15;;7497:12;:30;;;;7438:100;7566:15;;7551:12;;:30;7548:101;;;7623:15;;7608:12;:30;;;;7548:101;6547:1108;;;:::o;662:114::-;714:6;746:1;741;:6;;733:15;;;;;;;;767:1;763;:5;759:9;;662:114;;;;:::o;3478:11796::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;:::o;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;:::-;;;;;;;","deployedSourceMap":"3478:11796:0:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;14835:8;;;3593:19;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;23:1:-1;8:100;33:3;30:1;27:2;8:100;;;99:1;94:3;90;84:5;80:1;75:3;71;64:6;52:2;49:1;45:3;40:15;;8:100;;;12:14;3:109;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;12405:203:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;4441:36;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;10036:119;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8393:1361;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;10815:116;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;13149:338;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;4312:21;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3619;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;10161:92;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3647:24;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;10367:257;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;9844:103;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;4339:27;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;4559:24;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;4374:27;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;11156:124;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3022:191;;;;;;;;;;;;;;7902:484;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3832:22;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;4070:37;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;4115:24;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;4222:30;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2625:20;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3566;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;23:1:-1;8:100;33:3;30:1;27:2;8:100;;;99:1;94:3;90;84:5;80:1;75:3;71;64:6;52:2;49:1;45:3;40:15;;8:100;;;12:14;3:109;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;7662:232:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;11629:262;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3888:42;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;4407:28;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;14290:312;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3782:41;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2652:23;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;15087:184;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;4006:35;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;13773:151;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2914:102;;;;;;;;;;;;;;;;;;;;;;;;;;;;3593:19;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;12405:203::-;12468:12;12524:6;12493:7;:19;12501:10;12493:19;;;;;;;;;;;;;;;:28;12513:7;12493:28;;;;;;;;;;;;;;;:37;;;;12562:7;12541:37;;12550:10;12541:37;;;12571:6;12541:37;;;;;;;;;;;;;;;;;;12596:4;12589:11;;12405:203;;;;:::o;4441:36::-;;;;:::o;10036:119::-;10092:4;10115:33;10135:12;;10115:15;;:19;;:33;;;;:::i;:::-;10108:40;;10036:119;:::o;8393:1361::-;8464:12;8540:18;8739:14;9139;8561:17;:15;:17::i;:::-;8540:38;;8767:15;;8784:10;8796:5;8757:46;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8739:64;;8883:16;8873:26;;;:6;:26;;;;;8869:40;;;8901:8;;;8869:40;8994:12;;8984:6;8976:15;;;:30;8973:43;;;9008:8;;;8973:43;9156:17;:25;9174:6;9156:25;;;;;;;;;;;;;;;;;;9139:42;;9220:10;;9192:17;:25;9210:6;9192:25;;;;;;;;;;;;;;;;;:38;;;;9257:1;9244:9;:14;;9241:27;;;9260:8;;;9241:27;9351:39;9376:13;9351:8;:20;9360:10;9351:20;;;;;;;;;;;;;;;;:24;;:39;;;;:::i;:::-;9328:8;:20;9337:10;9328:20;;;;;;;;;;;;;;;:62;;;;9417:31;9434:13;9417:12;;:16;;:31;;;;:::i;:::-;9402:12;:46;;;;9515:10;9500:12;;:25;;;;;;;;;;;;;;;;;;9554:13;9535:16;:32;;;;9604:12;9577:24;:39;;;;9629:22;:20;:22::i;:::-;9669:10;9664:61;;;9681:13;9696:10;;9708:15;;9664:61;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;9742:4;9735:11;;8393:1361;;;;;;;:::o;10815:116::-;10863:4;10903:8;:20;10920:1;10903:20;;;;;;;;;;;;;;;;10887:12;;:36;10880:43;;10815:116;:::o;13149:338::-;13226:12;13268:26;13287:6;13268:8;:14;13277:4;13268:14;;;;;;;;;;;;;;;;:18;;:26;;;;:::i;:::-;13251:8;:14;13260:4;13251:14;;;;;;;;;;;;;;;:43;;;;13333:37;13363:6;13333:7;:13;13341:4;13333:13;;;;;;;;;;;;;;;:25;13347:10;13333:25;;;;;;;;;;;;;;;;:29;;:37;;;;:::i;:::-;13305:7;:13;13313:4;13305:13;;;;;;;;;;;;;;;:25;13319:10;13305:25;;;;;;;;;;;;;;;:65;;;;13396:24;13413:6;13396:8;:12;13405:2;13396:12;;;;;;;;;;;;;;;;:16;;:24;;;;:::i;:::-;13381:8;:12;13390:2;13381:12;;;;;;;;;;;;;;;:39;;;;13446:2;13431:26;;13440:4;13431:26;;;13450:6;13431:26;;;;;;;;;;;;;;;;;;13475:4;13468:11;;13149:338;;;;;:::o;4312:21::-;;;;:::o;3619:::-;;;;;;;;;;;;;:::o;10161:92::-;10213:4;10235:12;;10228:19;;10161:92;:::o;3647:24::-;;;;:::o;10367:257::-;10419:4;10569:46;10604:9;;10601:1;:12;10584:8;;;;;;;;;;;10579:14;;10575:2;:18;10570:2;:23;10569:30;;:46;;;;:::i;:::-;10562:53;;10367:257;:::o;9844:103::-;9899:7;9925:15;;9918:22;;9844:103;:::o;4339:27::-;;;;:::o;4559:24::-;;;;:::o;4374:27::-;;;;;;;;;;;;;:::o;11156:124::-;11220:12;11252:8;:20;11261:10;11252:20;;;;;;;;;;;;;;;;11245:27;;11156:124;;;:::o;3022:191::-;3089:8;;;;;;;;;;;3075:22;;:10;:22;;;3067:31;;;;;;;;3137:8;;;;;;;;;;;3109:37;;3130:5;;;;;;;;;;;3109:37;;;;;;;;;;;;3165:8;;;;;;;;;;;3157:5;;:16;;;;;;;;;;;;;;;;;;3203:1;3184:8;;:21;;;;;;;;;;;;;;;;;;3022:191::o;7902:484::-;8033:12;8060:15;8104:18;8155:14;8078;8060:32;;8125:17;:15;:17::i;:::-;8104:38;;8182:16;8199:10;8210:5;8172:44;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8155:61;;8304:12;;8294:6;8286:15;;;:30;8283:43;;;8318:8;;;8283:43;8357:16;8347:26;;;:6;:26;;;;8339:35;;7902:484;;;;;;;;;:::o;3832:22::-;;;;:::o;4070:37::-;;;;:::o;4115:24::-;;;;:::o;4222:30::-;;;;:::o;2625:20::-;;;;;;;;;;;;;:::o;3566:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;7662:232::-;7768:18;7799:14;7826:16;7843:10;7854:5;7816:44;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;7799:61;;7878:6;7871:13;;7662:232;;;;;;:::o;11629:262::-;11688:12;11736:32;11761:6;11736:8;:20;11745:10;11736:20;;;;;;;;;;;;;;;;:24;;:32;;;;:::i;:::-;11713:8;:20;11722:10;11713:20;;;;;;;;;;;;;;;:55;;;;11794:24;11811:6;11794:8;:12;11803:2;11794:12;;;;;;;;;;;;;;;;:16;;:24;;;;:::i;:::-;11779:8;:12;11788:2;11779:12;;;;;;;;;;;;;;;:39;;;;11850:2;11829:32;;11838:10;11829:32;;;11854:6;11829:32;;;;;;;;;;;;;;;;;;11879:4;11872:11;;11629:262;;;;:::o;3888:42::-;;;;:::o;4407:28::-;;;;:::o;14290:312::-;14372:12;14428:6;14397:7;:19;14405:10;14397:19;;;;;;;;;;;;;;;:28;14417:7;14397:28;;;;;;;;;;;;;;;:37;;;;14466:7;14445:37;;14454:10;14445:37;;;14475:6;14445:37;;;;;;;;;;;;;;;;;;14516:7;14493:47;;;14541:10;14553:6;14561:4;14567;14493:79;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;23:1:-1;8:100;33:3;30:1;27:2;8:100;;;99:1;94:3;90;84:5;80:1;75:3;71;64:6;52:2;49:1;45:3;40:15;;8:100;;;12:14;3:109;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;14590:4:0;14583:11;;14290:312;;;;;:::o;3782:41::-;;;;:::o;2652:23::-;;;;;;;;;;;;;:::o;15087:184::-;15179:12;2881:5;;;;;;;;;;;2867:19;;:10;:19;;;2859:28;;;;;;;;15226:12;15211:37;;;15249:5;;;;;;;;;;;15256:6;15211:52;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;15204:59;;15087:184;;;;:::o;4006:35::-;;;;:::o;13773:151::-;13854:14;13888:7;:19;13896:10;13888:19;;;;;;;;;;;;;;;:28;13908:7;13888:28;;;;;;;;;;;;;;;;13881:35;;13773:151;;;;:::o;2914:102::-;2881:5;;;;;;;;;;;2867:19;;:10;:19;;;2859:28;;;;;;;;2999:9;2988:8;;:20;;;;;;;;;;;;;;;;;;2914:102;:::o;916:113::-;968:6;999:1;995;:5;987:14;;;;;;;;1020:1;1016;:5;;;;;;;;1012:9;;916:113;;;;:::o;542:114::-;594:6;621:1;617;:5;613:9;;646:1;641;:6;;633:15;;;;;;;;542:114;;;;:::o;5502:821::-;5646:15;;5630:12;;:31;;:49;;;;;5677:2;5665:9;;:14;5630:49;5627:152;;;5769:1;5757:9;;:13;5745:9;:25;;;;5627:152;5884:37;5918:1;5906:9;;:13;5902:1;:18;5884:12;;:16;;:37;;;;:::i;:::-;5869:12;;:52;5851:15;:70;;;;6096:1;6081:12;:16;6065:33;6047:15;:51;;;;;;;6121:17;6136:1;6121:10;;:14;;:17;;;;:::i;:::-;6108:10;:30;;;;6265:1;6237:24;;6224:10;;:37;;;;;;;;:42;6221:93;;;6284:21;:19;:21::i;:::-;6221:93;5502:821::o;662:114::-;714:6;746:1;741;:6;;733:15;;;;;;;;767:1;763;:5;759:9;;662:114;;;;:::o;6547:1108::-;6599:39;6857:16;6917:28;6656:29;;6641:12;:44;6599:86;;6876:24;;6857:43;;6962:2;6948:11;:16;6917:47;;7127:23;7090:34;:60;7086:285;;;7215:38;7232:20;7249:2;7232:12;;:16;;:20;;;;:::i;:::-;7215:12;;:16;;:38;;;;:::i;:::-;7200:12;:53;;;;7086:285;;;7322:38;7339:20;7356:2;7339:12;;:16;;:20;;;;:::i;:::-;7322:12;;:16;;:38;;;;:::i;:::-;7307:12;:53;;;;7086:285;7415:12;7383:29;:44;;;;7456:15;;7441:12;;:30;7438:100;;;7512:15;;7497:12;:30;;;;7438:100;7566:15;;7551:12;;:30;7548:101;;;7623:15;;7608:12;:30;;;;7548:101;6547:1108;;;:::o","source":"pragma solidity ^0.4.18;\n\n\n// ----------------------------------------------------------------------------\n\n// '0xBitcoin Token' contract\n\n//\n\n// Symbol      : 0xBTC\n\n// Name        : 0xBitcoin Token\n\n// Total supply: 21,000,000.00\n\n// Decimals    : 8\n\n//\n\n\n// ----------------------------------------------------------------------------\n\n\n\n// ----------------------------------------------------------------------------\n\n// Safe maths\n\n// ----------------------------------------------------------------------------\n\nlibrary SafeMath {\n\n    function add(uint a, uint b) internal pure returns (uint c) {\n\n        c = a + b;\n\n        require(c >= a);\n\n    }\n\n    function sub(uint a, uint b) internal pure returns (uint c) {\n\n        require(b <= a);\n\n        c = a - b;\n\n    }\n\n    function mul(uint a, uint b) internal pure returns (uint c) {\n\n        c = a * b;\n\n        require(a == 0 || c / a == b);\n\n    }\n\n    function div(uint a, uint b) internal pure returns (uint c) {\n\n        require(b > 0);\n\n        c = a / b;\n\n    }\n\n}\n\n\n\n// ----------------------------------------------------------------------------\n\n// ERC Token Standard #20 Interface\n\n// https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md\n\n// ----------------------------------------------------------------------------\n\ncontract ERC20Interface {\n\n    function totalSupply() public constant returns (uint);\n\n    function balanceOf(address tokenOwner) public constant returns (uint balance);\n\n    function allowance(address tokenOwner, address spender) public constant returns (uint remaining);\n\n    function transfer(address to, uint tokens) public returns (bool success);\n\n    function approve(address spender, uint tokens) public returns (bool success);\n\n    function transferFrom(address from, address to, uint tokens) public returns (bool success);\n\n\n    event Transfer(address indexed from, address indexed to, uint tokens);\n\n    event Approval(address indexed tokenOwner, address indexed spender, uint tokens);\n\n}\n\n\n\n// ----------------------------------------------------------------------------\n\n// Contract function to receive approval and execute function in one call\n\n//\n\n// Borrowed from MiniMeToken\n\n// ----------------------------------------------------------------------------\n\ncontract ApproveAndCallFallBack {\n\n    function receiveApproval(address from, uint256 tokens, address token, bytes data) public;\n\n}\n\n\n\n// ----------------------------------------------------------------------------\n\n// Owned contract\n\n// ----------------------------------------------------------------------------\n\ncontract Owned {\n\n    address public owner;\n\n    address public newOwner;\n\n\n    event OwnershipTransferred(address indexed _from, address indexed _to);\n\n\n    function Owned() public {\n\n        owner = msg.sender;\n\n    }\n\n\n    modifier onlyOwner {\n\n        require(msg.sender == owner);\n\n        _;\n\n    }\n\n\n    function transferOwnership(address _newOwner) public onlyOwner {\n\n        newOwner = _newOwner;\n\n    }\n\n    function acceptOwnership() public {\n\n        require(msg.sender == newOwner);\n\n        OwnershipTransferred(owner, newOwner);\n\n        owner = newOwner;\n\n        newOwner = address(0);\n\n    }\n\n}\n\n\n\n// ----------------------------------------------------------------------------\n\n// ERC20 Token, with the addition of symbol, name and decimals and an\n\n// initial fixed supply\n\n// ----------------------------------------------------------------------------\n\ncontract _0xBitcoinToken is ERC20Interface, Owned {\n\n    using SafeMath for uint;\n\n\n    string public symbol;\n\n    string public  name;\n\n    uint8 public decimals;\n\n    uint public _totalSupply;\n\n\n\n      //ethereum block number when last 0xbtc was minted\n  //  uint public latestMiningEpochStarted;\n\n    uint public latestDifficultyPeriodStarted;\n\n\n\n    uint public epochCount;//number of 'blocks' mined\n\n\n    uint public _BLOCKS_PER_READJUSTMENT = 256;\n\n\n    //a big number is easier ; just find a solution that is smaller\n    uint public  _MINIMUM_TARGET = 2**8;\n\n    //a little number\n    uint public  _MAXIMUM_TARGET = 2**250;\n\n\n    uint public miningTarget;\n  //  uint public miningDifficulty; //adjusts every 2016 epochs (or blocks)\n\n    bytes32 public challengeNumber;   //generate a new one when a new reward is minted\n\n\n\n    uint public rewardEra;\n    uint public maxSupplyForEra;\n\n\n    address public lastRewardTo;\n    uint public lastRewardAmount;\n    uint public lastRewardEthBlockNumber;\n\n\n    mapping(bytes32 => uint) rewardHashesFound; //the hash and the nonce\n\n    uint public tokensMinted;\n\n    mapping(address => uint) balances;\n\n\n\n\n\n    mapping(address => mapping(address => uint)) allowed;\n\n\n\n\n    event Mint(address indexed from, uint reward_amount, uint epochCount, bytes32 newChallengeNumber);\n\n    // ------------------------------------------------------------------------\n\n    // Constructor\n\n    // ------------------------------------------------------------------------\n\n    function _0xBitcoinToken() public onlyOwner{\n\n        symbol = \"0xBTC\";\n\n        name = \"0xBitcoin Token\";\n\n        decimals = 8;\n\n        _totalSupply = 21000000 * 10**uint(decimals);\n        tokensMinted = 0;\n\n        rewardEra = 0;\n        maxSupplyForEra = _totalSupply.div(2);\n\n        miningTarget = _MAXIMUM_TARGET;\n\n        latestDifficultyPeriodStarted = block.number;\n\n        _startNewMiningEpoch();\n\n        //balances[owner] = _totalSupply;\n\n        //Transfer(address(0), owner, _totalSupply);\n\n    }\n\n    function _startNewMiningEpoch() internal {//a new block to be mined\n\n      //latestMiningEpochStarted = block.number;\n\n      if(tokensMinted >= maxSupplyForEra && rewardEra < 32) //32 is the final era, almost all tokens minted\n      {\n        rewardEra = rewardEra + 1;\n      }\n\n      //set the next minted supply at which the era will change\n      maxSupplyForEra = _totalSupply - _totalSupply.div( 2**(rewardEra + 1));\n\n      //make the latest ethereum block hash a part of the next challenge for PoW to prevent pre-mining future blocks\n      challengeNumber = block.blockhash(block.number - 1);\n\n\n      epochCount = epochCount.add(1);\n\n      //every so often, readjust difficulty, dont readjust when deploying\n      if(epochCount % _BLOCKS_PER_READJUSTMENT == 0)\n      {\n        _reAdjustDifficulty();\n      }\n\n\n\n    }\n\n\n\n\n    //https://en.bitcoin.it/wiki/Difficulty#What_is_the_formula_for_difficulty.3F\n    //as of 2017 the bitcoin difficulty was up to 17 zeroes, it was only 8 in the early days\n\n    //readjust the target by 5 percent\n    function _reAdjustDifficulty() internal {\n\n\n        uint ethBlocksSinceLastDifficultyPeriod = block.number - latestDifficultyPeriodStarted;\n\n        //assume 360 ethereum blocks per hour\n\n        //we want miners to spend 10 minutes to mine each 'block', about 60 ethereum blocks = one 0xbitcoin epoch\n        uint epochsMined = _BLOCKS_PER_READJUSTMENT; //256\n\n        uint targetEthBlocksPerEpoch = epochsMined * 60; //should be 60 times slower than ethereum\n\n        //if there were less eth blocks passed in time than expected\n        if( ethBlocksSinceLastDifficultyPeriod < targetEthBlocksPerEpoch )\n        {\n          //make it harder\n          miningTarget = miningTarget.sub(miningTarget.div(20));\n        }else{\n          //make it easier\n          miningTarget = miningTarget.add(miningTarget.div(20));\n        }\n\n\n\n        latestDifficultyPeriodStarted = block.number;\n\n        if(miningTarget < _MINIMUM_TARGET) //6\n        {\n          miningTarget = _MINIMUM_TARGET;\n        }\n\n        if(miningTarget > _MAXIMUM_TARGET) //54\n        {\n          miningTarget = _MAXIMUM_TARGET;\n        }\n    }\n\n\n    function getMintDigest(uint256 nonce, bytes32 challenge_digest, bytes32 challenge_number) public returns (bytes32 digesttest) {\n\n        bytes32 digest = keccak256(challenge_number,msg.sender,nonce);\n\n        return digest;\n\n      }\n\n      function checkMintSolution(uint256 nonce, bytes32 challenge_digest, bytes32 challenge_number, uint testDifficulty) public returns (bool success) {\n\n          uint difficulty = testDifficulty;\n          uint reward_amount = getMiningReward();\n\n          bytes32 digest = keccak256(challenge_number,msg.sender,nonce);\n\n          //bytes memory characters = bytes(digest);\n\n          if(uint256(digest) > miningTarget) revert();\n\n          return (digest == challenge_digest);\n\n        }\n\n\n    function mint(uint256 nonce, bytes32 challenge_digest) public returns (bool success) {\n\n      //  uint difficulty = getMiningDifficulty();\n        uint reward_amount = getMiningReward();\n\n        //the PoW must contain work that includes a recent etherum block hash (challenge number) and the msg.sender's address to prevent MITM attacks\n        bytes32 digest =  keccak256(challengeNumber, msg.sender, nonce );\n\n        //the challenge digest must match the expected\n        if (digest != challenge_digest) revert();\n\n        //the digest must be smaller than the target\n        if(uint256(digest) > miningTarget) revert();\n      //  for(uint i = 0; i < difficulty    ; i++) {\n      //     if (digest[i] != 0x0 ) revert();\n      //  }\n\n         uint hashFound = rewardHashesFound[digest];\n         rewardHashesFound[digest] = epochCount;\n         if(hashFound != 0) revert();  //prevent the same answer from awarding twice\n\n\n\n        balances[msg.sender] = balances[msg.sender].add(reward_amount);\n\n\n        tokensMinted = tokensMinted.add(reward_amount);\n\n\n        //set readonly diagnostics data\n        lastRewardTo = msg.sender;\n        lastRewardAmount = reward_amount;\n        lastRewardEthBlockNumber = block.number;\n\n\n         _startNewMiningEpoch();\n\n          Mint(msg.sender, reward_amount, epochCount, challengeNumber );\n\n       return true;\n\n    }\n\n    //this is a recent ethreum block hash, used to prevent pre-mining future blocks\n    function getChallengeNumber() public constant returns (bytes32) {\n        return challengeNumber;\n    }\n\n    //the number of zeroes the digest of the PoW solution requires.  Auto adjusts\n     function getMiningDifficulty() public constant returns (uint) {\n        return _MAXIMUM_TARGET.div(miningTarget);\n    }\n\n    function getMiningTarget() public constant returns (uint) {\n       return miningTarget;\n   }\n\n\n\n    //21m coins total\n    //reward begins at 50 and is cut in half every reward era (as tokens are mined)\n    function getMiningReward() public constant returns (uint) {\n        //once we get half way thru the coins, only get 25 per block\n\n         //every reward era, the reward amount halves.\n\n         return (50 * 10**uint(decimals) ).div( 2**rewardEra ) ;\n\n    }\n\n\n\n    // ------------------------------------------------------------------------\n\n    // Total supply\n\n    // ------------------------------------------------------------------------\n\n    function totalSupply() public constant returns (uint) {\n\n        return _totalSupply  - balances[address(0)];\n\n    }\n\n\n\n    // ------------------------------------------------------------------------\n\n    // Get the token balance for account `tokenOwner`\n\n    // ------------------------------------------------------------------------\n\n    function balanceOf(address tokenOwner) public constant returns (uint balance) {\n\n        return balances[tokenOwner];\n\n    }\n\n\n\n    // ------------------------------------------------------------------------\n\n    // Transfer the balance from token owner's account to `to` account\n\n    // - Owner's account must have sufficient balance to transfer\n\n    // - 0 value transfers are allowed\n\n    // ------------------------------------------------------------------------\n\n    function transfer(address to, uint tokens) public returns (bool success) {\n\n        balances[msg.sender] = balances[msg.sender].sub(tokens);\n\n        balances[to] = balances[to].add(tokens);\n\n        Transfer(msg.sender, to, tokens);\n\n        return true;\n\n    }\n\n\n\n    // ------------------------------------------------------------------------\n\n    // Token owner can approve for `spender` to transferFrom(...) `tokens`\n\n    // from the token owner's account\n\n    //\n\n    // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md\n\n    // recommends that there are no checks for the approval double-spend attack\n\n    // as this should be implemented in user interfaces\n\n    // ------------------------------------------------------------------------\n\n    function approve(address spender, uint tokens) public returns (bool success) {\n\n        allowed[msg.sender][spender] = tokens;\n\n        Approval(msg.sender, spender, tokens);\n\n        return true;\n\n    }\n\n\n\n    // ------------------------------------------------------------------------\n\n    // Transfer `tokens` from the `from` account to the `to` account\n\n    //\n\n    // The calling account must already have sufficient tokens approve(...)-d\n\n    // for spending from the `from` account and\n\n    // - From account must have sufficient balance to transfer\n\n    // - Spender must have sufficient allowance to transfer\n\n    // - 0 value transfers are allowed\n\n    // ------------------------------------------------------------------------\n\n    function transferFrom(address from, address to, uint tokens) public returns (bool success) {\n\n        balances[from] = balances[from].sub(tokens);\n\n        allowed[from][msg.sender] = allowed[from][msg.sender].sub(tokens);\n\n        balances[to] = balances[to].add(tokens);\n\n        Transfer(from, to, tokens);\n\n        return true;\n\n    }\n\n\n\n    // ------------------------------------------------------------------------\n\n    // Returns the amount of tokens approved by the owner that can be\n\n    // transferred to the spender's account\n\n    // ------------------------------------------------------------------------\n\n    function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {\n\n        return allowed[tokenOwner][spender];\n\n    }\n\n\n\n    // ------------------------------------------------------------------------\n\n    // Token owner can approve for `spender` to transferFrom(...) `tokens`\n\n    // from the token owner's account. The `spender` contract function\n\n    // `receiveApproval(...)` is then executed\n\n    // ------------------------------------------------------------------------\n\n    function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {\n\n        allowed[msg.sender][spender] = tokens;\n\n        Approval(msg.sender, spender, tokens);\n\n        ApproveAndCallFallBack(spender).receiveApproval(msg.sender, tokens, this, data);\n\n        return true;\n\n    }\n\n\n\n    // ------------------------------------------------------------------------\n\n    // Don't accept ETH\n\n    // ------------------------------------------------------------------------\n\n    function () public payable {\n\n        revert();\n\n    }\n\n\n\n    // ------------------------------------------------------------------------\n\n    // Owner can transfer out any accidentally sent ERC20 tokens\n\n    // ------------------------------------------------------------------------\n\n    function transferAnyERC20Token(address tokenAddress, uint tokens) public onlyOwner returns (bool success) {\n\n        return ERC20Interface(tokenAddress).transfer(owner, tokens);\n\n    }\n\n}\n","sourcePath":"/home/andy/dev/0xbitcoin-token/contracts/_0xBitcoinToken.sol","ast":{"attributes":{"absolutePath":"/home/andy/dev/0xbitcoin-token/contracts/_0xBitcoinToken.sol","exportedSymbols":{"ApproveAndCallFallBack":[175],"ERC20Interface":[163],"Owned":[244],"SafeMath":[96],"_0xBitcoinToken":[964]}},"children":[{"attributes":{"literals":["solidity","^","0.4",".18"]},"id":1,"name":"PragmaDirective","src":"0:24:0"},{"attributes":{"baseContracts":[null],"contractDependencies":[null],"contractKind":"library","documentation":null,"fullyImplemented":true,"linearizedBaseContracts":[96],"name":"SafeMath","scope":965},"children":[{"attributes":{"constant":true,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"add","payable":false,"scope":96,"stateMutability":"pure","superFunction":null,"visibility":"internal"},"children":[{"children":[{"attributes":{"constant":false,"name":"a","scope":23,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":2,"name":"ElementaryTypeName","src":"555:4:0"}],"id":3,"name":"VariableDeclaration","src":"555:6:0"},{"attributes":{"constant":false,"name":"b","scope":23,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":4,"name":"ElementaryTypeName","src":"563:4:0"}],"id":5,"name":"VariableDeclaration","src":"563:6:0"}],"id":6,"name":"ParameterList","src":"554:16:0"},{"children":[{"attributes":{"constant":false,"name":"c","scope":23,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":7,"name":"ElementaryTypeName","src":"594:4:0"}],"id":8,"name":"VariableDeclaration","src":"594:6:0"}],"id":9,"name":"ParameterList","src":"593:8:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":8,"type":"uint256","value":"c"},"id":10,"name":"Identifier","src":"613:1:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"+","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":3,"type":"uint256","value":"a"},"id":11,"name":"Identifier","src":"617:1:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":5,"type":"uint256","value":"b"},"id":12,"name":"Identifier","src":"621:1:0"}],"id":13,"name":"BinaryOperation","src":"617:5:0"}],"id":14,"name":"Assignment","src":"613:9:0"}],"id":15,"name":"ExpressionStatement","src":"613:9:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_bool","typeString":"bool"}],"overloadedDeclarations":[null],"referencedDeclaration":979,"type":"function (bool) pure","value":"require"},"id":16,"name":"Identifier","src":"633:7:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":">=","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":8,"type":"uint256","value":"c"},"id":17,"name":"Identifier","src":"641:1:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":3,"type":"uint256","value":"a"},"id":18,"name":"Identifier","src":"646:1:0"}],"id":19,"name":"BinaryOperation","src":"641:6:0"}],"id":20,"name":"FunctionCall","src":"633:15:0"}],"id":21,"name":"ExpressionStatement","src":"633:15:0"}],"id":22,"name":"Block","src":"602:54:0"}],"id":23,"name":"FunctionDefinition","src":"542:114:0"},{"attributes":{"constant":true,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"sub","payable":false,"scope":96,"stateMutability":"pure","superFunction":null,"visibility":"internal"},"children":[{"children":[{"attributes":{"constant":false,"name":"a","scope":45,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":24,"name":"ElementaryTypeName","src":"675:4:0"}],"id":25,"name":"VariableDeclaration","src":"675:6:0"},{"attributes":{"constant":false,"name":"b","scope":45,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":26,"name":"ElementaryTypeName","src":"683:4:0"}],"id":27,"name":"VariableDeclaration","src":"683:6:0"}],"id":28,"name":"ParameterList","src":"674:16:0"},{"children":[{"attributes":{"constant":false,"name":"c","scope":45,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":29,"name":"ElementaryTypeName","src":"714:4:0"}],"id":30,"name":"VariableDeclaration","src":"714:6:0"}],"id":31,"name":"ParameterList","src":"713:8:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_bool","typeString":"bool"}],"overloadedDeclarations":[null],"referencedDeclaration":979,"type":"function (bool) pure","value":"require"},"id":32,"name":"Identifier","src":"733:7:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"<=","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":27,"type":"uint256","value":"b"},"id":33,"name":"Identifier","src":"741:1:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":25,"type":"uint256","value":"a"},"id":34,"name":"Identifier","src":"746:1:0"}],"id":35,"name":"BinaryOperation","src":"741:6:0"}],"id":36,"name":"FunctionCall","src":"733:15:0"}],"id":37,"name":"ExpressionStatement","src":"733:15:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":30,"type":"uint256","value":"c"},"id":38,"name":"Identifier","src":"759:1:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"-","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":25,"type":"uint256","value":"a"},"id":39,"name":"Identifier","src":"763:1:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":27,"type":"uint256","value":"b"},"id":40,"name":"Identifier","src":"767:1:0"}],"id":41,"name":"BinaryOperation","src":"763:5:0"}],"id":42,"name":"Assignment","src":"759:9:0"}],"id":43,"name":"ExpressionStatement","src":"759:9:0"}],"id":44,"name":"Block","src":"722:54:0"}],"id":45,"name":"FunctionDefinition","src":"662:114:0"},{"attributes":{"constant":true,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"mul","payable":false,"scope":96,"stateMutability":"pure","superFunction":null,"visibility":"internal"},"children":[{"children":[{"attributes":{"constant":false,"name":"a","scope":73,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":46,"name":"ElementaryTypeName","src":"795:4:0"}],"id":47,"name":"VariableDeclaration","src":"795:6:0"},{"attributes":{"constant":false,"name":"b","scope":73,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":48,"name":"ElementaryTypeName","src":"803:4:0"}],"id":49,"name":"VariableDeclaration","src":"803:6:0"}],"id":50,"name":"ParameterList","src":"794:16:0"},{"children":[{"attributes":{"constant":false,"name":"c","scope":73,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":51,"name":"ElementaryTypeName","src":"834:4:0"}],"id":52,"name":"VariableDeclaration","src":"834:6:0"}],"id":53,"name":"ParameterList","src":"833:8:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":52,"type":"uint256","value":"c"},"id":54,"name":"Identifier","src":"853:1:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"*","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":47,"type":"uint256","value":"a"},"id":55,"name":"Identifier","src":"857:1:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":49,"type":"uint256","value":"b"},"id":56,"name":"Identifier","src":"861:1:0"}],"id":57,"name":"BinaryOperation","src":"857:5:0"}],"id":58,"name":"Assignment","src":"853:9:0"}],"id":59,"name":"ExpressionStatement","src":"853:9:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_bool","typeString":"bool"}],"overloadedDeclarations":[null],"referencedDeclaration":979,"type":"function (bool) pure","value":"require"},"id":60,"name":"Identifier","src":"873:7:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_bool","typeString":"bool"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"||","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"==","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":47,"type":"uint256","value":"a"},"id":61,"name":"Identifier","src":"881:1:0"},{"attributes":{"argumentTypes":null,"hexvalue":"30","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 0","value":"0"},"id":62,"name":"Literal","src":"886:1:0"}],"id":63,"name":"BinaryOperation","src":"881:6:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"==","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"/","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":52,"type":"uint256","value":"c"},"id":64,"name":"Identifier","src":"891:1:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":47,"type":"uint256","value":"a"},"id":65,"name":"Identifier","src":"895:1:0"}],"id":66,"name":"BinaryOperation","src":"891:5:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":49,"type":"uint256","value":"b"},"id":67,"name":"Identifier","src":"900:1:0"}],"id":68,"name":"BinaryOperation","src":"891:10:0"}],"id":69,"name":"BinaryOperation","src":"881:20:0"}],"id":70,"name":"FunctionCall","src":"873:29:0"}],"id":71,"name":"ExpressionStatement","src":"873:29:0"}],"id":72,"name":"Block","src":"842:68:0"}],"id":73,"name":"FunctionDefinition","src":"782:128:0"},{"attributes":{"constant":true,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"div","payable":false,"scope":96,"stateMutability":"pure","superFunction":null,"visibility":"internal"},"children":[{"children":[{"attributes":{"constant":false,"name":"a","scope":95,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":74,"name":"ElementaryTypeName","src":"929:4:0"}],"id":75,"name":"VariableDeclaration","src":"929:6:0"},{"attributes":{"constant":false,"name":"b","scope":95,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":76,"name":"ElementaryTypeName","src":"937:4:0"}],"id":77,"name":"VariableDeclaration","src":"937:6:0"}],"id":78,"name":"ParameterList","src":"928:16:0"},{"children":[{"attributes":{"constant":false,"name":"c","scope":95,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":79,"name":"ElementaryTypeName","src":"968:4:0"}],"id":80,"name":"VariableDeclaration","src":"968:6:0"}],"id":81,"name":"ParameterList","src":"967:8:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_bool","typeString":"bool"}],"overloadedDeclarations":[null],"referencedDeclaration":979,"type":"function (bool) pure","value":"require"},"id":82,"name":"Identifier","src":"987:7:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":">","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":77,"type":"uint256","value":"b"},"id":83,"name":"Identifier","src":"995:1:0"},{"attributes":{"argumentTypes":null,"hexvalue":"30","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 0","value":"0"},"id":84,"name":"Literal","src":"999:1:0"}],"id":85,"name":"BinaryOperation","src":"995:5:0"}],"id":86,"name":"FunctionCall","src":"987:14:0"}],"id":87,"name":"ExpressionStatement","src":"987:14:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":80,"type":"uint256","value":"c"},"id":88,"name":"Identifier","src":"1012:1:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"/","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":75,"type":"uint256","value":"a"},"id":89,"name":"Identifier","src":"1016:1:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":77,"type":"uint256","value":"b"},"id":90,"name":"Identifier","src":"1020:1:0"}],"id":91,"name":"BinaryOperation","src":"1016:5:0"}],"id":92,"name":"Assignment","src":"1012:9:0"}],"id":93,"name":"ExpressionStatement","src":"1012:9:0"}],"id":94,"name":"Block","src":"976:53:0"}],"id":95,"name":"FunctionDefinition","src":"916:113:0"}],"id":96,"name":"ContractDefinition","src":"518:514:0"},{"attributes":{"baseContracts":[null],"contractDependencies":[null],"contractKind":"contract","documentation":null,"fullyImplemented":false,"linearizedBaseContracts":[163],"name":"ERC20Interface","scope":965},"children":[{"attributes":{"body":null,"constant":true,"implemented":false,"isConstructor":false,"modifiers":[null],"name":"totalSupply","payable":false,"scope":163,"stateMutability":"view","superFunction":null,"visibility":"public"},"children":[{"attributes":{"parameters":[null]},"children":[],"id":97,"name":"ParameterList","src":"1365:2:0"},{"children":[{"attributes":{"constant":false,"name":"","scope":101,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":98,"name":"ElementaryTypeName","src":"1393:4:0"}],"id":99,"name":"VariableDeclaration","src":"1393:4:0"}],"id":100,"name":"ParameterList","src":"1392:6:0"}],"id":101,"name":"FunctionDefinition","src":"1345:54:0"},{"attributes":{"body":null,"constant":true,"implemented":false,"isConstructor":false,"modifiers":[null],"name":"balanceOf","payable":false,"scope":163,"stateMutability":"view","superFunction":null,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"tokenOwner","scope":108,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":102,"name":"ElementaryTypeName","src":"1424:7:0"}],"id":103,"name":"VariableDeclaration","src":"1424:18:0"}],"id":104,"name":"ParameterList","src":"1423:20:0"},{"children":[{"attributes":{"constant":false,"name":"balance","scope":108,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":105,"name":"ElementaryTypeName","src":"1469:4:0"}],"id":106,"name":"VariableDeclaration","src":"1469:12:0"}],"id":107,"name":"ParameterList","src":"1468:14:0"}],"id":108,"name":"FunctionDefinition","src":"1405:78:0"},{"attributes":{"body":null,"constant":true,"implemented":false,"isConstructor":false,"modifiers":[null],"name":"allowance","payable":false,"scope":163,"stateMutability":"view","superFunction":null,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"tokenOwner","scope":117,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":109,"name":"ElementaryTypeName","src":"1508:7:0"}],"id":110,"name":"VariableDeclaration","src":"1508:18:0"},{"attributes":{"constant":false,"name":"spender","scope":117,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":111,"name":"ElementaryTypeName","src":"1528:7:0"}],"id":112,"name":"VariableDeclaration","src":"1528:15:0"}],"id":113,"name":"ParameterList","src":"1507:37:0"},{"children":[{"attributes":{"constant":false,"name":"remaining","scope":117,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":114,"name":"ElementaryTypeName","src":"1570:4:0"}],"id":115,"name":"VariableDeclaration","src":"1570:14:0"}],"id":116,"name":"ParameterList","src":"1569:16:0"}],"id":117,"name":"FunctionDefinition","src":"1489:97:0"},{"attributes":{"body":null,"constant":false,"implemented":false,"isConstructor":false,"modifiers":[null],"name":"transfer","payable":false,"scope":163,"stateMutability":"nonpayable","superFunction":null,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"to","scope":126,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":118,"name":"ElementaryTypeName","src":"1610:7:0"}],"id":119,"name":"VariableDeclaration","src":"1610:10:0"},{"attributes":{"constant":false,"name":"tokens","scope":126,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":120,"name":"ElementaryTypeName","src":"1622:4:0"}],"id":121,"name":"VariableDeclaration","src":"1622:11:0"}],"id":122,"name":"ParameterList","src":"1609:25:0"},{"children":[{"attributes":{"constant":false,"name":"success","scope":126,"stateVariable":false,"storageLocation":"default","type":"bool","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bool","type":"bool"},"id":123,"name":"ElementaryTypeName","src":"1651:4:0"}],"id":124,"name":"VariableDeclaration","src":"1651:12:0"}],"id":125,"name":"ParameterList","src":"1650:14:0"}],"id":126,"name":"FunctionDefinition","src":"1592:73:0"},{"attributes":{"body":null,"constant":false,"implemented":false,"isConstructor":false,"modifiers":[null],"name":"approve","payable":false,"scope":163,"stateMutability":"nonpayable","superFunction":null,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"spender","scope":135,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":127,"name":"ElementaryTypeName","src":"1688:7:0"}],"id":128,"name":"VariableDeclaration","src":"1688:15:0"},{"attributes":{"constant":false,"name":"tokens","scope":135,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":129,"name":"ElementaryTypeName","src":"1705:4:0"}],"id":130,"name":"VariableDeclaration","src":"1705:11:0"}],"id":131,"name":"ParameterList","src":"1687:30:0"},{"children":[{"attributes":{"constant":false,"name":"success","scope":135,"stateVariable":false,"storageLocation":"default","type":"bool","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bool","type":"bool"},"id":132,"name":"ElementaryTypeName","src":"1734:4:0"}],"id":133,"name":"VariableDeclaration","src":"1734:12:0"}],"id":134,"name":"ParameterList","src":"1733:14:0"}],"id":135,"name":"FunctionDefinition","src":"1671:77:0"},{"attributes":{"body":null,"constant":false,"implemented":false,"isConstructor":false,"modifiers":[null],"name":"transferFrom","payable":false,"scope":163,"stateMutability":"nonpayable","superFunction":null,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"from","scope":146,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":136,"name":"ElementaryTypeName","src":"1776:7:0"}],"id":137,"name":"VariableDeclaration","src":"1776:12:0"},{"attributes":{"constant":false,"name":"to","scope":146,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":138,"name":"ElementaryTypeName","src":"1790:7:0"}],"id":139,"name":"VariableDeclaration","src":"1790:10:0"},{"attributes":{"constant":false,"name":"tokens","scope":146,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":140,"name":"ElementaryTypeName","src":"1802:4:0"}],"id":141,"name":"VariableDeclaration","src":"1802:11:0"}],"id":142,"name":"ParameterList","src":"1775:39:0"},{"children":[{"attributes":{"constant":false,"name":"success","scope":146,"stateVariable":false,"storageLocation":"default","type":"bool","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bool","type":"bool"},"id":143,"name":"ElementaryTypeName","src":"1831:4:0"}],"id":144,"name":"VariableDeclaration","src":"1831:12:0"}],"id":145,"name":"ParameterList","src":"1830:14:0"}],"id":146,"name":"FunctionDefinition","src":"1754:91:0"},{"attributes":{"anonymous":false,"name":"Transfer"},"children":[{"children":[{"attributes":{"constant":false,"indexed":true,"name":"from","scope":154,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":147,"name":"ElementaryTypeName","src":"1867:7:0"}],"id":148,"name":"VariableDeclaration","src":"1867:20:0"},{"attributes":{"constant":false,"indexed":true,"name":"to","scope":154,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":149,"name":"ElementaryTypeName","src":"1889:7:0"}],"id":150,"name":"VariableDeclaration","src":"1889:18:0"},{"attributes":{"constant":false,"indexed":false,"name":"tokens","scope":154,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":151,"name":"ElementaryTypeName","src":"1909:4:0"}],"id":152,"name":"VariableDeclaration","src":"1909:11:0"}],"id":153,"name":"ParameterList","src":"1866:55:0"}],"id":154,"name":"EventDefinition","src":"1852:70:0"},{"attributes":{"anonymous":false,"name":"Approval"},"children":[{"children":[{"attributes":{"constant":false,"indexed":true,"name":"tokenOwner","scope":162,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":155,"name":"ElementaryTypeName","src":"1943:7:0"}],"id":156,"name":"VariableDeclaration","src":"1943:26:0"},{"attributes":{"constant":false,"indexed":true,"name":"spender","scope":162,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":157,"name":"ElementaryTypeName","src":"1971:7:0"}],"id":158,"name":"VariableDeclaration","src":"1971:23:0"},{"attributes":{"constant":false,"indexed":false,"name":"tokens","scope":162,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":159,"name":"ElementaryTypeName","src":"1996:4:0"}],"id":160,"name":"VariableDeclaration","src":"1996:11:0"}],"id":161,"name":"ParameterList","src":"1942:66:0"}],"id":162,"name":"EventDefinition","src":"1928:81:0"}],"id":163,"name":"ContractDefinition","src":"1314:698:0"},{"attributes":{"baseContracts":[null],"contractDependencies":[null],"contractKind":"contract","documentation":null,"fullyImplemented":false,"linearizedBaseContracts":[175],"name":"ApproveAndCallFallBack","scope":965},"children":[{"attributes":{"body":null,"constant":false,"implemented":false,"isConstructor":false,"modifiers":[null],"name":"receiveApproval","payable":false,"scope":175,"stateMutability":"nonpayable","superFunction":null,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"from","scope":174,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":164,"name":"ElementaryTypeName","src":"2351:7:0"}],"id":165,"name":"VariableDeclaration","src":"2351:12:0"},{"attributes":{"constant":false,"name":"tokens","scope":174,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint256","type":"uint256"},"id":166,"name":"ElementaryTypeName","src":"2365:7:0"}],"id":167,"name":"VariableDeclaration","src":"2365:14:0"},{"attributes":{"constant":false,"name":"token","scope":174,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":168,"name":"ElementaryTypeName","src":"2381:7:0"}],"id":169,"name":"VariableDeclaration","src":"2381:13:0"},{"attributes":{"constant":false,"name":"data","scope":174,"stateVariable":false,"storageLocation":"default","type":"bytes memory","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bytes","type":"bytes storage pointer"},"id":170,"name":"ElementaryTypeName","src":"2396:5:0"}],"id":171,"name":"VariableDeclaration","src":"2396:10:0"}],"id":172,"name":"ParameterList","src":"2350:57:0"},{"attributes":{"parameters":[null]},"children":[],"id":173,"name":"ParameterList","src":"2414:0:0"}],"id":174,"name":"FunctionDefinition","src":"2326:89:0"}],"id":175,"name":"ContractDefinition","src":"2287:131:0"},{"attributes":{"baseContracts":[null],"contractDependencies":[null],"contractKind":"contract","documentation":null,"fullyImplemented":true,"linearizedBaseContracts":[244],"name":"Owned","scope":965},"children":[{"attributes":{"constant":false,"name":"owner","scope":244,"stateVariable":true,"storageLocation":"default","type":"address","value":null,"visibility":"public"},"children":[{"attributes":{"name":"address","type":"address"},"id":176,"name":"ElementaryTypeName","src":"2625:7:0"}],"id":177,"name":"VariableDeclaration","src":"2625:20:0"},{"attributes":{"constant":false,"name":"newOwner","scope":244,"stateVariable":true,"storageLocation":"default","type":"address","value":null,"visibility":"public"},"children":[{"attributes":{"name":"address","type":"address"},"id":178,"name":"ElementaryTypeName","src":"2652:7:0"}],"id":179,"name":"VariableDeclaration","src":"2652:23:0"},{"attributes":{"anonymous":false,"name":"OwnershipTransferred"},"children":[{"children":[{"attributes":{"constant":false,"indexed":true,"name":"_from","scope":185,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":180,"name":"ElementaryTypeName","src":"2710:7:0"}],"id":181,"name":"VariableDeclaration","src":"2710:21:0"},{"attributes":{"constant":false,"indexed":true,"name":"_to","scope":185,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":182,"name":"ElementaryTypeName","src":"2733:7:0"}],"id":183,"name":"VariableDeclaration","src":"2733:19:0"}],"id":184,"name":"ParameterList","src":"2709:44:0"}],"id":185,"name":"EventDefinition","src":"2683:71:0"},{"attributes":{"constant":false,"implemented":true,"isConstructor":true,"modifiers":[null],"name":"Owned","payable":false,"scope":244,"stateMutability":"nonpayable","superFunction":null,"visibility":"public"},"children":[{"attributes":{"parameters":[null]},"children":[],"id":186,"name":"ParameterList","src":"2775:2:0"},{"attributes":{"parameters":[null]},"children":[],"id":187,"name":"ParameterList","src":"2785:0:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":177,"type":"address","value":"owner"},"id":188,"name":"Identifier","src":"2796:5:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":189,"name":"Identifier","src":"2804:3:0"}],"id":190,"name":"MemberAccess","src":"2804:10:0"}],"id":191,"name":"Assignment","src":"2796:18:0"}],"id":192,"name":"ExpressionStatement","src":"2796:18:0"}],"id":193,"name":"Block","src":"2785:37:0"}],"id":194,"name":"FunctionDefinition","src":"2761:61:0"},{"attributes":{"name":"onlyOwner","visibility":"internal"},"children":[{"attributes":{"parameters":[null]},"children":[],"id":195,"name":"ParameterList","src":"2848:0:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_bool","typeString":"bool"}],"overloadedDeclarations":[null],"referencedDeclaration":979,"type":"function (bool) pure","value":"require"},"id":196,"name":"Identifier","src":"2859:7:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_address","typeString":"address"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"==","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":197,"name":"Identifier","src":"2867:3:0"}],"id":198,"name":"MemberAccess","src":"2867:10:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":177,"type":"address","value":"owner"},"id":199,"name":"Identifier","src":"2881:5:0"}],"id":200,"name":"BinaryOperation","src":"2867:19:0"}],"id":201,"name":"FunctionCall","src":"2859:28:0"}],"id":202,"name":"ExpressionStatement","src":"2859:28:0"},{"id":203,"name":"PlaceholderStatement","src":"2898:1:0"}],"id":204,"name":"Block","src":"2848:59:0"}],"id":205,"name":"ModifierDefinition","src":"2829:78:0"},{"attributes":{"constant":false,"implemented":true,"isConstructor":false,"name":"transferOwnership","payable":false,"scope":244,"stateMutability":"nonpayable","superFunction":null,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"_newOwner","scope":217,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":206,"name":"ElementaryTypeName","src":"2941:7:0"}],"id":207,"name":"VariableDeclaration","src":"2941:17:0"}],"id":208,"name":"ParameterList","src":"2940:19:0"},{"attributes":{"parameters":[null]},"children":[],"id":211,"name":"ParameterList","src":"2977:0:0"},{"attributes":{"arguments":[null]},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":205,"type":"modifier ()","value":"onlyOwner"},"id":209,"name":"Identifier","src":"2967:9:0"}],"id":210,"name":"ModifierInvocation","src":"2967:9:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":179,"type":"address","value":"newOwner"},"id":212,"name":"Identifier","src":"2988:8:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":207,"type":"address","value":"_newOwner"},"id":213,"name":"Identifier","src":"2999:9:0"}],"id":214,"name":"Assignment","src":"2988:20:0"}],"id":215,"name":"ExpressionStatement","src":"2988:20:0"}],"id":216,"name":"Block","src":"2977:39:0"}],"id":217,"name":"FunctionDefinition","src":"2914:102:0"},{"attributes":{"constant":false,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"acceptOwnership","payable":false,"scope":244,"stateMutability":"nonpayable","superFunction":null,"visibility":"public"},"children":[{"attributes":{"parameters":[null]},"children":[],"id":218,"name":"ParameterList","src":"3046:2:0"},{"attributes":{"parameters":[null]},"children":[],"id":219,"name":"ParameterList","src":"3056:0:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_bool","typeString":"bool"}],"overloadedDeclarations":[null],"referencedDeclaration":979,"type":"function (bool) pure","value":"require"},"id":220,"name":"Identifier","src":"3067:7:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_address","typeString":"address"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"==","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":221,"name":"Identifier","src":"3075:3:0"}],"id":222,"name":"MemberAccess","src":"3075:10:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":179,"type":"address","value":"newOwner"},"id":223,"name":"Identifier","src":"3089:8:0"}],"id":224,"name":"BinaryOperation","src":"3075:22:0"}],"id":225,"name":"FunctionCall","src":"3067:31:0"}],"id":226,"name":"ExpressionStatement","src":"3067:31:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_address","typeString":"address"},{"typeIdentifier":"t_address","typeString":"address"}],"overloadedDeclarations":[null],"referencedDeclaration":185,"type":"function (address,address)","value":"OwnershipTransferred"},"id":227,"name":"Identifier","src":"3109:20:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":177,"type":"address","value":"owner"},"id":228,"name":"Identifier","src":"3130:5:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":179,"type":"address","value":"newOwner"},"id":229,"name":"Identifier","src":"3137:8:0"}],"id":230,"name":"FunctionCall","src":"3109:37:0"}],"id":231,"name":"ExpressionStatement","src":"3109:37:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":177,"type":"address","value":"owner"},"id":232,"name":"Identifier","src":"3157:5:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":179,"type":"address","value":"newOwner"},"id":233,"name":"Identifier","src":"3165:8:0"}],"id":234,"name":"Assignment","src":"3157:16:0"}],"id":235,"name":"ExpressionStatement","src":"3157:16:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":179,"type":"address","value":"newOwner"},"id":236,"name":"Identifier","src":"3184:8:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":true,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"address","type_conversion":true},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_rational_0_by_1","typeString":"int_const 0"}],"isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"type":"type(address)","value":"address"},"id":237,"name":"ElementaryTypeNameExpression","src":"3195:7:0"},{"attributes":{"argumentTypes":null,"hexvalue":"30","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 0","value":"0"},"id":238,"name":"Literal","src":"3203:1:0"}],"id":239,"name":"FunctionCall","src":"3195:10:0"}],"id":240,"name":"Assignment","src":"3184:21:0"}],"id":241,"name":"ExpressionStatement","src":"3184:21:0"}],"id":242,"name":"Block","src":"3056:157:0"}],"id":243,"name":"FunctionDefinition","src":"3022:191:0"}],"id":244,"name":"ContractDefinition","src":"2603:613:0"},{"attributes":{"contractDependencies":[163,244],"contractKind":"contract","documentation":null,"fullyImplemented":true,"linearizedBaseContracts":[964,244,163],"name":"_0xBitcoinToken","scope":965},"children":[{"attributes":{"arguments":[null]},"children":[{"attributes":{"contractScope":null,"name":"ERC20Interface","referencedDeclaration":163,"type":"contract ERC20Interface"},"id":245,"name":"UserDefinedTypeName","src":"3506:14:0"}],"id":246,"name":"InheritanceSpecifier","src":"3506:14:0"},{"attributes":{"arguments":[null]},"children":[{"attributes":{"contractScope":null,"name":"Owned","referencedDeclaration":244,"type":"contract Owned"},"id":247,"name":"UserDefinedTypeName","src":"3522:5:0"}],"id":248,"name":"InheritanceSpecifier","src":"3522:5:0"},{"children":[{"attributes":{"contractScope":null,"name":"SafeMath","referencedDeclaration":96,"type":"library SafeMath"},"id":249,"name":"UserDefinedTypeName","src":"3541:8:0"},{"attributes":{"name":"uint","type":"uint256"},"id":250,"name":"ElementaryTypeName","src":"3554:4:0"}],"id":251,"name":"UsingForDirective","src":"3535:24:0"},{"attributes":{"constant":false,"name":"symbol","scope":964,"stateVariable":true,"storageLocation":"default","type":"string storage ref","value":null,"visibility":"public"},"children":[{"attributes":{"name":"string","type":"string storage pointer"},"id":252,"name":"ElementaryTypeName","src":"3566:6:0"}],"id":253,"name":"VariableDeclaration","src":"3566:20:0"},{"attributes":{"constant":false,"name":"name","scope":964,"stateVariable":true,"storageLocation":"default","type":"string storage ref","value":null,"visibility":"public"},"children":[{"attributes":{"name":"string","type":"string storage pointer"},"id":254,"name":"ElementaryTypeName","src":"3593:6:0"}],"id":255,"name":"VariableDeclaration","src":"3593:19:0"},{"attributes":{"constant":false,"name":"decimals","scope":964,"stateVariable":true,"storageLocation":"default","type":"uint8","value":null,"visibility":"public"},"children":[{"attributes":{"name":"uint8","type":"uint8"},"id":256,"name":"ElementaryTypeName","src":"3619:5:0"}],"id":257,"name":"VariableDeclaration","src":"3619:21:0"},{"attributes":{"constant":false,"name":"_totalSupply","scope":964,"stateVariable":true,"storageLocation":"default","type":"uint256","value":null,"visibility":"public"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":258,"name":"ElementaryTypeName","src":"3647:4:0"}],"id":259,"name":"VariableDeclaration","src":"3647:24:0"},{"attributes":{"constant":false,"name":"latestDifficultyPeriodStarted","scope":964,"stateVariable":true,"storageLocation":"default","type":"uint256","value":null,"visibility":"public"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":260,"name":"ElementaryTypeName","src":"3782:4:0"}],"id":261,"name":"VariableDeclaration","src":"3782:41:0"},{"attributes":{"constant":false,"name":"epochCount","scope":964,"stateVariable":true,"storageLocation":"default","type":"uint256","value":null,"visibility":"public"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":262,"name":"ElementaryTypeName","src":"3832:4:0"}],"id":263,"name":"VariableDeclaration","src":"3832:22:0"},{"attributes":{"constant":false,"name":"_BLOCKS_PER_READJUSTMENT","scope":964,"stateVariable":true,"storageLocation":"default","type":"uint256","visibility":"public"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":264,"name":"ElementaryTypeName","src":"3888:4:0"},{"attributes":{"argumentTypes":null,"hexvalue":"323536","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 256","value":"256"},"id":265,"name":"Literal","src":"3927:3:0"}],"id":266,"name":"VariableDeclaration","src":"3888:42:0"},{"attributes":{"constant":false,"name":"_MINIMUM_TARGET","scope":964,"stateVariable":true,"storageLocation":"default","type":"uint256","visibility":"public"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":267,"name":"ElementaryTypeName","src":"4006:4:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_rational_256_by_1","typeString":"int_const 256"},"isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"operator":"**","type":"int_const 256"},"children":[{"attributes":{"argumentTypes":null,"hexvalue":"32","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 2","value":"2"},"id":268,"name":"Literal","src":"4037:1:0"},{"attributes":{"argumentTypes":null,"hexvalue":"38","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 8","value":"8"},"id":269,"name":"Literal","src":"4040:1:0"}],"id":270,"name":"BinaryOperation","src":"4037:4:0"}],"id":271,"name":"VariableDeclaration","src":"4006:35:0"},{"attributes":{"constant":false,"name":"_MAXIMUM_TARGET","scope":964,"stateVariable":true,"storageLocation":"default","type":"uint256","visibility":"public"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":272,"name":"ElementaryTypeName","src":"4070:4:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_rational_1809251394333065553493296640760748560207343510400633813116524750123642650624_by_1","typeString":"int_const 1809251394333065553493296640760748560207343510400633813116524750123642650624"},"isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"operator":"**","type":"int_const 1809251394333065553493296640760748560207343510400633813116524750123642650624"},"children":[{"attributes":{"argumentTypes":null,"hexvalue":"32","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 2","value":"2"},"id":273,"name":"Literal","src":"4101:1:0"},{"attributes":{"argumentTypes":null,"hexvalue":"323530","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 250","value":"250"},"id":274,"name":"Literal","src":"4104:3:0"}],"id":275,"name":"BinaryOperation","src":"4101:6:0"}],"id":276,"name":"VariableDeclaration","src":"4070:37:0"},{"attributes":{"constant":false,"name":"miningTarget","scope":964,"stateVariable":true,"storageLocation":"default","type":"uint256","value":null,"visibility":"public"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":277,"name":"ElementaryTypeName","src":"4115:4:0"}],"id":278,"name":"VariableDeclaration","src":"4115:24:0"},{"attributes":{"constant":false,"name":"challengeNumber","scope":964,"stateVariable":true,"storageLocation":"default","type":"bytes32","value":null,"visibility":"public"},"children":[{"attributes":{"name":"bytes32","type":"bytes32"},"id":279,"name":"ElementaryTypeName","src":"4222:7:0"}],"id":280,"name":"VariableDeclaration","src":"4222:30:0"},{"attributes":{"constant":false,"name":"rewardEra","scope":964,"stateVariable":true,"storageLocation":"default","type":"uint256","value":null,"visibility":"public"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":281,"name":"ElementaryTypeName","src":"4312:4:0"}],"id":282,"name":"VariableDeclaration","src":"4312:21:0"},{"attributes":{"constant":false,"name":"maxSupplyForEra","scope":964,"stateVariable":true,"storageLocation":"default","type":"uint256","value":null,"visibility":"public"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":283,"name":"ElementaryTypeName","src":"4339:4:0"}],"id":284,"name":"VariableDeclaration","src":"4339:27:0"},{"attributes":{"constant":false,"name":"lastRewardTo","scope":964,"stateVariable":true,"storageLocation":"default","type":"address","value":null,"visibility":"public"},"children":[{"attributes":{"name":"address","type":"address"},"id":285,"name":"ElementaryTypeName","src":"4374:7:0"}],"id":286,"name":"VariableDeclaration","src":"4374:27:0"},{"attributes":{"constant":false,"name":"lastRewardAmount","scope":964,"stateVariable":true,"storageLocation":"default","type":"uint256","value":null,"visibility":"public"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":287,"name":"ElementaryTypeName","src":"4407:4:0"}],"id":288,"name":"VariableDeclaration","src":"4407:28:0"},{"attributes":{"constant":false,"name":"lastRewardEthBlockNumber","scope":964,"stateVariable":true,"storageLocation":"default","type":"uint256","value":null,"visibility":"public"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":289,"name":"ElementaryTypeName","src":"4441:4:0"}],"id":290,"name":"VariableDeclaration","src":"4441:36:0"},{"attributes":{"constant":false,"name":"rewardHashesFound","scope":964,"stateVariable":true,"storageLocation":"default","type":"mapping(bytes32 => uint256)","value":null,"visibility":"internal"},"children":[{"attributes":{"type":"mapping(bytes32 => uint256)"},"children":[{"attributes":{"name":"bytes32","type":"bytes32"},"id":291,"name":"ElementaryTypeName","src":"4493:7:0"},{"attributes":{"name":"uint","type":"uint256"},"id":292,"name":"ElementaryTypeName","src":"4504:4:0"}],"id":293,"name":"Mapping","src":"4485:24:0"}],"id":294,"name":"VariableDeclaration","src":"4485:42:0"},{"attributes":{"constant":false,"name":"tokensMinted","scope":964,"stateVariable":true,"storageLocation":"default","type":"uint256","value":null,"visibility":"public"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":295,"name":"ElementaryTypeName","src":"4559:4:0"}],"id":296,"name":"VariableDeclaration","src":"4559:24:0"},{"attributes":{"constant":false,"name":"balances","scope":964,"stateVariable":true,"storageLocation":"default","type":"mapping(address => uint256)","value":null,"visibility":"internal"},"children":[{"attributes":{"type":"mapping(address => uint256)"},"children":[{"attributes":{"name":"address","type":"address"},"id":297,"name":"ElementaryTypeName","src":"4598:7:0"},{"attributes":{"name":"uint","type":"uint256"},"id":298,"name":"ElementaryTypeName","src":"4609:4:0"}],"id":299,"name":"Mapping","src":"4590:24:0"}],"id":300,"name":"VariableDeclaration","src":"4590:33:0"},{"attributes":{"constant":false,"name":"allowed","scope":964,"stateVariable":true,"storageLocation":"default","type":"mapping(address => mapping(address => uint256))","value":null,"visibility":"internal"},"children":[{"attributes":{"type":"mapping(address => mapping(address => uint256))"},"children":[{"attributes":{"name":"address","type":"address"},"id":301,"name":"ElementaryTypeName","src":"4642:7:0"},{"attributes":{"type":"mapping(address => uint256)"},"children":[{"attributes":{"name":"address","type":"address"},"id":302,"name":"ElementaryTypeName","src":"4661:7:0"},{"attributes":{"name":"uint","type":"uint256"},"id":303,"name":"ElementaryTypeName","src":"4672:4:0"}],"id":304,"name":"Mapping","src":"4653:24:0"}],"id":305,"name":"Mapping","src":"4634:44:0"}],"id":306,"name":"VariableDeclaration","src":"4634:52:0"},{"attributes":{"anonymous":false,"name":"Mint"},"children":[{"children":[{"attributes":{"constant":false,"indexed":true,"name":"from","scope":316,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":307,"name":"ElementaryTypeName","src":"4707:7:0"}],"id":308,"name":"VariableDeclaration","src":"4707:20:0"},{"attributes":{"constant":false,"indexed":false,"name":"reward_amount","scope":316,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":309,"name":"ElementaryTypeName","src":"4729:4:0"}],"id":310,"name":"VariableDeclaration","src":"4729:18:0"},{"attributes":{"constant":false,"indexed":false,"name":"epochCount","scope":316,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":311,"name":"ElementaryTypeName","src":"4749:4:0"}],"id":312,"name":"VariableDeclaration","src":"4749:15:0"},{"attributes":{"constant":false,"indexed":false,"name":"newChallengeNumber","scope":316,"stateVariable":false,"storageLocation":"default","type":"bytes32","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bytes32","type":"bytes32"},"id":313,"name":"ElementaryTypeName","src":"4766:7:0"}],"id":314,"name":"VariableDeclaration","src":"4766:26:0"}],"id":315,"name":"ParameterList","src":"4706:87:0"}],"id":316,"name":"EventDefinition","src":"4696:98:0"},{"attributes":{"constant":false,"implemented":true,"isConstructor":true,"name":"_0xBitcoinToken","payable":false,"scope":964,"stateMutability":"nonpayable","superFunction":null,"visibility":"public"},"children":[{"attributes":{"parameters":[null]},"children":[],"id":317,"name":"ParameterList","src":"5006:2:0"},{"attributes":{"parameters":[null]},"children":[],"id":320,"name":"ParameterList","src":"5025:0:0"},{"attributes":{"arguments":[null]},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":205,"type":"modifier ()","value":"onlyOwner"},"id":318,"name":"Identifier","src":"5016:9:0"}],"id":319,"name":"ModifierInvocation","src":"5016:9:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"string storage ref"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":253,"type":"string storage ref","value":"symbol"},"id":321,"name":"Identifier","src":"5036:6:0"},{"attributes":{"argumentTypes":null,"hexvalue":"3078425443","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"string","type":"literal_string \"0xBTC\"","value":"0xBTC"},"id":322,"name":"Literal","src":"5045:7:0"}],"id":323,"name":"Assignment","src":"5036:16:0"}],"id":324,"name":"ExpressionStatement","src":"5036:16:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"string storage ref"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":255,"type":"string storage ref","value":"name"},"id":325,"name":"Identifier","src":"5063:4:0"},{"attributes":{"argumentTypes":null,"hexvalue":"3078426974636f696e20546f6b656e","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"string","type":"literal_string \"0xBitcoin Token\"","value":"0xBitcoin Token"},"id":326,"name":"Literal","src":"5070:17:0"}],"id":327,"name":"Assignment","src":"5063:24:0"}],"id":328,"name":"ExpressionStatement","src":"5063:24:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint8"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":257,"type":"uint8","value":"decimals"},"id":329,"name":"Identifier","src":"5098:8:0"},{"attributes":{"argumentTypes":null,"hexvalue":"38","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 8","value":"8"},"id":330,"name":"Literal","src":"5109:1:0"}],"id":331,"name":"Assignment","src":"5098:12:0"}],"id":332,"name":"ExpressionStatement","src":"5098:12:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":259,"type":"uint256","value":"_totalSupply"},"id":333,"name":"Identifier","src":"5121:12:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"*","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"hexvalue":"3231303030303030","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 21000000","value":"21000000"},"id":334,"name":"Literal","src":"5136:8:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"**","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"hexvalue":"3130","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 10","value":"10"},"id":335,"name":"Literal","src":"5147:2:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":true},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_uint8","typeString":"uint8"}],"isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"type":"type(uint256)","value":"uint"},"id":336,"name":"ElementaryTypeNameExpression","src":"5151:4:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":257,"type":"uint8","value":"decimals"},"id":337,"name":"Identifier","src":"5156:8:0"}],"id":338,"name":"FunctionCall","src":"5151:14:0"}],"id":339,"name":"BinaryOperation","src":"5147:18:0"}],"id":340,"name":"BinaryOperation","src":"5136:29:0"}],"id":341,"name":"Assignment","src":"5121:44:0"}],"id":342,"name":"ExpressionStatement","src":"5121:44:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":296,"type":"uint256","value":"tokensMinted"},"id":343,"name":"Identifier","src":"5175:12:0"},{"attributes":{"argumentTypes":null,"hexvalue":"30","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 0","value":"0"},"id":344,"name":"Literal","src":"5190:1:0"}],"id":345,"name":"Assignment","src":"5175:16:0"}],"id":346,"name":"ExpressionStatement","src":"5175:16:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":282,"type":"uint256","value":"rewardEra"},"id":347,"name":"Identifier","src":"5202:9:0"},{"attributes":{"argumentTypes":null,"hexvalue":"30","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 0","value":"0"},"id":348,"name":"Literal","src":"5214:1:0"}],"id":349,"name":"Assignment","src":"5202:13:0"}],"id":350,"name":"ExpressionStatement","src":"5202:13:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":284,"type":"uint256","value":"maxSupplyForEra"},"id":351,"name":"Identifier","src":"5225:15:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_rational_2_by_1","typeString":"int_const 2"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"div","referencedDeclaration":95,"type":"function (uint256,uint256) pure returns (uint256)"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":259,"type":"uint256","value":"_totalSupply"},"id":352,"name":"Identifier","src":"5243:12:0"}],"id":353,"name":"MemberAccess","src":"5243:16:0"},{"attributes":{"argumentTypes":null,"hexvalue":"32","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 2","value":"2"},"id":354,"name":"Literal","src":"5260:1:0"}],"id":355,"name":"FunctionCall","src":"5243:19:0"}],"id":356,"name":"Assignment","src":"5225:37:0"}],"id":357,"name":"ExpressionStatement","src":"5225:37:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":278,"type":"uint256","value":"miningTarget"},"id":358,"name":"Identifier","src":"5273:12:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":276,"type":"uint256","value":"_MAXIMUM_TARGET"},"id":359,"name":"Identifier","src":"5288:15:0"}],"id":360,"name":"Assignment","src":"5273:30:0"}],"id":361,"name":"ExpressionStatement","src":"5273:30:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":261,"type":"uint256","value":"latestDifficultyPeriodStarted"},"id":362,"name":"Identifier","src":"5314:29:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"number","referencedDeclaration":null,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":968,"type":"block","value":"block"},"id":363,"name":"Identifier","src":"5346:5:0"}],"id":364,"name":"MemberAccess","src":"5346:12:0"}],"id":365,"name":"Assignment","src":"5314:44:0"}],"id":366,"name":"ExpressionStatement","src":"5314:44:0"},{"children":[{"attributes":{"argumentTypes":null,"arguments":[null],"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[null],"overloadedDeclarations":[null],"referencedDeclaration":431,"type":"function ()","value":"_startNewMiningEpoch"},"id":367,"name":"Identifier","src":"5369:20:0"}],"id":368,"name":"FunctionCall","src":"5369:22:0"}],"id":369,"name":"ExpressionStatement","src":"5369:22:0"}],"id":370,"name":"Block","src":"5025:471:0"}],"id":371,"name":"FunctionDefinition","src":"4982:514:0"},{"attributes":{"constant":false,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"_startNewMiningEpoch","payable":false,"scope":964,"stateMutability":"nonpayable","superFunction":null,"visibility":"internal"},"children":[{"attributes":{"parameters":[null]},"children":[],"id":372,"name":"ParameterList","src":"5531:2:0"},{"attributes":{"parameters":[null]},"children":[],"id":373,"name":"ParameterList","src":"5543:0:0"},{"children":[{"attributes":{"falseBody":null},"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_bool","typeString":"bool"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"&&","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":">=","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":296,"type":"uint256","value":"tokensMinted"},"id":374,"name":"Identifier","src":"5630:12:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":284,"type":"uint256","value":"maxSupplyForEra"},"id":375,"name":"Identifier","src":"5646:15:0"}],"id":376,"name":"BinaryOperation","src":"5630:31:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"<","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":282,"type":"uint256","value":"rewardEra"},"id":377,"name":"Identifier","src":"5665:9:0"},{"attributes":{"argumentTypes":null,"hexvalue":"3332","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 32","value":"32"},"id":378,"name":"Literal","src":"5677:2:0"}],"id":379,"name":"BinaryOperation","src":"5665:14:0"}],"id":380,"name":"BinaryOperation","src":"5630:49:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":282,"type":"uint256","value":"rewardEra"},"id":381,"name":"Identifier","src":"5745:9:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"+","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":282,"type":"uint256","value":"rewardEra"},"id":382,"name":"Identifier","src":"5757:9:0"},{"attributes":{"argumentTypes":null,"hexvalue":"31","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 1","value":"1"},"id":383,"name":"Literal","src":"5769:1:0"}],"id":384,"name":"BinaryOperation","src":"5757:13:0"}],"id":385,"name":"Assignment","src":"5745:25:0"}],"id":386,"name":"ExpressionStatement","src":"5745:25:0"}],"id":387,"name":"Block","src":"5735:44:0"}],"id":388,"name":"IfStatement","src":"5627:152:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":284,"type":"uint256","value":"maxSupplyForEra"},"id":389,"name":"Identifier","src":"5851:15:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"-","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":259,"type":"uint256","value":"_totalSupply"},"id":390,"name":"Identifier","src":"5869:12:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_uint256","typeString":"uint256"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"div","referencedDeclaration":95,"type":"function (uint256,uint256) pure returns (uint256)"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":259,"type":"uint256","value":"_totalSupply"},"id":391,"name":"Identifier","src":"5884:12:0"}],"id":392,"name":"MemberAccess","src":"5884:16:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"**","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"hexvalue":"32","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 2","value":"2"},"id":393,"name":"Literal","src":"5902:1:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isInlineArray":false,"isLValue":false,"isPure":false,"lValueRequested":false,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"+","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":282,"type":"uint256","value":"rewardEra"},"id":394,"name":"Identifier","src":"5906:9:0"},{"attributes":{"argumentTypes":null,"hexvalue":"31","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 1","value":"1"},"id":395,"name":"Literal","src":"5918:1:0"}],"id":396,"name":"BinaryOperation","src":"5906:13:0"}],"id":397,"name":"TupleExpression","src":"5905:15:0"}],"id":398,"name":"BinaryOperation","src":"5902:18:0"}],"id":399,"name":"FunctionCall","src":"5884:37:0"}],"id":400,"name":"BinaryOperation","src":"5869:52:0"}],"id":401,"name":"Assignment","src":"5851:70:0"}],"id":402,"name":"ExpressionStatement","src":"5851:70:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"bytes32"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":280,"type":"bytes32","value":"challengeNumber"},"id":403,"name":"Identifier","src":"6047:15:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"bytes32","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_uint256","typeString":"uint256"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"blockhash","referencedDeclaration":null,"type":"function (uint256) view returns (bytes32)"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":968,"type":"block","value":"block"},"id":404,"name":"Identifier","src":"6065:5:0"}],"id":405,"name":"MemberAccess","src":"6065:15:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"-","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"number","referencedDeclaration":null,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":968,"type":"block","value":"block"},"id":406,"name":"Identifier","src":"6081:5:0"}],"id":407,"name":"MemberAccess","src":"6081:12:0"},{"attributes":{"argumentTypes":null,"hexvalue":"31","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 1","value":"1"},"id":408,"name":"Literal","src":"6096:1:0"}],"id":409,"name":"BinaryOperation","src":"6081:16:0"}],"id":410,"name":"FunctionCall","src":"6065:33:0"}],"id":411,"name":"Assignment","src":"6047:51:0"}],"id":412,"name":"ExpressionStatement","src":"6047:51:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":263,"type":"uint256","value":"epochCount"},"id":413,"name":"Identifier","src":"6108:10:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_rational_1_by_1","typeString":"int_const 1"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"add","referencedDeclaration":23,"type":"function (uint256,uint256) pure returns (uint256)"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":263,"type":"uint256","value":"epochCount"},"id":414,"name":"Identifier","src":"6121:10:0"}],"id":415,"name":"MemberAccess","src":"6121:14:0"},{"attributes":{"argumentTypes":null,"hexvalue":"31","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 1","value":"1"},"id":416,"name":"Literal","src":"6136:1:0"}],"id":417,"name":"FunctionCall","src":"6121:17:0"}],"id":418,"name":"Assignment","src":"6108:30:0"}],"id":419,"name":"ExpressionStatement","src":"6108:30:0"},{"attributes":{"falseBody":null},"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"==","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"%","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":263,"type":"uint256","value":"epochCount"},"id":420,"name":"Identifier","src":"6224:10:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":266,"type":"uint256","value":"_BLOCKS_PER_READJUSTMENT"},"id":421,"name":"Identifier","src":"6237:24:0"}],"id":422,"name":"BinaryOperation","src":"6224:37:0"},{"attributes":{"argumentTypes":null,"hexvalue":"30","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 0","value":"0"},"id":423,"name":"Literal","src":"6265:1:0"}],"id":424,"name":"BinaryOperation","src":"6224:42:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"arguments":[null],"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[null],"overloadedDeclarations":[null],"referencedDeclaration":501,"type":"function ()","value":"_reAdjustDifficulty"},"id":425,"name":"Identifier","src":"6284:19:0"}],"id":426,"name":"FunctionCall","src":"6284:21:0"}],"id":427,"name":"ExpressionStatement","src":"6284:21:0"}],"id":428,"name":"Block","src":"6274:40:0"}],"id":429,"name":"IfStatement","src":"6221:93:0"}],"id":430,"name":"Block","src":"5543:780:0"}],"id":431,"name":"FunctionDefinition","src":"5502:821:0"},{"attributes":{"constant":false,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"_reAdjustDifficulty","payable":false,"scope":964,"stateMutability":"nonpayable","superFunction":null,"visibility":"internal"},"children":[{"attributes":{"parameters":[null]},"children":[],"id":432,"name":"ParameterList","src":"6575:2:0"},{"attributes":{"parameters":[null]},"children":[],"id":433,"name":"ParameterList","src":"6587:0:0"},{"children":[{"attributes":{"assignments":[435]},"children":[{"attributes":{"constant":false,"name":"ethBlocksSinceLastDifficultyPeriod","scope":501,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":434,"name":"ElementaryTypeName","src":"6599:4:0"}],"id":435,"name":"VariableDeclaration","src":"6599:39:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"-","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"number","referencedDeclaration":null,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":968,"type":"block","value":"block"},"id":436,"name":"Identifier","src":"6641:5:0"}],"id":437,"name":"MemberAccess","src":"6641:12:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":261,"type":"uint256","value":"latestDifficultyPeriodStarted"},"id":438,"name":"Identifier","src":"6656:29:0"}],"id":439,"name":"BinaryOperation","src":"6641:44:0"}],"id":440,"name":"VariableDeclarationStatement","src":"6599:86:0"},{"attributes":{"assignments":[442]},"children":[{"attributes":{"constant":false,"name":"epochsMined","scope":501,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":441,"name":"ElementaryTypeName","src":"6857:4:0"}],"id":442,"name":"VariableDeclaration","src":"6857:16:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":266,"type":"uint256","value":"_BLOCKS_PER_READJUSTMENT"},"id":443,"name":"Identifier","src":"6876:24:0"}],"id":444,"name":"VariableDeclarationStatement","src":"6857:43:0"},{"attributes":{"assignments":[446]},"children":[{"attributes":{"constant":false,"name":"targetEthBlocksPerEpoch","scope":501,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":445,"name":"ElementaryTypeName","src":"6917:4:0"}],"id":446,"name":"VariableDeclaration","src":"6917:28:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"*","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":442,"type":"uint256","value":"epochsMined"},"id":447,"name":"Identifier","src":"6948:11:0"},{"attributes":{"argumentTypes":null,"hexvalue":"3630","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 60","value":"60"},"id":448,"name":"Literal","src":"6962:2:0"}],"id":449,"name":"BinaryOperation","src":"6948:16:0"}],"id":450,"name":"VariableDeclarationStatement","src":"6917:47:0"},{"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"<","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":435,"type":"uint256","value":"ethBlocksSinceLastDifficultyPeriod"},"id":451,"name":"Identifier","src":"7090:34:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":446,"type":"uint256","value":"targetEthBlocksPerEpoch"},"id":452,"name":"Identifier","src":"7127:23:0"}],"id":453,"name":"BinaryOperation","src":"7090:60:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":278,"type":"uint256","value":"miningTarget"},"id":454,"name":"Identifier","src":"7200:12:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_uint256","typeString":"uint256"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sub","referencedDeclaration":45,"type":"function (uint256,uint256) pure returns (uint256)"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":278,"type":"uint256","value":"miningTarget"},"id":455,"name":"Identifier","src":"7215:12:0"}],"id":456,"name":"MemberAccess","src":"7215:16:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_rational_20_by_1","typeString":"int_const 20"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"div","referencedDeclaration":95,"type":"function (uint256,uint256) pure returns (uint256)"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":278,"type":"uint256","value":"miningTarget"},"id":457,"name":"Identifier","src":"7232:12:0"}],"id":458,"name":"MemberAccess","src":"7232:16:0"},{"attributes":{"argumentTypes":null,"hexvalue":"3230","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 20","value":"20"},"id":459,"name":"Literal","src":"7249:2:0"}],"id":460,"name":"FunctionCall","src":"7232:20:0"}],"id":461,"name":"FunctionCall","src":"7215:38:0"}],"id":462,"name":"Assignment","src":"7200:53:0"}],"id":463,"name":"ExpressionStatement","src":"7200:53:0"}],"id":464,"name":"Block","src":"7161:103:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":278,"type":"uint256","value":"miningTarget"},"id":465,"name":"Identifier","src":"7307:12:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_uint256","typeString":"uint256"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"add","referencedDeclaration":23,"type":"function (uint256,uint256) pure returns (uint256)"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":278,"type":"uint256","value":"miningTarget"},"id":466,"name":"Identifier","src":"7322:12:0"}],"id":467,"name":"MemberAccess","src":"7322:16:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_rational_20_by_1","typeString":"int_const 20"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"div","referencedDeclaration":95,"type":"function (uint256,uint256) pure returns (uint256)"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":278,"type":"uint256","value":"miningTarget"},"id":468,"name":"Identifier","src":"7339:12:0"}],"id":469,"name":"MemberAccess","src":"7339:16:0"},{"attributes":{"argumentTypes":null,"hexvalue":"3230","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 20","value":"20"},"id":470,"name":"Literal","src":"7356:2:0"}],"id":471,"name":"FunctionCall","src":"7339:20:0"}],"id":472,"name":"FunctionCall","src":"7322:38:0"}],"id":473,"name":"Assignment","src":"7307:53:0"}],"id":474,"name":"ExpressionStatement","src":"7307:53:0"}],"id":475,"name":"Block","src":"7268:103:0"}],"id":476,"name":"IfStatement","src":"7086:285:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":261,"type":"uint256","value":"latestDifficultyPeriodStarted"},"id":477,"name":"Identifier","src":"7383:29:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"number","referencedDeclaration":null,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":968,"type":"block","value":"block"},"id":478,"name":"Identifier","src":"7415:5:0"}],"id":479,"name":"MemberAccess","src":"7415:12:0"}],"id":480,"name":"Assignment","src":"7383:44:0"}],"id":481,"name":"ExpressionStatement","src":"7383:44:0"},{"attributes":{"falseBody":null},"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"<","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":278,"type":"uint256","value":"miningTarget"},"id":482,"name":"Identifier","src":"7441:12:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":271,"type":"uint256","value":"_MINIMUM_TARGET"},"id":483,"name":"Identifier","src":"7456:15:0"}],"id":484,"name":"BinaryOperation","src":"7441:30:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":278,"type":"uint256","value":"miningTarget"},"id":485,"name":"Identifier","src":"7497:12:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":271,"type":"uint256","value":"_MINIMUM_TARGET"},"id":486,"name":"Identifier","src":"7512:15:0"}],"id":487,"name":"Assignment","src":"7497:30:0"}],"id":488,"name":"ExpressionStatement","src":"7497:30:0"}],"id":489,"name":"Block","src":"7485:53:0"}],"id":490,"name":"IfStatement","src":"7438:100:0"},{"attributes":{"falseBody":null},"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":">","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":278,"type":"uint256","value":"miningTarget"},"id":491,"name":"Identifier","src":"7551:12:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":276,"type":"uint256","value":"_MAXIMUM_TARGET"},"id":492,"name":"Identifier","src":"7566:15:0"}],"id":493,"name":"BinaryOperation","src":"7551:30:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":278,"type":"uint256","value":"miningTarget"},"id":494,"name":"Identifier","src":"7608:12:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":276,"type":"uint256","value":"_MAXIMUM_TARGET"},"id":495,"name":"Identifier","src":"7623:15:0"}],"id":496,"name":"Assignment","src":"7608:30:0"}],"id":497,"name":"ExpressionStatement","src":"7608:30:0"}],"id":498,"name":"Block","src":"7596:53:0"}],"id":499,"name":"IfStatement","src":"7548:101:0"}],"id":500,"name":"Block","src":"6587:1068:0"}],"id":501,"name":"FunctionDefinition","src":"6547:1108:0"},{"attributes":{"constant":false,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"getMintDigest","payable":false,"scope":964,"stateMutability":"nonpayable","superFunction":null,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"nonce","scope":524,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint256","type":"uint256"},"id":502,"name":"ElementaryTypeName","src":"7685:7:0"}],"id":503,"name":"VariableDeclaration","src":"7685:13:0"},{"attributes":{"constant":false,"name":"challenge_digest","scope":524,"stateVariable":false,"storageLocation":"default","type":"bytes32","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bytes32","type":"bytes32"},"id":504,"name":"ElementaryTypeName","src":"7700:7:0"}],"id":505,"name":"VariableDeclaration","src":"7700:24:0"},{"attributes":{"constant":false,"name":"challenge_number","scope":524,"stateVariable":false,"storageLocation":"default","type":"bytes32","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bytes32","type":"bytes32"},"id":506,"name":"ElementaryTypeName","src":"7726:7:0"}],"id":507,"name":"VariableDeclaration","src":"7726:24:0"}],"id":508,"name":"ParameterList","src":"7684:67:0"},{"children":[{"attributes":{"constant":false,"name":"digesttest","scope":524,"stateVariable":false,"storageLocation":"default","type":"bytes32","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bytes32","type":"bytes32"},"id":509,"name":"ElementaryTypeName","src":"7768:7:0"}],"id":510,"name":"VariableDeclaration","src":"7768:18:0"}],"id":511,"name":"ParameterList","src":"7767:20:0"},{"children":[{"attributes":{"assignments":[513]},"children":[{"attributes":{"constant":false,"name":"digest","scope":524,"stateVariable":false,"storageLocation":"default","type":"bytes32","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bytes32","type":"bytes32"},"id":512,"name":"ElementaryTypeName","src":"7799:7:0"}],"id":513,"name":"VariableDeclaration","src":"7799:14:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"bytes32","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_bytes32","typeString":"bytes32"},{"typeIdentifier":"t_address","typeString":"address"},{"typeIdentifier":"t_uint256","typeString":"uint256"}],"overloadedDeclarations":[null],"referencedDeclaration":970,"type":"function () pure returns (bytes32)","value":"keccak256"},"id":514,"name":"Identifier","src":"7816:9:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":507,"type":"bytes32","value":"challenge_number"},"id":515,"name":"Identifier","src":"7826:16:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":516,"name":"Identifier","src":"7843:3:0"}],"id":517,"name":"MemberAccess","src":"7843:10:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":503,"type":"uint256","value":"nonce"},"id":518,"name":"Identifier","src":"7854:5:0"}],"id":519,"name":"FunctionCall","src":"7816:44:0"}],"id":520,"name":"VariableDeclarationStatement","src":"7799:61:0"},{"attributes":{"functionReturnParameters":511},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":513,"type":"bytes32","value":"digest"},"id":521,"name":"Identifier","src":"7878:6:0"}],"id":522,"name":"Return","src":"7871:13:0"}],"id":523,"name":"Block","src":"7788:106:0"}],"id":524,"name":"FunctionDefinition","src":"7662:232:0"},{"attributes":{"constant":false,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"checkMintSolution","payable":false,"scope":964,"stateMutability":"nonpayable","superFunction":null,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"nonce","scope":570,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint256","type":"uint256"},"id":525,"name":"ElementaryTypeName","src":"7929:7:0"}],"id":526,"name":"VariableDeclaration","src":"7929:13:0"},{"attributes":{"constant":false,"name":"challenge_digest","scope":570,"stateVariable":false,"storageLocation":"default","type":"bytes32","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bytes32","type":"bytes32"},"id":527,"name":"ElementaryTypeName","src":"7944:7:0"}],"id":528,"name":"VariableDeclaration","src":"7944:24:0"},{"attributes":{"constant":false,"name":"challenge_number","scope":570,"stateVariable":false,"storageLocation":"default","type":"bytes32","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bytes32","type":"bytes32"},"id":529,"name":"ElementaryTypeName","src":"7970:7:0"}],"id":530,"name":"VariableDeclaration","src":"7970:24:0"},{"attributes":{"constant":false,"name":"testDifficulty","scope":570,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":531,"name":"ElementaryTypeName","src":"7996:4:0"}],"id":532,"name":"VariableDeclaration","src":"7996:19:0"}],"id":533,"name":"ParameterList","src":"7928:88:0"},{"children":[{"attributes":{"constant":false,"name":"success","scope":570,"stateVariable":false,"storageLocation":"default","type":"bool","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bool","type":"bool"},"id":534,"name":"ElementaryTypeName","src":"8033:4:0"}],"id":535,"name":"VariableDeclaration","src":"8033:12:0"}],"id":536,"name":"ParameterList","src":"8032:14:0"},{"children":[{"attributes":{"assignments":[538]},"children":[{"attributes":{"constant":false,"name":"difficulty","scope":570,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":537,"name":"ElementaryTypeName","src":"8060:4:0"}],"id":538,"name":"VariableDeclaration","src":"8060:15:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":532,"type":"uint256","value":"testDifficulty"},"id":539,"name":"Identifier","src":"8078:14:0"}],"id":540,"name":"VariableDeclarationStatement","src":"8060:32:0"},{"attributes":{"assignments":[542]},"children":[{"attributes":{"constant":false,"name":"reward_amount","scope":570,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":541,"name":"ElementaryTypeName","src":"8104:4:0"}],"id":542,"name":"VariableDeclaration","src":"8104:18:0"},{"attributes":{"argumentTypes":null,"arguments":[null],"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[null],"overloadedDeclarations":[null],"referencedDeclaration":723,"type":"function () view returns (uint256)","value":"getMiningReward"},"id":543,"name":"Identifier","src":"8125:15:0"}],"id":544,"name":"FunctionCall","src":"8125:17:0"}],"id":545,"name":"VariableDeclarationStatement","src":"8104:38:0"},{"attributes":{"assignments":[547]},"children":[{"attributes":{"constant":false,"name":"digest","scope":570,"stateVariable":false,"storageLocation":"default","type":"bytes32","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bytes32","type":"bytes32"},"id":546,"name":"ElementaryTypeName","src":"8155:7:0"}],"id":547,"name":"VariableDeclaration","src":"8155:14:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"bytes32","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_bytes32","typeString":"bytes32"},{"typeIdentifier":"t_address","typeString":"address"},{"typeIdentifier":"t_uint256","typeString":"uint256"}],"overloadedDeclarations":[null],"referencedDeclaration":970,"type":"function () pure returns (bytes32)","value":"keccak256"},"id":548,"name":"Identifier","src":"8172:9:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":530,"type":"bytes32","value":"challenge_number"},"id":549,"name":"Identifier","src":"8182:16:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":550,"name":"Identifier","src":"8199:3:0"}],"id":551,"name":"MemberAccess","src":"8199:10:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":526,"type":"uint256","value":"nonce"},"id":552,"name":"Identifier","src":"8210:5:0"}],"id":553,"name":"FunctionCall","src":"8172:44:0"}],"id":554,"name":"VariableDeclarationStatement","src":"8155:61:0"},{"attributes":{"falseBody":null},"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":">","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":true},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_bytes32","typeString":"bytes32"}],"isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"type":"type(uint256)","value":"uint256"},"id":555,"name":"ElementaryTypeNameExpression","src":"8286:7:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":547,"type":"bytes32","value":"digest"},"id":556,"name":"Identifier","src":"8294:6:0"}],"id":557,"name":"FunctionCall","src":"8286:15:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":278,"type":"uint256","value":"miningTarget"},"id":558,"name":"Identifier","src":"8304:12:0"}],"id":559,"name":"BinaryOperation","src":"8286:30:0"},{"children":[{"attributes":{"argumentTypes":null,"arguments":[null],"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[null],"overloadedDeclarations":[null],"referencedDeclaration":980,"type":"function () pure","value":"revert"},"id":560,"name":"Identifier","src":"8318:6:0"}],"id":561,"name":"FunctionCall","src":"8318:8:0"}],"id":562,"name":"ExpressionStatement","src":"8318:8:0"}],"id":563,"name":"IfStatement","src":"8283:43:0"},{"attributes":{"functionReturnParameters":536},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isInlineArray":false,"isLValue":false,"isPure":false,"lValueRequested":false,"type":"bool"},"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_bytes32","typeString":"bytes32"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"==","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":547,"type":"bytes32","value":"digest"},"id":564,"name":"Identifier","src":"8347:6:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":528,"type":"bytes32","value":"challenge_digest"},"id":565,"name":"Identifier","src":"8357:16:0"}],"id":566,"name":"BinaryOperation","src":"8347:26:0"}],"id":567,"name":"TupleExpression","src":"8346:28:0"}],"id":568,"name":"Return","src":"8339:35:0"}],"id":569,"name":"Block","src":"8047:339:0"}],"id":570,"name":"FunctionDefinition","src":"7902:484:0"},{"attributes":{"constant":false,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"mint","payable":false,"scope":964,"stateMutability":"nonpayable","superFunction":null,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"nonce","scope":676,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint256","type":"uint256"},"id":571,"name":"ElementaryTypeName","src":"8407:7:0"}],"id":572,"name":"VariableDeclaration","src":"8407:13:0"},{"attributes":{"constant":false,"name":"challenge_digest","scope":676,"stateVariable":false,"storageLocation":"default","type":"bytes32","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bytes32","type":"bytes32"},"id":573,"name":"ElementaryTypeName","src":"8422:7:0"}],"id":574,"name":"VariableDeclaration","src":"8422:24:0"}],"id":575,"name":"ParameterList","src":"8406:41:0"},{"children":[{"attributes":{"constant":false,"name":"success","scope":676,"stateVariable":false,"storageLocation":"default","type":"bool","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bool","type":"bool"},"id":576,"name":"ElementaryTypeName","src":"8464:4:0"}],"id":577,"name":"VariableDeclaration","src":"8464:12:0"}],"id":578,"name":"ParameterList","src":"8463:14:0"},{"children":[{"attributes":{"assignments":[580]},"children":[{"attributes":{"constant":false,"name":"reward_amount","scope":676,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":579,"name":"ElementaryTypeName","src":"8540:4:0"}],"id":580,"name":"VariableDeclaration","src":"8540:18:0"},{"attributes":{"argumentTypes":null,"arguments":[null],"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[null],"overloadedDeclarations":[null],"referencedDeclaration":723,"type":"function () view returns (uint256)","value":"getMiningReward"},"id":581,"name":"Identifier","src":"8561:15:0"}],"id":582,"name":"FunctionCall","src":"8561:17:0"}],"id":583,"name":"VariableDeclarationStatement","src":"8540:38:0"},{"attributes":{"assignments":[585]},"children":[{"attributes":{"constant":false,"name":"digest","scope":676,"stateVariable":false,"storageLocation":"default","type":"bytes32","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bytes32","type":"bytes32"},"id":584,"name":"ElementaryTypeName","src":"8739:7:0"}],"id":585,"name":"VariableDeclaration","src":"8739:14:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"bytes32","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_bytes32","typeString":"bytes32"},{"typeIdentifier":"t_address","typeString":"address"},{"typeIdentifier":"t_uint256","typeString":"uint256"}],"overloadedDeclarations":[null],"referencedDeclaration":970,"type":"function () pure returns (bytes32)","value":"keccak256"},"id":586,"name":"Identifier","src":"8757:9:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":280,"type":"bytes32","value":"challengeNumber"},"id":587,"name":"Identifier","src":"8767:15:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":588,"name":"Identifier","src":"8784:3:0"}],"id":589,"name":"MemberAccess","src":"8784:10:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":572,"type":"uint256","value":"nonce"},"id":590,"name":"Identifier","src":"8796:5:0"}],"id":591,"name":"FunctionCall","src":"8757:46:0"}],"id":592,"name":"VariableDeclarationStatement","src":"8739:64:0"},{"attributes":{"falseBody":null},"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_bytes32","typeString":"bytes32"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"!=","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":585,"type":"bytes32","value":"digest"},"id":593,"name":"Identifier","src":"8873:6:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":574,"type":"bytes32","value":"challenge_digest"},"id":594,"name":"Identifier","src":"8883:16:0"}],"id":595,"name":"BinaryOperation","src":"8873:26:0"},{"children":[{"attributes":{"argumentTypes":null,"arguments":[null],"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[null],"overloadedDeclarations":[null],"referencedDeclaration":980,"type":"function () pure","value":"revert"},"id":596,"name":"Identifier","src":"8901:6:0"}],"id":597,"name":"FunctionCall","src":"8901:8:0"}],"id":598,"name":"ExpressionStatement","src":"8901:8:0"}],"id":599,"name":"IfStatement","src":"8869:40:0"},{"attributes":{"falseBody":null},"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":">","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":true},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_bytes32","typeString":"bytes32"}],"isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"type":"type(uint256)","value":"uint256"},"id":600,"name":"ElementaryTypeNameExpression","src":"8976:7:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":585,"type":"bytes32","value":"digest"},"id":601,"name":"Identifier","src":"8984:6:0"}],"id":602,"name":"FunctionCall","src":"8976:15:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":278,"type":"uint256","value":"miningTarget"},"id":603,"name":"Identifier","src":"8994:12:0"}],"id":604,"name":"BinaryOperation","src":"8976:30:0"},{"children":[{"attributes":{"argumentTypes":null,"arguments":[null],"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[null],"overloadedDeclarations":[null],"referencedDeclaration":980,"type":"function () pure","value":"revert"},"id":605,"name":"Identifier","src":"9008:6:0"}],"id":606,"name":"FunctionCall","src":"9008:8:0"}],"id":607,"name":"ExpressionStatement","src":"9008:8:0"}],"id":608,"name":"IfStatement","src":"8973:43:0"},{"attributes":{"assignments":[610]},"children":[{"attributes":{"constant":false,"name":"hashFound","scope":676,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":609,"name":"ElementaryTypeName","src":"9139:4:0"}],"id":610,"name":"VariableDeclaration","src":"9139:14:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":false,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":294,"type":"mapping(bytes32 => uint256)","value":"rewardHashesFound"},"id":611,"name":"Identifier","src":"9156:17:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":585,"type":"bytes32","value":"digest"},"id":612,"name":"Identifier","src":"9174:6:0"}],"id":613,"name":"IndexAccess","src":"9156:25:0"}],"id":614,"name":"VariableDeclarationStatement","src":"9139:42:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":true,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":294,"type":"mapping(bytes32 => uint256)","value":"rewardHashesFound"},"id":615,"name":"Identifier","src":"9192:17:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":585,"type":"bytes32","value":"digest"},"id":616,"name":"Identifier","src":"9210:6:0"}],"id":617,"name":"IndexAccess","src":"9192:25:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":263,"type":"uint256","value":"epochCount"},"id":618,"name":"Identifier","src":"9220:10:0"}],"id":619,"name":"Assignment","src":"9192:38:0"}],"id":620,"name":"ExpressionStatement","src":"9192:38:0"},{"attributes":{"falseBody":null},"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"!=","type":"bool"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":610,"type":"uint256","value":"hashFound"},"id":621,"name":"Identifier","src":"9244:9:0"},{"attributes":{"argumentTypes":null,"hexvalue":"30","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 0","value":"0"},"id":622,"name":"Literal","src":"9257:1:0"}],"id":623,"name":"BinaryOperation","src":"9244:14:0"},{"children":[{"attributes":{"argumentTypes":null,"arguments":[null],"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[null],"overloadedDeclarations":[null],"referencedDeclaration":980,"type":"function () pure","value":"revert"},"id":624,"name":"Identifier","src":"9260:6:0"}],"id":625,"name":"FunctionCall","src":"9260:8:0"}],"id":626,"name":"ExpressionStatement","src":"9260:8:0"}],"id":627,"name":"IfStatement","src":"9241:27:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":true,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":300,"type":"mapping(address => uint256)","value":"balances"},"id":628,"name":"Identifier","src":"9328:8:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":629,"name":"Identifier","src":"9337:3:0"}],"id":630,"name":"MemberAccess","src":"9337:10:0"}],"id":631,"name":"IndexAccess","src":"9328:20:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_uint256","typeString":"uint256"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"add","referencedDeclaration":23,"type":"function (uint256,uint256) pure returns (uint256)"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":false,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":300,"type":"mapping(address => uint256)","value":"balances"},"id":632,"name":"Identifier","src":"9351:8:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":633,"name":"Identifier","src":"9360:3:0"}],"id":634,"name":"MemberAccess","src":"9360:10:0"}],"id":635,"name":"IndexAccess","src":"9351:20:0"}],"id":636,"name":"MemberAccess","src":"9351:24:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":580,"type":"uint256","value":"reward_amount"},"id":637,"name":"Identifier","src":"9376:13:0"}],"id":638,"name":"FunctionCall","src":"9351:39:0"}],"id":639,"name":"Assignment","src":"9328:62:0"}],"id":640,"name":"ExpressionStatement","src":"9328:62:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":296,"type":"uint256","value":"tokensMinted"},"id":641,"name":"Identifier","src":"9402:12:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_uint256","typeString":"uint256"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"add","referencedDeclaration":23,"type":"function (uint256,uint256) pure returns (uint256)"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":296,"type":"uint256","value":"tokensMinted"},"id":642,"name":"Identifier","src":"9417:12:0"}],"id":643,"name":"MemberAccess","src":"9417:16:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":580,"type":"uint256","value":"reward_amount"},"id":644,"name":"Identifier","src":"9434:13:0"}],"id":645,"name":"FunctionCall","src":"9417:31:0"}],"id":646,"name":"Assignment","src":"9402:46:0"}],"id":647,"name":"ExpressionStatement","src":"9402:46:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":286,"type":"address","value":"lastRewardTo"},"id":648,"name":"Identifier","src":"9500:12:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":649,"name":"Identifier","src":"9515:3:0"}],"id":650,"name":"MemberAccess","src":"9515:10:0"}],"id":651,"name":"Assignment","src":"9500:25:0"}],"id":652,"name":"ExpressionStatement","src":"9500:25:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":288,"type":"uint256","value":"lastRewardAmount"},"id":653,"name":"Identifier","src":"9535:16:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":580,"type":"uint256","value":"reward_amount"},"id":654,"name":"Identifier","src":"9554:13:0"}],"id":655,"name":"Assignment","src":"9535:32:0"}],"id":656,"name":"ExpressionStatement","src":"9535:32:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":290,"type":"uint256","value":"lastRewardEthBlockNumber"},"id":657,"name":"Identifier","src":"9577:24:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"number","referencedDeclaration":null,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":968,"type":"block","value":"block"},"id":658,"name":"Identifier","src":"9604:5:0"}],"id":659,"name":"MemberAccess","src":"9604:12:0"}],"id":660,"name":"Assignment","src":"9577:39:0"}],"id":661,"name":"ExpressionStatement","src":"9577:39:0"},{"children":[{"attributes":{"argumentTypes":null,"arguments":[null],"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[null],"overloadedDeclarations":[null],"referencedDeclaration":431,"type":"function ()","value":"_startNewMiningEpoch"},"id":662,"name":"Identifier","src":"9629:20:0"}],"id":663,"name":"FunctionCall","src":"9629:22:0"}],"id":664,"name":"ExpressionStatement","src":"9629:22:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_address","typeString":"address"},{"typeIdentifier":"t_uint256","typeString":"uint256"},{"typeIdentifier":"t_uint256","typeString":"uint256"},{"typeIdentifier":"t_bytes32","typeString":"bytes32"}],"overloadedDeclarations":[null],"referencedDeclaration":316,"type":"function (address,uint256,uint256,bytes32)","value":"Mint"},"id":665,"name":"Identifier","src":"9664:4:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":666,"name":"Identifier","src":"9669:3:0"}],"id":667,"name":"MemberAccess","src":"9669:10:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":580,"type":"uint256","value":"reward_amount"},"id":668,"name":"Identifier","src":"9681:13:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":263,"type":"uint256","value":"epochCount"},"id":669,"name":"Identifier","src":"9696:10:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":280,"type":"bytes32","value":"challengeNumber"},"id":670,"name":"Identifier","src":"9708:15:0"}],"id":671,"name":"FunctionCall","src":"9664:61:0"}],"id":672,"name":"ExpressionStatement","src":"9664:61:0"},{"attributes":{"functionReturnParameters":578},"children":[{"attributes":{"argumentTypes":null,"hexvalue":"74727565","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"bool","type":"bool","value":"true"},"id":673,"name":"Literal","src":"9742:4:0"}],"id":674,"name":"Return","src":"9735:11:0"}],"id":675,"name":"Block","src":"8478:1276:0"}],"id":676,"name":"FunctionDefinition","src":"8393:1361:0"},{"attributes":{"constant":true,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"getChallengeNumber","payable":false,"scope":964,"stateMutability":"view","superFunction":null,"visibility":"public"},"children":[{"attributes":{"parameters":[null]},"children":[],"id":677,"name":"ParameterList","src":"9871:2:0"},{"children":[{"attributes":{"constant":false,"name":"","scope":684,"stateVariable":false,"storageLocation":"default","type":"bytes32","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bytes32","type":"bytes32"},"id":678,"name":"ElementaryTypeName","src":"9899:7:0"}],"id":679,"name":"VariableDeclaration","src":"9899:7:0"}],"id":680,"name":"ParameterList","src":"9898:9:0"},{"children":[{"attributes":{"functionReturnParameters":680},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":280,"type":"bytes32","value":"challengeNumber"},"id":681,"name":"Identifier","src":"9925:15:0"}],"id":682,"name":"Return","src":"9918:22:0"}],"id":683,"name":"Block","src":"9908:39:0"}],"id":684,"name":"FunctionDefinition","src":"9844:103:0"},{"attributes":{"constant":true,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"getMiningDifficulty","payable":false,"scope":964,"stateMutability":"view","superFunction":null,"visibility":"public"},"children":[{"attributes":{"parameters":[null]},"children":[],"id":685,"name":"ParameterList","src":"10064:2:0"},{"children":[{"attributes":{"constant":false,"name":"","scope":695,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":686,"name":"ElementaryTypeName","src":"10092:4:0"}],"id":687,"name":"VariableDeclaration","src":"10092:4:0"}],"id":688,"name":"ParameterList","src":"10091:6:0"},{"children":[{"attributes":{"functionReturnParameters":688},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_uint256","typeString":"uint256"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"div","referencedDeclaration":95,"type":"function (uint256,uint256) pure returns (uint256)"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":276,"type":"uint256","value":"_MAXIMUM_TARGET"},"id":689,"name":"Identifier","src":"10115:15:0"}],"id":690,"name":"MemberAccess","src":"10115:19:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":278,"type":"uint256","value":"miningTarget"},"id":691,"name":"Identifier","src":"10135:12:0"}],"id":692,"name":"FunctionCall","src":"10115:33:0"}],"id":693,"name":"Return","src":"10108:40:0"}],"id":694,"name":"Block","src":"10098:57:0"}],"id":695,"name":"FunctionDefinition","src":"10036:119:0"},{"attributes":{"constant":true,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"getMiningTarget","payable":false,"scope":964,"stateMutability":"view","superFunction":null,"visibility":"public"},"children":[{"attributes":{"parameters":[null]},"children":[],"id":696,"name":"ParameterList","src":"10185:2:0"},{"children":[{"attributes":{"constant":false,"name":"","scope":703,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":697,"name":"ElementaryTypeName","src":"10213:4:0"}],"id":698,"name":"VariableDeclaration","src":"10213:4:0"}],"id":699,"name":"ParameterList","src":"10212:6:0"},{"children":[{"attributes":{"functionReturnParameters":699},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":278,"type":"uint256","value":"miningTarget"},"id":700,"name":"Identifier","src":"10235:12:0"}],"id":701,"name":"Return","src":"10228:19:0"}],"id":702,"name":"Block","src":"10219:34:0"}],"id":703,"name":"FunctionDefinition","src":"10161:92:0"},{"attributes":{"constant":true,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"getMiningReward","payable":false,"scope":964,"stateMutability":"view","superFunction":null,"visibility":"public"},"children":[{"attributes":{"parameters":[null]},"children":[],"id":704,"name":"ParameterList","src":"10391:2:0"},{"children":[{"attributes":{"constant":false,"name":"","scope":723,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":705,"name":"ElementaryTypeName","src":"10419:4:0"}],"id":706,"name":"VariableDeclaration","src":"10419:4:0"}],"id":707,"name":"ParameterList","src":"10418:6:0"},{"children":[{"attributes":{"functionReturnParameters":707},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_uint256","typeString":"uint256"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"div","referencedDeclaration":95,"type":"function (uint256,uint256) pure returns (uint256)"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isInlineArray":false,"isLValue":false,"isPure":false,"lValueRequested":false,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"*","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"hexvalue":"3530","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 50","value":"50"},"id":708,"name":"Literal","src":"10570:2:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"**","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"hexvalue":"3130","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 10","value":"10"},"id":709,"name":"Literal","src":"10575:2:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":true},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_uint8","typeString":"uint8"}],"isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"type":"type(uint256)","value":"uint"},"id":710,"name":"ElementaryTypeNameExpression","src":"10579:4:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":257,"type":"uint8","value":"decimals"},"id":711,"name":"Identifier","src":"10584:8:0"}],"id":712,"name":"FunctionCall","src":"10579:14:0"}],"id":713,"name":"BinaryOperation","src":"10575:18:0"}],"id":714,"name":"BinaryOperation","src":"10570:23:0"}],"id":715,"name":"TupleExpression","src":"10569:26:0"}],"id":716,"name":"MemberAccess","src":"10569:30:0"},{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"**","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"hexvalue":"32","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 2","value":"2"},"id":717,"name":"Literal","src":"10601:1:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":282,"type":"uint256","value":"rewardEra"},"id":718,"name":"Identifier","src":"10604:9:0"}],"id":719,"name":"BinaryOperation","src":"10601:12:0"}],"id":720,"name":"FunctionCall","src":"10569:46:0"}],"id":721,"name":"Return","src":"10562:53:0"}],"id":722,"name":"Block","src":"10425:199:0"}],"id":723,"name":"FunctionDefinition","src":"10367:257:0"},{"attributes":{"constant":true,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"totalSupply","payable":false,"scope":964,"stateMutability":"view","superFunction":101,"visibility":"public"},"children":[{"attributes":{"parameters":[null]},"children":[],"id":724,"name":"ParameterList","src":"10835:2:0"},{"children":[{"attributes":{"constant":false,"name":"","scope":737,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":725,"name":"ElementaryTypeName","src":"10863:4:0"}],"id":726,"name":"VariableDeclaration","src":"10863:4:0"}],"id":727,"name":"ParameterList","src":"10862:6:0"},{"children":[{"attributes":{"functionReturnParameters":727},"children":[{"attributes":{"argumentTypes":null,"commonType":{"typeIdentifier":"t_uint256","typeString":"uint256"},"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"-","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":259,"type":"uint256","value":"_totalSupply"},"id":728,"name":"Identifier","src":"10887:12:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":false,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":300,"type":"mapping(address => uint256)","value":"balances"},"id":729,"name":"Identifier","src":"10903:8:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":true,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"address","type_conversion":true},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_rational_0_by_1","typeString":"int_const 0"}],"isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"type":"type(address)","value":"address"},"id":730,"name":"ElementaryTypeNameExpression","src":"10912:7:0"},{"attributes":{"argumentTypes":null,"hexvalue":"30","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"number","type":"int_const 0","value":"0"},"id":731,"name":"Literal","src":"10920:1:0"}],"id":732,"name":"FunctionCall","src":"10912:10:0"}],"id":733,"name":"IndexAccess","src":"10903:20:0"}],"id":734,"name":"BinaryOperation","src":"10887:36:0"}],"id":735,"name":"Return","src":"10880:43:0"}],"id":736,"name":"Block","src":"10869:62:0"}],"id":737,"name":"FunctionDefinition","src":"10815:116:0"},{"attributes":{"constant":true,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"balanceOf","payable":false,"scope":964,"stateMutability":"view","superFunction":108,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"tokenOwner","scope":749,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":738,"name":"ElementaryTypeName","src":"11175:7:0"}],"id":739,"name":"VariableDeclaration","src":"11175:18:0"}],"id":740,"name":"ParameterList","src":"11174:20:0"},{"children":[{"attributes":{"constant":false,"name":"balance","scope":749,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":741,"name":"ElementaryTypeName","src":"11220:4:0"}],"id":742,"name":"VariableDeclaration","src":"11220:12:0"}],"id":743,"name":"ParameterList","src":"11219:14:0"},{"children":[{"attributes":{"functionReturnParameters":743},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":false,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":300,"type":"mapping(address => uint256)","value":"balances"},"id":744,"name":"Identifier","src":"11252:8:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":739,"type":"address","value":"tokenOwner"},"id":745,"name":"Identifier","src":"11261:10:0"}],"id":746,"name":"IndexAccess","src":"11252:20:0"}],"id":747,"name":"Return","src":"11245:27:0"}],"id":748,"name":"Block","src":"11234:46:0"}],"id":749,"name":"FunctionDefinition","src":"11156:124:0"},{"attributes":{"constant":false,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"transfer","payable":false,"scope":964,"stateMutability":"nonpayable","superFunction":126,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"to","scope":792,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":750,"name":"ElementaryTypeName","src":"11647:7:0"}],"id":751,"name":"VariableDeclaration","src":"11647:10:0"},{"attributes":{"constant":false,"name":"tokens","scope":792,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":752,"name":"ElementaryTypeName","src":"11659:4:0"}],"id":753,"name":"VariableDeclaration","src":"11659:11:0"}],"id":754,"name":"ParameterList","src":"11646:25:0"},{"children":[{"attributes":{"constant":false,"name":"success","scope":792,"stateVariable":false,"storageLocation":"default","type":"bool","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bool","type":"bool"},"id":755,"name":"ElementaryTypeName","src":"11688:4:0"}],"id":756,"name":"VariableDeclaration","src":"11688:12:0"}],"id":757,"name":"ParameterList","src":"11687:14:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":true,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":300,"type":"mapping(address => uint256)","value":"balances"},"id":758,"name":"Identifier","src":"11713:8:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":759,"name":"Identifier","src":"11722:3:0"}],"id":760,"name":"MemberAccess","src":"11722:10:0"}],"id":761,"name":"IndexAccess","src":"11713:20:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_uint256","typeString":"uint256"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sub","referencedDeclaration":45,"type":"function (uint256,uint256) pure returns (uint256)"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":false,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":300,"type":"mapping(address => uint256)","value":"balances"},"id":762,"name":"Identifier","src":"11736:8:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":763,"name":"Identifier","src":"11745:3:0"}],"id":764,"name":"MemberAccess","src":"11745:10:0"}],"id":765,"name":"IndexAccess","src":"11736:20:0"}],"id":766,"name":"MemberAccess","src":"11736:24:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":753,"type":"uint256","value":"tokens"},"id":767,"name":"Identifier","src":"11761:6:0"}],"id":768,"name":"FunctionCall","src":"11736:32:0"}],"id":769,"name":"Assignment","src":"11713:55:0"}],"id":770,"name":"ExpressionStatement","src":"11713:55:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":true,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":300,"type":"mapping(address => uint256)","value":"balances"},"id":771,"name":"Identifier","src":"11779:8:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":751,"type":"address","value":"to"},"id":772,"name":"Identifier","src":"11788:2:0"}],"id":773,"name":"IndexAccess","src":"11779:12:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_uint256","typeString":"uint256"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"add","referencedDeclaration":23,"type":"function (uint256,uint256) pure returns (uint256)"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":false,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":300,"type":"mapping(address => uint256)","value":"balances"},"id":774,"name":"Identifier","src":"11794:8:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":751,"type":"address","value":"to"},"id":775,"name":"Identifier","src":"11803:2:0"}],"id":776,"name":"IndexAccess","src":"11794:12:0"}],"id":777,"name":"MemberAccess","src":"11794:16:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":753,"type":"uint256","value":"tokens"},"id":778,"name":"Identifier","src":"11811:6:0"}],"id":779,"name":"FunctionCall","src":"11794:24:0"}],"id":780,"name":"Assignment","src":"11779:39:0"}],"id":781,"name":"ExpressionStatement","src":"11779:39:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_address","typeString":"address"},{"typeIdentifier":"t_address","typeString":"address"},{"typeIdentifier":"t_uint256","typeString":"uint256"}],"overloadedDeclarations":[null],"referencedDeclaration":154,"type":"function (address,address,uint256)","value":"Transfer"},"id":782,"name":"Identifier","src":"11829:8:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":783,"name":"Identifier","src":"11838:3:0"}],"id":784,"name":"MemberAccess","src":"11838:10:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":751,"type":"address","value":"to"},"id":785,"name":"Identifier","src":"11850:2:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":753,"type":"uint256","value":"tokens"},"id":786,"name":"Identifier","src":"11854:6:0"}],"id":787,"name":"FunctionCall","src":"11829:32:0"}],"id":788,"name":"ExpressionStatement","src":"11829:32:0"},{"attributes":{"functionReturnParameters":757},"children":[{"attributes":{"argumentTypes":null,"hexvalue":"74727565","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"bool","type":"bool","value":"true"},"id":789,"name":"Literal","src":"11879:4:0"}],"id":790,"name":"Return","src":"11872:11:0"}],"id":791,"name":"Block","src":"11702:189:0"}],"id":792,"name":"FunctionDefinition","src":"11629:262:0"},{"attributes":{"constant":false,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"approve","payable":false,"scope":964,"stateMutability":"nonpayable","superFunction":135,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"spender","scope":820,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":793,"name":"ElementaryTypeName","src":"12422:7:0"}],"id":794,"name":"VariableDeclaration","src":"12422:15:0"},{"attributes":{"constant":false,"name":"tokens","scope":820,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":795,"name":"ElementaryTypeName","src":"12439:4:0"}],"id":796,"name":"VariableDeclaration","src":"12439:11:0"}],"id":797,"name":"ParameterList","src":"12421:30:0"},{"children":[{"attributes":{"constant":false,"name":"success","scope":820,"stateVariable":false,"storageLocation":"default","type":"bool","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bool","type":"bool"},"id":798,"name":"ElementaryTypeName","src":"12468:4:0"}],"id":799,"name":"VariableDeclaration","src":"12468:12:0"}],"id":800,"name":"ParameterList","src":"12467:14:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":true,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":false,"type":"mapping(address => uint256)"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":306,"type":"mapping(address => mapping(address => uint256))","value":"allowed"},"id":801,"name":"Identifier","src":"12493:7:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":802,"name":"Identifier","src":"12501:3:0"}],"id":803,"name":"MemberAccess","src":"12501:10:0"}],"id":805,"name":"IndexAccess","src":"12493:19:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":794,"type":"address","value":"spender"},"id":804,"name":"Identifier","src":"12513:7:0"}],"id":806,"name":"IndexAccess","src":"12493:28:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":796,"type":"uint256","value":"tokens"},"id":807,"name":"Identifier","src":"12524:6:0"}],"id":808,"name":"Assignment","src":"12493:37:0"}],"id":809,"name":"ExpressionStatement","src":"12493:37:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_address","typeString":"address"},{"typeIdentifier":"t_address","typeString":"address"},{"typeIdentifier":"t_uint256","typeString":"uint256"}],"overloadedDeclarations":[null],"referencedDeclaration":162,"type":"function (address,address,uint256)","value":"Approval"},"id":810,"name":"Identifier","src":"12541:8:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":811,"name":"Identifier","src":"12550:3:0"}],"id":812,"name":"MemberAccess","src":"12550:10:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":794,"type":"address","value":"spender"},"id":813,"name":"Identifier","src":"12562:7:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":796,"type":"uint256","value":"tokens"},"id":814,"name":"Identifier","src":"12571:6:0"}],"id":815,"name":"FunctionCall","src":"12541:37:0"}],"id":816,"name":"ExpressionStatement","src":"12541:37:0"},{"attributes":{"functionReturnParameters":800},"children":[{"attributes":{"argumentTypes":null,"hexvalue":"74727565","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"bool","type":"bool","value":"true"},"id":817,"name":"Literal","src":"12596:4:0"}],"id":818,"name":"Return","src":"12589:11:0"}],"id":819,"name":"Block","src":"12482:126:0"}],"id":820,"name":"FunctionDefinition","src":"12405:203:0"},{"attributes":{"constant":false,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"transferFrom","payable":false,"scope":964,"stateMutability":"nonpayable","superFunction":146,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"from","scope":879,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":821,"name":"ElementaryTypeName","src":"13171:7:0"}],"id":822,"name":"VariableDeclaration","src":"13171:12:0"},{"attributes":{"constant":false,"name":"to","scope":879,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":823,"name":"ElementaryTypeName","src":"13185:7:0"}],"id":824,"name":"VariableDeclaration","src":"13185:10:0"},{"attributes":{"constant":false,"name":"tokens","scope":879,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":825,"name":"ElementaryTypeName","src":"13197:4:0"}],"id":826,"name":"VariableDeclaration","src":"13197:11:0"}],"id":827,"name":"ParameterList","src":"13170:39:0"},{"children":[{"attributes":{"constant":false,"name":"success","scope":879,"stateVariable":false,"storageLocation":"default","type":"bool","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bool","type":"bool"},"id":828,"name":"ElementaryTypeName","src":"13226:4:0"}],"id":829,"name":"VariableDeclaration","src":"13226:12:0"}],"id":830,"name":"ParameterList","src":"13225:14:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":true,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":300,"type":"mapping(address => uint256)","value":"balances"},"id":831,"name":"Identifier","src":"13251:8:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":822,"type":"address","value":"from"},"id":832,"name":"Identifier","src":"13260:4:0"}],"id":833,"name":"IndexAccess","src":"13251:14:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_uint256","typeString":"uint256"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sub","referencedDeclaration":45,"type":"function (uint256,uint256) pure returns (uint256)"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":false,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":300,"type":"mapping(address => uint256)","value":"balances"},"id":834,"name":"Identifier","src":"13268:8:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":822,"type":"address","value":"from"},"id":835,"name":"Identifier","src":"13277:4:0"}],"id":836,"name":"IndexAccess","src":"13268:14:0"}],"id":837,"name":"MemberAccess","src":"13268:18:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":826,"type":"uint256","value":"tokens"},"id":838,"name":"Identifier","src":"13287:6:0"}],"id":839,"name":"FunctionCall","src":"13268:26:0"}],"id":840,"name":"Assignment","src":"13251:43:0"}],"id":841,"name":"ExpressionStatement","src":"13251:43:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":true,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":false,"type":"mapping(address => uint256)"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":306,"type":"mapping(address => mapping(address => uint256))","value":"allowed"},"id":842,"name":"Identifier","src":"13305:7:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":822,"type":"address","value":"from"},"id":843,"name":"Identifier","src":"13313:4:0"}],"id":846,"name":"IndexAccess","src":"13305:13:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":844,"name":"Identifier","src":"13319:3:0"}],"id":845,"name":"MemberAccess","src":"13319:10:0"}],"id":847,"name":"IndexAccess","src":"13305:25:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_uint256","typeString":"uint256"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sub","referencedDeclaration":45,"type":"function (uint256,uint256) pure returns (uint256)"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":false,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":false,"type":"mapping(address => uint256)"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":306,"type":"mapping(address => mapping(address => uint256))","value":"allowed"},"id":848,"name":"Identifier","src":"13333:7:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":822,"type":"address","value":"from"},"id":849,"name":"Identifier","src":"13341:4:0"}],"id":850,"name":"IndexAccess","src":"13333:13:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":851,"name":"Identifier","src":"13347:3:0"}],"id":852,"name":"MemberAccess","src":"13347:10:0"}],"id":853,"name":"IndexAccess","src":"13333:25:0"}],"id":854,"name":"MemberAccess","src":"13333:29:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":826,"type":"uint256","value":"tokens"},"id":855,"name":"Identifier","src":"13363:6:0"}],"id":856,"name":"FunctionCall","src":"13333:37:0"}],"id":857,"name":"Assignment","src":"13305:65:0"}],"id":858,"name":"ExpressionStatement","src":"13305:65:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":true,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":300,"type":"mapping(address => uint256)","value":"balances"},"id":859,"name":"Identifier","src":"13381:8:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":824,"type":"address","value":"to"},"id":860,"name":"Identifier","src":"13390:2:0"}],"id":861,"name":"IndexAccess","src":"13381:12:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"uint256","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_uint256","typeString":"uint256"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"add","referencedDeclaration":23,"type":"function (uint256,uint256) pure returns (uint256)"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":false,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":300,"type":"mapping(address => uint256)","value":"balances"},"id":862,"name":"Identifier","src":"13396:8:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":824,"type":"address","value":"to"},"id":863,"name":"Identifier","src":"13405:2:0"}],"id":864,"name":"IndexAccess","src":"13396:12:0"}],"id":865,"name":"MemberAccess","src":"13396:16:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":826,"type":"uint256","value":"tokens"},"id":866,"name":"Identifier","src":"13413:6:0"}],"id":867,"name":"FunctionCall","src":"13396:24:0"}],"id":868,"name":"Assignment","src":"13381:39:0"}],"id":869,"name":"ExpressionStatement","src":"13381:39:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_address","typeString":"address"},{"typeIdentifier":"t_address","typeString":"address"},{"typeIdentifier":"t_uint256","typeString":"uint256"}],"overloadedDeclarations":[null],"referencedDeclaration":154,"type":"function (address,address,uint256)","value":"Transfer"},"id":870,"name":"Identifier","src":"13431:8:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":822,"type":"address","value":"from"},"id":871,"name":"Identifier","src":"13440:4:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":824,"type":"address","value":"to"},"id":872,"name":"Identifier","src":"13446:2:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":826,"type":"uint256","value":"tokens"},"id":873,"name":"Identifier","src":"13450:6:0"}],"id":874,"name":"FunctionCall","src":"13431:26:0"}],"id":875,"name":"ExpressionStatement","src":"13431:26:0"},{"attributes":{"functionReturnParameters":830},"children":[{"attributes":{"argumentTypes":null,"hexvalue":"74727565","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"bool","type":"bool","value":"true"},"id":876,"name":"Literal","src":"13475:4:0"}],"id":877,"name":"Return","src":"13468:11:0"}],"id":878,"name":"Block","src":"13240:247:0"}],"id":879,"name":"FunctionDefinition","src":"13149:338:0"},{"attributes":{"constant":true,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"allowance","payable":false,"scope":964,"stateMutability":"view","superFunction":117,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"tokenOwner","scope":895,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":880,"name":"ElementaryTypeName","src":"13792:7:0"}],"id":881,"name":"VariableDeclaration","src":"13792:18:0"},{"attributes":{"constant":false,"name":"spender","scope":895,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":882,"name":"ElementaryTypeName","src":"13812:7:0"}],"id":883,"name":"VariableDeclaration","src":"13812:15:0"}],"id":884,"name":"ParameterList","src":"13791:37:0"},{"children":[{"attributes":{"constant":false,"name":"remaining","scope":895,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":885,"name":"ElementaryTypeName","src":"13854:4:0"}],"id":886,"name":"VariableDeclaration","src":"13854:14:0"}],"id":887,"name":"ParameterList","src":"13853:16:0"},{"children":[{"attributes":{"functionReturnParameters":887},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":false,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":false,"type":"mapping(address => uint256)"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":306,"type":"mapping(address => mapping(address => uint256))","value":"allowed"},"id":888,"name":"Identifier","src":"13888:7:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":881,"type":"address","value":"tokenOwner"},"id":889,"name":"Identifier","src":"13896:10:0"}],"id":890,"name":"IndexAccess","src":"13888:19:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":883,"type":"address","value":"spender"},"id":891,"name":"Identifier","src":"13908:7:0"}],"id":892,"name":"IndexAccess","src":"13888:28:0"}],"id":893,"name":"Return","src":"13881:35:0"}],"id":894,"name":"Block","src":"13870:54:0"}],"id":895,"name":"FunctionDefinition","src":"13773:151:0"},{"attributes":{"constant":false,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"approveAndCall","payable":false,"scope":964,"stateMutability":"nonpayable","superFunction":null,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"spender","scope":936,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":896,"name":"ElementaryTypeName","src":"14314:7:0"}],"id":897,"name":"VariableDeclaration","src":"14314:15:0"},{"attributes":{"constant":false,"name":"tokens","scope":936,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":898,"name":"ElementaryTypeName","src":"14331:4:0"}],"id":899,"name":"VariableDeclaration","src":"14331:11:0"},{"attributes":{"constant":false,"name":"data","scope":936,"stateVariable":false,"storageLocation":"default","type":"bytes memory","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bytes","type":"bytes storage pointer"},"id":900,"name":"ElementaryTypeName","src":"14344:5:0"}],"id":901,"name":"VariableDeclaration","src":"14344:10:0"}],"id":902,"name":"ParameterList","src":"14313:42:0"},{"children":[{"attributes":{"constant":false,"name":"success","scope":936,"stateVariable":false,"storageLocation":"default","type":"bool","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bool","type":"bool"},"id":903,"name":"ElementaryTypeName","src":"14372:4:0"}],"id":904,"name":"VariableDeclaration","src":"14372:12:0"}],"id":905,"name":"ParameterList","src":"14371:14:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"operator":"=","type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":true,"type":"uint256"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":true,"isPure":false,"lValueRequested":false,"type":"mapping(address => uint256)"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":306,"type":"mapping(address => mapping(address => uint256))","value":"allowed"},"id":906,"name":"Identifier","src":"14397:7:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":907,"name":"Identifier","src":"14405:3:0"}],"id":908,"name":"MemberAccess","src":"14405:10:0"}],"id":910,"name":"IndexAccess","src":"14397:19:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":897,"type":"address","value":"spender"},"id":909,"name":"Identifier","src":"14417:7:0"}],"id":911,"name":"IndexAccess","src":"14397:28:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":899,"type":"uint256","value":"tokens"},"id":912,"name":"Identifier","src":"14428:6:0"}],"id":913,"name":"Assignment","src":"14397:37:0"}],"id":914,"name":"ExpressionStatement","src":"14397:37:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_address","typeString":"address"},{"typeIdentifier":"t_address","typeString":"address"},{"typeIdentifier":"t_uint256","typeString":"uint256"}],"overloadedDeclarations":[null],"referencedDeclaration":162,"type":"function (address,address,uint256)","value":"Approval"},"id":915,"name":"Identifier","src":"14445:8:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":916,"name":"Identifier","src":"14454:3:0"}],"id":917,"name":"MemberAccess","src":"14454:10:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":897,"type":"address","value":"spender"},"id":918,"name":"Identifier","src":"14466:7:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":899,"type":"uint256","value":"tokens"},"id":919,"name":"Identifier","src":"14475:6:0"}],"id":920,"name":"FunctionCall","src":"14445:37:0"}],"id":921,"name":"ExpressionStatement","src":"14445:37:0"},{"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_address","typeString":"address"},{"typeIdentifier":"t_uint256","typeString":"uint256"},{"typeIdentifier":"t_contract$__0xBitcoinToken_$964","typeString":"contract _0xBitcoinToken"},{"typeIdentifier":"t_bytes_memory_ptr","typeString":"bytes memory"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"receiveApproval","referencedDeclaration":174,"type":"function (address,uint256,address,bytes memory) external"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"contract ApproveAndCallFallBack","type_conversion":true},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_address","typeString":"address"}],"overloadedDeclarations":[null],"referencedDeclaration":175,"type":"type(contract ApproveAndCallFallBack)","value":"ApproveAndCallFallBack"},"id":922,"name":"Identifier","src":"14493:22:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":897,"type":"address","value":"spender"},"id":923,"name":"Identifier","src":"14516:7:0"}],"id":924,"name":"FunctionCall","src":"14493:31:0"}],"id":925,"name":"MemberAccess","src":"14493:47:0"},{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"sender","referencedDeclaration":null,"type":"address"},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":976,"type":"msg","value":"msg"},"id":926,"name":"Identifier","src":"14541:3:0"}],"id":927,"name":"MemberAccess","src":"14541:10:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":899,"type":"uint256","value":"tokens"},"id":928,"name":"Identifier","src":"14553:6:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":995,"type":"contract _0xBitcoinToken","value":"this"},"id":929,"name":"Identifier","src":"14561:4:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":901,"type":"bytes memory","value":"data"},"id":930,"name":"Identifier","src":"14567:4:0"}],"id":931,"name":"FunctionCall","src":"14493:79:0"}],"id":932,"name":"ExpressionStatement","src":"14493:79:0"},{"attributes":{"functionReturnParameters":905},"children":[{"attributes":{"argumentTypes":null,"hexvalue":"74727565","isConstant":false,"isLValue":false,"isPure":true,"lValueRequested":false,"subdenomination":null,"token":"bool","type":"bool","value":"true"},"id":933,"name":"Literal","src":"14590:4:0"}],"id":934,"name":"Return","src":"14583:11:0"}],"id":935,"name":"Block","src":"14386:216:0"}],"id":936,"name":"FunctionDefinition","src":"14290:312:0"},{"attributes":{"constant":false,"implemented":true,"isConstructor":false,"modifiers":[null],"name":"","payable":true,"scope":964,"stateMutability":"payable","superFunction":null,"visibility":"public"},"children":[{"attributes":{"parameters":[null]},"children":[],"id":937,"name":"ParameterList","src":"14806:2:0"},{"attributes":{"parameters":[null]},"children":[],"id":938,"name":"ParameterList","src":"14824:0:0"},{"children":[{"children":[{"attributes":{"argumentTypes":null,"arguments":[null],"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"tuple()","type_conversion":false},"children":[{"attributes":{"argumentTypes":[null],"overloadedDeclarations":[null],"referencedDeclaration":980,"type":"function () pure","value":"revert"},"id":939,"name":"Identifier","src":"14835:6:0"}],"id":940,"name":"FunctionCall","src":"14835:8:0"}],"id":941,"name":"ExpressionStatement","src":"14835:8:0"}],"id":942,"name":"Block","src":"14824:27:0"}],"id":943,"name":"FunctionDefinition","src":"14797:54:0"},{"attributes":{"constant":false,"implemented":true,"isConstructor":false,"name":"transferAnyERC20Token","payable":false,"scope":964,"stateMutability":"nonpayable","superFunction":null,"visibility":"public"},"children":[{"children":[{"attributes":{"constant":false,"name":"tokenAddress","scope":963,"stateVariable":false,"storageLocation":"default","type":"address","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"address","type":"address"},"id":944,"name":"ElementaryTypeName","src":"15118:7:0"}],"id":945,"name":"VariableDeclaration","src":"15118:20:0"},{"attributes":{"constant":false,"name":"tokens","scope":963,"stateVariable":false,"storageLocation":"default","type":"uint256","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"uint","type":"uint256"},"id":946,"name":"ElementaryTypeName","src":"15140:4:0"}],"id":947,"name":"VariableDeclaration","src":"15140:11:0"}],"id":948,"name":"ParameterList","src":"15117:35:0"},{"children":[{"attributes":{"constant":false,"name":"success","scope":963,"stateVariable":false,"storageLocation":"default","type":"bool","value":null,"visibility":"internal"},"children":[{"attributes":{"name":"bool","type":"bool"},"id":951,"name":"ElementaryTypeName","src":"15179:4:0"}],"id":952,"name":"VariableDeclaration","src":"15179:12:0"}],"id":953,"name":"ParameterList","src":"15178:14:0"},{"attributes":{"arguments":[null]},"children":[{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":205,"type":"modifier ()","value":"onlyOwner"},"id":949,"name":"Identifier","src":"15160:9:0"}],"id":950,"name":"ModifierInvocation","src":"15160:9:0"},{"children":[{"attributes":{"functionReturnParameters":953},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"bool","type_conversion":false},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_address","typeString":"address"},{"typeIdentifier":"t_uint256","typeString":"uint256"}],"isConstant":false,"isLValue":false,"isPure":false,"lValueRequested":false,"member_name":"transfer","referencedDeclaration":126,"type":"function (address,uint256) external returns (bool)"},"children":[{"attributes":{"argumentTypes":null,"isConstant":false,"isLValue":false,"isPure":false,"isStructConstructorCall":false,"lValueRequested":false,"names":[null],"type":"contract ERC20Interface","type_conversion":true},"children":[{"attributes":{"argumentTypes":[{"typeIdentifier":"t_address","typeString":"address"}],"overloadedDeclarations":[null],"referencedDeclaration":163,"type":"type(contract ERC20Interface)","value":"ERC20Interface"},"id":954,"name":"Identifier","src":"15211:14:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":945,"type":"address","value":"tokenAddress"},"id":955,"name":"Identifier","src":"15226:12:0"}],"id":956,"name":"FunctionCall","src":"15211:28:0"}],"id":957,"name":"MemberAccess","src":"15211:37:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":177,"type":"address","value":"owner"},"id":958,"name":"Identifier","src":"15249:5:0"},{"attributes":{"argumentTypes":null,"overloadedDeclarations":[null],"referencedDeclaration":947,"type":"uint256","value":"tokens"},"id":959,"name":"Identifier","src":"15256:6:0"}],"id":960,"name":"FunctionCall","src":"15211:52:0"}],"id":961,"name":"Return","src":"15204:59:0"}],"id":962,"name":"Block","src":"15193:78:0"}],"id":963,"name":"FunctionDefinition","src":"15087:184:0"}],"id":964,"name":"ContractDefinition","src":"3478:11796:0"}],"id":965,"name":"SourceUnit","src":"0:15275:0"},"compiler":{"name":"solc","version":"0.4.18+commit.9cf6e910.Emscripten.clang"},"networks":{},"schemaVersion":"1.0.1","updatedAt":"2018-02-03T22:55:50.574Z"}
 
 /***/ }),
-/* 48 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Web3 = __webpack_require__(49);
+var Web3 = __webpack_require__(58);
 
 // dont override global variable
 if (typeof window !== 'undefined' && typeof window.Web3 === 'undefined') {
@@ -31237,7 +41115,7 @@ if (typeof window !== 'undefined' && typeof window.Web3 === 'undefined') {
 module.exports = Web3;
 
 /***/ }),
-/* 49 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -31267,21 +41145,21 @@ module.exports = Web3;
  * @date 2014
  */
 
-var RequestManager = __webpack_require__(50);
-var Iban = __webpack_require__(16);
-var Eth = __webpack_require__(53);
-var DB = __webpack_require__(95);
-var Shh = __webpack_require__(96);
-var Net = __webpack_require__(97);
-var Settings = __webpack_require__(98);
-var version = __webpack_require__(99);
+var RequestManager = __webpack_require__(59);
+var Iban = __webpack_require__(17);
+var Eth = __webpack_require__(61);
+var DB = __webpack_require__(103);
+var Shh = __webpack_require__(104);
+var Net = __webpack_require__(105);
+var Settings = __webpack_require__(106);
+var version = __webpack_require__(107);
 var utils = __webpack_require__(1);
-var sha3 = __webpack_require__(18);
-var extend = __webpack_require__(100);
-var Batch = __webpack_require__(101);
-var Property = __webpack_require__(17);
-var HttpProvider = __webpack_require__(102);
-var IpcProvider = __webpack_require__(104);
+var sha3 = __webpack_require__(19);
+var extend = __webpack_require__(108);
+var Batch = __webpack_require__(109);
+var Property = __webpack_require__(18);
+var HttpProvider = __webpack_require__(110);
+var IpcProvider = __webpack_require__(112);
 
 function Web3(provider) {
     this._requestManager = new RequestManager(provider);
@@ -31372,7 +41250,7 @@ Web3.prototype.createBatch = function () {
 module.exports = Web3;
 
 /***/ }),
-/* 50 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -31401,10 +41279,10 @@ module.exports = Web3;
  * @date 2014
  */
 
-var Jsonrpc = __webpack_require__(25);
+var Jsonrpc = __webpack_require__(28);
 var utils = __webpack_require__(1);
-var c = __webpack_require__(15);
-var errors = __webpack_require__(10);
+var c = __webpack_require__(16);
+var errors = __webpack_require__(12);
 
 /**
  * It's responsible for passing messages to providers
@@ -31637,7 +41515,7 @@ RequestManager.prototype.poll = function () {
 module.exports = RequestManager;
 
 /***/ }),
-/* 51 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(module, global) {var __WEBPACK_AMD_DEFINE_RESULT__;/*! https://mths.be/utf8js v2.1.2 by @mathias */
@@ -31881,37 +41759,10 @@ module.exports = RequestManager;
 		root.utf8 = utf8;
 	}
 })(this);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(52)(module), __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)(module), __webpack_require__(7)))
 
 /***/ }),
-/* 52 */
-/***/ (function(module, exports) {
-
-module.exports = function (module) {
-	if (!module.webpackPolyfill) {
-		module.deprecate = function () {};
-		module.paths = [];
-		// module.parent = undefined by default
-		if (!module.children) module.children = [];
-		Object.defineProperty(module, "loaded", {
-			enumerable: true,
-			get: function () {
-				return module.l;
-			}
-		});
-		Object.defineProperty(module, "id", {
-			enumerable: true,
-			get: function () {
-				return module.i;
-			}
-		});
-		module.webpackPolyfill = 1;
-	}
-	return module;
-};
-
-/***/ }),
-/* 53 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31942,16 +41793,16 @@ module.exports = function (module) {
 
 var formatters = __webpack_require__(5);
 var utils = __webpack_require__(1);
-var Method = __webpack_require__(11);
-var Property = __webpack_require__(17);
-var c = __webpack_require__(15);
-var Contract = __webpack_require__(54);
-var watches = __webpack_require__(21);
-var Filter = __webpack_require__(20);
-var IsSyncing = __webpack_require__(89);
-var namereg = __webpack_require__(90);
-var Iban = __webpack_require__(16);
-var transfer = __webpack_require__(93);
+var Method = __webpack_require__(13);
+var Property = __webpack_require__(18);
+var c = __webpack_require__(16);
+var Contract = __webpack_require__(62);
+var watches = __webpack_require__(22);
+var Filter = __webpack_require__(21);
+var IsSyncing = __webpack_require__(97);
+var namereg = __webpack_require__(98);
+var Iban = __webpack_require__(17);
+var transfer = __webpack_require__(101);
 
 var blockCall = function (args) {
     return utils.isString(args[0]) && args[0].indexOf('0x') === 0 ? "eth_getBlockByHash" : "eth_getBlockByNumber";
@@ -32215,7 +42066,7 @@ Eth.prototype.isSyncing = function (callback) {
 module.exports = Eth;
 
 /***/ }),
-/* 54 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -32241,10 +42092,10 @@ module.exports = Eth;
  */
 
 var utils = __webpack_require__(1);
-var coder = __webpack_require__(22);
-var SolidityEvent = __webpack_require__(27);
-var SolidityFunction = __webpack_require__(87);
-var AllEvents = __webpack_require__(88);
+var coder = __webpack_require__(23);
+var SolidityEvent = __webpack_require__(30);
+var SolidityFunction = __webpack_require__(95);
+var AllEvents = __webpack_require__(96);
 
 /**
  * Should be called to encode constructor params
@@ -32482,7 +42333,7 @@ var Contract = function (web3, abi, address) {
 module.exports = ContractFactory;
 
 /***/ }),
-/* 55 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var f = __webpack_require__(3);
@@ -32517,7 +42368,7 @@ SolidityTypeAddress.prototype.staticPartLength = function (name) {
 module.exports = SolidityTypeAddress;
 
 /***/ }),
-/* 56 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var f = __webpack_require__(3);
@@ -32552,7 +42403,7 @@ SolidityTypeBool.prototype.staticPartLength = function (name) {
 module.exports = SolidityTypeBool;
 
 /***/ }),
-/* 57 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var f = __webpack_require__(3);
@@ -32593,7 +42444,7 @@ SolidityTypeInt.prototype.staticPartLength = function (name) {
 module.exports = SolidityTypeInt;
 
 /***/ }),
-/* 58 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var f = __webpack_require__(3);
@@ -32634,7 +42485,7 @@ SolidityTypeUInt.prototype.staticPartLength = function (name) {
 module.exports = SolidityTypeUInt;
 
 /***/ }),
-/* 59 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var f = __webpack_require__(3);
@@ -32663,7 +42514,7 @@ SolidityTypeDynamicBytes.prototype.isDynamicType = function () {
 module.exports = SolidityTypeDynamicBytes;
 
 /***/ }),
-/* 60 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var f = __webpack_require__(3);
@@ -32692,7 +42543,7 @@ SolidityTypeString.prototype.isDynamicType = function () {
 module.exports = SolidityTypeString;
 
 /***/ }),
-/* 61 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var f = __webpack_require__(3);
@@ -32733,7 +42584,7 @@ SolidityTypeReal.prototype.staticPartLength = function (name) {
 module.exports = SolidityTypeReal;
 
 /***/ }),
-/* 62 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var f = __webpack_require__(3);
@@ -32774,7 +42625,7 @@ SolidityTypeUReal.prototype.staticPartLength = function (name) {
 module.exports = SolidityTypeUReal;
 
 /***/ }),
-/* 63 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var f = __webpack_require__(3);
@@ -32817,13 +42668,13 @@ SolidityTypeBytes.prototype.staticPartLength = function (name) {
 module.exports = SolidityTypeBytes;
 
 /***/ }),
-/* 64 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
 	if (true) {
 		// CommonJS
-		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(19), __webpack_require__(65), __webpack_require__(66), __webpack_require__(6), __webpack_require__(7), __webpack_require__(23), __webpack_require__(28), __webpack_require__(67), __webpack_require__(29), __webpack_require__(68), __webpack_require__(30), __webpack_require__(69), __webpack_require__(24), __webpack_require__(70), __webpack_require__(8), __webpack_require__(2), __webpack_require__(71), __webpack_require__(72), __webpack_require__(73), __webpack_require__(74), __webpack_require__(75), __webpack_require__(76), __webpack_require__(77), __webpack_require__(78), __webpack_require__(79), __webpack_require__(80), __webpack_require__(81), __webpack_require__(82), __webpack_require__(83), __webpack_require__(84), __webpack_require__(85), __webpack_require__(86));
+		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(20), __webpack_require__(73), __webpack_require__(74), __webpack_require__(8), __webpack_require__(9), __webpack_require__(24), __webpack_require__(31), __webpack_require__(75), __webpack_require__(32), __webpack_require__(76), __webpack_require__(33), __webpack_require__(77), __webpack_require__(25), __webpack_require__(78), __webpack_require__(10), __webpack_require__(2), __webpack_require__(79), __webpack_require__(80), __webpack_require__(81), __webpack_require__(82), __webpack_require__(83), __webpack_require__(84), __webpack_require__(85), __webpack_require__(86), __webpack_require__(87), __webpack_require__(88), __webpack_require__(89), __webpack_require__(90), __webpack_require__(91), __webpack_require__(92), __webpack_require__(93), __webpack_require__(94));
 	} else if (typeof define === "function" && define.amd) {
 		// AMD
 		define(["./core", "./x64-core", "./lib-typedarrays", "./enc-utf16", "./enc-base64", "./md5", "./sha1", "./sha256", "./sha224", "./sha512", "./sha384", "./sha3", "./ripemd160", "./hmac", "./pbkdf2", "./evpkdf", "./cipher-core", "./mode-cfb", "./mode-ctr", "./mode-ctr-gladman", "./mode-ofb", "./mode-ecb", "./pad-ansix923", "./pad-iso10126", "./pad-iso97971", "./pad-zeropadding", "./pad-nopadding", "./format-hex", "./aes", "./tripledes", "./rc4", "./rabbit", "./rabbit-legacy"], factory);
@@ -32837,7 +42688,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 65 */
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory) {
@@ -32905,7 +42756,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 66 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory) {
@@ -33055,13 +42906,13 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 67 */
+/* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
 	if (true) {
 		// CommonJS
-		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(28));
+		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(31));
 	} else if (typeof define === "function" && define.amd) {
 		// AMD
 		define(["./core", "./sha256"], factory);
@@ -33133,13 +42984,13 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 68 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
 	if (true) {
 		// CommonJS
-		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(19), __webpack_require__(29));
+		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(20), __webpack_require__(32));
 	} else if (typeof define === "function" && define.amd) {
 		// AMD
 		define(["./core", "./x64-core", "./sha512"], factory);
@@ -33212,7 +43063,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 69 */
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory) {
@@ -33448,13 +43299,13 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 70 */
+/* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
 	if (true) {
 		// CommonJS
-		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(23), __webpack_require__(24));
+		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(24), __webpack_require__(25));
 	} else if (typeof define === "function" && define.amd) {
 		// AMD
 		define(["./core", "./sha1", "./hmac"], factory);
@@ -33594,7 +43445,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 71 */
+/* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
@@ -33673,7 +43524,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 72 */
+/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
@@ -33732,7 +43583,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 73 */
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
@@ -33835,7 +43686,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 74 */
+/* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
@@ -33890,7 +43741,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 75 */
+/* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
@@ -33931,7 +43782,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 76 */
+/* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
@@ -33981,7 +43832,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 77 */
+/* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
@@ -34025,7 +43876,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 78 */
+/* 86 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
@@ -34066,7 +43917,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 79 */
+/* 87 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
@@ -34112,7 +43963,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 80 */
+/* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
@@ -34141,7 +43992,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 81 */
+/* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
@@ -34208,13 +44059,13 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 82 */
+/* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
 	if (true) {
 		// CommonJS
-		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(6), __webpack_require__(7), __webpack_require__(8), __webpack_require__(2));
+		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(8), __webpack_require__(9), __webpack_require__(10), __webpack_require__(2));
 	} else if (typeof define === "function" && define.amd) {
 		// AMD
 		define(["./core", "./enc-base64", "./md5", "./evpkdf", "./cipher-core"], factory);
@@ -34440,13 +44291,13 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 83 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
 	if (true) {
 		// CommonJS
-		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(6), __webpack_require__(7), __webpack_require__(8), __webpack_require__(2));
+		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(8), __webpack_require__(9), __webpack_require__(10), __webpack_require__(2));
 	} else if (typeof define === "function" && define.amd) {
 		// AMD
 		define(["./core", "./enc-base64", "./md5", "./evpkdf", "./cipher-core"], factory);
@@ -35182,13 +45033,13 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 84 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
 	if (true) {
 		// CommonJS
-		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(6), __webpack_require__(7), __webpack_require__(8), __webpack_require__(2));
+		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(8), __webpack_require__(9), __webpack_require__(10), __webpack_require__(2));
 	} else if (typeof define === "function" && define.amd) {
 		// AMD
 		define(["./core", "./enc-base64", "./md5", "./evpkdf", "./cipher-core"], factory);
@@ -35322,13 +45173,13 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 85 */
+/* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
 	if (true) {
 		// CommonJS
-		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(6), __webpack_require__(7), __webpack_require__(8), __webpack_require__(2));
+		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(8), __webpack_require__(9), __webpack_require__(10), __webpack_require__(2));
 	} else if (typeof define === "function" && define.amd) {
 		// AMD
 		define(["./core", "./enc-base64", "./md5", "./evpkdf", "./cipher-core"], factory);
@@ -35503,13 +45354,13 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 86 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
 	if (true) {
 		// CommonJS
-		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(6), __webpack_require__(7), __webpack_require__(8), __webpack_require__(2));
+		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(8), __webpack_require__(9), __webpack_require__(10), __webpack_require__(2));
 	} else if (typeof define === "function" && define.amd) {
 		// AMD
 		define(["./core", "./enc-base64", "./md5", "./evpkdf", "./cipher-core"], factory);
@@ -35683,7 +45534,7 @@ module.exports = SolidityTypeBytes;
 });
 
 /***/ }),
-/* 87 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -35708,10 +45559,10 @@ module.exports = SolidityTypeBytes;
  * @date 2015
  */
 
-var coder = __webpack_require__(22);
+var coder = __webpack_require__(23);
 var utils = __webpack_require__(1);
 var formatters = __webpack_require__(5);
-var sha3 = __webpack_require__(18);
+var sha3 = __webpack_require__(19);
 
 /**
  * This prototype should be used to call/sendTransaction to solidity functions
@@ -35924,7 +45775,7 @@ SolidityFunction.prototype.attachToContract = function (contract) {
 module.exports = SolidityFunction;
 
 /***/ }),
-/* 88 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -35949,12 +45800,12 @@ module.exports = SolidityFunction;
  * @date 2014
  */
 
-var sha3 = __webpack_require__(18);
-var SolidityEvent = __webpack_require__(27);
+var sha3 = __webpack_require__(19);
+var SolidityEvent = __webpack_require__(30);
 var formatters = __webpack_require__(5);
 var utils = __webpack_require__(1);
-var Filter = __webpack_require__(20);
-var watches = __webpack_require__(21);
+var Filter = __webpack_require__(21);
+var watches = __webpack_require__(22);
 
 var AllSolidityEvents = function (web3, json, address) {
     this._web3 = web3;
@@ -36016,7 +45867,7 @@ AllSolidityEvents.prototype.attachToContract = function (contract) {
 module.exports = AllSolidityEvents;
 
 /***/ }),
-/* 89 */
+/* 97 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -36110,7 +45961,7 @@ IsSyncing.prototype.stopWatching = function () {
 module.exports = IsSyncing;
 
 /***/ }),
-/* 90 */
+/* 98 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -36135,8 +45986,8 @@ module.exports = IsSyncing;
  * @date 2015
  */
 
-var globalRegistrarAbi = __webpack_require__(91);
-var icapRegistrarAbi = __webpack_require__(92);
+var globalRegistrarAbi = __webpack_require__(99);
+var icapRegistrarAbi = __webpack_require__(100);
 
 var globalNameregAddress = '0xc6d9d2cd449a754c494264e1809c50e34d64562b';
 var icapNameregAddress = '0xa1a111bc074c9cfa781f0c38e63bd51c91b8af00';
@@ -36153,19 +46004,19 @@ module.exports = {
 };
 
 /***/ }),
-/* 91 */
+/* 99 */
 /***/ (function(module, exports) {
 
 module.exports = [{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"name","outputs":[{"name":"o_name","type":"bytes32"}],"type":"function"},{"constant":true,"inputs":[{"name":"_name","type":"bytes32"}],"name":"owner","outputs":[{"name":"","type":"address"}],"type":"function"},{"constant":true,"inputs":[{"name":"_name","type":"bytes32"}],"name":"content","outputs":[{"name":"","type":"bytes32"}],"type":"function"},{"constant":true,"inputs":[{"name":"_name","type":"bytes32"}],"name":"addr","outputs":[{"name":"","type":"address"}],"type":"function"},{"constant":false,"inputs":[{"name":"_name","type":"bytes32"}],"name":"reserve","outputs":[],"type":"function"},{"constant":true,"inputs":[{"name":"_name","type":"bytes32"}],"name":"subRegistrar","outputs":[{"name":"","type":"address"}],"type":"function"},{"constant":false,"inputs":[{"name":"_name","type":"bytes32"},{"name":"_newOwner","type":"address"}],"name":"transfer","outputs":[],"type":"function"},{"constant":false,"inputs":[{"name":"_name","type":"bytes32"},{"name":"_registrar","type":"address"}],"name":"setSubRegistrar","outputs":[],"type":"function"},{"constant":false,"inputs":[],"name":"Registrar","outputs":[],"type":"function"},{"constant":false,"inputs":[{"name":"_name","type":"bytes32"},{"name":"_a","type":"address"},{"name":"_primary","type":"bool"}],"name":"setAddress","outputs":[],"type":"function"},{"constant":false,"inputs":[{"name":"_name","type":"bytes32"},{"name":"_content","type":"bytes32"}],"name":"setContent","outputs":[],"type":"function"},{"constant":false,"inputs":[{"name":"_name","type":"bytes32"}],"name":"disown","outputs":[],"type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_name","type":"bytes32"},{"indexed":false,"name":"_winner","type":"address"}],"name":"AuctionEnded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_name","type":"bytes32"},{"indexed":false,"name":"_bidder","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}],"name":"NewBid","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"name","type":"bytes32"}],"name":"Changed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"name","type":"bytes32"},{"indexed":true,"name":"addr","type":"address"}],"name":"PrimaryChanged","type":"event"}]
 
 /***/ }),
-/* 92 */
+/* 100 */
 /***/ (function(module, exports) {
 
 module.exports = [{"constant":true,"inputs":[{"name":"_name","type":"bytes32"}],"name":"owner","outputs":[{"name":"","type":"address"}],"type":"function"},{"constant":false,"inputs":[{"name":"_name","type":"bytes32"},{"name":"_refund","type":"address"}],"name":"disown","outputs":[],"type":"function"},{"constant":true,"inputs":[{"name":"_name","type":"bytes32"}],"name":"addr","outputs":[{"name":"","type":"address"}],"type":"function"},{"constant":false,"inputs":[{"name":"_name","type":"bytes32"}],"name":"reserve","outputs":[],"type":"function"},{"constant":false,"inputs":[{"name":"_name","type":"bytes32"},{"name":"_newOwner","type":"address"}],"name":"transfer","outputs":[],"type":"function"},{"constant":false,"inputs":[{"name":"_name","type":"bytes32"},{"name":"_a","type":"address"}],"name":"setAddr","outputs":[],"type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"name":"name","type":"bytes32"}],"name":"Changed","type":"event"}]
 
 /***/ }),
-/* 93 */
+/* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -36190,8 +46041,8 @@ module.exports = [{"constant":true,"inputs":[{"name":"_name","type":"bytes32"}],
  * @date 2015
  */
 
-var Iban = __webpack_require__(16);
-var exchangeAbi = __webpack_require__(94);
+var Iban = __webpack_require__(17);
+var exchangeAbi = __webpack_require__(102);
 
 /**
  * Should be used to make Iban transfer
@@ -36260,13 +46111,13 @@ var deposit = function (web3, from, to, value, client, callback) {
 module.exports = transfer;
 
 /***/ }),
-/* 94 */
+/* 102 */
 /***/ (function(module, exports) {
 
 module.exports = [{"constant":false,"inputs":[{"name":"from","type":"bytes32"},{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transfer","outputs":[],"type":"function"},{"constant":false,"inputs":[{"name":"from","type":"bytes32"},{"name":"to","type":"address"},{"name":"indirectId","type":"bytes32"},{"name":"value","type":"uint256"}],"name":"icapTransfer","outputs":[],"type":"function"},{"constant":false,"inputs":[{"name":"to","type":"bytes32"}],"name":"deposit","outputs":[],"type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"AnonymousDeposit","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"bytes32"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Deposit","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"bytes32"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"bytes32"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"indirectId","type":"bytes32"},{"indexed":false,"name":"value","type":"uint256"}],"name":"IcapTransfer","type":"event"}]
 
 /***/ }),
-/* 95 */
+/* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -36291,7 +46142,7 @@ module.exports = [{"constant":false,"inputs":[{"name":"from","type":"bytes32"},{
  * @date 2015
  */
 
-var Method = __webpack_require__(11);
+var Method = __webpack_require__(13);
 
 var DB = function (web3) {
     this._requestManager = web3._requestManager;
@@ -36335,7 +46186,7 @@ var methods = function () {
 module.exports = DB;
 
 /***/ }),
-/* 96 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -36360,10 +46211,10 @@ module.exports = DB;
  * @date 2015
  */
 
-var Method = __webpack_require__(11);
+var Method = __webpack_require__(13);
 var formatters = __webpack_require__(5);
-var Filter = __webpack_require__(20);
-var watches = __webpack_require__(21);
+var Filter = __webpack_require__(21);
+var watches = __webpack_require__(22);
 
 var Shh = function (web3) {
     this.web3 = web3;
@@ -36419,7 +46270,7 @@ var methods = function () {
 module.exports = Shh;
 
 /***/ }),
-/* 97 */
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -36445,7 +46296,7 @@ module.exports = Shh;
  */
 
 var utils = __webpack_require__(1);
-var Property = __webpack_require__(17);
+var Property = __webpack_require__(18);
 
 var Net = function (web3) {
     this._requestManager = web3._requestManager;
@@ -36473,7 +46324,7 @@ var properties = function () {
 module.exports = Net;
 
 /***/ }),
-/* 98 */
+/* 106 */
 /***/ (function(module, exports) {
 
 
@@ -36486,19 +46337,19 @@ var Settings = function () {
 module.exports = Settings;
 
 /***/ }),
-/* 99 */
+/* 107 */
 /***/ (function(module, exports) {
 
 module.exports = {"version":"0.14.1"}
 
 /***/ }),
-/* 100 */
+/* 108 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var formatters = __webpack_require__(5);
 var utils = __webpack_require__(1);
-var Method = __webpack_require__(11);
-var Property = __webpack_require__(17);
+var Method = __webpack_require__(13);
+var Property = __webpack_require__(18);
 
 // TODO: refactor, so the input params are not altered.
 // it's necessary to make same 'extension' work with multiple providers
@@ -36542,7 +46393,7 @@ var extend = function (web3) {
 module.exports = extend;
 
 /***/ }),
-/* 101 */
+/* 109 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -36567,8 +46418,8 @@ module.exports = extend;
  * @date 2015
  */
 
-var Jsonrpc = __webpack_require__(25);
-var errors = __webpack_require__(10);
+var Jsonrpc = __webpack_require__(28);
+var errors = __webpack_require__(12);
 
 var Batch = function (web3) {
     this.requestManager = web3._requestManager;
@@ -36612,7 +46463,7 @@ Batch.prototype.execute = function () {
 module.exports = Batch;
 
 /***/ }),
-/* 102 */
+/* 110 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36642,7 +46493,7 @@ module.exports = Batch;
 
 
 
-var errors = __webpack_require__(10);
+var errors = __webpack_require__(12);
 
 // workaround to use httpprovider in different envs
 var XMLHttpRequest; // jshint ignore: line
@@ -36658,7 +46509,7 @@ if (typeof Meteor !== 'undefined' && Meteor.isServer) {
 
     // node
 } else {
-    XMLHttpRequest = __webpack_require__(103).XMLHttpRequest; // jshint ignore: line
+    XMLHttpRequest = __webpack_require__(111).XMLHttpRequest; // jshint ignore: line
 }
 
 /**
@@ -36764,7 +46615,7 @@ HttpProvider.prototype.isConnected = function () {
 module.exports = HttpProvider;
 
 /***/ }),
-/* 103 */
+/* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36779,7 +46630,7 @@ if (typeof XMLHttpRequest === 'undefined') {
 }
 
 /***/ }),
-/* 104 */
+/* 112 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36808,7 +46659,7 @@ if (typeof XMLHttpRequest === 'undefined') {
 
 
 var utils = __webpack_require__(1);
-var errors = __webpack_require__(10);
+var errors = __webpack_require__(12);
 
 var IpcProvider = function (path, net) {
     var _this = this;
@@ -36977,7 +46828,8567 @@ IpcProvider.prototype.sendAsync = function (payload, callback) {
 module.exports = IpcProvider;
 
 /***/ }),
-/* 105 */
+/* 113 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+ This file is part of web3.js.
+
+ web3.js is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ web3.js is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public License
+ along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/**
+ * @file utils.js
+ * @author Marek Kotewicz <marek@parity.io>
+ * @author Fabian Vogelsteller <fabian@ethereum.org>
+ * @date 2017
+ */
+
+var _ = __webpack_require__(26);
+var ethjsUnit = __webpack_require__(114);
+var utils = __webpack_require__(35);
+var soliditySha3 = __webpack_require__(124);
+var randomHex = __webpack_require__(125);
+
+/**
+ * Fires an error in an event emitter and callback and returns the eventemitter
+ *
+ * @method _fireError
+ * @param {Object} error a string, a error, or an object with {message, data}
+ * @param {Object} emitter
+ * @param {Function} reject
+ * @param {Function} callback
+ * @return {Object} the emitter
+ */
+var _fireError = function (error, emitter, reject, callback) {
+    /*jshint maxcomplexity: 10 */
+
+    // add data if given
+    if (_.isObject(error) && !(error instanceof Error) && error.data) {
+        if (_.isObject(error.data) || _.isArray(error.data)) {
+            error.data = JSON.stringify(error.data, null, 2);
+        }
+
+        error = error.message + "\n" + error.data;
+    }
+
+    if (_.isString(error)) {
+        error = new Error(error);
+    }
+
+    if (_.isFunction(callback)) {
+        callback(error);
+    }
+    if (_.isFunction(reject)) {
+        // suppress uncatched error if an error listener is present
+        if (emitter && _.isFunction(emitter.listeners) && emitter.listeners('error').length && _.isFunction(emitter.suppressUnhandledRejections)) {
+            emitter.suppressUnhandledRejections();
+            // OR suppress uncatched error if an callback listener is present
+        } else if (_.isFunction(callback) && _.isFunction(emitter.suppressUnhandledRejections)) {
+            emitter.suppressUnhandledRejections();
+        }
+        // reject later, to be able to return emitter
+        setTimeout(function () {
+            reject(error);
+        }, 1);
+    }
+
+    if (emitter && _.isFunction(emitter.emit)) {
+        // emit later, to be able to return emitter
+        setTimeout(function () {
+            emitter.emit('error', error);
+            emitter.removeAllListeners();
+        }, 1);
+    }
+
+    return emitter;
+};
+
+/**
+ * Should be used to create full function/event name from json abi
+ *
+ * @method _jsonInterfaceMethodToString
+ * @param {Object} json
+ * @return {String} full function/event name
+ */
+var _jsonInterfaceMethodToString = function (json) {
+    if (_.isObject(json) && json.name && json.name.indexOf('(') !== -1) {
+        return json.name;
+    }
+
+    var typeName = json.inputs.map(function (i) {
+        return i.type;
+    }).join(',');
+    return json.name + '(' + typeName + ')';
+};
+
+/**
+ * Should be called to get ascii from it's hex representation
+ *
+ * @method hexToAscii
+ * @param {String} hex
+ * @returns {String} ascii string representation of hex value
+ */
+var hexToAscii = function (hex) {
+    if (!utils.isHexStrict(hex)) throw new Error('The parameter must be a valid HEX string.');
+
+    var str = "";
+    var i = 0,
+        l = hex.length;
+    if (hex.substring(0, 2) === '0x') {
+        i = 2;
+    }
+    for (; i < l; i += 2) {
+        var code = parseInt(hex.substr(i, 2), 16);
+        str += String.fromCharCode(code);
+    }
+
+    return str;
+};
+
+/**
+ * Should be called to get hex representation (prefixed by 0x) of ascii string
+ *
+ * @method asciiToHex
+ * @param {String} str
+ * @returns {String} hex representation of input string
+ */
+var asciiToHex = function (str) {
+    if (!str) return "0x00";
+    var hex = "";
+    for (var i = 0; i < str.length; i++) {
+        var code = str.charCodeAt(i);
+        var n = code.toString(16);
+        hex += n.length < 2 ? '0' + n : n;
+    }
+
+    return "0x" + hex;
+};
+
+/**
+ * Returns value of unit in Wei
+ *
+ * @method getUnitValue
+ * @param {String} unit the unit to convert to, default ether
+ * @returns {BN} value of the unit (in Wei)
+ * @throws error if the unit is not correct:w
+ */
+var getUnitValue = function (unit) {
+    unit = unit ? unit.toLowerCase() : 'ether';
+    if (!ethjsUnit.unitMap[unit]) {
+        throw new Error('This unit "' + unit + '" doesn\'t exist, please use the one of the following units' + JSON.stringify(ethjsUnit.unitMap, null, 2));
+    }
+    return unit;
+};
+
+/**
+ * Takes a number of wei and converts it to any other ether unit.
+ *
+ * Possible units are:
+ *   SI Short   SI Full        Effigy       Other
+ * - kwei       femtoether     babbage
+ * - mwei       picoether      lovelace
+ * - gwei       nanoether      shannon      nano
+ * - --         microether     szabo        micro
+ * - --         milliether     finney       milli
+ * - ether      --             --
+ * - kether                    --           grand
+ * - mether
+ * - gether
+ * - tether
+ *
+ * @method fromWei
+ * @param {Number|String} number can be a number, number string or a HEX of a decimal
+ * @param {String} unit the unit to convert to, default ether
+ * @return {String|Object} When given a BN object it returns one as well, otherwise a number
+ */
+var fromWei = function (number, unit) {
+    unit = getUnitValue(unit);
+
+    if (!utils.isBN(number) && !_.isString(number)) {
+        throw new Error('Please pass numbers as strings or BigNumber objects to avoid precision errors.');
+    }
+
+    return utils.isBN(number) ? ethjsUnit.fromWei(number, unit) : ethjsUnit.fromWei(number, unit).toString(10);
+};
+
+/**
+ * Takes a number of a unit and converts it to wei.
+ *
+ * Possible units are:
+ *   SI Short   SI Full        Effigy       Other
+ * - kwei       femtoether     babbage
+ * - mwei       picoether      lovelace
+ * - gwei       nanoether      shannon      nano
+ * - --         microether     szabo        micro
+ * - --         microether     szabo        micro
+ * - --         milliether     finney       milli
+ * - ether      --             --
+ * - kether                    --           grand
+ * - mether
+ * - gether
+ * - tether
+ *
+ * @method toWei
+ * @param {Number|String|BN} number can be a number, number string or a HEX of a decimal
+ * @param {String} unit the unit to convert from, default ether
+ * @return {String|Object} When given a BN object it returns one as well, otherwise a number
+ */
+var toWei = function (number, unit) {
+    unit = getUnitValue(unit);
+
+    if (!utils.isBN(number) && !_.isString(number)) {
+        throw new Error('Please pass numbers as strings or BigNumber objects to avoid precision errors.');
+    }
+
+    return utils.isBN(number) ? ethjsUnit.toWei(number, unit) : ethjsUnit.toWei(number, unit).toString(10);
+};
+
+/**
+ * Converts to a checksum address
+ *
+ * @method toChecksumAddress
+ * @param {String} address the given HEX address
+ * @return {String}
+ */
+var toChecksumAddress = function (address) {
+    if (typeof address === 'undefined') return '';
+
+    if (!/^(0x)?[0-9a-f]{40}$/i.test(address)) throw new Error('Given address "' + address + '" is not a valid Ethereum address.');
+
+    address = address.toLowerCase().replace(/^0x/i, '');
+    var addressHash = utils.sha3(address).replace(/^0x/i, '');
+    var checksumAddress = '0x';
+
+    for (var i = 0; i < address.length; i++) {
+        // If ith character is 9 to f then make it uppercase
+        if (parseInt(addressHash[i], 16) > 7) {
+            checksumAddress += address[i].toUpperCase();
+        } else {
+            checksumAddress += address[i];
+        }
+    }
+    return checksumAddress;
+};
+
+module.exports = {
+    _fireError: _fireError,
+    _jsonInterfaceMethodToString: _jsonInterfaceMethodToString,
+    // extractDisplayName: extractDisplayName,
+    // extractTypeName: extractTypeName,
+    randomHex: randomHex,
+    _: _,
+    BN: utils.BN,
+    isBN: utils.isBN,
+    isBigNumber: utils.isBigNumber,
+    isHex: utils.isHex,
+    isHexStrict: utils.isHexStrict,
+    sha3: utils.sha3,
+    keccak256: utils.sha3,
+    soliditySha3: soliditySha3,
+    isAddress: utils.isAddress,
+    checkAddressChecksum: utils.checkAddressChecksum,
+    toChecksumAddress: toChecksumAddress,
+    toHex: utils.toHex,
+    toBN: utils.toBN,
+
+    bytesToHex: utils.bytesToHex,
+    hexToBytes: utils.hexToBytes,
+
+    hexToNumberString: utils.hexToNumberString,
+
+    hexToNumber: utils.hexToNumber,
+    toDecimal: utils.hexToNumber, // alias
+
+    numberToHex: utils.numberToHex,
+    fromDecimal: utils.numberToHex, // alias
+
+    hexToUtf8: utils.hexToUtf8,
+    hexToString: utils.hexToUtf8,
+    toUtf8: utils.hexToUtf8,
+
+    utf8ToHex: utils.utf8ToHex,
+    stringToHex: utils.utf8ToHex,
+    fromUtf8: utils.utf8ToHex,
+
+    hexToAscii: hexToAscii,
+    toAscii: hexToAscii,
+    asciiToHex: asciiToHex,
+    fromAscii: asciiToHex,
+
+    unitMap: ethjsUnit.unitMap,
+    toWei: toWei,
+    fromWei: fromWei,
+
+    padLeft: utils.leftPad,
+    leftPad: utils.leftPad,
+    padRight: utils.rightPad,
+    rightPad: utils.rightPad,
+    toTwosComplement: utils.toTwosComplement
+};
+
+/***/ }),
+/* 114 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var BN = __webpack_require__(115);
+var numberToBN = __webpack_require__(34);
+
+var zero = new BN(0);
+var negative1 = new BN(-1);
+
+// complete ethereum unit map
+var unitMap = {
+  'noether': '0', // eslint-disable-line
+  'wei': '1', // eslint-disable-line
+  'kwei': '1000', // eslint-disable-line
+  'Kwei': '1000', // eslint-disable-line
+  'babbage': '1000', // eslint-disable-line
+  'femtoether': '1000', // eslint-disable-line
+  'mwei': '1000000', // eslint-disable-line
+  'Mwei': '1000000', // eslint-disable-line
+  'lovelace': '1000000', // eslint-disable-line
+  'picoether': '1000000', // eslint-disable-line
+  'gwei': '1000000000', // eslint-disable-line
+  'Gwei': '1000000000', // eslint-disable-line
+  'shannon': '1000000000', // eslint-disable-line
+  'nanoether': '1000000000', // eslint-disable-line
+  'nano': '1000000000', // eslint-disable-line
+  'szabo': '1000000000000', // eslint-disable-line
+  'microether': '1000000000000', // eslint-disable-line
+  'micro': '1000000000000', // eslint-disable-line
+  'finney': '1000000000000000', // eslint-disable-line
+  'milliether': '1000000000000000', // eslint-disable-line
+  'milli': '1000000000000000', // eslint-disable-line
+  'ether': '1000000000000000000', // eslint-disable-line
+  'kether': '1000000000000000000000', // eslint-disable-line
+  'grand': '1000000000000000000000', // eslint-disable-line
+  'mether': '1000000000000000000000000', // eslint-disable-line
+  'gether': '1000000000000000000000000000', // eslint-disable-line
+  'tether': '1000000000000000000000000000000' };
+
+/**
+ * Returns value of unit in Wei
+ *
+ * @method getValueOfUnit
+ * @param {String} unit the unit to convert to, default ether
+ * @returns {BigNumber} value of the unit (in Wei)
+ * @throws error if the unit is not correct:w
+ */
+function getValueOfUnit(unitInput) {
+  var unit = unitInput ? unitInput.toLowerCase() : 'ether';
+  var unitValue = unitMap[unit]; // eslint-disable-line
+
+  if (typeof unitValue !== 'string') {
+    throw new Error('[ethjs-unit] the unit provided ' + unitInput + ' doesn\'t exists, please use the one of the following units ' + JSON.stringify(unitMap, null, 2));
+  }
+
+  return new BN(unitValue, 10);
+}
+
+function numberToString(arg) {
+  if (typeof arg === 'string') {
+    if (!arg.match(/^-?[0-9.]+$/)) {
+      throw new Error('while converting number to string, invalid number value \'' + arg + '\', should be a number matching (^-?[0-9.]+).');
+    }
+    return arg;
+  } else if (typeof arg === 'number') {
+    return String(arg);
+  } else if (typeof arg === 'object' && arg.toString && (arg.toTwos || arg.dividedToIntegerBy)) {
+    if (arg.toPrecision) {
+      return String(arg.toPrecision());
+    } else {
+      // eslint-disable-line
+      return arg.toString(10);
+    }
+  }
+  throw new Error('while converting number to string, invalid number value \'' + arg + '\' type ' + typeof arg + '.');
+}
+
+function fromWei(weiInput, unit, optionsInput) {
+  var wei = numberToBN(weiInput); // eslint-disable-line
+  var negative = wei.lt(zero); // eslint-disable-line
+  var base = getValueOfUnit(unit);
+  var baseLength = unitMap[unit].length - 1 || 1;
+  var options = optionsInput || {};
+
+  if (negative) {
+    wei = wei.mul(negative1);
+  }
+
+  var fraction = wei.mod(base).toString(10); // eslint-disable-line
+
+  while (fraction.length < baseLength) {
+    fraction = '0' + fraction;
+  }
+
+  if (!options.pad) {
+    fraction = fraction.match(/^([0-9]*[1-9]|0)(0*)/)[1];
+  }
+
+  var whole = wei.div(base).toString(10); // eslint-disable-line
+
+  if (options.commify) {
+    whole = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  var value = '' + whole + (fraction == '0' ? '' : '.' + fraction); // eslint-disable-line
+
+  if (negative) {
+    value = '-' + value;
+  }
+
+  return value;
+}
+
+function toWei(etherInput, unit) {
+  var ether = numberToString(etherInput); // eslint-disable-line
+  var base = getValueOfUnit(unit);
+  var baseLength = unitMap[unit].length - 1 || 1;
+
+  // Is it negative?
+  var negative = ether.substring(0, 1) === '-'; // eslint-disable-line
+  if (negative) {
+    ether = ether.substring(1);
+  }
+
+  if (ether === '.') {
+    throw new Error('[ethjs-unit] while converting number ' + etherInput + ' to wei, invalid value');
+  }
+
+  // Split it into a whole and fractional part
+  var comps = ether.split('.'); // eslint-disable-line
+  if (comps.length > 2) {
+    throw new Error('[ethjs-unit] while converting number ' + etherInput + ' to wei,  too many decimal points');
+  }
+
+  var whole = comps[0],
+      fraction = comps[1]; // eslint-disable-line
+
+  if (!whole) {
+    whole = '0';
+  }
+  if (!fraction) {
+    fraction = '0';
+  }
+  if (fraction.length > baseLength) {
+    throw new Error('[ethjs-unit] while converting number ' + etherInput + ' to wei, too many decimal places');
+  }
+
+  while (fraction.length < baseLength) {
+    fraction += '0';
+  }
+
+  whole = new BN(whole);
+  fraction = new BN(fraction);
+  var wei = whole.mul(base).add(fraction); // eslint-disable-line
+
+  if (negative) {
+    wei = wei.mul(negative1);
+  }
+
+  return new BN(wei.toString(10), 10);
+}
+
+module.exports = {
+  unitMap: unitMap,
+  numberToString: numberToString,
+  getValueOfUnit: getValueOfUnit,
+  fromWei: fromWei,
+  toWei: toWei
+};
+
+/***/ }),
+/* 115 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(module) {(function (module, exports) {
+  'use strict';
+
+  // Utils
+
+  function assert(val, msg) {
+    if (!val) throw new Error(msg || 'Assertion failed');
+  }
+
+  // Could use `inherits` module, but don't want to move from single file
+  // architecture yet.
+  function inherits(ctor, superCtor) {
+    ctor.super_ = superCtor;
+    var TempCtor = function TempCtor() {};
+    TempCtor.prototype = superCtor.prototype;
+    ctor.prototype = new TempCtor();
+    ctor.prototype.constructor = ctor;
+  }
+
+  // BN
+
+  function BN(number, base, endian) {
+    if (BN.isBN(number)) {
+      return number;
+    }
+
+    this.negative = 0;
+    this.words = null;
+    this.length = 0;
+
+    // Reduction context
+    this.red = null;
+
+    if (number !== null) {
+      if (base === 'le' || base === 'be') {
+        endian = base;
+        base = 10;
+      }
+
+      this._init(number || 0, base || 10, endian || 'be');
+    }
+  }
+  if (typeof module === 'object') {
+    module.exports = BN;
+  } else {
+    exports.BN = BN;
+  }
+
+  BN.BN = BN;
+  BN.wordSize = 26;
+
+  var Buffer;
+  try {
+    Buffer = __webpack_require__(27).Buffer;
+  } catch (e) {}
+
+  BN.isBN = function isBN(num) {
+    if (num instanceof BN) {
+      return true;
+    }
+
+    return num !== null && typeof num === 'object' && num.constructor.wordSize === BN.wordSize && Array.isArray(num.words);
+  };
+
+  BN.max = function max(left, right) {
+    if (left.cmp(right) > 0) return left;
+    return right;
+  };
+
+  BN.min = function min(left, right) {
+    if (left.cmp(right) < 0) return left;
+    return right;
+  };
+
+  BN.prototype._init = function init(number, base, endian) {
+    if (typeof number === 'number') {
+      return this._initNumber(number, base, endian);
+    }
+
+    if (typeof number === 'object') {
+      return this._initArray(number, base, endian);
+    }
+
+    if (base === 'hex') {
+      base = 16;
+    }
+    assert(base === (base | 0) && base >= 2 && base <= 36);
+
+    number = number.toString().replace(/\s+/g, '');
+    var start = 0;
+    if (number[0] === '-') {
+      start++;
+    }
+
+    if (base === 16) {
+      this._parseHex(number, start);
+    } else {
+      this._parseBase(number, base, start);
+    }
+
+    if (number[0] === '-') {
+      this.negative = 1;
+    }
+
+    this.strip();
+
+    if (endian !== 'le') return;
+
+    this._initArray(this.toArray(), base, endian);
+  };
+
+  BN.prototype._initNumber = function _initNumber(number, base, endian) {
+    if (number < 0) {
+      this.negative = 1;
+      number = -number;
+    }
+    if (number < 0x4000000) {
+      this.words = [number & 0x3ffffff];
+      this.length = 1;
+    } else if (number < 0x10000000000000) {
+      this.words = [number & 0x3ffffff, number / 0x4000000 & 0x3ffffff];
+      this.length = 2;
+    } else {
+      assert(number < 0x20000000000000); // 2 ^ 53 (unsafe)
+      this.words = [number & 0x3ffffff, number / 0x4000000 & 0x3ffffff, 1];
+      this.length = 3;
+    }
+
+    if (endian !== 'le') return;
+
+    // Reverse the bytes
+    this._initArray(this.toArray(), base, endian);
+  };
+
+  BN.prototype._initArray = function _initArray(number, base, endian) {
+    // Perhaps a Uint8Array
+    assert(typeof number.length === 'number');
+    if (number.length <= 0) {
+      this.words = [0];
+      this.length = 1;
+      return this;
+    }
+
+    this.length = Math.ceil(number.length / 3);
+    this.words = new Array(this.length);
+    for (var i = 0; i < this.length; i++) {
+      this.words[i] = 0;
+    }
+
+    var j, w;
+    var off = 0;
+    if (endian === 'be') {
+      for (i = number.length - 1, j = 0; i >= 0; i -= 3) {
+        w = number[i] | number[i - 1] << 8 | number[i - 2] << 16;
+        this.words[j] |= w << off & 0x3ffffff;
+        this.words[j + 1] = w >>> 26 - off & 0x3ffffff;
+        off += 24;
+        if (off >= 26) {
+          off -= 26;
+          j++;
+        }
+      }
+    } else if (endian === 'le') {
+      for (i = 0, j = 0; i < number.length; i += 3) {
+        w = number[i] | number[i + 1] << 8 | number[i + 2] << 16;
+        this.words[j] |= w << off & 0x3ffffff;
+        this.words[j + 1] = w >>> 26 - off & 0x3ffffff;
+        off += 24;
+        if (off >= 26) {
+          off -= 26;
+          j++;
+        }
+      }
+    }
+    return this.strip();
+  };
+
+  function parseHex(str, start, end) {
+    var r = 0;
+    var len = Math.min(str.length, end);
+    for (var i = start; i < len; i++) {
+      var c = str.charCodeAt(i) - 48;
+
+      r <<= 4;
+
+      // 'a' - 'f'
+      if (c >= 49 && c <= 54) {
+        r |= c - 49 + 0xa;
+
+        // 'A' - 'F'
+      } else if (c >= 17 && c <= 22) {
+        r |= c - 17 + 0xa;
+
+        // '0' - '9'
+      } else {
+        r |= c & 0xf;
+      }
+    }
+    return r;
+  }
+
+  BN.prototype._parseHex = function _parseHex(number, start) {
+    // Create possibly bigger array to ensure that it fits the number
+    this.length = Math.ceil((number.length - start) / 6);
+    this.words = new Array(this.length);
+    for (var i = 0; i < this.length; i++) {
+      this.words[i] = 0;
+    }
+
+    var j, w;
+    // Scan 24-bit chunks and add them to the number
+    var off = 0;
+    for (i = number.length - 6, j = 0; i >= start; i -= 6) {
+      w = parseHex(number, i, i + 6);
+      this.words[j] |= w << off & 0x3ffffff;
+      // NOTE: `0x3fffff` is intentional here, 26bits max shift + 24bit hex limb
+      this.words[j + 1] |= w >>> 26 - off & 0x3fffff;
+      off += 24;
+      if (off >= 26) {
+        off -= 26;
+        j++;
+      }
+    }
+    if (i + 6 !== start) {
+      w = parseHex(number, start, i + 6);
+      this.words[j] |= w << off & 0x3ffffff;
+      this.words[j + 1] |= w >>> 26 - off & 0x3fffff;
+    }
+    this.strip();
+  };
+
+  function parseBase(str, start, end, mul) {
+    var r = 0;
+    var len = Math.min(str.length, end);
+    for (var i = start; i < len; i++) {
+      var c = str.charCodeAt(i) - 48;
+
+      r *= mul;
+
+      // 'a'
+      if (c >= 49) {
+        r += c - 49 + 0xa;
+
+        // 'A'
+      } else if (c >= 17) {
+        r += c - 17 + 0xa;
+
+        // '0' - '9'
+      } else {
+        r += c;
+      }
+    }
+    return r;
+  }
+
+  BN.prototype._parseBase = function _parseBase(number, base, start) {
+    // Initialize as zero
+    this.words = [0];
+    this.length = 1;
+
+    // Find length of limb in base
+    for (var limbLen = 0, limbPow = 1; limbPow <= 0x3ffffff; limbPow *= base) {
+      limbLen++;
+    }
+    limbLen--;
+    limbPow = limbPow / base | 0;
+
+    var total = number.length - start;
+    var mod = total % limbLen;
+    var end = Math.min(total, total - mod) + start;
+
+    var word = 0;
+    for (var i = start; i < end; i += limbLen) {
+      word = parseBase(number, i, i + limbLen, base);
+
+      this.imuln(limbPow);
+      if (this.words[0] + word < 0x4000000) {
+        this.words[0] += word;
+      } else {
+        this._iaddn(word);
+      }
+    }
+
+    if (mod !== 0) {
+      var pow = 1;
+      word = parseBase(number, i, number.length, base);
+
+      for (i = 0; i < mod; i++) {
+        pow *= base;
+      }
+
+      this.imuln(pow);
+      if (this.words[0] + word < 0x4000000) {
+        this.words[0] += word;
+      } else {
+        this._iaddn(word);
+      }
+    }
+  };
+
+  BN.prototype.copy = function copy(dest) {
+    dest.words = new Array(this.length);
+    for (var i = 0; i < this.length; i++) {
+      dest.words[i] = this.words[i];
+    }
+    dest.length = this.length;
+    dest.negative = this.negative;
+    dest.red = this.red;
+  };
+
+  BN.prototype.clone = function clone() {
+    var r = new BN(null);
+    this.copy(r);
+    return r;
+  };
+
+  BN.prototype._expand = function _expand(size) {
+    while (this.length < size) {
+      this.words[this.length++] = 0;
+    }
+    return this;
+  };
+
+  // Remove leading `0` from `this`
+  BN.prototype.strip = function strip() {
+    while (this.length > 1 && this.words[this.length - 1] === 0) {
+      this.length--;
+    }
+    return this._normSign();
+  };
+
+  BN.prototype._normSign = function _normSign() {
+    // -0 = 0
+    if (this.length === 1 && this.words[0] === 0) {
+      this.negative = 0;
+    }
+    return this;
+  };
+
+  BN.prototype.inspect = function inspect() {
+    return (this.red ? '<BN-R: ' : '<BN: ') + this.toString(16) + '>';
+  };
+
+  /*
+   var zeros = [];
+  var groupSizes = [];
+  var groupBases = [];
+   var s = '';
+  var i = -1;
+  while (++i < BN.wordSize) {
+    zeros[i] = s;
+    s += '0';
+  }
+  groupSizes[0] = 0;
+  groupSizes[1] = 0;
+  groupBases[0] = 0;
+  groupBases[1] = 0;
+  var base = 2 - 1;
+  while (++base < 36 + 1) {
+    var groupSize = 0;
+    var groupBase = 1;
+    while (groupBase < (1 << BN.wordSize) / base) {
+      groupBase *= base;
+      groupSize += 1;
+    }
+    groupSizes[base] = groupSize;
+    groupBases[base] = groupBase;
+  }
+   */
+
+  var zeros = ['', '0', '00', '000', '0000', '00000', '000000', '0000000', '00000000', '000000000', '0000000000', '00000000000', '000000000000', '0000000000000', '00000000000000', '000000000000000', '0000000000000000', '00000000000000000', '000000000000000000', '0000000000000000000', '00000000000000000000', '000000000000000000000', '0000000000000000000000', '00000000000000000000000', '000000000000000000000000', '0000000000000000000000000'];
+
+  var groupSizes = [0, 0, 25, 16, 12, 11, 10, 9, 8, 8, 7, 7, 7, 7, 6, 6, 6, 6, 6, 6, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
+
+  var groupBases = [0, 0, 33554432, 43046721, 16777216, 48828125, 60466176, 40353607, 16777216, 43046721, 10000000, 19487171, 35831808, 62748517, 7529536, 11390625, 16777216, 24137569, 34012224, 47045881, 64000000, 4084101, 5153632, 6436343, 7962624, 9765625, 11881376, 14348907, 17210368, 20511149, 24300000, 28629151, 33554432, 39135393, 45435424, 52521875, 60466176];
+
+  BN.prototype.toString = function toString(base, padding) {
+    base = base || 10;
+    padding = padding | 0 || 1;
+
+    var out;
+    if (base === 16 || base === 'hex') {
+      out = '';
+      var off = 0;
+      var carry = 0;
+      for (var i = 0; i < this.length; i++) {
+        var w = this.words[i];
+        var word = ((w << off | carry) & 0xffffff).toString(16);
+        carry = w >>> 24 - off & 0xffffff;
+        if (carry !== 0 || i !== this.length - 1) {
+          out = zeros[6 - word.length] + word + out;
+        } else {
+          out = word + out;
+        }
+        off += 2;
+        if (off >= 26) {
+          off -= 26;
+          i--;
+        }
+      }
+      if (carry !== 0) {
+        out = carry.toString(16) + out;
+      }
+      while (out.length % padding !== 0) {
+        out = '0' + out;
+      }
+      if (this.negative !== 0) {
+        out = '-' + out;
+      }
+      return out;
+    }
+
+    if (base === (base | 0) && base >= 2 && base <= 36) {
+      // var groupSize = Math.floor(BN.wordSize * Math.LN2 / Math.log(base));
+      var groupSize = groupSizes[base];
+      // var groupBase = Math.pow(base, groupSize);
+      var groupBase = groupBases[base];
+      out = '';
+      var c = this.clone();
+      c.negative = 0;
+      while (!c.isZero()) {
+        var r = c.modn(groupBase).toString(base);
+        c = c.idivn(groupBase);
+
+        if (!c.isZero()) {
+          out = zeros[groupSize - r.length] + r + out;
+        } else {
+          out = r + out;
+        }
+      }
+      if (this.isZero()) {
+        out = '0' + out;
+      }
+      while (out.length % padding !== 0) {
+        out = '0' + out;
+      }
+      if (this.negative !== 0) {
+        out = '-' + out;
+      }
+      return out;
+    }
+
+    assert(false, 'Base should be between 2 and 36');
+  };
+
+  BN.prototype.toNumber = function toNumber() {
+    var ret = this.words[0];
+    if (this.length === 2) {
+      ret += this.words[1] * 0x4000000;
+    } else if (this.length === 3 && this.words[2] === 0x01) {
+      // NOTE: at this stage it is known that the top bit is set
+      ret += 0x10000000000000 + this.words[1] * 0x4000000;
+    } else if (this.length > 2) {
+      assert(false, 'Number can only safely store up to 53 bits');
+    }
+    return this.negative !== 0 ? -ret : ret;
+  };
+
+  BN.prototype.toJSON = function toJSON() {
+    return this.toString(16);
+  };
+
+  BN.prototype.toBuffer = function toBuffer(endian, length) {
+    assert(typeof Buffer !== 'undefined');
+    return this.toArrayLike(Buffer, endian, length);
+  };
+
+  BN.prototype.toArray = function toArray(endian, length) {
+    return this.toArrayLike(Array, endian, length);
+  };
+
+  BN.prototype.toArrayLike = function toArrayLike(ArrayType, endian, length) {
+    var byteLength = this.byteLength();
+    var reqLength = length || Math.max(1, byteLength);
+    assert(byteLength <= reqLength, 'byte array longer than desired length');
+    assert(reqLength > 0, 'Requested array length <= 0');
+
+    this.strip();
+    var littleEndian = endian === 'le';
+    var res = new ArrayType(reqLength);
+
+    var b, i;
+    var q = this.clone();
+    if (!littleEndian) {
+      // Assume big-endian
+      for (i = 0; i < reqLength - byteLength; i++) {
+        res[i] = 0;
+      }
+
+      for (i = 0; !q.isZero(); i++) {
+        b = q.andln(0xff);
+        q.iushrn(8);
+
+        res[reqLength - i - 1] = b;
+      }
+    } else {
+      for (i = 0; !q.isZero(); i++) {
+        b = q.andln(0xff);
+        q.iushrn(8);
+
+        res[i] = b;
+      }
+
+      for (; i < reqLength; i++) {
+        res[i] = 0;
+      }
+    }
+
+    return res;
+  };
+
+  if (Math.clz32) {
+    BN.prototype._countBits = function _countBits(w) {
+      return 32 - Math.clz32(w);
+    };
+  } else {
+    BN.prototype._countBits = function _countBits(w) {
+      var t = w;
+      var r = 0;
+      if (t >= 0x1000) {
+        r += 13;
+        t >>>= 13;
+      }
+      if (t >= 0x40) {
+        r += 7;
+        t >>>= 7;
+      }
+      if (t >= 0x8) {
+        r += 4;
+        t >>>= 4;
+      }
+      if (t >= 0x02) {
+        r += 2;
+        t >>>= 2;
+      }
+      return r + t;
+    };
+  }
+
+  BN.prototype._zeroBits = function _zeroBits(w) {
+    // Short-cut
+    if (w === 0) return 26;
+
+    var t = w;
+    var r = 0;
+    if ((t & 0x1fff) === 0) {
+      r += 13;
+      t >>>= 13;
+    }
+    if ((t & 0x7f) === 0) {
+      r += 7;
+      t >>>= 7;
+    }
+    if ((t & 0xf) === 0) {
+      r += 4;
+      t >>>= 4;
+    }
+    if ((t & 0x3) === 0) {
+      r += 2;
+      t >>>= 2;
+    }
+    if ((t & 0x1) === 0) {
+      r++;
+    }
+    return r;
+  };
+
+  // Return number of used bits in a BN
+  BN.prototype.bitLength = function bitLength() {
+    var w = this.words[this.length - 1];
+    var hi = this._countBits(w);
+    return (this.length - 1) * 26 + hi;
+  };
+
+  function toBitArray(num) {
+    var w = new Array(num.bitLength());
+
+    for (var bit = 0; bit < w.length; bit++) {
+      var off = bit / 26 | 0;
+      var wbit = bit % 26;
+
+      w[bit] = (num.words[off] & 1 << wbit) >>> wbit;
+    }
+
+    return w;
+  }
+
+  // Number of trailing zero bits
+  BN.prototype.zeroBits = function zeroBits() {
+    if (this.isZero()) return 0;
+
+    var r = 0;
+    for (var i = 0; i < this.length; i++) {
+      var b = this._zeroBits(this.words[i]);
+      r += b;
+      if (b !== 26) break;
+    }
+    return r;
+  };
+
+  BN.prototype.byteLength = function byteLength() {
+    return Math.ceil(this.bitLength() / 8);
+  };
+
+  BN.prototype.toTwos = function toTwos(width) {
+    if (this.negative !== 0) {
+      return this.abs().inotn(width).iaddn(1);
+    }
+    return this.clone();
+  };
+
+  BN.prototype.fromTwos = function fromTwos(width) {
+    if (this.testn(width - 1)) {
+      return this.notn(width).iaddn(1).ineg();
+    }
+    return this.clone();
+  };
+
+  BN.prototype.isNeg = function isNeg() {
+    return this.negative !== 0;
+  };
+
+  // Return negative clone of `this`
+  BN.prototype.neg = function neg() {
+    return this.clone().ineg();
+  };
+
+  BN.prototype.ineg = function ineg() {
+    if (!this.isZero()) {
+      this.negative ^= 1;
+    }
+
+    return this;
+  };
+
+  // Or `num` with `this` in-place
+  BN.prototype.iuor = function iuor(num) {
+    while (this.length < num.length) {
+      this.words[this.length++] = 0;
+    }
+
+    for (var i = 0; i < num.length; i++) {
+      this.words[i] = this.words[i] | num.words[i];
+    }
+
+    return this.strip();
+  };
+
+  BN.prototype.ior = function ior(num) {
+    assert((this.negative | num.negative) === 0);
+    return this.iuor(num);
+  };
+
+  // Or `num` with `this`
+  BN.prototype.or = function or(num) {
+    if (this.length > num.length) return this.clone().ior(num);
+    return num.clone().ior(this);
+  };
+
+  BN.prototype.uor = function uor(num) {
+    if (this.length > num.length) return this.clone().iuor(num);
+    return num.clone().iuor(this);
+  };
+
+  // And `num` with `this` in-place
+  BN.prototype.iuand = function iuand(num) {
+    // b = min-length(num, this)
+    var b;
+    if (this.length > num.length) {
+      b = num;
+    } else {
+      b = this;
+    }
+
+    for (var i = 0; i < b.length; i++) {
+      this.words[i] = this.words[i] & num.words[i];
+    }
+
+    this.length = b.length;
+
+    return this.strip();
+  };
+
+  BN.prototype.iand = function iand(num) {
+    assert((this.negative | num.negative) === 0);
+    return this.iuand(num);
+  };
+
+  // And `num` with `this`
+  BN.prototype.and = function and(num) {
+    if (this.length > num.length) return this.clone().iand(num);
+    return num.clone().iand(this);
+  };
+
+  BN.prototype.uand = function uand(num) {
+    if (this.length > num.length) return this.clone().iuand(num);
+    return num.clone().iuand(this);
+  };
+
+  // Xor `num` with `this` in-place
+  BN.prototype.iuxor = function iuxor(num) {
+    // a.length > b.length
+    var a;
+    var b;
+    if (this.length > num.length) {
+      a = this;
+      b = num;
+    } else {
+      a = num;
+      b = this;
+    }
+
+    for (var i = 0; i < b.length; i++) {
+      this.words[i] = a.words[i] ^ b.words[i];
+    }
+
+    if (this !== a) {
+      for (; i < a.length; i++) {
+        this.words[i] = a.words[i];
+      }
+    }
+
+    this.length = a.length;
+
+    return this.strip();
+  };
+
+  BN.prototype.ixor = function ixor(num) {
+    assert((this.negative | num.negative) === 0);
+    return this.iuxor(num);
+  };
+
+  // Xor `num` with `this`
+  BN.prototype.xor = function xor(num) {
+    if (this.length > num.length) return this.clone().ixor(num);
+    return num.clone().ixor(this);
+  };
+
+  BN.prototype.uxor = function uxor(num) {
+    if (this.length > num.length) return this.clone().iuxor(num);
+    return num.clone().iuxor(this);
+  };
+
+  // Not ``this`` with ``width`` bitwidth
+  BN.prototype.inotn = function inotn(width) {
+    assert(typeof width === 'number' && width >= 0);
+
+    var bytesNeeded = Math.ceil(width / 26) | 0;
+    var bitsLeft = width % 26;
+
+    // Extend the buffer with leading zeroes
+    this._expand(bytesNeeded);
+
+    if (bitsLeft > 0) {
+      bytesNeeded--;
+    }
+
+    // Handle complete words
+    for (var i = 0; i < bytesNeeded; i++) {
+      this.words[i] = ~this.words[i] & 0x3ffffff;
+    }
+
+    // Handle the residue
+    if (bitsLeft > 0) {
+      this.words[i] = ~this.words[i] & 0x3ffffff >> 26 - bitsLeft;
+    }
+
+    // And remove leading zeroes
+    return this.strip();
+  };
+
+  BN.prototype.notn = function notn(width) {
+    return this.clone().inotn(width);
+  };
+
+  // Set `bit` of `this`
+  BN.prototype.setn = function setn(bit, val) {
+    assert(typeof bit === 'number' && bit >= 0);
+
+    var off = bit / 26 | 0;
+    var wbit = bit % 26;
+
+    this._expand(off + 1);
+
+    if (val) {
+      this.words[off] = this.words[off] | 1 << wbit;
+    } else {
+      this.words[off] = this.words[off] & ~(1 << wbit);
+    }
+
+    return this.strip();
+  };
+
+  // Add `num` to `this` in-place
+  BN.prototype.iadd = function iadd(num) {
+    var r;
+
+    // negative + positive
+    if (this.negative !== 0 && num.negative === 0) {
+      this.negative = 0;
+      r = this.isub(num);
+      this.negative ^= 1;
+      return this._normSign();
+
+      // positive + negative
+    } else if (this.negative === 0 && num.negative !== 0) {
+      num.negative = 0;
+      r = this.isub(num);
+      num.negative = 1;
+      return r._normSign();
+    }
+
+    // a.length > b.length
+    var a, b;
+    if (this.length > num.length) {
+      a = this;
+      b = num;
+    } else {
+      a = num;
+      b = this;
+    }
+
+    var carry = 0;
+    for (var i = 0; i < b.length; i++) {
+      r = (a.words[i] | 0) + (b.words[i] | 0) + carry;
+      this.words[i] = r & 0x3ffffff;
+      carry = r >>> 26;
+    }
+    for (; carry !== 0 && i < a.length; i++) {
+      r = (a.words[i] | 0) + carry;
+      this.words[i] = r & 0x3ffffff;
+      carry = r >>> 26;
+    }
+
+    this.length = a.length;
+    if (carry !== 0) {
+      this.words[this.length] = carry;
+      this.length++;
+      // Copy the rest of the words
+    } else if (a !== this) {
+      for (; i < a.length; i++) {
+        this.words[i] = a.words[i];
+      }
+    }
+
+    return this;
+  };
+
+  // Add `num` to `this`
+  BN.prototype.add = function add(num) {
+    var res;
+    if (num.negative !== 0 && this.negative === 0) {
+      num.negative = 0;
+      res = this.sub(num);
+      num.negative ^= 1;
+      return res;
+    } else if (num.negative === 0 && this.negative !== 0) {
+      this.negative = 0;
+      res = num.sub(this);
+      this.negative = 1;
+      return res;
+    }
+
+    if (this.length > num.length) return this.clone().iadd(num);
+
+    return num.clone().iadd(this);
+  };
+
+  // Subtract `num` from `this` in-place
+  BN.prototype.isub = function isub(num) {
+    // this - (-num) = this + num
+    if (num.negative !== 0) {
+      num.negative = 0;
+      var r = this.iadd(num);
+      num.negative = 1;
+      return r._normSign();
+
+      // -this - num = -(this + num)
+    } else if (this.negative !== 0) {
+      this.negative = 0;
+      this.iadd(num);
+      this.negative = 1;
+      return this._normSign();
+    }
+
+    // At this point both numbers are positive
+    var cmp = this.cmp(num);
+
+    // Optimization - zeroify
+    if (cmp === 0) {
+      this.negative = 0;
+      this.length = 1;
+      this.words[0] = 0;
+      return this;
+    }
+
+    // a > b
+    var a, b;
+    if (cmp > 0) {
+      a = this;
+      b = num;
+    } else {
+      a = num;
+      b = this;
+    }
+
+    var carry = 0;
+    for (var i = 0; i < b.length; i++) {
+      r = (a.words[i] | 0) - (b.words[i] | 0) + carry;
+      carry = r >> 26;
+      this.words[i] = r & 0x3ffffff;
+    }
+    for (; carry !== 0 && i < a.length; i++) {
+      r = (a.words[i] | 0) + carry;
+      carry = r >> 26;
+      this.words[i] = r & 0x3ffffff;
+    }
+
+    // Copy rest of the words
+    if (carry === 0 && i < a.length && a !== this) {
+      for (; i < a.length; i++) {
+        this.words[i] = a.words[i];
+      }
+    }
+
+    this.length = Math.max(this.length, i);
+
+    if (a !== this) {
+      this.negative = 1;
+    }
+
+    return this.strip();
+  };
+
+  // Subtract `num` from `this`
+  BN.prototype.sub = function sub(num) {
+    return this.clone().isub(num);
+  };
+
+  function smallMulTo(self, num, out) {
+    out.negative = num.negative ^ self.negative;
+    var len = self.length + num.length | 0;
+    out.length = len;
+    len = len - 1 | 0;
+
+    // Peel one iteration (compiler can't do it, because of code complexity)
+    var a = self.words[0] | 0;
+    var b = num.words[0] | 0;
+    var r = a * b;
+
+    var lo = r & 0x3ffffff;
+    var carry = r / 0x4000000 | 0;
+    out.words[0] = lo;
+
+    for (var k = 1; k < len; k++) {
+      // Sum all words with the same `i + j = k` and accumulate `ncarry`,
+      // note that ncarry could be >= 0x3ffffff
+      var ncarry = carry >>> 26;
+      var rword = carry & 0x3ffffff;
+      var maxJ = Math.min(k, num.length - 1);
+      for (var j = Math.max(0, k - self.length + 1); j <= maxJ; j++) {
+        var i = k - j | 0;
+        a = self.words[i] | 0;
+        b = num.words[j] | 0;
+        r = a * b + rword;
+        ncarry += r / 0x4000000 | 0;
+        rword = r & 0x3ffffff;
+      }
+      out.words[k] = rword | 0;
+      carry = ncarry | 0;
+    }
+    if (carry !== 0) {
+      out.words[k] = carry | 0;
+    } else {
+      out.length--;
+    }
+
+    return out.strip();
+  }
+
+  // TODO(indutny): it may be reasonable to omit it for users who don't need
+  // to work with 256-bit numbers, otherwise it gives 20% improvement for 256-bit
+  // multiplication (like elliptic secp256k1).
+  var comb10MulTo = function comb10MulTo(self, num, out) {
+    var a = self.words;
+    var b = num.words;
+    var o = out.words;
+    var c = 0;
+    var lo;
+    var mid;
+    var hi;
+    var a0 = a[0] | 0;
+    var al0 = a0 & 0x1fff;
+    var ah0 = a0 >>> 13;
+    var a1 = a[1] | 0;
+    var al1 = a1 & 0x1fff;
+    var ah1 = a1 >>> 13;
+    var a2 = a[2] | 0;
+    var al2 = a2 & 0x1fff;
+    var ah2 = a2 >>> 13;
+    var a3 = a[3] | 0;
+    var al3 = a3 & 0x1fff;
+    var ah3 = a3 >>> 13;
+    var a4 = a[4] | 0;
+    var al4 = a4 & 0x1fff;
+    var ah4 = a4 >>> 13;
+    var a5 = a[5] | 0;
+    var al5 = a5 & 0x1fff;
+    var ah5 = a5 >>> 13;
+    var a6 = a[6] | 0;
+    var al6 = a6 & 0x1fff;
+    var ah6 = a6 >>> 13;
+    var a7 = a[7] | 0;
+    var al7 = a7 & 0x1fff;
+    var ah7 = a7 >>> 13;
+    var a8 = a[8] | 0;
+    var al8 = a8 & 0x1fff;
+    var ah8 = a8 >>> 13;
+    var a9 = a[9] | 0;
+    var al9 = a9 & 0x1fff;
+    var ah9 = a9 >>> 13;
+    var b0 = b[0] | 0;
+    var bl0 = b0 & 0x1fff;
+    var bh0 = b0 >>> 13;
+    var b1 = b[1] | 0;
+    var bl1 = b1 & 0x1fff;
+    var bh1 = b1 >>> 13;
+    var b2 = b[2] | 0;
+    var bl2 = b2 & 0x1fff;
+    var bh2 = b2 >>> 13;
+    var b3 = b[3] | 0;
+    var bl3 = b3 & 0x1fff;
+    var bh3 = b3 >>> 13;
+    var b4 = b[4] | 0;
+    var bl4 = b4 & 0x1fff;
+    var bh4 = b4 >>> 13;
+    var b5 = b[5] | 0;
+    var bl5 = b5 & 0x1fff;
+    var bh5 = b5 >>> 13;
+    var b6 = b[6] | 0;
+    var bl6 = b6 & 0x1fff;
+    var bh6 = b6 >>> 13;
+    var b7 = b[7] | 0;
+    var bl7 = b7 & 0x1fff;
+    var bh7 = b7 >>> 13;
+    var b8 = b[8] | 0;
+    var bl8 = b8 & 0x1fff;
+    var bh8 = b8 >>> 13;
+    var b9 = b[9] | 0;
+    var bl9 = b9 & 0x1fff;
+    var bh9 = b9 >>> 13;
+
+    out.negative = self.negative ^ num.negative;
+    out.length = 19;
+    /* k = 0 */
+    lo = Math.imul(al0, bl0);
+    mid = Math.imul(al0, bh0);
+    mid = mid + Math.imul(ah0, bl0) | 0;
+    hi = Math.imul(ah0, bh0);
+    var w0 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w0 >>> 26) | 0;
+    w0 &= 0x3ffffff;
+    /* k = 1 */
+    lo = Math.imul(al1, bl0);
+    mid = Math.imul(al1, bh0);
+    mid = mid + Math.imul(ah1, bl0) | 0;
+    hi = Math.imul(ah1, bh0);
+    lo = lo + Math.imul(al0, bl1) | 0;
+    mid = mid + Math.imul(al0, bh1) | 0;
+    mid = mid + Math.imul(ah0, bl1) | 0;
+    hi = hi + Math.imul(ah0, bh1) | 0;
+    var w1 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w1 >>> 26) | 0;
+    w1 &= 0x3ffffff;
+    /* k = 2 */
+    lo = Math.imul(al2, bl0);
+    mid = Math.imul(al2, bh0);
+    mid = mid + Math.imul(ah2, bl0) | 0;
+    hi = Math.imul(ah2, bh0);
+    lo = lo + Math.imul(al1, bl1) | 0;
+    mid = mid + Math.imul(al1, bh1) | 0;
+    mid = mid + Math.imul(ah1, bl1) | 0;
+    hi = hi + Math.imul(ah1, bh1) | 0;
+    lo = lo + Math.imul(al0, bl2) | 0;
+    mid = mid + Math.imul(al0, bh2) | 0;
+    mid = mid + Math.imul(ah0, bl2) | 0;
+    hi = hi + Math.imul(ah0, bh2) | 0;
+    var w2 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w2 >>> 26) | 0;
+    w2 &= 0x3ffffff;
+    /* k = 3 */
+    lo = Math.imul(al3, bl0);
+    mid = Math.imul(al3, bh0);
+    mid = mid + Math.imul(ah3, bl0) | 0;
+    hi = Math.imul(ah3, bh0);
+    lo = lo + Math.imul(al2, bl1) | 0;
+    mid = mid + Math.imul(al2, bh1) | 0;
+    mid = mid + Math.imul(ah2, bl1) | 0;
+    hi = hi + Math.imul(ah2, bh1) | 0;
+    lo = lo + Math.imul(al1, bl2) | 0;
+    mid = mid + Math.imul(al1, bh2) | 0;
+    mid = mid + Math.imul(ah1, bl2) | 0;
+    hi = hi + Math.imul(ah1, bh2) | 0;
+    lo = lo + Math.imul(al0, bl3) | 0;
+    mid = mid + Math.imul(al0, bh3) | 0;
+    mid = mid + Math.imul(ah0, bl3) | 0;
+    hi = hi + Math.imul(ah0, bh3) | 0;
+    var w3 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w3 >>> 26) | 0;
+    w3 &= 0x3ffffff;
+    /* k = 4 */
+    lo = Math.imul(al4, bl0);
+    mid = Math.imul(al4, bh0);
+    mid = mid + Math.imul(ah4, bl0) | 0;
+    hi = Math.imul(ah4, bh0);
+    lo = lo + Math.imul(al3, bl1) | 0;
+    mid = mid + Math.imul(al3, bh1) | 0;
+    mid = mid + Math.imul(ah3, bl1) | 0;
+    hi = hi + Math.imul(ah3, bh1) | 0;
+    lo = lo + Math.imul(al2, bl2) | 0;
+    mid = mid + Math.imul(al2, bh2) | 0;
+    mid = mid + Math.imul(ah2, bl2) | 0;
+    hi = hi + Math.imul(ah2, bh2) | 0;
+    lo = lo + Math.imul(al1, bl3) | 0;
+    mid = mid + Math.imul(al1, bh3) | 0;
+    mid = mid + Math.imul(ah1, bl3) | 0;
+    hi = hi + Math.imul(ah1, bh3) | 0;
+    lo = lo + Math.imul(al0, bl4) | 0;
+    mid = mid + Math.imul(al0, bh4) | 0;
+    mid = mid + Math.imul(ah0, bl4) | 0;
+    hi = hi + Math.imul(ah0, bh4) | 0;
+    var w4 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w4 >>> 26) | 0;
+    w4 &= 0x3ffffff;
+    /* k = 5 */
+    lo = Math.imul(al5, bl0);
+    mid = Math.imul(al5, bh0);
+    mid = mid + Math.imul(ah5, bl0) | 0;
+    hi = Math.imul(ah5, bh0);
+    lo = lo + Math.imul(al4, bl1) | 0;
+    mid = mid + Math.imul(al4, bh1) | 0;
+    mid = mid + Math.imul(ah4, bl1) | 0;
+    hi = hi + Math.imul(ah4, bh1) | 0;
+    lo = lo + Math.imul(al3, bl2) | 0;
+    mid = mid + Math.imul(al3, bh2) | 0;
+    mid = mid + Math.imul(ah3, bl2) | 0;
+    hi = hi + Math.imul(ah3, bh2) | 0;
+    lo = lo + Math.imul(al2, bl3) | 0;
+    mid = mid + Math.imul(al2, bh3) | 0;
+    mid = mid + Math.imul(ah2, bl3) | 0;
+    hi = hi + Math.imul(ah2, bh3) | 0;
+    lo = lo + Math.imul(al1, bl4) | 0;
+    mid = mid + Math.imul(al1, bh4) | 0;
+    mid = mid + Math.imul(ah1, bl4) | 0;
+    hi = hi + Math.imul(ah1, bh4) | 0;
+    lo = lo + Math.imul(al0, bl5) | 0;
+    mid = mid + Math.imul(al0, bh5) | 0;
+    mid = mid + Math.imul(ah0, bl5) | 0;
+    hi = hi + Math.imul(ah0, bh5) | 0;
+    var w5 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w5 >>> 26) | 0;
+    w5 &= 0x3ffffff;
+    /* k = 6 */
+    lo = Math.imul(al6, bl0);
+    mid = Math.imul(al6, bh0);
+    mid = mid + Math.imul(ah6, bl0) | 0;
+    hi = Math.imul(ah6, bh0);
+    lo = lo + Math.imul(al5, bl1) | 0;
+    mid = mid + Math.imul(al5, bh1) | 0;
+    mid = mid + Math.imul(ah5, bl1) | 0;
+    hi = hi + Math.imul(ah5, bh1) | 0;
+    lo = lo + Math.imul(al4, bl2) | 0;
+    mid = mid + Math.imul(al4, bh2) | 0;
+    mid = mid + Math.imul(ah4, bl2) | 0;
+    hi = hi + Math.imul(ah4, bh2) | 0;
+    lo = lo + Math.imul(al3, bl3) | 0;
+    mid = mid + Math.imul(al3, bh3) | 0;
+    mid = mid + Math.imul(ah3, bl3) | 0;
+    hi = hi + Math.imul(ah3, bh3) | 0;
+    lo = lo + Math.imul(al2, bl4) | 0;
+    mid = mid + Math.imul(al2, bh4) | 0;
+    mid = mid + Math.imul(ah2, bl4) | 0;
+    hi = hi + Math.imul(ah2, bh4) | 0;
+    lo = lo + Math.imul(al1, bl5) | 0;
+    mid = mid + Math.imul(al1, bh5) | 0;
+    mid = mid + Math.imul(ah1, bl5) | 0;
+    hi = hi + Math.imul(ah1, bh5) | 0;
+    lo = lo + Math.imul(al0, bl6) | 0;
+    mid = mid + Math.imul(al0, bh6) | 0;
+    mid = mid + Math.imul(ah0, bl6) | 0;
+    hi = hi + Math.imul(ah0, bh6) | 0;
+    var w6 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w6 >>> 26) | 0;
+    w6 &= 0x3ffffff;
+    /* k = 7 */
+    lo = Math.imul(al7, bl0);
+    mid = Math.imul(al7, bh0);
+    mid = mid + Math.imul(ah7, bl0) | 0;
+    hi = Math.imul(ah7, bh0);
+    lo = lo + Math.imul(al6, bl1) | 0;
+    mid = mid + Math.imul(al6, bh1) | 0;
+    mid = mid + Math.imul(ah6, bl1) | 0;
+    hi = hi + Math.imul(ah6, bh1) | 0;
+    lo = lo + Math.imul(al5, bl2) | 0;
+    mid = mid + Math.imul(al5, bh2) | 0;
+    mid = mid + Math.imul(ah5, bl2) | 0;
+    hi = hi + Math.imul(ah5, bh2) | 0;
+    lo = lo + Math.imul(al4, bl3) | 0;
+    mid = mid + Math.imul(al4, bh3) | 0;
+    mid = mid + Math.imul(ah4, bl3) | 0;
+    hi = hi + Math.imul(ah4, bh3) | 0;
+    lo = lo + Math.imul(al3, bl4) | 0;
+    mid = mid + Math.imul(al3, bh4) | 0;
+    mid = mid + Math.imul(ah3, bl4) | 0;
+    hi = hi + Math.imul(ah3, bh4) | 0;
+    lo = lo + Math.imul(al2, bl5) | 0;
+    mid = mid + Math.imul(al2, bh5) | 0;
+    mid = mid + Math.imul(ah2, bl5) | 0;
+    hi = hi + Math.imul(ah2, bh5) | 0;
+    lo = lo + Math.imul(al1, bl6) | 0;
+    mid = mid + Math.imul(al1, bh6) | 0;
+    mid = mid + Math.imul(ah1, bl6) | 0;
+    hi = hi + Math.imul(ah1, bh6) | 0;
+    lo = lo + Math.imul(al0, bl7) | 0;
+    mid = mid + Math.imul(al0, bh7) | 0;
+    mid = mid + Math.imul(ah0, bl7) | 0;
+    hi = hi + Math.imul(ah0, bh7) | 0;
+    var w7 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w7 >>> 26) | 0;
+    w7 &= 0x3ffffff;
+    /* k = 8 */
+    lo = Math.imul(al8, bl0);
+    mid = Math.imul(al8, bh0);
+    mid = mid + Math.imul(ah8, bl0) | 0;
+    hi = Math.imul(ah8, bh0);
+    lo = lo + Math.imul(al7, bl1) | 0;
+    mid = mid + Math.imul(al7, bh1) | 0;
+    mid = mid + Math.imul(ah7, bl1) | 0;
+    hi = hi + Math.imul(ah7, bh1) | 0;
+    lo = lo + Math.imul(al6, bl2) | 0;
+    mid = mid + Math.imul(al6, bh2) | 0;
+    mid = mid + Math.imul(ah6, bl2) | 0;
+    hi = hi + Math.imul(ah6, bh2) | 0;
+    lo = lo + Math.imul(al5, bl3) | 0;
+    mid = mid + Math.imul(al5, bh3) | 0;
+    mid = mid + Math.imul(ah5, bl3) | 0;
+    hi = hi + Math.imul(ah5, bh3) | 0;
+    lo = lo + Math.imul(al4, bl4) | 0;
+    mid = mid + Math.imul(al4, bh4) | 0;
+    mid = mid + Math.imul(ah4, bl4) | 0;
+    hi = hi + Math.imul(ah4, bh4) | 0;
+    lo = lo + Math.imul(al3, bl5) | 0;
+    mid = mid + Math.imul(al3, bh5) | 0;
+    mid = mid + Math.imul(ah3, bl5) | 0;
+    hi = hi + Math.imul(ah3, bh5) | 0;
+    lo = lo + Math.imul(al2, bl6) | 0;
+    mid = mid + Math.imul(al2, bh6) | 0;
+    mid = mid + Math.imul(ah2, bl6) | 0;
+    hi = hi + Math.imul(ah2, bh6) | 0;
+    lo = lo + Math.imul(al1, bl7) | 0;
+    mid = mid + Math.imul(al1, bh7) | 0;
+    mid = mid + Math.imul(ah1, bl7) | 0;
+    hi = hi + Math.imul(ah1, bh7) | 0;
+    lo = lo + Math.imul(al0, bl8) | 0;
+    mid = mid + Math.imul(al0, bh8) | 0;
+    mid = mid + Math.imul(ah0, bl8) | 0;
+    hi = hi + Math.imul(ah0, bh8) | 0;
+    var w8 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w8 >>> 26) | 0;
+    w8 &= 0x3ffffff;
+    /* k = 9 */
+    lo = Math.imul(al9, bl0);
+    mid = Math.imul(al9, bh0);
+    mid = mid + Math.imul(ah9, bl0) | 0;
+    hi = Math.imul(ah9, bh0);
+    lo = lo + Math.imul(al8, bl1) | 0;
+    mid = mid + Math.imul(al8, bh1) | 0;
+    mid = mid + Math.imul(ah8, bl1) | 0;
+    hi = hi + Math.imul(ah8, bh1) | 0;
+    lo = lo + Math.imul(al7, bl2) | 0;
+    mid = mid + Math.imul(al7, bh2) | 0;
+    mid = mid + Math.imul(ah7, bl2) | 0;
+    hi = hi + Math.imul(ah7, bh2) | 0;
+    lo = lo + Math.imul(al6, bl3) | 0;
+    mid = mid + Math.imul(al6, bh3) | 0;
+    mid = mid + Math.imul(ah6, bl3) | 0;
+    hi = hi + Math.imul(ah6, bh3) | 0;
+    lo = lo + Math.imul(al5, bl4) | 0;
+    mid = mid + Math.imul(al5, bh4) | 0;
+    mid = mid + Math.imul(ah5, bl4) | 0;
+    hi = hi + Math.imul(ah5, bh4) | 0;
+    lo = lo + Math.imul(al4, bl5) | 0;
+    mid = mid + Math.imul(al4, bh5) | 0;
+    mid = mid + Math.imul(ah4, bl5) | 0;
+    hi = hi + Math.imul(ah4, bh5) | 0;
+    lo = lo + Math.imul(al3, bl6) | 0;
+    mid = mid + Math.imul(al3, bh6) | 0;
+    mid = mid + Math.imul(ah3, bl6) | 0;
+    hi = hi + Math.imul(ah3, bh6) | 0;
+    lo = lo + Math.imul(al2, bl7) | 0;
+    mid = mid + Math.imul(al2, bh7) | 0;
+    mid = mid + Math.imul(ah2, bl7) | 0;
+    hi = hi + Math.imul(ah2, bh7) | 0;
+    lo = lo + Math.imul(al1, bl8) | 0;
+    mid = mid + Math.imul(al1, bh8) | 0;
+    mid = mid + Math.imul(ah1, bl8) | 0;
+    hi = hi + Math.imul(ah1, bh8) | 0;
+    lo = lo + Math.imul(al0, bl9) | 0;
+    mid = mid + Math.imul(al0, bh9) | 0;
+    mid = mid + Math.imul(ah0, bl9) | 0;
+    hi = hi + Math.imul(ah0, bh9) | 0;
+    var w9 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w9 >>> 26) | 0;
+    w9 &= 0x3ffffff;
+    /* k = 10 */
+    lo = Math.imul(al9, bl1);
+    mid = Math.imul(al9, bh1);
+    mid = mid + Math.imul(ah9, bl1) | 0;
+    hi = Math.imul(ah9, bh1);
+    lo = lo + Math.imul(al8, bl2) | 0;
+    mid = mid + Math.imul(al8, bh2) | 0;
+    mid = mid + Math.imul(ah8, bl2) | 0;
+    hi = hi + Math.imul(ah8, bh2) | 0;
+    lo = lo + Math.imul(al7, bl3) | 0;
+    mid = mid + Math.imul(al7, bh3) | 0;
+    mid = mid + Math.imul(ah7, bl3) | 0;
+    hi = hi + Math.imul(ah7, bh3) | 0;
+    lo = lo + Math.imul(al6, bl4) | 0;
+    mid = mid + Math.imul(al6, bh4) | 0;
+    mid = mid + Math.imul(ah6, bl4) | 0;
+    hi = hi + Math.imul(ah6, bh4) | 0;
+    lo = lo + Math.imul(al5, bl5) | 0;
+    mid = mid + Math.imul(al5, bh5) | 0;
+    mid = mid + Math.imul(ah5, bl5) | 0;
+    hi = hi + Math.imul(ah5, bh5) | 0;
+    lo = lo + Math.imul(al4, bl6) | 0;
+    mid = mid + Math.imul(al4, bh6) | 0;
+    mid = mid + Math.imul(ah4, bl6) | 0;
+    hi = hi + Math.imul(ah4, bh6) | 0;
+    lo = lo + Math.imul(al3, bl7) | 0;
+    mid = mid + Math.imul(al3, bh7) | 0;
+    mid = mid + Math.imul(ah3, bl7) | 0;
+    hi = hi + Math.imul(ah3, bh7) | 0;
+    lo = lo + Math.imul(al2, bl8) | 0;
+    mid = mid + Math.imul(al2, bh8) | 0;
+    mid = mid + Math.imul(ah2, bl8) | 0;
+    hi = hi + Math.imul(ah2, bh8) | 0;
+    lo = lo + Math.imul(al1, bl9) | 0;
+    mid = mid + Math.imul(al1, bh9) | 0;
+    mid = mid + Math.imul(ah1, bl9) | 0;
+    hi = hi + Math.imul(ah1, bh9) | 0;
+    var w10 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w10 >>> 26) | 0;
+    w10 &= 0x3ffffff;
+    /* k = 11 */
+    lo = Math.imul(al9, bl2);
+    mid = Math.imul(al9, bh2);
+    mid = mid + Math.imul(ah9, bl2) | 0;
+    hi = Math.imul(ah9, bh2);
+    lo = lo + Math.imul(al8, bl3) | 0;
+    mid = mid + Math.imul(al8, bh3) | 0;
+    mid = mid + Math.imul(ah8, bl3) | 0;
+    hi = hi + Math.imul(ah8, bh3) | 0;
+    lo = lo + Math.imul(al7, bl4) | 0;
+    mid = mid + Math.imul(al7, bh4) | 0;
+    mid = mid + Math.imul(ah7, bl4) | 0;
+    hi = hi + Math.imul(ah7, bh4) | 0;
+    lo = lo + Math.imul(al6, bl5) | 0;
+    mid = mid + Math.imul(al6, bh5) | 0;
+    mid = mid + Math.imul(ah6, bl5) | 0;
+    hi = hi + Math.imul(ah6, bh5) | 0;
+    lo = lo + Math.imul(al5, bl6) | 0;
+    mid = mid + Math.imul(al5, bh6) | 0;
+    mid = mid + Math.imul(ah5, bl6) | 0;
+    hi = hi + Math.imul(ah5, bh6) | 0;
+    lo = lo + Math.imul(al4, bl7) | 0;
+    mid = mid + Math.imul(al4, bh7) | 0;
+    mid = mid + Math.imul(ah4, bl7) | 0;
+    hi = hi + Math.imul(ah4, bh7) | 0;
+    lo = lo + Math.imul(al3, bl8) | 0;
+    mid = mid + Math.imul(al3, bh8) | 0;
+    mid = mid + Math.imul(ah3, bl8) | 0;
+    hi = hi + Math.imul(ah3, bh8) | 0;
+    lo = lo + Math.imul(al2, bl9) | 0;
+    mid = mid + Math.imul(al2, bh9) | 0;
+    mid = mid + Math.imul(ah2, bl9) | 0;
+    hi = hi + Math.imul(ah2, bh9) | 0;
+    var w11 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w11 >>> 26) | 0;
+    w11 &= 0x3ffffff;
+    /* k = 12 */
+    lo = Math.imul(al9, bl3);
+    mid = Math.imul(al9, bh3);
+    mid = mid + Math.imul(ah9, bl3) | 0;
+    hi = Math.imul(ah9, bh3);
+    lo = lo + Math.imul(al8, bl4) | 0;
+    mid = mid + Math.imul(al8, bh4) | 0;
+    mid = mid + Math.imul(ah8, bl4) | 0;
+    hi = hi + Math.imul(ah8, bh4) | 0;
+    lo = lo + Math.imul(al7, bl5) | 0;
+    mid = mid + Math.imul(al7, bh5) | 0;
+    mid = mid + Math.imul(ah7, bl5) | 0;
+    hi = hi + Math.imul(ah7, bh5) | 0;
+    lo = lo + Math.imul(al6, bl6) | 0;
+    mid = mid + Math.imul(al6, bh6) | 0;
+    mid = mid + Math.imul(ah6, bl6) | 0;
+    hi = hi + Math.imul(ah6, bh6) | 0;
+    lo = lo + Math.imul(al5, bl7) | 0;
+    mid = mid + Math.imul(al5, bh7) | 0;
+    mid = mid + Math.imul(ah5, bl7) | 0;
+    hi = hi + Math.imul(ah5, bh7) | 0;
+    lo = lo + Math.imul(al4, bl8) | 0;
+    mid = mid + Math.imul(al4, bh8) | 0;
+    mid = mid + Math.imul(ah4, bl8) | 0;
+    hi = hi + Math.imul(ah4, bh8) | 0;
+    lo = lo + Math.imul(al3, bl9) | 0;
+    mid = mid + Math.imul(al3, bh9) | 0;
+    mid = mid + Math.imul(ah3, bl9) | 0;
+    hi = hi + Math.imul(ah3, bh9) | 0;
+    var w12 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w12 >>> 26) | 0;
+    w12 &= 0x3ffffff;
+    /* k = 13 */
+    lo = Math.imul(al9, bl4);
+    mid = Math.imul(al9, bh4);
+    mid = mid + Math.imul(ah9, bl4) | 0;
+    hi = Math.imul(ah9, bh4);
+    lo = lo + Math.imul(al8, bl5) | 0;
+    mid = mid + Math.imul(al8, bh5) | 0;
+    mid = mid + Math.imul(ah8, bl5) | 0;
+    hi = hi + Math.imul(ah8, bh5) | 0;
+    lo = lo + Math.imul(al7, bl6) | 0;
+    mid = mid + Math.imul(al7, bh6) | 0;
+    mid = mid + Math.imul(ah7, bl6) | 0;
+    hi = hi + Math.imul(ah7, bh6) | 0;
+    lo = lo + Math.imul(al6, bl7) | 0;
+    mid = mid + Math.imul(al6, bh7) | 0;
+    mid = mid + Math.imul(ah6, bl7) | 0;
+    hi = hi + Math.imul(ah6, bh7) | 0;
+    lo = lo + Math.imul(al5, bl8) | 0;
+    mid = mid + Math.imul(al5, bh8) | 0;
+    mid = mid + Math.imul(ah5, bl8) | 0;
+    hi = hi + Math.imul(ah5, bh8) | 0;
+    lo = lo + Math.imul(al4, bl9) | 0;
+    mid = mid + Math.imul(al4, bh9) | 0;
+    mid = mid + Math.imul(ah4, bl9) | 0;
+    hi = hi + Math.imul(ah4, bh9) | 0;
+    var w13 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w13 >>> 26) | 0;
+    w13 &= 0x3ffffff;
+    /* k = 14 */
+    lo = Math.imul(al9, bl5);
+    mid = Math.imul(al9, bh5);
+    mid = mid + Math.imul(ah9, bl5) | 0;
+    hi = Math.imul(ah9, bh5);
+    lo = lo + Math.imul(al8, bl6) | 0;
+    mid = mid + Math.imul(al8, bh6) | 0;
+    mid = mid + Math.imul(ah8, bl6) | 0;
+    hi = hi + Math.imul(ah8, bh6) | 0;
+    lo = lo + Math.imul(al7, bl7) | 0;
+    mid = mid + Math.imul(al7, bh7) | 0;
+    mid = mid + Math.imul(ah7, bl7) | 0;
+    hi = hi + Math.imul(ah7, bh7) | 0;
+    lo = lo + Math.imul(al6, bl8) | 0;
+    mid = mid + Math.imul(al6, bh8) | 0;
+    mid = mid + Math.imul(ah6, bl8) | 0;
+    hi = hi + Math.imul(ah6, bh8) | 0;
+    lo = lo + Math.imul(al5, bl9) | 0;
+    mid = mid + Math.imul(al5, bh9) | 0;
+    mid = mid + Math.imul(ah5, bl9) | 0;
+    hi = hi + Math.imul(ah5, bh9) | 0;
+    var w14 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w14 >>> 26) | 0;
+    w14 &= 0x3ffffff;
+    /* k = 15 */
+    lo = Math.imul(al9, bl6);
+    mid = Math.imul(al9, bh6);
+    mid = mid + Math.imul(ah9, bl6) | 0;
+    hi = Math.imul(ah9, bh6);
+    lo = lo + Math.imul(al8, bl7) | 0;
+    mid = mid + Math.imul(al8, bh7) | 0;
+    mid = mid + Math.imul(ah8, bl7) | 0;
+    hi = hi + Math.imul(ah8, bh7) | 0;
+    lo = lo + Math.imul(al7, bl8) | 0;
+    mid = mid + Math.imul(al7, bh8) | 0;
+    mid = mid + Math.imul(ah7, bl8) | 0;
+    hi = hi + Math.imul(ah7, bh8) | 0;
+    lo = lo + Math.imul(al6, bl9) | 0;
+    mid = mid + Math.imul(al6, bh9) | 0;
+    mid = mid + Math.imul(ah6, bl9) | 0;
+    hi = hi + Math.imul(ah6, bh9) | 0;
+    var w15 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w15 >>> 26) | 0;
+    w15 &= 0x3ffffff;
+    /* k = 16 */
+    lo = Math.imul(al9, bl7);
+    mid = Math.imul(al9, bh7);
+    mid = mid + Math.imul(ah9, bl7) | 0;
+    hi = Math.imul(ah9, bh7);
+    lo = lo + Math.imul(al8, bl8) | 0;
+    mid = mid + Math.imul(al8, bh8) | 0;
+    mid = mid + Math.imul(ah8, bl8) | 0;
+    hi = hi + Math.imul(ah8, bh8) | 0;
+    lo = lo + Math.imul(al7, bl9) | 0;
+    mid = mid + Math.imul(al7, bh9) | 0;
+    mid = mid + Math.imul(ah7, bl9) | 0;
+    hi = hi + Math.imul(ah7, bh9) | 0;
+    var w16 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w16 >>> 26) | 0;
+    w16 &= 0x3ffffff;
+    /* k = 17 */
+    lo = Math.imul(al9, bl8);
+    mid = Math.imul(al9, bh8);
+    mid = mid + Math.imul(ah9, bl8) | 0;
+    hi = Math.imul(ah9, bh8);
+    lo = lo + Math.imul(al8, bl9) | 0;
+    mid = mid + Math.imul(al8, bh9) | 0;
+    mid = mid + Math.imul(ah8, bl9) | 0;
+    hi = hi + Math.imul(ah8, bh9) | 0;
+    var w17 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w17 >>> 26) | 0;
+    w17 &= 0x3ffffff;
+    /* k = 18 */
+    lo = Math.imul(al9, bl9);
+    mid = Math.imul(al9, bh9);
+    mid = mid + Math.imul(ah9, bl9) | 0;
+    hi = Math.imul(ah9, bh9);
+    var w18 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w18 >>> 26) | 0;
+    w18 &= 0x3ffffff;
+    o[0] = w0;
+    o[1] = w1;
+    o[2] = w2;
+    o[3] = w3;
+    o[4] = w4;
+    o[5] = w5;
+    o[6] = w6;
+    o[7] = w7;
+    o[8] = w8;
+    o[9] = w9;
+    o[10] = w10;
+    o[11] = w11;
+    o[12] = w12;
+    o[13] = w13;
+    o[14] = w14;
+    o[15] = w15;
+    o[16] = w16;
+    o[17] = w17;
+    o[18] = w18;
+    if (c !== 0) {
+      o[19] = c;
+      out.length++;
+    }
+    return out;
+  };
+
+  // Polyfill comb
+  if (!Math.imul) {
+    comb10MulTo = smallMulTo;
+  }
+
+  function bigMulTo(self, num, out) {
+    out.negative = num.negative ^ self.negative;
+    out.length = self.length + num.length;
+
+    var carry = 0;
+    var hncarry = 0;
+    for (var k = 0; k < out.length - 1; k++) {
+      // Sum all words with the same `i + j = k` and accumulate `ncarry`,
+      // note that ncarry could be >= 0x3ffffff
+      var ncarry = hncarry;
+      hncarry = 0;
+      var rword = carry & 0x3ffffff;
+      var maxJ = Math.min(k, num.length - 1);
+      for (var j = Math.max(0, k - self.length + 1); j <= maxJ; j++) {
+        var i = k - j;
+        var a = self.words[i] | 0;
+        var b = num.words[j] | 0;
+        var r = a * b;
+
+        var lo = r & 0x3ffffff;
+        ncarry = ncarry + (r / 0x4000000 | 0) | 0;
+        lo = lo + rword | 0;
+        rword = lo & 0x3ffffff;
+        ncarry = ncarry + (lo >>> 26) | 0;
+
+        hncarry += ncarry >>> 26;
+        ncarry &= 0x3ffffff;
+      }
+      out.words[k] = rword;
+      carry = ncarry;
+      ncarry = hncarry;
+    }
+    if (carry !== 0) {
+      out.words[k] = carry;
+    } else {
+      out.length--;
+    }
+
+    return out.strip();
+  }
+
+  function jumboMulTo(self, num, out) {
+    var fftm = new FFTM();
+    return fftm.mulp(self, num, out);
+  }
+
+  BN.prototype.mulTo = function mulTo(num, out) {
+    var res;
+    var len = this.length + num.length;
+    if (this.length === 10 && num.length === 10) {
+      res = comb10MulTo(this, num, out);
+    } else if (len < 63) {
+      res = smallMulTo(this, num, out);
+    } else if (len < 1024) {
+      res = bigMulTo(this, num, out);
+    } else {
+      res = jumboMulTo(this, num, out);
+    }
+
+    return res;
+  };
+
+  // Cooley-Tukey algorithm for FFT
+  // slightly revisited to rely on looping instead of recursion
+
+  function FFTM(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+
+  FFTM.prototype.makeRBT = function makeRBT(N) {
+    var t = new Array(N);
+    var l = BN.prototype._countBits(N) - 1;
+    for (var i = 0; i < N; i++) {
+      t[i] = this.revBin(i, l, N);
+    }
+
+    return t;
+  };
+
+  // Returns binary-reversed representation of `x`
+  FFTM.prototype.revBin = function revBin(x, l, N) {
+    if (x === 0 || x === N - 1) return x;
+
+    var rb = 0;
+    for (var i = 0; i < l; i++) {
+      rb |= (x & 1) << l - i - 1;
+      x >>= 1;
+    }
+
+    return rb;
+  };
+
+  // Performs "tweedling" phase, therefore 'emulating'
+  // behaviour of the recursive algorithm
+  FFTM.prototype.permute = function permute(rbt, rws, iws, rtws, itws, N) {
+    for (var i = 0; i < N; i++) {
+      rtws[i] = rws[rbt[i]];
+      itws[i] = iws[rbt[i]];
+    }
+  };
+
+  FFTM.prototype.transform = function transform(rws, iws, rtws, itws, N, rbt) {
+    this.permute(rbt, rws, iws, rtws, itws, N);
+
+    for (var s = 1; s < N; s <<= 1) {
+      var l = s << 1;
+
+      var rtwdf = Math.cos(2 * Math.PI / l);
+      var itwdf = Math.sin(2 * Math.PI / l);
+
+      for (var p = 0; p < N; p += l) {
+        var rtwdf_ = rtwdf;
+        var itwdf_ = itwdf;
+
+        for (var j = 0; j < s; j++) {
+          var re = rtws[p + j];
+          var ie = itws[p + j];
+
+          var ro = rtws[p + j + s];
+          var io = itws[p + j + s];
+
+          var rx = rtwdf_ * ro - itwdf_ * io;
+
+          io = rtwdf_ * io + itwdf_ * ro;
+          ro = rx;
+
+          rtws[p + j] = re + ro;
+          itws[p + j] = ie + io;
+
+          rtws[p + j + s] = re - ro;
+          itws[p + j + s] = ie - io;
+
+          /* jshint maxdepth : false */
+          if (j !== l) {
+            rx = rtwdf * rtwdf_ - itwdf * itwdf_;
+
+            itwdf_ = rtwdf * itwdf_ + itwdf * rtwdf_;
+            rtwdf_ = rx;
+          }
+        }
+      }
+    }
+  };
+
+  FFTM.prototype.guessLen13b = function guessLen13b(n, m) {
+    var N = Math.max(m, n) | 1;
+    var odd = N & 1;
+    var i = 0;
+    for (N = N / 2 | 0; N; N = N >>> 1) {
+      i++;
+    }
+
+    return 1 << i + 1 + odd;
+  };
+
+  FFTM.prototype.conjugate = function conjugate(rws, iws, N) {
+    if (N <= 1) return;
+
+    for (var i = 0; i < N / 2; i++) {
+      var t = rws[i];
+
+      rws[i] = rws[N - i - 1];
+      rws[N - i - 1] = t;
+
+      t = iws[i];
+
+      iws[i] = -iws[N - i - 1];
+      iws[N - i - 1] = -t;
+    }
+  };
+
+  FFTM.prototype.normalize13b = function normalize13b(ws, N) {
+    var carry = 0;
+    for (var i = 0; i < N / 2; i++) {
+      var w = Math.round(ws[2 * i + 1] / N) * 0x2000 + Math.round(ws[2 * i] / N) + carry;
+
+      ws[i] = w & 0x3ffffff;
+
+      if (w < 0x4000000) {
+        carry = 0;
+      } else {
+        carry = w / 0x4000000 | 0;
+      }
+    }
+
+    return ws;
+  };
+
+  FFTM.prototype.convert13b = function convert13b(ws, len, rws, N) {
+    var carry = 0;
+    for (var i = 0; i < len; i++) {
+      carry = carry + (ws[i] | 0);
+
+      rws[2 * i] = carry & 0x1fff;carry = carry >>> 13;
+      rws[2 * i + 1] = carry & 0x1fff;carry = carry >>> 13;
+    }
+
+    // Pad with zeroes
+    for (i = 2 * len; i < N; ++i) {
+      rws[i] = 0;
+    }
+
+    assert(carry === 0);
+    assert((carry & ~0x1fff) === 0);
+  };
+
+  FFTM.prototype.stub = function stub(N) {
+    var ph = new Array(N);
+    for (var i = 0; i < N; i++) {
+      ph[i] = 0;
+    }
+
+    return ph;
+  };
+
+  FFTM.prototype.mulp = function mulp(x, y, out) {
+    var N = 2 * this.guessLen13b(x.length, y.length);
+
+    var rbt = this.makeRBT(N);
+
+    var _ = this.stub(N);
+
+    var rws = new Array(N);
+    var rwst = new Array(N);
+    var iwst = new Array(N);
+
+    var nrws = new Array(N);
+    var nrwst = new Array(N);
+    var niwst = new Array(N);
+
+    var rmws = out.words;
+    rmws.length = N;
+
+    this.convert13b(x.words, x.length, rws, N);
+    this.convert13b(y.words, y.length, nrws, N);
+
+    this.transform(rws, _, rwst, iwst, N, rbt);
+    this.transform(nrws, _, nrwst, niwst, N, rbt);
+
+    for (var i = 0; i < N; i++) {
+      var rx = rwst[i] * nrwst[i] - iwst[i] * niwst[i];
+      iwst[i] = rwst[i] * niwst[i] + iwst[i] * nrwst[i];
+      rwst[i] = rx;
+    }
+
+    this.conjugate(rwst, iwst, N);
+    this.transform(rwst, iwst, rmws, _, N, rbt);
+    this.conjugate(rmws, _, N);
+    this.normalize13b(rmws, N);
+
+    out.negative = x.negative ^ y.negative;
+    out.length = x.length + y.length;
+    return out.strip();
+  };
+
+  // Multiply `this` by `num`
+  BN.prototype.mul = function mul(num) {
+    var out = new BN(null);
+    out.words = new Array(this.length + num.length);
+    return this.mulTo(num, out);
+  };
+
+  // Multiply employing FFT
+  BN.prototype.mulf = function mulf(num) {
+    var out = new BN(null);
+    out.words = new Array(this.length + num.length);
+    return jumboMulTo(this, num, out);
+  };
+
+  // In-place Multiplication
+  BN.prototype.imul = function imul(num) {
+    return this.clone().mulTo(num, this);
+  };
+
+  BN.prototype.imuln = function imuln(num) {
+    assert(typeof num === 'number');
+    assert(num < 0x4000000);
+
+    // Carry
+    var carry = 0;
+    for (var i = 0; i < this.length; i++) {
+      var w = (this.words[i] | 0) * num;
+      var lo = (w & 0x3ffffff) + (carry & 0x3ffffff);
+      carry >>= 26;
+      carry += w / 0x4000000 | 0;
+      // NOTE: lo is 27bit maximum
+      carry += lo >>> 26;
+      this.words[i] = lo & 0x3ffffff;
+    }
+
+    if (carry !== 0) {
+      this.words[i] = carry;
+      this.length++;
+    }
+
+    return this;
+  };
+
+  BN.prototype.muln = function muln(num) {
+    return this.clone().imuln(num);
+  };
+
+  // `this` * `this`
+  BN.prototype.sqr = function sqr() {
+    return this.mul(this);
+  };
+
+  // `this` * `this` in-place
+  BN.prototype.isqr = function isqr() {
+    return this.imul(this.clone());
+  };
+
+  // Math.pow(`this`, `num`)
+  BN.prototype.pow = function pow(num) {
+    var w = toBitArray(num);
+    if (w.length === 0) return new BN(1);
+
+    // Skip leading zeroes
+    var res = this;
+    for (var i = 0; i < w.length; i++, res = res.sqr()) {
+      if (w[i] !== 0) break;
+    }
+
+    if (++i < w.length) {
+      for (var q = res.sqr(); i < w.length; i++, q = q.sqr()) {
+        if (w[i] === 0) continue;
+
+        res = res.mul(q);
+      }
+    }
+
+    return res;
+  };
+
+  // Shift-left in-place
+  BN.prototype.iushln = function iushln(bits) {
+    assert(typeof bits === 'number' && bits >= 0);
+    var r = bits % 26;
+    var s = (bits - r) / 26;
+    var carryMask = 0x3ffffff >>> 26 - r << 26 - r;
+    var i;
+
+    if (r !== 0) {
+      var carry = 0;
+
+      for (i = 0; i < this.length; i++) {
+        var newCarry = this.words[i] & carryMask;
+        var c = (this.words[i] | 0) - newCarry << r;
+        this.words[i] = c | carry;
+        carry = newCarry >>> 26 - r;
+      }
+
+      if (carry) {
+        this.words[i] = carry;
+        this.length++;
+      }
+    }
+
+    if (s !== 0) {
+      for (i = this.length - 1; i >= 0; i--) {
+        this.words[i + s] = this.words[i];
+      }
+
+      for (i = 0; i < s; i++) {
+        this.words[i] = 0;
+      }
+
+      this.length += s;
+    }
+
+    return this.strip();
+  };
+
+  BN.prototype.ishln = function ishln(bits) {
+    // TODO(indutny): implement me
+    assert(this.negative === 0);
+    return this.iushln(bits);
+  };
+
+  // Shift-right in-place
+  // NOTE: `hint` is a lowest bit before trailing zeroes
+  // NOTE: if `extended` is present - it will be filled with destroyed bits
+  BN.prototype.iushrn = function iushrn(bits, hint, extended) {
+    assert(typeof bits === 'number' && bits >= 0);
+    var h;
+    if (hint) {
+      h = (hint - hint % 26) / 26;
+    } else {
+      h = 0;
+    }
+
+    var r = bits % 26;
+    var s = Math.min((bits - r) / 26, this.length);
+    var mask = 0x3ffffff ^ 0x3ffffff >>> r << r;
+    var maskedWords = extended;
+
+    h -= s;
+    h = Math.max(0, h);
+
+    // Extended mode, copy masked part
+    if (maskedWords) {
+      for (var i = 0; i < s; i++) {
+        maskedWords.words[i] = this.words[i];
+      }
+      maskedWords.length = s;
+    }
+
+    if (s === 0) {
+      // No-op, we should not move anything at all
+    } else if (this.length > s) {
+      this.length -= s;
+      for (i = 0; i < this.length; i++) {
+        this.words[i] = this.words[i + s];
+      }
+    } else {
+      this.words[0] = 0;
+      this.length = 1;
+    }
+
+    var carry = 0;
+    for (i = this.length - 1; i >= 0 && (carry !== 0 || i >= h); i--) {
+      var word = this.words[i] | 0;
+      this.words[i] = carry << 26 - r | word >>> r;
+      carry = word & mask;
+    }
+
+    // Push carried bits as a mask
+    if (maskedWords && carry !== 0) {
+      maskedWords.words[maskedWords.length++] = carry;
+    }
+
+    if (this.length === 0) {
+      this.words[0] = 0;
+      this.length = 1;
+    }
+
+    return this.strip();
+  };
+
+  BN.prototype.ishrn = function ishrn(bits, hint, extended) {
+    // TODO(indutny): implement me
+    assert(this.negative === 0);
+    return this.iushrn(bits, hint, extended);
+  };
+
+  // Shift-left
+  BN.prototype.shln = function shln(bits) {
+    return this.clone().ishln(bits);
+  };
+
+  BN.prototype.ushln = function ushln(bits) {
+    return this.clone().iushln(bits);
+  };
+
+  // Shift-right
+  BN.prototype.shrn = function shrn(bits) {
+    return this.clone().ishrn(bits);
+  };
+
+  BN.prototype.ushrn = function ushrn(bits) {
+    return this.clone().iushrn(bits);
+  };
+
+  // Test if n bit is set
+  BN.prototype.testn = function testn(bit) {
+    assert(typeof bit === 'number' && bit >= 0);
+    var r = bit % 26;
+    var s = (bit - r) / 26;
+    var q = 1 << r;
+
+    // Fast case: bit is much higher than all existing words
+    if (this.length <= s) return false;
+
+    // Check bit and return
+    var w = this.words[s];
+
+    return !!(w & q);
+  };
+
+  // Return only lowers bits of number (in-place)
+  BN.prototype.imaskn = function imaskn(bits) {
+    assert(typeof bits === 'number' && bits >= 0);
+    var r = bits % 26;
+    var s = (bits - r) / 26;
+
+    assert(this.negative === 0, 'imaskn works only with positive numbers');
+
+    if (this.length <= s) {
+      return this;
+    }
+
+    if (r !== 0) {
+      s++;
+    }
+    this.length = Math.min(s, this.length);
+
+    if (r !== 0) {
+      var mask = 0x3ffffff ^ 0x3ffffff >>> r << r;
+      this.words[this.length - 1] &= mask;
+    }
+
+    return this.strip();
+  };
+
+  // Return only lowers bits of number
+  BN.prototype.maskn = function maskn(bits) {
+    return this.clone().imaskn(bits);
+  };
+
+  // Add plain number `num` to `this`
+  BN.prototype.iaddn = function iaddn(num) {
+    assert(typeof num === 'number');
+    assert(num < 0x4000000);
+    if (num < 0) return this.isubn(-num);
+
+    // Possible sign change
+    if (this.negative !== 0) {
+      if (this.length === 1 && (this.words[0] | 0) < num) {
+        this.words[0] = num - (this.words[0] | 0);
+        this.negative = 0;
+        return this;
+      }
+
+      this.negative = 0;
+      this.isubn(num);
+      this.negative = 1;
+      return this;
+    }
+
+    // Add without checks
+    return this._iaddn(num);
+  };
+
+  BN.prototype._iaddn = function _iaddn(num) {
+    this.words[0] += num;
+
+    // Carry
+    for (var i = 0; i < this.length && this.words[i] >= 0x4000000; i++) {
+      this.words[i] -= 0x4000000;
+      if (i === this.length - 1) {
+        this.words[i + 1] = 1;
+      } else {
+        this.words[i + 1]++;
+      }
+    }
+    this.length = Math.max(this.length, i + 1);
+
+    return this;
+  };
+
+  // Subtract plain number `num` from `this`
+  BN.prototype.isubn = function isubn(num) {
+    assert(typeof num === 'number');
+    assert(num < 0x4000000);
+    if (num < 0) return this.iaddn(-num);
+
+    if (this.negative !== 0) {
+      this.negative = 0;
+      this.iaddn(num);
+      this.negative = 1;
+      return this;
+    }
+
+    this.words[0] -= num;
+
+    if (this.length === 1 && this.words[0] < 0) {
+      this.words[0] = -this.words[0];
+      this.negative = 1;
+    } else {
+      // Carry
+      for (var i = 0; i < this.length && this.words[i] < 0; i++) {
+        this.words[i] += 0x4000000;
+        this.words[i + 1] -= 1;
+      }
+    }
+
+    return this.strip();
+  };
+
+  BN.prototype.addn = function addn(num) {
+    return this.clone().iaddn(num);
+  };
+
+  BN.prototype.subn = function subn(num) {
+    return this.clone().isubn(num);
+  };
+
+  BN.prototype.iabs = function iabs() {
+    this.negative = 0;
+
+    return this;
+  };
+
+  BN.prototype.abs = function abs() {
+    return this.clone().iabs();
+  };
+
+  BN.prototype._ishlnsubmul = function _ishlnsubmul(num, mul, shift) {
+    var len = num.length + shift;
+    var i;
+
+    this._expand(len);
+
+    var w;
+    var carry = 0;
+    for (i = 0; i < num.length; i++) {
+      w = (this.words[i + shift] | 0) + carry;
+      var right = (num.words[i] | 0) * mul;
+      w -= right & 0x3ffffff;
+      carry = (w >> 26) - (right / 0x4000000 | 0);
+      this.words[i + shift] = w & 0x3ffffff;
+    }
+    for (; i < this.length - shift; i++) {
+      w = (this.words[i + shift] | 0) + carry;
+      carry = w >> 26;
+      this.words[i + shift] = w & 0x3ffffff;
+    }
+
+    if (carry === 0) return this.strip();
+
+    // Subtraction overflow
+    assert(carry === -1);
+    carry = 0;
+    for (i = 0; i < this.length; i++) {
+      w = -(this.words[i] | 0) + carry;
+      carry = w >> 26;
+      this.words[i] = w & 0x3ffffff;
+    }
+    this.negative = 1;
+
+    return this.strip();
+  };
+
+  BN.prototype._wordDiv = function _wordDiv(num, mode) {
+    var shift = this.length - num.length;
+
+    var a = this.clone();
+    var b = num;
+
+    // Normalize
+    var bhi = b.words[b.length - 1] | 0;
+    var bhiBits = this._countBits(bhi);
+    shift = 26 - bhiBits;
+    if (shift !== 0) {
+      b = b.ushln(shift);
+      a.iushln(shift);
+      bhi = b.words[b.length - 1] | 0;
+    }
+
+    // Initialize quotient
+    var m = a.length - b.length;
+    var q;
+
+    if (mode !== 'mod') {
+      q = new BN(null);
+      q.length = m + 1;
+      q.words = new Array(q.length);
+      for (var i = 0; i < q.length; i++) {
+        q.words[i] = 0;
+      }
+    }
+
+    var diff = a.clone()._ishlnsubmul(b, 1, m);
+    if (diff.negative === 0) {
+      a = diff;
+      if (q) {
+        q.words[m] = 1;
+      }
+    }
+
+    for (var j = m - 1; j >= 0; j--) {
+      var qj = (a.words[b.length + j] | 0) * 0x4000000 + (a.words[b.length + j - 1] | 0);
+
+      // NOTE: (qj / bhi) is (0x3ffffff * 0x4000000 + 0x3ffffff) / 0x2000000 max
+      // (0x7ffffff)
+      qj = Math.min(qj / bhi | 0, 0x3ffffff);
+
+      a._ishlnsubmul(b, qj, j);
+      while (a.negative !== 0) {
+        qj--;
+        a.negative = 0;
+        a._ishlnsubmul(b, 1, j);
+        if (!a.isZero()) {
+          a.negative ^= 1;
+        }
+      }
+      if (q) {
+        q.words[j] = qj;
+      }
+    }
+    if (q) {
+      q.strip();
+    }
+    a.strip();
+
+    // Denormalize
+    if (mode !== 'div' && shift !== 0) {
+      a.iushrn(shift);
+    }
+
+    return {
+      div: q || null,
+      mod: a
+    };
+  };
+
+  // NOTE: 1) `mode` can be set to `mod` to request mod only,
+  //       to `div` to request div only, or be absent to
+  //       request both div & mod
+  //       2) `positive` is true if unsigned mod is requested
+  BN.prototype.divmod = function divmod(num, mode, positive) {
+    assert(!num.isZero());
+
+    if (this.isZero()) {
+      return {
+        div: new BN(0),
+        mod: new BN(0)
+      };
+    }
+
+    var div, mod, res;
+    if (this.negative !== 0 && num.negative === 0) {
+      res = this.neg().divmod(num, mode);
+
+      if (mode !== 'mod') {
+        div = res.div.neg();
+      }
+
+      if (mode !== 'div') {
+        mod = res.mod.neg();
+        if (positive && mod.negative !== 0) {
+          mod.iadd(num);
+        }
+      }
+
+      return {
+        div: div,
+        mod: mod
+      };
+    }
+
+    if (this.negative === 0 && num.negative !== 0) {
+      res = this.divmod(num.neg(), mode);
+
+      if (mode !== 'mod') {
+        div = res.div.neg();
+      }
+
+      return {
+        div: div,
+        mod: res.mod
+      };
+    }
+
+    if ((this.negative & num.negative) !== 0) {
+      res = this.neg().divmod(num.neg(), mode);
+
+      if (mode !== 'div') {
+        mod = res.mod.neg();
+        if (positive && mod.negative !== 0) {
+          mod.isub(num);
+        }
+      }
+
+      return {
+        div: res.div,
+        mod: mod
+      };
+    }
+
+    // Both numbers are positive at this point
+
+    // Strip both numbers to approximate shift value
+    if (num.length > this.length || this.cmp(num) < 0) {
+      return {
+        div: new BN(0),
+        mod: this
+      };
+    }
+
+    // Very short reduction
+    if (num.length === 1) {
+      if (mode === 'div') {
+        return {
+          div: this.divn(num.words[0]),
+          mod: null
+        };
+      }
+
+      if (mode === 'mod') {
+        return {
+          div: null,
+          mod: new BN(this.modn(num.words[0]))
+        };
+      }
+
+      return {
+        div: this.divn(num.words[0]),
+        mod: new BN(this.modn(num.words[0]))
+      };
+    }
+
+    return this._wordDiv(num, mode);
+  };
+
+  // Find `this` / `num`
+  BN.prototype.div = function div(num) {
+    return this.divmod(num, 'div', false).div;
+  };
+
+  // Find `this` % `num`
+  BN.prototype.mod = function mod(num) {
+    return this.divmod(num, 'mod', false).mod;
+  };
+
+  BN.prototype.umod = function umod(num) {
+    return this.divmod(num, 'mod', true).mod;
+  };
+
+  // Find Round(`this` / `num`)
+  BN.prototype.divRound = function divRound(num) {
+    var dm = this.divmod(num);
+
+    // Fast case - exact division
+    if (dm.mod.isZero()) return dm.div;
+
+    var mod = dm.div.negative !== 0 ? dm.mod.isub(num) : dm.mod;
+
+    var half = num.ushrn(1);
+    var r2 = num.andln(1);
+    var cmp = mod.cmp(half);
+
+    // Round down
+    if (cmp < 0 || r2 === 1 && cmp === 0) return dm.div;
+
+    // Round up
+    return dm.div.negative !== 0 ? dm.div.isubn(1) : dm.div.iaddn(1);
+  };
+
+  BN.prototype.modn = function modn(num) {
+    assert(num <= 0x3ffffff);
+    var p = (1 << 26) % num;
+
+    var acc = 0;
+    for (var i = this.length - 1; i >= 0; i--) {
+      acc = (p * acc + (this.words[i] | 0)) % num;
+    }
+
+    return acc;
+  };
+
+  // In-place division by number
+  BN.prototype.idivn = function idivn(num) {
+    assert(num <= 0x3ffffff);
+
+    var carry = 0;
+    for (var i = this.length - 1; i >= 0; i--) {
+      var w = (this.words[i] | 0) + carry * 0x4000000;
+      this.words[i] = w / num | 0;
+      carry = w % num;
+    }
+
+    return this.strip();
+  };
+
+  BN.prototype.divn = function divn(num) {
+    return this.clone().idivn(num);
+  };
+
+  BN.prototype.egcd = function egcd(p) {
+    assert(p.negative === 0);
+    assert(!p.isZero());
+
+    var x = this;
+    var y = p.clone();
+
+    if (x.negative !== 0) {
+      x = x.umod(p);
+    } else {
+      x = x.clone();
+    }
+
+    // A * x + B * y = x
+    var A = new BN(1);
+    var B = new BN(0);
+
+    // C * x + D * y = y
+    var C = new BN(0);
+    var D = new BN(1);
+
+    var g = 0;
+
+    while (x.isEven() && y.isEven()) {
+      x.iushrn(1);
+      y.iushrn(1);
+      ++g;
+    }
+
+    var yp = y.clone();
+    var xp = x.clone();
+
+    while (!x.isZero()) {
+      for (var i = 0, im = 1; (x.words[0] & im) === 0 && i < 26; ++i, im <<= 1) {}
+      if (i > 0) {
+        x.iushrn(i);
+        while (i-- > 0) {
+          if (A.isOdd() || B.isOdd()) {
+            A.iadd(yp);
+            B.isub(xp);
+          }
+
+          A.iushrn(1);
+          B.iushrn(1);
+        }
+      }
+
+      for (var j = 0, jm = 1; (y.words[0] & jm) === 0 && j < 26; ++j, jm <<= 1) {}
+      if (j > 0) {
+        y.iushrn(j);
+        while (j-- > 0) {
+          if (C.isOdd() || D.isOdd()) {
+            C.iadd(yp);
+            D.isub(xp);
+          }
+
+          C.iushrn(1);
+          D.iushrn(1);
+        }
+      }
+
+      if (x.cmp(y) >= 0) {
+        x.isub(y);
+        A.isub(C);
+        B.isub(D);
+      } else {
+        y.isub(x);
+        C.isub(A);
+        D.isub(B);
+      }
+    }
+
+    return {
+      a: C,
+      b: D,
+      gcd: y.iushln(g)
+    };
+  };
+
+  // This is reduced incarnation of the binary EEA
+  // above, designated to invert members of the
+  // _prime_ fields F(p) at a maximal speed
+  BN.prototype._invmp = function _invmp(p) {
+    assert(p.negative === 0);
+    assert(!p.isZero());
+
+    var a = this;
+    var b = p.clone();
+
+    if (a.negative !== 0) {
+      a = a.umod(p);
+    } else {
+      a = a.clone();
+    }
+
+    var x1 = new BN(1);
+    var x2 = new BN(0);
+
+    var delta = b.clone();
+
+    while (a.cmpn(1) > 0 && b.cmpn(1) > 0) {
+      for (var i = 0, im = 1; (a.words[0] & im) === 0 && i < 26; ++i, im <<= 1) {}
+      if (i > 0) {
+        a.iushrn(i);
+        while (i-- > 0) {
+          if (x1.isOdd()) {
+            x1.iadd(delta);
+          }
+
+          x1.iushrn(1);
+        }
+      }
+
+      for (var j = 0, jm = 1; (b.words[0] & jm) === 0 && j < 26; ++j, jm <<= 1) {}
+      if (j > 0) {
+        b.iushrn(j);
+        while (j-- > 0) {
+          if (x2.isOdd()) {
+            x2.iadd(delta);
+          }
+
+          x2.iushrn(1);
+        }
+      }
+
+      if (a.cmp(b) >= 0) {
+        a.isub(b);
+        x1.isub(x2);
+      } else {
+        b.isub(a);
+        x2.isub(x1);
+      }
+    }
+
+    var res;
+    if (a.cmpn(1) === 0) {
+      res = x1;
+    } else {
+      res = x2;
+    }
+
+    if (res.cmpn(0) < 0) {
+      res.iadd(p);
+    }
+
+    return res;
+  };
+
+  BN.prototype.gcd = function gcd(num) {
+    if (this.isZero()) return num.abs();
+    if (num.isZero()) return this.abs();
+
+    var a = this.clone();
+    var b = num.clone();
+    a.negative = 0;
+    b.negative = 0;
+
+    // Remove common factor of two
+    for (var shift = 0; a.isEven() && b.isEven(); shift++) {
+      a.iushrn(1);
+      b.iushrn(1);
+    }
+
+    do {
+      while (a.isEven()) {
+        a.iushrn(1);
+      }
+      while (b.isEven()) {
+        b.iushrn(1);
+      }
+
+      var r = a.cmp(b);
+      if (r < 0) {
+        // Swap `a` and `b` to make `a` always bigger than `b`
+        var t = a;
+        a = b;
+        b = t;
+      } else if (r === 0 || b.cmpn(1) === 0) {
+        break;
+      }
+
+      a.isub(b);
+    } while (true);
+
+    return b.iushln(shift);
+  };
+
+  // Invert number in the field F(num)
+  BN.prototype.invm = function invm(num) {
+    return this.egcd(num).a.umod(num);
+  };
+
+  BN.prototype.isEven = function isEven() {
+    return (this.words[0] & 1) === 0;
+  };
+
+  BN.prototype.isOdd = function isOdd() {
+    return (this.words[0] & 1) === 1;
+  };
+
+  // And first word and num
+  BN.prototype.andln = function andln(num) {
+    return this.words[0] & num;
+  };
+
+  // Increment at the bit position in-line
+  BN.prototype.bincn = function bincn(bit) {
+    assert(typeof bit === 'number');
+    var r = bit % 26;
+    var s = (bit - r) / 26;
+    var q = 1 << r;
+
+    // Fast case: bit is much higher than all existing words
+    if (this.length <= s) {
+      this._expand(s + 1);
+      this.words[s] |= q;
+      return this;
+    }
+
+    // Add bit and propagate, if needed
+    var carry = q;
+    for (var i = s; carry !== 0 && i < this.length; i++) {
+      var w = this.words[i] | 0;
+      w += carry;
+      carry = w >>> 26;
+      w &= 0x3ffffff;
+      this.words[i] = w;
+    }
+    if (carry !== 0) {
+      this.words[i] = carry;
+      this.length++;
+    }
+    return this;
+  };
+
+  BN.prototype.isZero = function isZero() {
+    return this.length === 1 && this.words[0] === 0;
+  };
+
+  BN.prototype.cmpn = function cmpn(num) {
+    var negative = num < 0;
+
+    if (this.negative !== 0 && !negative) return -1;
+    if (this.negative === 0 && negative) return 1;
+
+    this.strip();
+
+    var res;
+    if (this.length > 1) {
+      res = 1;
+    } else {
+      if (negative) {
+        num = -num;
+      }
+
+      assert(num <= 0x3ffffff, 'Number is too big');
+
+      var w = this.words[0] | 0;
+      res = w === num ? 0 : w < num ? -1 : 1;
+    }
+    if (this.negative !== 0) return -res | 0;
+    return res;
+  };
+
+  // Compare two numbers and return:
+  // 1 - if `this` > `num`
+  // 0 - if `this` == `num`
+  // -1 - if `this` < `num`
+  BN.prototype.cmp = function cmp(num) {
+    if (this.negative !== 0 && num.negative === 0) return -1;
+    if (this.negative === 0 && num.negative !== 0) return 1;
+
+    var res = this.ucmp(num);
+    if (this.negative !== 0) return -res | 0;
+    return res;
+  };
+
+  // Unsigned comparison
+  BN.prototype.ucmp = function ucmp(num) {
+    // At this point both numbers have the same sign
+    if (this.length > num.length) return 1;
+    if (this.length < num.length) return -1;
+
+    var res = 0;
+    for (var i = this.length - 1; i >= 0; i--) {
+      var a = this.words[i] | 0;
+      var b = num.words[i] | 0;
+
+      if (a === b) continue;
+      if (a < b) {
+        res = -1;
+      } else if (a > b) {
+        res = 1;
+      }
+      break;
+    }
+    return res;
+  };
+
+  BN.prototype.gtn = function gtn(num) {
+    return this.cmpn(num) === 1;
+  };
+
+  BN.prototype.gt = function gt(num) {
+    return this.cmp(num) === 1;
+  };
+
+  BN.prototype.gten = function gten(num) {
+    return this.cmpn(num) >= 0;
+  };
+
+  BN.prototype.gte = function gte(num) {
+    return this.cmp(num) >= 0;
+  };
+
+  BN.prototype.ltn = function ltn(num) {
+    return this.cmpn(num) === -1;
+  };
+
+  BN.prototype.lt = function lt(num) {
+    return this.cmp(num) === -1;
+  };
+
+  BN.prototype.lten = function lten(num) {
+    return this.cmpn(num) <= 0;
+  };
+
+  BN.prototype.lte = function lte(num) {
+    return this.cmp(num) <= 0;
+  };
+
+  BN.prototype.eqn = function eqn(num) {
+    return this.cmpn(num) === 0;
+  };
+
+  BN.prototype.eq = function eq(num) {
+    return this.cmp(num) === 0;
+  };
+
+  //
+  // A reduce context, could be using montgomery or something better, depending
+  // on the `m` itself.
+  //
+  BN.red = function red(num) {
+    return new Red(num);
+  };
+
+  BN.prototype.toRed = function toRed(ctx) {
+    assert(!this.red, 'Already a number in reduction context');
+    assert(this.negative === 0, 'red works only with positives');
+    return ctx.convertTo(this)._forceRed(ctx);
+  };
+
+  BN.prototype.fromRed = function fromRed() {
+    assert(this.red, 'fromRed works only with numbers in reduction context');
+    return this.red.convertFrom(this);
+  };
+
+  BN.prototype._forceRed = function _forceRed(ctx) {
+    this.red = ctx;
+    return this;
+  };
+
+  BN.prototype.forceRed = function forceRed(ctx) {
+    assert(!this.red, 'Already a number in reduction context');
+    return this._forceRed(ctx);
+  };
+
+  BN.prototype.redAdd = function redAdd(num) {
+    assert(this.red, 'redAdd works only with red numbers');
+    return this.red.add(this, num);
+  };
+
+  BN.prototype.redIAdd = function redIAdd(num) {
+    assert(this.red, 'redIAdd works only with red numbers');
+    return this.red.iadd(this, num);
+  };
+
+  BN.prototype.redSub = function redSub(num) {
+    assert(this.red, 'redSub works only with red numbers');
+    return this.red.sub(this, num);
+  };
+
+  BN.prototype.redISub = function redISub(num) {
+    assert(this.red, 'redISub works only with red numbers');
+    return this.red.isub(this, num);
+  };
+
+  BN.prototype.redShl = function redShl(num) {
+    assert(this.red, 'redShl works only with red numbers');
+    return this.red.shl(this, num);
+  };
+
+  BN.prototype.redMul = function redMul(num) {
+    assert(this.red, 'redMul works only with red numbers');
+    this.red._verify2(this, num);
+    return this.red.mul(this, num);
+  };
+
+  BN.prototype.redIMul = function redIMul(num) {
+    assert(this.red, 'redMul works only with red numbers');
+    this.red._verify2(this, num);
+    return this.red.imul(this, num);
+  };
+
+  BN.prototype.redSqr = function redSqr() {
+    assert(this.red, 'redSqr works only with red numbers');
+    this.red._verify1(this);
+    return this.red.sqr(this);
+  };
+
+  BN.prototype.redISqr = function redISqr() {
+    assert(this.red, 'redISqr works only with red numbers');
+    this.red._verify1(this);
+    return this.red.isqr(this);
+  };
+
+  // Square root over p
+  BN.prototype.redSqrt = function redSqrt() {
+    assert(this.red, 'redSqrt works only with red numbers');
+    this.red._verify1(this);
+    return this.red.sqrt(this);
+  };
+
+  BN.prototype.redInvm = function redInvm() {
+    assert(this.red, 'redInvm works only with red numbers');
+    this.red._verify1(this);
+    return this.red.invm(this);
+  };
+
+  // Return negative clone of `this` % `red modulo`
+  BN.prototype.redNeg = function redNeg() {
+    assert(this.red, 'redNeg works only with red numbers');
+    this.red._verify1(this);
+    return this.red.neg(this);
+  };
+
+  BN.prototype.redPow = function redPow(num) {
+    assert(this.red && !num.red, 'redPow(normalNum)');
+    this.red._verify1(this);
+    return this.red.pow(this, num);
+  };
+
+  // Prime numbers with efficient reduction
+  var primes = {
+    k256: null,
+    p224: null,
+    p192: null,
+    p25519: null
+  };
+
+  // Pseudo-Mersenne prime
+  function MPrime(name, p) {
+    // P = 2 ^ N - K
+    this.name = name;
+    this.p = new BN(p, 16);
+    this.n = this.p.bitLength();
+    this.k = new BN(1).iushln(this.n).isub(this.p);
+
+    this.tmp = this._tmp();
+  }
+
+  MPrime.prototype._tmp = function _tmp() {
+    var tmp = new BN(null);
+    tmp.words = new Array(Math.ceil(this.n / 13));
+    return tmp;
+  };
+
+  MPrime.prototype.ireduce = function ireduce(num) {
+    // Assumes that `num` is less than `P^2`
+    // num = HI * (2 ^ N - K) + HI * K + LO = HI * K + LO (mod P)
+    var r = num;
+    var rlen;
+
+    do {
+      this.split(r, this.tmp);
+      r = this.imulK(r);
+      r = r.iadd(this.tmp);
+      rlen = r.bitLength();
+    } while (rlen > this.n);
+
+    var cmp = rlen < this.n ? -1 : r.ucmp(this.p);
+    if (cmp === 0) {
+      r.words[0] = 0;
+      r.length = 1;
+    } else if (cmp > 0) {
+      r.isub(this.p);
+    } else {
+      r.strip();
+    }
+
+    return r;
+  };
+
+  MPrime.prototype.split = function split(input, out) {
+    input.iushrn(this.n, 0, out);
+  };
+
+  MPrime.prototype.imulK = function imulK(num) {
+    return num.imul(this.k);
+  };
+
+  function K256() {
+    MPrime.call(this, 'k256', 'ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff fffffffe fffffc2f');
+  }
+  inherits(K256, MPrime);
+
+  K256.prototype.split = function split(input, output) {
+    // 256 = 9 * 26 + 22
+    var mask = 0x3fffff;
+
+    var outLen = Math.min(input.length, 9);
+    for (var i = 0; i < outLen; i++) {
+      output.words[i] = input.words[i];
+    }
+    output.length = outLen;
+
+    if (input.length <= 9) {
+      input.words[0] = 0;
+      input.length = 1;
+      return;
+    }
+
+    // Shift by 9 limbs
+    var prev = input.words[9];
+    output.words[output.length++] = prev & mask;
+
+    for (i = 10; i < input.length; i++) {
+      var next = input.words[i] | 0;
+      input.words[i - 10] = (next & mask) << 4 | prev >>> 22;
+      prev = next;
+    }
+    prev >>>= 22;
+    input.words[i - 10] = prev;
+    if (prev === 0 && input.length > 10) {
+      input.length -= 10;
+    } else {
+      input.length -= 9;
+    }
+  };
+
+  K256.prototype.imulK = function imulK(num) {
+    // K = 0x1000003d1 = [ 0x40, 0x3d1 ]
+    num.words[num.length] = 0;
+    num.words[num.length + 1] = 0;
+    num.length += 2;
+
+    // bounded at: 0x40 * 0x3ffffff + 0x3d0 = 0x100000390
+    var lo = 0;
+    for (var i = 0; i < num.length; i++) {
+      var w = num.words[i] | 0;
+      lo += w * 0x3d1;
+      num.words[i] = lo & 0x3ffffff;
+      lo = w * 0x40 + (lo / 0x4000000 | 0);
+    }
+
+    // Fast length reduction
+    if (num.words[num.length - 1] === 0) {
+      num.length--;
+      if (num.words[num.length - 1] === 0) {
+        num.length--;
+      }
+    }
+    return num;
+  };
+
+  function P224() {
+    MPrime.call(this, 'p224', 'ffffffff ffffffff ffffffff ffffffff 00000000 00000000 00000001');
+  }
+  inherits(P224, MPrime);
+
+  function P192() {
+    MPrime.call(this, 'p192', 'ffffffff ffffffff ffffffff fffffffe ffffffff ffffffff');
+  }
+  inherits(P192, MPrime);
+
+  function P25519() {
+    // 2 ^ 255 - 19
+    MPrime.call(this, '25519', '7fffffffffffffff ffffffffffffffff ffffffffffffffff ffffffffffffffed');
+  }
+  inherits(P25519, MPrime);
+
+  P25519.prototype.imulK = function imulK(num) {
+    // K = 0x13
+    var carry = 0;
+    for (var i = 0; i < num.length; i++) {
+      var hi = (num.words[i] | 0) * 0x13 + carry;
+      var lo = hi & 0x3ffffff;
+      hi >>>= 26;
+
+      num.words[i] = lo;
+      carry = hi;
+    }
+    if (carry !== 0) {
+      num.words[num.length++] = carry;
+    }
+    return num;
+  };
+
+  // Exported mostly for testing purposes, use plain name instead
+  BN._prime = function prime(name) {
+    // Cached version of prime
+    if (primes[name]) return primes[name];
+
+    var prime;
+    if (name === 'k256') {
+      prime = new K256();
+    } else if (name === 'p224') {
+      prime = new P224();
+    } else if (name === 'p192') {
+      prime = new P192();
+    } else if (name === 'p25519') {
+      prime = new P25519();
+    } else {
+      throw new Error('Unknown prime ' + name);
+    }
+    primes[name] = prime;
+
+    return prime;
+  };
+
+  //
+  // Base reduction engine
+  //
+  function Red(m) {
+    if (typeof m === 'string') {
+      var prime = BN._prime(m);
+      this.m = prime.p;
+      this.prime = prime;
+    } else {
+      assert(m.gtn(1), 'modulus must be greater than 1');
+      this.m = m;
+      this.prime = null;
+    }
+  }
+
+  Red.prototype._verify1 = function _verify1(a) {
+    assert(a.negative === 0, 'red works only with positives');
+    assert(a.red, 'red works only with red numbers');
+  };
+
+  Red.prototype._verify2 = function _verify2(a, b) {
+    assert((a.negative | b.negative) === 0, 'red works only with positives');
+    assert(a.red && a.red === b.red, 'red works only with red numbers');
+  };
+
+  Red.prototype.imod = function imod(a) {
+    if (this.prime) return this.prime.ireduce(a)._forceRed(this);
+    return a.umod(this.m)._forceRed(this);
+  };
+
+  Red.prototype.neg = function neg(a) {
+    if (a.isZero()) {
+      return a.clone();
+    }
+
+    return this.m.sub(a)._forceRed(this);
+  };
+
+  Red.prototype.add = function add(a, b) {
+    this._verify2(a, b);
+
+    var res = a.add(b);
+    if (res.cmp(this.m) >= 0) {
+      res.isub(this.m);
+    }
+    return res._forceRed(this);
+  };
+
+  Red.prototype.iadd = function iadd(a, b) {
+    this._verify2(a, b);
+
+    var res = a.iadd(b);
+    if (res.cmp(this.m) >= 0) {
+      res.isub(this.m);
+    }
+    return res;
+  };
+
+  Red.prototype.sub = function sub(a, b) {
+    this._verify2(a, b);
+
+    var res = a.sub(b);
+    if (res.cmpn(0) < 0) {
+      res.iadd(this.m);
+    }
+    return res._forceRed(this);
+  };
+
+  Red.prototype.isub = function isub(a, b) {
+    this._verify2(a, b);
+
+    var res = a.isub(b);
+    if (res.cmpn(0) < 0) {
+      res.iadd(this.m);
+    }
+    return res;
+  };
+
+  Red.prototype.shl = function shl(a, num) {
+    this._verify1(a);
+    return this.imod(a.ushln(num));
+  };
+
+  Red.prototype.imul = function imul(a, b) {
+    this._verify2(a, b);
+    return this.imod(a.imul(b));
+  };
+
+  Red.prototype.mul = function mul(a, b) {
+    this._verify2(a, b);
+    return this.imod(a.mul(b));
+  };
+
+  Red.prototype.isqr = function isqr(a) {
+    return this.imul(a, a.clone());
+  };
+
+  Red.prototype.sqr = function sqr(a) {
+    return this.mul(a, a);
+  };
+
+  Red.prototype.sqrt = function sqrt(a) {
+    if (a.isZero()) return a.clone();
+
+    var mod3 = this.m.andln(3);
+    assert(mod3 % 2 === 1);
+
+    // Fast case
+    if (mod3 === 3) {
+      var pow = this.m.add(new BN(1)).iushrn(2);
+      return this.pow(a, pow);
+    }
+
+    // Tonelli-Shanks algorithm (Totally unoptimized and slow)
+    //
+    // Find Q and S, that Q * 2 ^ S = (P - 1)
+    var q = this.m.subn(1);
+    var s = 0;
+    while (!q.isZero() && q.andln(1) === 0) {
+      s++;
+      q.iushrn(1);
+    }
+    assert(!q.isZero());
+
+    var one = new BN(1).toRed(this);
+    var nOne = one.redNeg();
+
+    // Find quadratic non-residue
+    // NOTE: Max is such because of generalized Riemann hypothesis.
+    var lpow = this.m.subn(1).iushrn(1);
+    var z = this.m.bitLength();
+    z = new BN(2 * z * z).toRed(this);
+
+    while (this.pow(z, lpow).cmp(nOne) !== 0) {
+      z.redIAdd(nOne);
+    }
+
+    var c = this.pow(z, q);
+    var r = this.pow(a, q.addn(1).iushrn(1));
+    var t = this.pow(a, q);
+    var m = s;
+    while (t.cmp(one) !== 0) {
+      var tmp = t;
+      for (var i = 0; tmp.cmp(one) !== 0; i++) {
+        tmp = tmp.redSqr();
+      }
+      assert(i < m);
+      var b = this.pow(c, new BN(1).iushln(m - i - 1));
+
+      r = r.redMul(b);
+      c = b.redSqr();
+      t = t.redMul(c);
+      m = i;
+    }
+
+    return r;
+  };
+
+  Red.prototype.invm = function invm(a) {
+    var inv = a._invmp(this.m);
+    if (inv.negative !== 0) {
+      inv.negative = 0;
+      return this.imod(inv).redNeg();
+    } else {
+      return this.imod(inv);
+    }
+  };
+
+  Red.prototype.pow = function pow(a, num) {
+    if (num.isZero()) return new BN(1);
+    if (num.cmpn(1) === 0) return a.clone();
+
+    var windowSize = 4;
+    var wnd = new Array(1 << windowSize);
+    wnd[0] = new BN(1).toRed(this);
+    wnd[1] = a;
+    for (var i = 2; i < wnd.length; i++) {
+      wnd[i] = this.mul(wnd[i - 1], a);
+    }
+
+    var res = wnd[0];
+    var current = 0;
+    var currentLen = 0;
+    var start = num.bitLength() % 26;
+    if (start === 0) {
+      start = 26;
+    }
+
+    for (i = num.length - 1; i >= 0; i--) {
+      var word = num.words[i];
+      for (var j = start - 1; j >= 0; j--) {
+        var bit = word >> j & 1;
+        if (res !== wnd[0]) {
+          res = this.sqr(res);
+        }
+
+        if (bit === 0 && current === 0) {
+          currentLen = 0;
+          continue;
+        }
+
+        current <<= 1;
+        current |= bit;
+        currentLen++;
+        if (currentLen !== windowSize && (i !== 0 || j !== 0)) continue;
+
+        res = this.mul(res, wnd[current]);
+        currentLen = 0;
+        current = 0;
+      }
+      start = 26;
+    }
+
+    return res;
+  };
+
+  Red.prototype.convertTo = function convertTo(num) {
+    var r = num.umod(this.m);
+
+    return r === num ? r.clone() : r;
+  };
+
+  Red.prototype.convertFrom = function convertFrom(num) {
+    var res = num.clone();
+    res.red = null;
+    return res;
+  };
+
+  //
+  // Montgomery method engine
+  //
+
+  BN.mont = function mont(num) {
+    return new Mont(num);
+  };
+
+  function Mont(m) {
+    Red.call(this, m);
+
+    this.shift = this.m.bitLength();
+    if (this.shift % 26 !== 0) {
+      this.shift += 26 - this.shift % 26;
+    }
+
+    this.r = new BN(1).iushln(this.shift);
+    this.r2 = this.imod(this.r.sqr());
+    this.rinv = this.r._invmp(this.m);
+
+    this.minv = this.rinv.mul(this.r).isubn(1).div(this.m);
+    this.minv = this.minv.umod(this.r);
+    this.minv = this.r.sub(this.minv);
+  }
+  inherits(Mont, Red);
+
+  Mont.prototype.convertTo = function convertTo(num) {
+    return this.imod(num.ushln(this.shift));
+  };
+
+  Mont.prototype.convertFrom = function convertFrom(num) {
+    var r = this.imod(num.mul(this.rinv));
+    r.red = null;
+    return r;
+  };
+
+  Mont.prototype.imul = function imul(a, b) {
+    if (a.isZero() || b.isZero()) {
+      a.words[0] = 0;
+      a.length = 1;
+      return a;
+    }
+
+    var t = a.imul(b);
+    var c = t.maskn(this.shift).mul(this.minv).imaskn(this.shift).mul(this.m);
+    var u = t.isub(c).iushrn(this.shift);
+    var res = u;
+
+    if (u.cmp(this.m) >= 0) {
+      res = u.isub(this.m);
+    } else if (u.cmpn(0) < 0) {
+      res = u.iadd(this.m);
+    }
+
+    return res._forceRed(this);
+  };
+
+  Mont.prototype.mul = function mul(a, b) {
+    if (a.isZero() || b.isZero()) return new BN(0)._forceRed(this);
+
+    var t = a.mul(b);
+    var c = t.maskn(this.shift).mul(this.minv).imaskn(this.shift).mul(this.m);
+    var u = t.isub(c).iushrn(this.shift);
+    var res = u;
+    if (u.cmp(this.m) >= 0) {
+      res = u.isub(this.m);
+    } else if (u.cmpn(0) < 0) {
+      res = u.iadd(this.m);
+    }
+
+    return res._forceRed(this);
+  };
+
+  Mont.prototype.invm = function invm(a) {
+    // (AR)^-1 * R^2 = (A^-1 * R^-1) * R^2 = A^-1 * R
+    var res = this.imod(a._invmp(this.m).mul(this.r2));
+    return res._forceRed(this);
+  };
+})(typeof module === 'undefined' || module, this);
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)(module)))
+
+/***/ }),
+/* 116 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.byteLength = byteLength;
+exports.toByteArray = toByteArray;
+exports.fromByteArray = fromByteArray;
+
+var lookup = [];
+var revLookup = [];
+var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array;
+
+var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+for (var i = 0, len = code.length; i < len; ++i) {
+  lookup[i] = code[i];
+  revLookup[code.charCodeAt(i)] = i;
+}
+
+revLookup['-'.charCodeAt(0)] = 62;
+revLookup['_'.charCodeAt(0)] = 63;
+
+function placeHoldersCount(b64) {
+  var len = b64.length;
+  if (len % 4 > 0) {
+    throw new Error('Invalid string. Length must be a multiple of 4');
+  }
+
+  // the number of equal signs (place holders)
+  // if there are two placeholders, than the two characters before it
+  // represent one byte
+  // if there is only one, then the three characters before it represent 2 bytes
+  // this is just a cheap hack to not do indexOf twice
+  return b64[len - 2] === '=' ? 2 : b64[len - 1] === '=' ? 1 : 0;
+}
+
+function byteLength(b64) {
+  // base64 is 4/3 + up to two characters of the original data
+  return b64.length * 3 / 4 - placeHoldersCount(b64);
+}
+
+function toByteArray(b64) {
+  var i, l, tmp, placeHolders, arr;
+  var len = b64.length;
+  placeHolders = placeHoldersCount(b64);
+
+  arr = new Arr(len * 3 / 4 - placeHolders);
+
+  // if there are placeholders, only get up to the last complete 4 chars
+  l = placeHolders > 0 ? len - 4 : len;
+
+  var L = 0;
+
+  for (i = 0; i < l; i += 4) {
+    tmp = revLookup[b64.charCodeAt(i)] << 18 | revLookup[b64.charCodeAt(i + 1)] << 12 | revLookup[b64.charCodeAt(i + 2)] << 6 | revLookup[b64.charCodeAt(i + 3)];
+    arr[L++] = tmp >> 16 & 0xFF;
+    arr[L++] = tmp >> 8 & 0xFF;
+    arr[L++] = tmp & 0xFF;
+  }
+
+  if (placeHolders === 2) {
+    tmp = revLookup[b64.charCodeAt(i)] << 2 | revLookup[b64.charCodeAt(i + 1)] >> 4;
+    arr[L++] = tmp & 0xFF;
+  } else if (placeHolders === 1) {
+    tmp = revLookup[b64.charCodeAt(i)] << 10 | revLookup[b64.charCodeAt(i + 1)] << 4 | revLookup[b64.charCodeAt(i + 2)] >> 2;
+    arr[L++] = tmp >> 8 & 0xFF;
+    arr[L++] = tmp & 0xFF;
+  }
+
+  return arr;
+}
+
+function tripletToBase64(num) {
+  return lookup[num >> 18 & 0x3F] + lookup[num >> 12 & 0x3F] + lookup[num >> 6 & 0x3F] + lookup[num & 0x3F];
+}
+
+function encodeChunk(uint8, start, end) {
+  var tmp;
+  var output = [];
+  for (var i = start; i < end; i += 3) {
+    tmp = (uint8[i] << 16) + (uint8[i + 1] << 8) + uint8[i + 2];
+    output.push(tripletToBase64(tmp));
+  }
+  return output.join('');
+}
+
+function fromByteArray(uint8) {
+  var tmp;
+  var len = uint8.length;
+  var extraBytes = len % 3; // if we have 1 byte left, pad 2 bytes
+  var output = '';
+  var parts = [];
+  var maxChunkLength = 16383; // must be multiple of 3
+
+  // go through the array every three bytes, we'll deal with trailing stuff later
+  for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
+    parts.push(encodeChunk(uint8, i, i + maxChunkLength > len2 ? len2 : i + maxChunkLength));
+  }
+
+  // pad the end with zeros, but make sure to not forget the extra bytes
+  if (extraBytes === 1) {
+    tmp = uint8[len - 1];
+    output += lookup[tmp >> 2];
+    output += lookup[tmp << 4 & 0x3F];
+    output += '==';
+  } else if (extraBytes === 2) {
+    tmp = (uint8[len - 2] << 8) + uint8[len - 1];
+    output += lookup[tmp >> 10];
+    output += lookup[tmp >> 4 & 0x3F];
+    output += lookup[tmp << 2 & 0x3F];
+    output += '=';
+  }
+
+  parts.push(output);
+
+  return parts.join('');
+}
+
+/***/ }),
+/* 117 */
+/***/ (function(module, exports) {
+
+exports.read = function (buffer, offset, isLE, mLen, nBytes) {
+  var e, m;
+  var eLen = nBytes * 8 - mLen - 1;
+  var eMax = (1 << eLen) - 1;
+  var eBias = eMax >> 1;
+  var nBits = -7;
+  var i = isLE ? nBytes - 1 : 0;
+  var d = isLE ? -1 : 1;
+  var s = buffer[offset + i];
+
+  i += d;
+
+  e = s & (1 << -nBits) - 1;
+  s >>= -nBits;
+  nBits += eLen;
+  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+
+  m = e & (1 << -nBits) - 1;
+  e >>= -nBits;
+  nBits += mLen;
+  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+
+  if (e === 0) {
+    e = 1 - eBias;
+  } else if (e === eMax) {
+    return m ? NaN : (s ? -1 : 1) * Infinity;
+  } else {
+    m = m + Math.pow(2, mLen);
+    e = e - eBias;
+  }
+  return (s ? -1 : 1) * m * Math.pow(2, e - mLen);
+};
+
+exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
+  var e, m, c;
+  var eLen = nBytes * 8 - mLen - 1;
+  var eMax = (1 << eLen) - 1;
+  var eBias = eMax >> 1;
+  var rt = mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0;
+  var i = isLE ? 0 : nBytes - 1;
+  var d = isLE ? 1 : -1;
+  var s = value < 0 || value === 0 && 1 / value < 0 ? 1 : 0;
+
+  value = Math.abs(value);
+
+  if (isNaN(value) || value === Infinity) {
+    m = isNaN(value) ? 1 : 0;
+    e = eMax;
+  } else {
+    e = Math.floor(Math.log(value) / Math.LN2);
+    if (value * (c = Math.pow(2, -e)) < 1) {
+      e--;
+      c *= 2;
+    }
+    if (e + eBias >= 1) {
+      value += rt / c;
+    } else {
+      value += rt * Math.pow(2, 1 - eBias);
+    }
+    if (value * c >= 2) {
+      e++;
+      c /= 2;
+    }
+
+    if (e + eBias >= eMax) {
+      m = 0;
+      e = eMax;
+    } else if (e + eBias >= 1) {
+      m = (value * c - 1) * Math.pow(2, mLen);
+      e = e + eBias;
+    } else {
+      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen);
+      e = 0;
+    }
+  }
+
+  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
+
+  e = e << mLen | m;
+  eLen += mLen;
+  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
+
+  buffer[offset + i - d] |= s * 128;
+};
+
+/***/ }),
+/* 118 */
+/***/ (function(module, exports) {
+
+var toString = {}.toString;
+
+module.exports = Array.isArray || function (arr) {
+  return toString.call(arr) == '[object Array]';
+};
+
+/***/ }),
+/* 119 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(module) {(function (module, exports) {
+  'use strict';
+
+  // Utils
+
+  function assert(val, msg) {
+    if (!val) throw new Error(msg || 'Assertion failed');
+  }
+
+  // Could use `inherits` module, but don't want to move from single file
+  // architecture yet.
+  function inherits(ctor, superCtor) {
+    ctor.super_ = superCtor;
+    var TempCtor = function () {};
+    TempCtor.prototype = superCtor.prototype;
+    ctor.prototype = new TempCtor();
+    ctor.prototype.constructor = ctor;
+  }
+
+  // BN
+
+  function BN(number, base, endian) {
+    if (BN.isBN(number)) {
+      return number;
+    }
+
+    this.negative = 0;
+    this.words = null;
+    this.length = 0;
+
+    // Reduction context
+    this.red = null;
+
+    if (number !== null) {
+      if (base === 'le' || base === 'be') {
+        endian = base;
+        base = 10;
+      }
+
+      this._init(number || 0, base || 10, endian || 'be');
+    }
+  }
+  if (typeof module === 'object') {
+    module.exports = BN;
+  } else {
+    exports.BN = BN;
+  }
+
+  BN.BN = BN;
+  BN.wordSize = 26;
+
+  var Buffer;
+  try {
+    Buffer = __webpack_require__(27).Buffer;
+  } catch (e) {}
+
+  BN.isBN = function isBN(num) {
+    if (num instanceof BN) {
+      return true;
+    }
+
+    return num !== null && typeof num === 'object' && num.constructor.wordSize === BN.wordSize && Array.isArray(num.words);
+  };
+
+  BN.max = function max(left, right) {
+    if (left.cmp(right) > 0) return left;
+    return right;
+  };
+
+  BN.min = function min(left, right) {
+    if (left.cmp(right) < 0) return left;
+    return right;
+  };
+
+  BN.prototype._init = function init(number, base, endian) {
+    if (typeof number === 'number') {
+      return this._initNumber(number, base, endian);
+    }
+
+    if (typeof number === 'object') {
+      return this._initArray(number, base, endian);
+    }
+
+    if (base === 'hex') {
+      base = 16;
+    }
+    assert(base === (base | 0) && base >= 2 && base <= 36);
+
+    number = number.toString().replace(/\s+/g, '');
+    var start = 0;
+    if (number[0] === '-') {
+      start++;
+    }
+
+    if (base === 16) {
+      this._parseHex(number, start);
+    } else {
+      this._parseBase(number, base, start);
+    }
+
+    if (number[0] === '-') {
+      this.negative = 1;
+    }
+
+    this.strip();
+
+    if (endian !== 'le') return;
+
+    this._initArray(this.toArray(), base, endian);
+  };
+
+  BN.prototype._initNumber = function _initNumber(number, base, endian) {
+    if (number < 0) {
+      this.negative = 1;
+      number = -number;
+    }
+    if (number < 0x4000000) {
+      this.words = [number & 0x3ffffff];
+      this.length = 1;
+    } else if (number < 0x10000000000000) {
+      this.words = [number & 0x3ffffff, number / 0x4000000 & 0x3ffffff];
+      this.length = 2;
+    } else {
+      assert(number < 0x20000000000000); // 2 ^ 53 (unsafe)
+      this.words = [number & 0x3ffffff, number / 0x4000000 & 0x3ffffff, 1];
+      this.length = 3;
+    }
+
+    if (endian !== 'le') return;
+
+    // Reverse the bytes
+    this._initArray(this.toArray(), base, endian);
+  };
+
+  BN.prototype._initArray = function _initArray(number, base, endian) {
+    // Perhaps a Uint8Array
+    assert(typeof number.length === 'number');
+    if (number.length <= 0) {
+      this.words = [0];
+      this.length = 1;
+      return this;
+    }
+
+    this.length = Math.ceil(number.length / 3);
+    this.words = new Array(this.length);
+    for (var i = 0; i < this.length; i++) {
+      this.words[i] = 0;
+    }
+
+    var j, w;
+    var off = 0;
+    if (endian === 'be') {
+      for (i = number.length - 1, j = 0; i >= 0; i -= 3) {
+        w = number[i] | number[i - 1] << 8 | number[i - 2] << 16;
+        this.words[j] |= w << off & 0x3ffffff;
+        this.words[j + 1] = w >>> 26 - off & 0x3ffffff;
+        off += 24;
+        if (off >= 26) {
+          off -= 26;
+          j++;
+        }
+      }
+    } else if (endian === 'le') {
+      for (i = 0, j = 0; i < number.length; i += 3) {
+        w = number[i] | number[i + 1] << 8 | number[i + 2] << 16;
+        this.words[j] |= w << off & 0x3ffffff;
+        this.words[j + 1] = w >>> 26 - off & 0x3ffffff;
+        off += 24;
+        if (off >= 26) {
+          off -= 26;
+          j++;
+        }
+      }
+    }
+    return this.strip();
+  };
+
+  function parseHex(str, start, end) {
+    var r = 0;
+    var len = Math.min(str.length, end);
+    for (var i = start; i < len; i++) {
+      var c = str.charCodeAt(i) - 48;
+
+      r <<= 4;
+
+      // 'a' - 'f'
+      if (c >= 49 && c <= 54) {
+        r |= c - 49 + 0xa;
+
+        // 'A' - 'F'
+      } else if (c >= 17 && c <= 22) {
+        r |= c - 17 + 0xa;
+
+        // '0' - '9'
+      } else {
+        r |= c & 0xf;
+      }
+    }
+    return r;
+  }
+
+  BN.prototype._parseHex = function _parseHex(number, start) {
+    // Create possibly bigger array to ensure that it fits the number
+    this.length = Math.ceil((number.length - start) / 6);
+    this.words = new Array(this.length);
+    for (var i = 0; i < this.length; i++) {
+      this.words[i] = 0;
+    }
+
+    var j, w;
+    // Scan 24-bit chunks and add them to the number
+    var off = 0;
+    for (i = number.length - 6, j = 0; i >= start; i -= 6) {
+      w = parseHex(number, i, i + 6);
+      this.words[j] |= w << off & 0x3ffffff;
+      // NOTE: `0x3fffff` is intentional here, 26bits max shift + 24bit hex limb
+      this.words[j + 1] |= w >>> 26 - off & 0x3fffff;
+      off += 24;
+      if (off >= 26) {
+        off -= 26;
+        j++;
+      }
+    }
+    if (i + 6 !== start) {
+      w = parseHex(number, start, i + 6);
+      this.words[j] |= w << off & 0x3ffffff;
+      this.words[j + 1] |= w >>> 26 - off & 0x3fffff;
+    }
+    this.strip();
+  };
+
+  function parseBase(str, start, end, mul) {
+    var r = 0;
+    var len = Math.min(str.length, end);
+    for (var i = start; i < len; i++) {
+      var c = str.charCodeAt(i) - 48;
+
+      r *= mul;
+
+      // 'a'
+      if (c >= 49) {
+        r += c - 49 + 0xa;
+
+        // 'A'
+      } else if (c >= 17) {
+        r += c - 17 + 0xa;
+
+        // '0' - '9'
+      } else {
+        r += c;
+      }
+    }
+    return r;
+  }
+
+  BN.prototype._parseBase = function _parseBase(number, base, start) {
+    // Initialize as zero
+    this.words = [0];
+    this.length = 1;
+
+    // Find length of limb in base
+    for (var limbLen = 0, limbPow = 1; limbPow <= 0x3ffffff; limbPow *= base) {
+      limbLen++;
+    }
+    limbLen--;
+    limbPow = limbPow / base | 0;
+
+    var total = number.length - start;
+    var mod = total % limbLen;
+    var end = Math.min(total, total - mod) + start;
+
+    var word = 0;
+    for (var i = start; i < end; i += limbLen) {
+      word = parseBase(number, i, i + limbLen, base);
+
+      this.imuln(limbPow);
+      if (this.words[0] + word < 0x4000000) {
+        this.words[0] += word;
+      } else {
+        this._iaddn(word);
+      }
+    }
+
+    if (mod !== 0) {
+      var pow = 1;
+      word = parseBase(number, i, number.length, base);
+
+      for (i = 0; i < mod; i++) {
+        pow *= base;
+      }
+
+      this.imuln(pow);
+      if (this.words[0] + word < 0x4000000) {
+        this.words[0] += word;
+      } else {
+        this._iaddn(word);
+      }
+    }
+  };
+
+  BN.prototype.copy = function copy(dest) {
+    dest.words = new Array(this.length);
+    for (var i = 0; i < this.length; i++) {
+      dest.words[i] = this.words[i];
+    }
+    dest.length = this.length;
+    dest.negative = this.negative;
+    dest.red = this.red;
+  };
+
+  BN.prototype.clone = function clone() {
+    var r = new BN(null);
+    this.copy(r);
+    return r;
+  };
+
+  BN.prototype._expand = function _expand(size) {
+    while (this.length < size) {
+      this.words[this.length++] = 0;
+    }
+    return this;
+  };
+
+  // Remove leading `0` from `this`
+  BN.prototype.strip = function strip() {
+    while (this.length > 1 && this.words[this.length - 1] === 0) {
+      this.length--;
+    }
+    return this._normSign();
+  };
+
+  BN.prototype._normSign = function _normSign() {
+    // -0 = 0
+    if (this.length === 1 && this.words[0] === 0) {
+      this.negative = 0;
+    }
+    return this;
+  };
+
+  BN.prototype.inspect = function inspect() {
+    return (this.red ? '<BN-R: ' : '<BN: ') + this.toString(16) + '>';
+  };
+
+  /*
+   var zeros = [];
+  var groupSizes = [];
+  var groupBases = [];
+   var s = '';
+  var i = -1;
+  while (++i < BN.wordSize) {
+    zeros[i] = s;
+    s += '0';
+  }
+  groupSizes[0] = 0;
+  groupSizes[1] = 0;
+  groupBases[0] = 0;
+  groupBases[1] = 0;
+  var base = 2 - 1;
+  while (++base < 36 + 1) {
+    var groupSize = 0;
+    var groupBase = 1;
+    while (groupBase < (1 << BN.wordSize) / base) {
+      groupBase *= base;
+      groupSize += 1;
+    }
+    groupSizes[base] = groupSize;
+    groupBases[base] = groupBase;
+  }
+   */
+
+  var zeros = ['', '0', '00', '000', '0000', '00000', '000000', '0000000', '00000000', '000000000', '0000000000', '00000000000', '000000000000', '0000000000000', '00000000000000', '000000000000000', '0000000000000000', '00000000000000000', '000000000000000000', '0000000000000000000', '00000000000000000000', '000000000000000000000', '0000000000000000000000', '00000000000000000000000', '000000000000000000000000', '0000000000000000000000000'];
+
+  var groupSizes = [0, 0, 25, 16, 12, 11, 10, 9, 8, 8, 7, 7, 7, 7, 6, 6, 6, 6, 6, 6, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
+
+  var groupBases = [0, 0, 33554432, 43046721, 16777216, 48828125, 60466176, 40353607, 16777216, 43046721, 10000000, 19487171, 35831808, 62748517, 7529536, 11390625, 16777216, 24137569, 34012224, 47045881, 64000000, 4084101, 5153632, 6436343, 7962624, 9765625, 11881376, 14348907, 17210368, 20511149, 24300000, 28629151, 33554432, 39135393, 45435424, 52521875, 60466176];
+
+  BN.prototype.toString = function toString(base, padding) {
+    base = base || 10;
+    padding = padding | 0 || 1;
+
+    var out;
+    if (base === 16 || base === 'hex') {
+      out = '';
+      var off = 0;
+      var carry = 0;
+      for (var i = 0; i < this.length; i++) {
+        var w = this.words[i];
+        var word = ((w << off | carry) & 0xffffff).toString(16);
+        carry = w >>> 24 - off & 0xffffff;
+        if (carry !== 0 || i !== this.length - 1) {
+          out = zeros[6 - word.length] + word + out;
+        } else {
+          out = word + out;
+        }
+        off += 2;
+        if (off >= 26) {
+          off -= 26;
+          i--;
+        }
+      }
+      if (carry !== 0) {
+        out = carry.toString(16) + out;
+      }
+      while (out.length % padding !== 0) {
+        out = '0' + out;
+      }
+      if (this.negative !== 0) {
+        out = '-' + out;
+      }
+      return out;
+    }
+
+    if (base === (base | 0) && base >= 2 && base <= 36) {
+      // var groupSize = Math.floor(BN.wordSize * Math.LN2 / Math.log(base));
+      var groupSize = groupSizes[base];
+      // var groupBase = Math.pow(base, groupSize);
+      var groupBase = groupBases[base];
+      out = '';
+      var c = this.clone();
+      c.negative = 0;
+      while (!c.isZero()) {
+        var r = c.modn(groupBase).toString(base);
+        c = c.idivn(groupBase);
+
+        if (!c.isZero()) {
+          out = zeros[groupSize - r.length] + r + out;
+        } else {
+          out = r + out;
+        }
+      }
+      if (this.isZero()) {
+        out = '0' + out;
+      }
+      while (out.length % padding !== 0) {
+        out = '0' + out;
+      }
+      if (this.negative !== 0) {
+        out = '-' + out;
+      }
+      return out;
+    }
+
+    assert(false, 'Base should be between 2 and 36');
+  };
+
+  BN.prototype.toNumber = function toNumber() {
+    var ret = this.words[0];
+    if (this.length === 2) {
+      ret += this.words[1] * 0x4000000;
+    } else if (this.length === 3 && this.words[2] === 0x01) {
+      // NOTE: at this stage it is known that the top bit is set
+      ret += 0x10000000000000 + this.words[1] * 0x4000000;
+    } else if (this.length > 2) {
+      assert(false, 'Number can only safely store up to 53 bits');
+    }
+    return this.negative !== 0 ? -ret : ret;
+  };
+
+  BN.prototype.toJSON = function toJSON() {
+    return this.toString(16);
+  };
+
+  BN.prototype.toBuffer = function toBuffer(endian, length) {
+    assert(typeof Buffer !== 'undefined');
+    return this.toArrayLike(Buffer, endian, length);
+  };
+
+  BN.prototype.toArray = function toArray(endian, length) {
+    return this.toArrayLike(Array, endian, length);
+  };
+
+  BN.prototype.toArrayLike = function toArrayLike(ArrayType, endian, length) {
+    var byteLength = this.byteLength();
+    var reqLength = length || Math.max(1, byteLength);
+    assert(byteLength <= reqLength, 'byte array longer than desired length');
+    assert(reqLength > 0, 'Requested array length <= 0');
+
+    this.strip();
+    var littleEndian = endian === 'le';
+    var res = new ArrayType(reqLength);
+
+    var b, i;
+    var q = this.clone();
+    if (!littleEndian) {
+      // Assume big-endian
+      for (i = 0; i < reqLength - byteLength; i++) {
+        res[i] = 0;
+      }
+
+      for (i = 0; !q.isZero(); i++) {
+        b = q.andln(0xff);
+        q.iushrn(8);
+
+        res[reqLength - i - 1] = b;
+      }
+    } else {
+      for (i = 0; !q.isZero(); i++) {
+        b = q.andln(0xff);
+        q.iushrn(8);
+
+        res[i] = b;
+      }
+
+      for (; i < reqLength; i++) {
+        res[i] = 0;
+      }
+    }
+
+    return res;
+  };
+
+  if (Math.clz32) {
+    BN.prototype._countBits = function _countBits(w) {
+      return 32 - Math.clz32(w);
+    };
+  } else {
+    BN.prototype._countBits = function _countBits(w) {
+      var t = w;
+      var r = 0;
+      if (t >= 0x1000) {
+        r += 13;
+        t >>>= 13;
+      }
+      if (t >= 0x40) {
+        r += 7;
+        t >>>= 7;
+      }
+      if (t >= 0x8) {
+        r += 4;
+        t >>>= 4;
+      }
+      if (t >= 0x02) {
+        r += 2;
+        t >>>= 2;
+      }
+      return r + t;
+    };
+  }
+
+  BN.prototype._zeroBits = function _zeroBits(w) {
+    // Short-cut
+    if (w === 0) return 26;
+
+    var t = w;
+    var r = 0;
+    if ((t & 0x1fff) === 0) {
+      r += 13;
+      t >>>= 13;
+    }
+    if ((t & 0x7f) === 0) {
+      r += 7;
+      t >>>= 7;
+    }
+    if ((t & 0xf) === 0) {
+      r += 4;
+      t >>>= 4;
+    }
+    if ((t & 0x3) === 0) {
+      r += 2;
+      t >>>= 2;
+    }
+    if ((t & 0x1) === 0) {
+      r++;
+    }
+    return r;
+  };
+
+  // Return number of used bits in a BN
+  BN.prototype.bitLength = function bitLength() {
+    var w = this.words[this.length - 1];
+    var hi = this._countBits(w);
+    return (this.length - 1) * 26 + hi;
+  };
+
+  function toBitArray(num) {
+    var w = new Array(num.bitLength());
+
+    for (var bit = 0; bit < w.length; bit++) {
+      var off = bit / 26 | 0;
+      var wbit = bit % 26;
+
+      w[bit] = (num.words[off] & 1 << wbit) >>> wbit;
+    }
+
+    return w;
+  }
+
+  // Number of trailing zero bits
+  BN.prototype.zeroBits = function zeroBits() {
+    if (this.isZero()) return 0;
+
+    var r = 0;
+    for (var i = 0; i < this.length; i++) {
+      var b = this._zeroBits(this.words[i]);
+      r += b;
+      if (b !== 26) break;
+    }
+    return r;
+  };
+
+  BN.prototype.byteLength = function byteLength() {
+    return Math.ceil(this.bitLength() / 8);
+  };
+
+  BN.prototype.toTwos = function toTwos(width) {
+    if (this.negative !== 0) {
+      return this.abs().inotn(width).iaddn(1);
+    }
+    return this.clone();
+  };
+
+  BN.prototype.fromTwos = function fromTwos(width) {
+    if (this.testn(width - 1)) {
+      return this.notn(width).iaddn(1).ineg();
+    }
+    return this.clone();
+  };
+
+  BN.prototype.isNeg = function isNeg() {
+    return this.negative !== 0;
+  };
+
+  // Return negative clone of `this`
+  BN.prototype.neg = function neg() {
+    return this.clone().ineg();
+  };
+
+  BN.prototype.ineg = function ineg() {
+    if (!this.isZero()) {
+      this.negative ^= 1;
+    }
+
+    return this;
+  };
+
+  // Or `num` with `this` in-place
+  BN.prototype.iuor = function iuor(num) {
+    while (this.length < num.length) {
+      this.words[this.length++] = 0;
+    }
+
+    for (var i = 0; i < num.length; i++) {
+      this.words[i] = this.words[i] | num.words[i];
+    }
+
+    return this.strip();
+  };
+
+  BN.prototype.ior = function ior(num) {
+    assert((this.negative | num.negative) === 0);
+    return this.iuor(num);
+  };
+
+  // Or `num` with `this`
+  BN.prototype.or = function or(num) {
+    if (this.length > num.length) return this.clone().ior(num);
+    return num.clone().ior(this);
+  };
+
+  BN.prototype.uor = function uor(num) {
+    if (this.length > num.length) return this.clone().iuor(num);
+    return num.clone().iuor(this);
+  };
+
+  // And `num` with `this` in-place
+  BN.prototype.iuand = function iuand(num) {
+    // b = min-length(num, this)
+    var b;
+    if (this.length > num.length) {
+      b = num;
+    } else {
+      b = this;
+    }
+
+    for (var i = 0; i < b.length; i++) {
+      this.words[i] = this.words[i] & num.words[i];
+    }
+
+    this.length = b.length;
+
+    return this.strip();
+  };
+
+  BN.prototype.iand = function iand(num) {
+    assert((this.negative | num.negative) === 0);
+    return this.iuand(num);
+  };
+
+  // And `num` with `this`
+  BN.prototype.and = function and(num) {
+    if (this.length > num.length) return this.clone().iand(num);
+    return num.clone().iand(this);
+  };
+
+  BN.prototype.uand = function uand(num) {
+    if (this.length > num.length) return this.clone().iuand(num);
+    return num.clone().iuand(this);
+  };
+
+  // Xor `num` with `this` in-place
+  BN.prototype.iuxor = function iuxor(num) {
+    // a.length > b.length
+    var a;
+    var b;
+    if (this.length > num.length) {
+      a = this;
+      b = num;
+    } else {
+      a = num;
+      b = this;
+    }
+
+    for (var i = 0; i < b.length; i++) {
+      this.words[i] = a.words[i] ^ b.words[i];
+    }
+
+    if (this !== a) {
+      for (; i < a.length; i++) {
+        this.words[i] = a.words[i];
+      }
+    }
+
+    this.length = a.length;
+
+    return this.strip();
+  };
+
+  BN.prototype.ixor = function ixor(num) {
+    assert((this.negative | num.negative) === 0);
+    return this.iuxor(num);
+  };
+
+  // Xor `num` with `this`
+  BN.prototype.xor = function xor(num) {
+    if (this.length > num.length) return this.clone().ixor(num);
+    return num.clone().ixor(this);
+  };
+
+  BN.prototype.uxor = function uxor(num) {
+    if (this.length > num.length) return this.clone().iuxor(num);
+    return num.clone().iuxor(this);
+  };
+
+  // Not ``this`` with ``width`` bitwidth
+  BN.prototype.inotn = function inotn(width) {
+    assert(typeof width === 'number' && width >= 0);
+
+    var bytesNeeded = Math.ceil(width / 26) | 0;
+    var bitsLeft = width % 26;
+
+    // Extend the buffer with leading zeroes
+    this._expand(bytesNeeded);
+
+    if (bitsLeft > 0) {
+      bytesNeeded--;
+    }
+
+    // Handle complete words
+    for (var i = 0; i < bytesNeeded; i++) {
+      this.words[i] = ~this.words[i] & 0x3ffffff;
+    }
+
+    // Handle the residue
+    if (bitsLeft > 0) {
+      this.words[i] = ~this.words[i] & 0x3ffffff >> 26 - bitsLeft;
+    }
+
+    // And remove leading zeroes
+    return this.strip();
+  };
+
+  BN.prototype.notn = function notn(width) {
+    return this.clone().inotn(width);
+  };
+
+  // Set `bit` of `this`
+  BN.prototype.setn = function setn(bit, val) {
+    assert(typeof bit === 'number' && bit >= 0);
+
+    var off = bit / 26 | 0;
+    var wbit = bit % 26;
+
+    this._expand(off + 1);
+
+    if (val) {
+      this.words[off] = this.words[off] | 1 << wbit;
+    } else {
+      this.words[off] = this.words[off] & ~(1 << wbit);
+    }
+
+    return this.strip();
+  };
+
+  // Add `num` to `this` in-place
+  BN.prototype.iadd = function iadd(num) {
+    var r;
+
+    // negative + positive
+    if (this.negative !== 0 && num.negative === 0) {
+      this.negative = 0;
+      r = this.isub(num);
+      this.negative ^= 1;
+      return this._normSign();
+
+      // positive + negative
+    } else if (this.negative === 0 && num.negative !== 0) {
+      num.negative = 0;
+      r = this.isub(num);
+      num.negative = 1;
+      return r._normSign();
+    }
+
+    // a.length > b.length
+    var a, b;
+    if (this.length > num.length) {
+      a = this;
+      b = num;
+    } else {
+      a = num;
+      b = this;
+    }
+
+    var carry = 0;
+    for (var i = 0; i < b.length; i++) {
+      r = (a.words[i] | 0) + (b.words[i] | 0) + carry;
+      this.words[i] = r & 0x3ffffff;
+      carry = r >>> 26;
+    }
+    for (; carry !== 0 && i < a.length; i++) {
+      r = (a.words[i] | 0) + carry;
+      this.words[i] = r & 0x3ffffff;
+      carry = r >>> 26;
+    }
+
+    this.length = a.length;
+    if (carry !== 0) {
+      this.words[this.length] = carry;
+      this.length++;
+      // Copy the rest of the words
+    } else if (a !== this) {
+      for (; i < a.length; i++) {
+        this.words[i] = a.words[i];
+      }
+    }
+
+    return this;
+  };
+
+  // Add `num` to `this`
+  BN.prototype.add = function add(num) {
+    var res;
+    if (num.negative !== 0 && this.negative === 0) {
+      num.negative = 0;
+      res = this.sub(num);
+      num.negative ^= 1;
+      return res;
+    } else if (num.negative === 0 && this.negative !== 0) {
+      this.negative = 0;
+      res = num.sub(this);
+      this.negative = 1;
+      return res;
+    }
+
+    if (this.length > num.length) return this.clone().iadd(num);
+
+    return num.clone().iadd(this);
+  };
+
+  // Subtract `num` from `this` in-place
+  BN.prototype.isub = function isub(num) {
+    // this - (-num) = this + num
+    if (num.negative !== 0) {
+      num.negative = 0;
+      var r = this.iadd(num);
+      num.negative = 1;
+      return r._normSign();
+
+      // -this - num = -(this + num)
+    } else if (this.negative !== 0) {
+      this.negative = 0;
+      this.iadd(num);
+      this.negative = 1;
+      return this._normSign();
+    }
+
+    // At this point both numbers are positive
+    var cmp = this.cmp(num);
+
+    // Optimization - zeroify
+    if (cmp === 0) {
+      this.negative = 0;
+      this.length = 1;
+      this.words[0] = 0;
+      return this;
+    }
+
+    // a > b
+    var a, b;
+    if (cmp > 0) {
+      a = this;
+      b = num;
+    } else {
+      a = num;
+      b = this;
+    }
+
+    var carry = 0;
+    for (var i = 0; i < b.length; i++) {
+      r = (a.words[i] | 0) - (b.words[i] | 0) + carry;
+      carry = r >> 26;
+      this.words[i] = r & 0x3ffffff;
+    }
+    for (; carry !== 0 && i < a.length; i++) {
+      r = (a.words[i] | 0) + carry;
+      carry = r >> 26;
+      this.words[i] = r & 0x3ffffff;
+    }
+
+    // Copy rest of the words
+    if (carry === 0 && i < a.length && a !== this) {
+      for (; i < a.length; i++) {
+        this.words[i] = a.words[i];
+      }
+    }
+
+    this.length = Math.max(this.length, i);
+
+    if (a !== this) {
+      this.negative = 1;
+    }
+
+    return this.strip();
+  };
+
+  // Subtract `num` from `this`
+  BN.prototype.sub = function sub(num) {
+    return this.clone().isub(num);
+  };
+
+  function smallMulTo(self, num, out) {
+    out.negative = num.negative ^ self.negative;
+    var len = self.length + num.length | 0;
+    out.length = len;
+    len = len - 1 | 0;
+
+    // Peel one iteration (compiler can't do it, because of code complexity)
+    var a = self.words[0] | 0;
+    var b = num.words[0] | 0;
+    var r = a * b;
+
+    var lo = r & 0x3ffffff;
+    var carry = r / 0x4000000 | 0;
+    out.words[0] = lo;
+
+    for (var k = 1; k < len; k++) {
+      // Sum all words with the same `i + j = k` and accumulate `ncarry`,
+      // note that ncarry could be >= 0x3ffffff
+      var ncarry = carry >>> 26;
+      var rword = carry & 0x3ffffff;
+      var maxJ = Math.min(k, num.length - 1);
+      for (var j = Math.max(0, k - self.length + 1); j <= maxJ; j++) {
+        var i = k - j | 0;
+        a = self.words[i] | 0;
+        b = num.words[j] | 0;
+        r = a * b + rword;
+        ncarry += r / 0x4000000 | 0;
+        rword = r & 0x3ffffff;
+      }
+      out.words[k] = rword | 0;
+      carry = ncarry | 0;
+    }
+    if (carry !== 0) {
+      out.words[k] = carry | 0;
+    } else {
+      out.length--;
+    }
+
+    return out.strip();
+  }
+
+  // TODO(indutny): it may be reasonable to omit it for users who don't need
+  // to work with 256-bit numbers, otherwise it gives 20% improvement for 256-bit
+  // multiplication (like elliptic secp256k1).
+  var comb10MulTo = function comb10MulTo(self, num, out) {
+    var a = self.words;
+    var b = num.words;
+    var o = out.words;
+    var c = 0;
+    var lo;
+    var mid;
+    var hi;
+    var a0 = a[0] | 0;
+    var al0 = a0 & 0x1fff;
+    var ah0 = a0 >>> 13;
+    var a1 = a[1] | 0;
+    var al1 = a1 & 0x1fff;
+    var ah1 = a1 >>> 13;
+    var a2 = a[2] | 0;
+    var al2 = a2 & 0x1fff;
+    var ah2 = a2 >>> 13;
+    var a3 = a[3] | 0;
+    var al3 = a3 & 0x1fff;
+    var ah3 = a3 >>> 13;
+    var a4 = a[4] | 0;
+    var al4 = a4 & 0x1fff;
+    var ah4 = a4 >>> 13;
+    var a5 = a[5] | 0;
+    var al5 = a5 & 0x1fff;
+    var ah5 = a5 >>> 13;
+    var a6 = a[6] | 0;
+    var al6 = a6 & 0x1fff;
+    var ah6 = a6 >>> 13;
+    var a7 = a[7] | 0;
+    var al7 = a7 & 0x1fff;
+    var ah7 = a7 >>> 13;
+    var a8 = a[8] | 0;
+    var al8 = a8 & 0x1fff;
+    var ah8 = a8 >>> 13;
+    var a9 = a[9] | 0;
+    var al9 = a9 & 0x1fff;
+    var ah9 = a9 >>> 13;
+    var b0 = b[0] | 0;
+    var bl0 = b0 & 0x1fff;
+    var bh0 = b0 >>> 13;
+    var b1 = b[1] | 0;
+    var bl1 = b1 & 0x1fff;
+    var bh1 = b1 >>> 13;
+    var b2 = b[2] | 0;
+    var bl2 = b2 & 0x1fff;
+    var bh2 = b2 >>> 13;
+    var b3 = b[3] | 0;
+    var bl3 = b3 & 0x1fff;
+    var bh3 = b3 >>> 13;
+    var b4 = b[4] | 0;
+    var bl4 = b4 & 0x1fff;
+    var bh4 = b4 >>> 13;
+    var b5 = b[5] | 0;
+    var bl5 = b5 & 0x1fff;
+    var bh5 = b5 >>> 13;
+    var b6 = b[6] | 0;
+    var bl6 = b6 & 0x1fff;
+    var bh6 = b6 >>> 13;
+    var b7 = b[7] | 0;
+    var bl7 = b7 & 0x1fff;
+    var bh7 = b7 >>> 13;
+    var b8 = b[8] | 0;
+    var bl8 = b8 & 0x1fff;
+    var bh8 = b8 >>> 13;
+    var b9 = b[9] | 0;
+    var bl9 = b9 & 0x1fff;
+    var bh9 = b9 >>> 13;
+
+    out.negative = self.negative ^ num.negative;
+    out.length = 19;
+    /* k = 0 */
+    lo = Math.imul(al0, bl0);
+    mid = Math.imul(al0, bh0);
+    mid = mid + Math.imul(ah0, bl0) | 0;
+    hi = Math.imul(ah0, bh0);
+    var w0 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w0 >>> 26) | 0;
+    w0 &= 0x3ffffff;
+    /* k = 1 */
+    lo = Math.imul(al1, bl0);
+    mid = Math.imul(al1, bh0);
+    mid = mid + Math.imul(ah1, bl0) | 0;
+    hi = Math.imul(ah1, bh0);
+    lo = lo + Math.imul(al0, bl1) | 0;
+    mid = mid + Math.imul(al0, bh1) | 0;
+    mid = mid + Math.imul(ah0, bl1) | 0;
+    hi = hi + Math.imul(ah0, bh1) | 0;
+    var w1 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w1 >>> 26) | 0;
+    w1 &= 0x3ffffff;
+    /* k = 2 */
+    lo = Math.imul(al2, bl0);
+    mid = Math.imul(al2, bh0);
+    mid = mid + Math.imul(ah2, bl0) | 0;
+    hi = Math.imul(ah2, bh0);
+    lo = lo + Math.imul(al1, bl1) | 0;
+    mid = mid + Math.imul(al1, bh1) | 0;
+    mid = mid + Math.imul(ah1, bl1) | 0;
+    hi = hi + Math.imul(ah1, bh1) | 0;
+    lo = lo + Math.imul(al0, bl2) | 0;
+    mid = mid + Math.imul(al0, bh2) | 0;
+    mid = mid + Math.imul(ah0, bl2) | 0;
+    hi = hi + Math.imul(ah0, bh2) | 0;
+    var w2 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w2 >>> 26) | 0;
+    w2 &= 0x3ffffff;
+    /* k = 3 */
+    lo = Math.imul(al3, bl0);
+    mid = Math.imul(al3, bh0);
+    mid = mid + Math.imul(ah3, bl0) | 0;
+    hi = Math.imul(ah3, bh0);
+    lo = lo + Math.imul(al2, bl1) | 0;
+    mid = mid + Math.imul(al2, bh1) | 0;
+    mid = mid + Math.imul(ah2, bl1) | 0;
+    hi = hi + Math.imul(ah2, bh1) | 0;
+    lo = lo + Math.imul(al1, bl2) | 0;
+    mid = mid + Math.imul(al1, bh2) | 0;
+    mid = mid + Math.imul(ah1, bl2) | 0;
+    hi = hi + Math.imul(ah1, bh2) | 0;
+    lo = lo + Math.imul(al0, bl3) | 0;
+    mid = mid + Math.imul(al0, bh3) | 0;
+    mid = mid + Math.imul(ah0, bl3) | 0;
+    hi = hi + Math.imul(ah0, bh3) | 0;
+    var w3 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w3 >>> 26) | 0;
+    w3 &= 0x3ffffff;
+    /* k = 4 */
+    lo = Math.imul(al4, bl0);
+    mid = Math.imul(al4, bh0);
+    mid = mid + Math.imul(ah4, bl0) | 0;
+    hi = Math.imul(ah4, bh0);
+    lo = lo + Math.imul(al3, bl1) | 0;
+    mid = mid + Math.imul(al3, bh1) | 0;
+    mid = mid + Math.imul(ah3, bl1) | 0;
+    hi = hi + Math.imul(ah3, bh1) | 0;
+    lo = lo + Math.imul(al2, bl2) | 0;
+    mid = mid + Math.imul(al2, bh2) | 0;
+    mid = mid + Math.imul(ah2, bl2) | 0;
+    hi = hi + Math.imul(ah2, bh2) | 0;
+    lo = lo + Math.imul(al1, bl3) | 0;
+    mid = mid + Math.imul(al1, bh3) | 0;
+    mid = mid + Math.imul(ah1, bl3) | 0;
+    hi = hi + Math.imul(ah1, bh3) | 0;
+    lo = lo + Math.imul(al0, bl4) | 0;
+    mid = mid + Math.imul(al0, bh4) | 0;
+    mid = mid + Math.imul(ah0, bl4) | 0;
+    hi = hi + Math.imul(ah0, bh4) | 0;
+    var w4 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w4 >>> 26) | 0;
+    w4 &= 0x3ffffff;
+    /* k = 5 */
+    lo = Math.imul(al5, bl0);
+    mid = Math.imul(al5, bh0);
+    mid = mid + Math.imul(ah5, bl0) | 0;
+    hi = Math.imul(ah5, bh0);
+    lo = lo + Math.imul(al4, bl1) | 0;
+    mid = mid + Math.imul(al4, bh1) | 0;
+    mid = mid + Math.imul(ah4, bl1) | 0;
+    hi = hi + Math.imul(ah4, bh1) | 0;
+    lo = lo + Math.imul(al3, bl2) | 0;
+    mid = mid + Math.imul(al3, bh2) | 0;
+    mid = mid + Math.imul(ah3, bl2) | 0;
+    hi = hi + Math.imul(ah3, bh2) | 0;
+    lo = lo + Math.imul(al2, bl3) | 0;
+    mid = mid + Math.imul(al2, bh3) | 0;
+    mid = mid + Math.imul(ah2, bl3) | 0;
+    hi = hi + Math.imul(ah2, bh3) | 0;
+    lo = lo + Math.imul(al1, bl4) | 0;
+    mid = mid + Math.imul(al1, bh4) | 0;
+    mid = mid + Math.imul(ah1, bl4) | 0;
+    hi = hi + Math.imul(ah1, bh4) | 0;
+    lo = lo + Math.imul(al0, bl5) | 0;
+    mid = mid + Math.imul(al0, bh5) | 0;
+    mid = mid + Math.imul(ah0, bl5) | 0;
+    hi = hi + Math.imul(ah0, bh5) | 0;
+    var w5 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w5 >>> 26) | 0;
+    w5 &= 0x3ffffff;
+    /* k = 6 */
+    lo = Math.imul(al6, bl0);
+    mid = Math.imul(al6, bh0);
+    mid = mid + Math.imul(ah6, bl0) | 0;
+    hi = Math.imul(ah6, bh0);
+    lo = lo + Math.imul(al5, bl1) | 0;
+    mid = mid + Math.imul(al5, bh1) | 0;
+    mid = mid + Math.imul(ah5, bl1) | 0;
+    hi = hi + Math.imul(ah5, bh1) | 0;
+    lo = lo + Math.imul(al4, bl2) | 0;
+    mid = mid + Math.imul(al4, bh2) | 0;
+    mid = mid + Math.imul(ah4, bl2) | 0;
+    hi = hi + Math.imul(ah4, bh2) | 0;
+    lo = lo + Math.imul(al3, bl3) | 0;
+    mid = mid + Math.imul(al3, bh3) | 0;
+    mid = mid + Math.imul(ah3, bl3) | 0;
+    hi = hi + Math.imul(ah3, bh3) | 0;
+    lo = lo + Math.imul(al2, bl4) | 0;
+    mid = mid + Math.imul(al2, bh4) | 0;
+    mid = mid + Math.imul(ah2, bl4) | 0;
+    hi = hi + Math.imul(ah2, bh4) | 0;
+    lo = lo + Math.imul(al1, bl5) | 0;
+    mid = mid + Math.imul(al1, bh5) | 0;
+    mid = mid + Math.imul(ah1, bl5) | 0;
+    hi = hi + Math.imul(ah1, bh5) | 0;
+    lo = lo + Math.imul(al0, bl6) | 0;
+    mid = mid + Math.imul(al0, bh6) | 0;
+    mid = mid + Math.imul(ah0, bl6) | 0;
+    hi = hi + Math.imul(ah0, bh6) | 0;
+    var w6 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w6 >>> 26) | 0;
+    w6 &= 0x3ffffff;
+    /* k = 7 */
+    lo = Math.imul(al7, bl0);
+    mid = Math.imul(al7, bh0);
+    mid = mid + Math.imul(ah7, bl0) | 0;
+    hi = Math.imul(ah7, bh0);
+    lo = lo + Math.imul(al6, bl1) | 0;
+    mid = mid + Math.imul(al6, bh1) | 0;
+    mid = mid + Math.imul(ah6, bl1) | 0;
+    hi = hi + Math.imul(ah6, bh1) | 0;
+    lo = lo + Math.imul(al5, bl2) | 0;
+    mid = mid + Math.imul(al5, bh2) | 0;
+    mid = mid + Math.imul(ah5, bl2) | 0;
+    hi = hi + Math.imul(ah5, bh2) | 0;
+    lo = lo + Math.imul(al4, bl3) | 0;
+    mid = mid + Math.imul(al4, bh3) | 0;
+    mid = mid + Math.imul(ah4, bl3) | 0;
+    hi = hi + Math.imul(ah4, bh3) | 0;
+    lo = lo + Math.imul(al3, bl4) | 0;
+    mid = mid + Math.imul(al3, bh4) | 0;
+    mid = mid + Math.imul(ah3, bl4) | 0;
+    hi = hi + Math.imul(ah3, bh4) | 0;
+    lo = lo + Math.imul(al2, bl5) | 0;
+    mid = mid + Math.imul(al2, bh5) | 0;
+    mid = mid + Math.imul(ah2, bl5) | 0;
+    hi = hi + Math.imul(ah2, bh5) | 0;
+    lo = lo + Math.imul(al1, bl6) | 0;
+    mid = mid + Math.imul(al1, bh6) | 0;
+    mid = mid + Math.imul(ah1, bl6) | 0;
+    hi = hi + Math.imul(ah1, bh6) | 0;
+    lo = lo + Math.imul(al0, bl7) | 0;
+    mid = mid + Math.imul(al0, bh7) | 0;
+    mid = mid + Math.imul(ah0, bl7) | 0;
+    hi = hi + Math.imul(ah0, bh7) | 0;
+    var w7 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w7 >>> 26) | 0;
+    w7 &= 0x3ffffff;
+    /* k = 8 */
+    lo = Math.imul(al8, bl0);
+    mid = Math.imul(al8, bh0);
+    mid = mid + Math.imul(ah8, bl0) | 0;
+    hi = Math.imul(ah8, bh0);
+    lo = lo + Math.imul(al7, bl1) | 0;
+    mid = mid + Math.imul(al7, bh1) | 0;
+    mid = mid + Math.imul(ah7, bl1) | 0;
+    hi = hi + Math.imul(ah7, bh1) | 0;
+    lo = lo + Math.imul(al6, bl2) | 0;
+    mid = mid + Math.imul(al6, bh2) | 0;
+    mid = mid + Math.imul(ah6, bl2) | 0;
+    hi = hi + Math.imul(ah6, bh2) | 0;
+    lo = lo + Math.imul(al5, bl3) | 0;
+    mid = mid + Math.imul(al5, bh3) | 0;
+    mid = mid + Math.imul(ah5, bl3) | 0;
+    hi = hi + Math.imul(ah5, bh3) | 0;
+    lo = lo + Math.imul(al4, bl4) | 0;
+    mid = mid + Math.imul(al4, bh4) | 0;
+    mid = mid + Math.imul(ah4, bl4) | 0;
+    hi = hi + Math.imul(ah4, bh4) | 0;
+    lo = lo + Math.imul(al3, bl5) | 0;
+    mid = mid + Math.imul(al3, bh5) | 0;
+    mid = mid + Math.imul(ah3, bl5) | 0;
+    hi = hi + Math.imul(ah3, bh5) | 0;
+    lo = lo + Math.imul(al2, bl6) | 0;
+    mid = mid + Math.imul(al2, bh6) | 0;
+    mid = mid + Math.imul(ah2, bl6) | 0;
+    hi = hi + Math.imul(ah2, bh6) | 0;
+    lo = lo + Math.imul(al1, bl7) | 0;
+    mid = mid + Math.imul(al1, bh7) | 0;
+    mid = mid + Math.imul(ah1, bl7) | 0;
+    hi = hi + Math.imul(ah1, bh7) | 0;
+    lo = lo + Math.imul(al0, bl8) | 0;
+    mid = mid + Math.imul(al0, bh8) | 0;
+    mid = mid + Math.imul(ah0, bl8) | 0;
+    hi = hi + Math.imul(ah0, bh8) | 0;
+    var w8 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w8 >>> 26) | 0;
+    w8 &= 0x3ffffff;
+    /* k = 9 */
+    lo = Math.imul(al9, bl0);
+    mid = Math.imul(al9, bh0);
+    mid = mid + Math.imul(ah9, bl0) | 0;
+    hi = Math.imul(ah9, bh0);
+    lo = lo + Math.imul(al8, bl1) | 0;
+    mid = mid + Math.imul(al8, bh1) | 0;
+    mid = mid + Math.imul(ah8, bl1) | 0;
+    hi = hi + Math.imul(ah8, bh1) | 0;
+    lo = lo + Math.imul(al7, bl2) | 0;
+    mid = mid + Math.imul(al7, bh2) | 0;
+    mid = mid + Math.imul(ah7, bl2) | 0;
+    hi = hi + Math.imul(ah7, bh2) | 0;
+    lo = lo + Math.imul(al6, bl3) | 0;
+    mid = mid + Math.imul(al6, bh3) | 0;
+    mid = mid + Math.imul(ah6, bl3) | 0;
+    hi = hi + Math.imul(ah6, bh3) | 0;
+    lo = lo + Math.imul(al5, bl4) | 0;
+    mid = mid + Math.imul(al5, bh4) | 0;
+    mid = mid + Math.imul(ah5, bl4) | 0;
+    hi = hi + Math.imul(ah5, bh4) | 0;
+    lo = lo + Math.imul(al4, bl5) | 0;
+    mid = mid + Math.imul(al4, bh5) | 0;
+    mid = mid + Math.imul(ah4, bl5) | 0;
+    hi = hi + Math.imul(ah4, bh5) | 0;
+    lo = lo + Math.imul(al3, bl6) | 0;
+    mid = mid + Math.imul(al3, bh6) | 0;
+    mid = mid + Math.imul(ah3, bl6) | 0;
+    hi = hi + Math.imul(ah3, bh6) | 0;
+    lo = lo + Math.imul(al2, bl7) | 0;
+    mid = mid + Math.imul(al2, bh7) | 0;
+    mid = mid + Math.imul(ah2, bl7) | 0;
+    hi = hi + Math.imul(ah2, bh7) | 0;
+    lo = lo + Math.imul(al1, bl8) | 0;
+    mid = mid + Math.imul(al1, bh8) | 0;
+    mid = mid + Math.imul(ah1, bl8) | 0;
+    hi = hi + Math.imul(ah1, bh8) | 0;
+    lo = lo + Math.imul(al0, bl9) | 0;
+    mid = mid + Math.imul(al0, bh9) | 0;
+    mid = mid + Math.imul(ah0, bl9) | 0;
+    hi = hi + Math.imul(ah0, bh9) | 0;
+    var w9 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w9 >>> 26) | 0;
+    w9 &= 0x3ffffff;
+    /* k = 10 */
+    lo = Math.imul(al9, bl1);
+    mid = Math.imul(al9, bh1);
+    mid = mid + Math.imul(ah9, bl1) | 0;
+    hi = Math.imul(ah9, bh1);
+    lo = lo + Math.imul(al8, bl2) | 0;
+    mid = mid + Math.imul(al8, bh2) | 0;
+    mid = mid + Math.imul(ah8, bl2) | 0;
+    hi = hi + Math.imul(ah8, bh2) | 0;
+    lo = lo + Math.imul(al7, bl3) | 0;
+    mid = mid + Math.imul(al7, bh3) | 0;
+    mid = mid + Math.imul(ah7, bl3) | 0;
+    hi = hi + Math.imul(ah7, bh3) | 0;
+    lo = lo + Math.imul(al6, bl4) | 0;
+    mid = mid + Math.imul(al6, bh4) | 0;
+    mid = mid + Math.imul(ah6, bl4) | 0;
+    hi = hi + Math.imul(ah6, bh4) | 0;
+    lo = lo + Math.imul(al5, bl5) | 0;
+    mid = mid + Math.imul(al5, bh5) | 0;
+    mid = mid + Math.imul(ah5, bl5) | 0;
+    hi = hi + Math.imul(ah5, bh5) | 0;
+    lo = lo + Math.imul(al4, bl6) | 0;
+    mid = mid + Math.imul(al4, bh6) | 0;
+    mid = mid + Math.imul(ah4, bl6) | 0;
+    hi = hi + Math.imul(ah4, bh6) | 0;
+    lo = lo + Math.imul(al3, bl7) | 0;
+    mid = mid + Math.imul(al3, bh7) | 0;
+    mid = mid + Math.imul(ah3, bl7) | 0;
+    hi = hi + Math.imul(ah3, bh7) | 0;
+    lo = lo + Math.imul(al2, bl8) | 0;
+    mid = mid + Math.imul(al2, bh8) | 0;
+    mid = mid + Math.imul(ah2, bl8) | 0;
+    hi = hi + Math.imul(ah2, bh8) | 0;
+    lo = lo + Math.imul(al1, bl9) | 0;
+    mid = mid + Math.imul(al1, bh9) | 0;
+    mid = mid + Math.imul(ah1, bl9) | 0;
+    hi = hi + Math.imul(ah1, bh9) | 0;
+    var w10 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w10 >>> 26) | 0;
+    w10 &= 0x3ffffff;
+    /* k = 11 */
+    lo = Math.imul(al9, bl2);
+    mid = Math.imul(al9, bh2);
+    mid = mid + Math.imul(ah9, bl2) | 0;
+    hi = Math.imul(ah9, bh2);
+    lo = lo + Math.imul(al8, bl3) | 0;
+    mid = mid + Math.imul(al8, bh3) | 0;
+    mid = mid + Math.imul(ah8, bl3) | 0;
+    hi = hi + Math.imul(ah8, bh3) | 0;
+    lo = lo + Math.imul(al7, bl4) | 0;
+    mid = mid + Math.imul(al7, bh4) | 0;
+    mid = mid + Math.imul(ah7, bl4) | 0;
+    hi = hi + Math.imul(ah7, bh4) | 0;
+    lo = lo + Math.imul(al6, bl5) | 0;
+    mid = mid + Math.imul(al6, bh5) | 0;
+    mid = mid + Math.imul(ah6, bl5) | 0;
+    hi = hi + Math.imul(ah6, bh5) | 0;
+    lo = lo + Math.imul(al5, bl6) | 0;
+    mid = mid + Math.imul(al5, bh6) | 0;
+    mid = mid + Math.imul(ah5, bl6) | 0;
+    hi = hi + Math.imul(ah5, bh6) | 0;
+    lo = lo + Math.imul(al4, bl7) | 0;
+    mid = mid + Math.imul(al4, bh7) | 0;
+    mid = mid + Math.imul(ah4, bl7) | 0;
+    hi = hi + Math.imul(ah4, bh7) | 0;
+    lo = lo + Math.imul(al3, bl8) | 0;
+    mid = mid + Math.imul(al3, bh8) | 0;
+    mid = mid + Math.imul(ah3, bl8) | 0;
+    hi = hi + Math.imul(ah3, bh8) | 0;
+    lo = lo + Math.imul(al2, bl9) | 0;
+    mid = mid + Math.imul(al2, bh9) | 0;
+    mid = mid + Math.imul(ah2, bl9) | 0;
+    hi = hi + Math.imul(ah2, bh9) | 0;
+    var w11 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w11 >>> 26) | 0;
+    w11 &= 0x3ffffff;
+    /* k = 12 */
+    lo = Math.imul(al9, bl3);
+    mid = Math.imul(al9, bh3);
+    mid = mid + Math.imul(ah9, bl3) | 0;
+    hi = Math.imul(ah9, bh3);
+    lo = lo + Math.imul(al8, bl4) | 0;
+    mid = mid + Math.imul(al8, bh4) | 0;
+    mid = mid + Math.imul(ah8, bl4) | 0;
+    hi = hi + Math.imul(ah8, bh4) | 0;
+    lo = lo + Math.imul(al7, bl5) | 0;
+    mid = mid + Math.imul(al7, bh5) | 0;
+    mid = mid + Math.imul(ah7, bl5) | 0;
+    hi = hi + Math.imul(ah7, bh5) | 0;
+    lo = lo + Math.imul(al6, bl6) | 0;
+    mid = mid + Math.imul(al6, bh6) | 0;
+    mid = mid + Math.imul(ah6, bl6) | 0;
+    hi = hi + Math.imul(ah6, bh6) | 0;
+    lo = lo + Math.imul(al5, bl7) | 0;
+    mid = mid + Math.imul(al5, bh7) | 0;
+    mid = mid + Math.imul(ah5, bl7) | 0;
+    hi = hi + Math.imul(ah5, bh7) | 0;
+    lo = lo + Math.imul(al4, bl8) | 0;
+    mid = mid + Math.imul(al4, bh8) | 0;
+    mid = mid + Math.imul(ah4, bl8) | 0;
+    hi = hi + Math.imul(ah4, bh8) | 0;
+    lo = lo + Math.imul(al3, bl9) | 0;
+    mid = mid + Math.imul(al3, bh9) | 0;
+    mid = mid + Math.imul(ah3, bl9) | 0;
+    hi = hi + Math.imul(ah3, bh9) | 0;
+    var w12 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w12 >>> 26) | 0;
+    w12 &= 0x3ffffff;
+    /* k = 13 */
+    lo = Math.imul(al9, bl4);
+    mid = Math.imul(al9, bh4);
+    mid = mid + Math.imul(ah9, bl4) | 0;
+    hi = Math.imul(ah9, bh4);
+    lo = lo + Math.imul(al8, bl5) | 0;
+    mid = mid + Math.imul(al8, bh5) | 0;
+    mid = mid + Math.imul(ah8, bl5) | 0;
+    hi = hi + Math.imul(ah8, bh5) | 0;
+    lo = lo + Math.imul(al7, bl6) | 0;
+    mid = mid + Math.imul(al7, bh6) | 0;
+    mid = mid + Math.imul(ah7, bl6) | 0;
+    hi = hi + Math.imul(ah7, bh6) | 0;
+    lo = lo + Math.imul(al6, bl7) | 0;
+    mid = mid + Math.imul(al6, bh7) | 0;
+    mid = mid + Math.imul(ah6, bl7) | 0;
+    hi = hi + Math.imul(ah6, bh7) | 0;
+    lo = lo + Math.imul(al5, bl8) | 0;
+    mid = mid + Math.imul(al5, bh8) | 0;
+    mid = mid + Math.imul(ah5, bl8) | 0;
+    hi = hi + Math.imul(ah5, bh8) | 0;
+    lo = lo + Math.imul(al4, bl9) | 0;
+    mid = mid + Math.imul(al4, bh9) | 0;
+    mid = mid + Math.imul(ah4, bl9) | 0;
+    hi = hi + Math.imul(ah4, bh9) | 0;
+    var w13 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w13 >>> 26) | 0;
+    w13 &= 0x3ffffff;
+    /* k = 14 */
+    lo = Math.imul(al9, bl5);
+    mid = Math.imul(al9, bh5);
+    mid = mid + Math.imul(ah9, bl5) | 0;
+    hi = Math.imul(ah9, bh5);
+    lo = lo + Math.imul(al8, bl6) | 0;
+    mid = mid + Math.imul(al8, bh6) | 0;
+    mid = mid + Math.imul(ah8, bl6) | 0;
+    hi = hi + Math.imul(ah8, bh6) | 0;
+    lo = lo + Math.imul(al7, bl7) | 0;
+    mid = mid + Math.imul(al7, bh7) | 0;
+    mid = mid + Math.imul(ah7, bl7) | 0;
+    hi = hi + Math.imul(ah7, bh7) | 0;
+    lo = lo + Math.imul(al6, bl8) | 0;
+    mid = mid + Math.imul(al6, bh8) | 0;
+    mid = mid + Math.imul(ah6, bl8) | 0;
+    hi = hi + Math.imul(ah6, bh8) | 0;
+    lo = lo + Math.imul(al5, bl9) | 0;
+    mid = mid + Math.imul(al5, bh9) | 0;
+    mid = mid + Math.imul(ah5, bl9) | 0;
+    hi = hi + Math.imul(ah5, bh9) | 0;
+    var w14 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w14 >>> 26) | 0;
+    w14 &= 0x3ffffff;
+    /* k = 15 */
+    lo = Math.imul(al9, bl6);
+    mid = Math.imul(al9, bh6);
+    mid = mid + Math.imul(ah9, bl6) | 0;
+    hi = Math.imul(ah9, bh6);
+    lo = lo + Math.imul(al8, bl7) | 0;
+    mid = mid + Math.imul(al8, bh7) | 0;
+    mid = mid + Math.imul(ah8, bl7) | 0;
+    hi = hi + Math.imul(ah8, bh7) | 0;
+    lo = lo + Math.imul(al7, bl8) | 0;
+    mid = mid + Math.imul(al7, bh8) | 0;
+    mid = mid + Math.imul(ah7, bl8) | 0;
+    hi = hi + Math.imul(ah7, bh8) | 0;
+    lo = lo + Math.imul(al6, bl9) | 0;
+    mid = mid + Math.imul(al6, bh9) | 0;
+    mid = mid + Math.imul(ah6, bl9) | 0;
+    hi = hi + Math.imul(ah6, bh9) | 0;
+    var w15 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w15 >>> 26) | 0;
+    w15 &= 0x3ffffff;
+    /* k = 16 */
+    lo = Math.imul(al9, bl7);
+    mid = Math.imul(al9, bh7);
+    mid = mid + Math.imul(ah9, bl7) | 0;
+    hi = Math.imul(ah9, bh7);
+    lo = lo + Math.imul(al8, bl8) | 0;
+    mid = mid + Math.imul(al8, bh8) | 0;
+    mid = mid + Math.imul(ah8, bl8) | 0;
+    hi = hi + Math.imul(ah8, bh8) | 0;
+    lo = lo + Math.imul(al7, bl9) | 0;
+    mid = mid + Math.imul(al7, bh9) | 0;
+    mid = mid + Math.imul(ah7, bl9) | 0;
+    hi = hi + Math.imul(ah7, bh9) | 0;
+    var w16 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w16 >>> 26) | 0;
+    w16 &= 0x3ffffff;
+    /* k = 17 */
+    lo = Math.imul(al9, bl8);
+    mid = Math.imul(al9, bh8);
+    mid = mid + Math.imul(ah9, bl8) | 0;
+    hi = Math.imul(ah9, bh8);
+    lo = lo + Math.imul(al8, bl9) | 0;
+    mid = mid + Math.imul(al8, bh9) | 0;
+    mid = mid + Math.imul(ah8, bl9) | 0;
+    hi = hi + Math.imul(ah8, bh9) | 0;
+    var w17 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w17 >>> 26) | 0;
+    w17 &= 0x3ffffff;
+    /* k = 18 */
+    lo = Math.imul(al9, bl9);
+    mid = Math.imul(al9, bh9);
+    mid = mid + Math.imul(ah9, bl9) | 0;
+    hi = Math.imul(ah9, bh9);
+    var w18 = (c + lo | 0) + ((mid & 0x1fff) << 13) | 0;
+    c = (hi + (mid >>> 13) | 0) + (w18 >>> 26) | 0;
+    w18 &= 0x3ffffff;
+    o[0] = w0;
+    o[1] = w1;
+    o[2] = w2;
+    o[3] = w3;
+    o[4] = w4;
+    o[5] = w5;
+    o[6] = w6;
+    o[7] = w7;
+    o[8] = w8;
+    o[9] = w9;
+    o[10] = w10;
+    o[11] = w11;
+    o[12] = w12;
+    o[13] = w13;
+    o[14] = w14;
+    o[15] = w15;
+    o[16] = w16;
+    o[17] = w17;
+    o[18] = w18;
+    if (c !== 0) {
+      o[19] = c;
+      out.length++;
+    }
+    return out;
+  };
+
+  // Polyfill comb
+  if (!Math.imul) {
+    comb10MulTo = smallMulTo;
+  }
+
+  function bigMulTo(self, num, out) {
+    out.negative = num.negative ^ self.negative;
+    out.length = self.length + num.length;
+
+    var carry = 0;
+    var hncarry = 0;
+    for (var k = 0; k < out.length - 1; k++) {
+      // Sum all words with the same `i + j = k` and accumulate `ncarry`,
+      // note that ncarry could be >= 0x3ffffff
+      var ncarry = hncarry;
+      hncarry = 0;
+      var rword = carry & 0x3ffffff;
+      var maxJ = Math.min(k, num.length - 1);
+      for (var j = Math.max(0, k - self.length + 1); j <= maxJ; j++) {
+        var i = k - j;
+        var a = self.words[i] | 0;
+        var b = num.words[j] | 0;
+        var r = a * b;
+
+        var lo = r & 0x3ffffff;
+        ncarry = ncarry + (r / 0x4000000 | 0) | 0;
+        lo = lo + rword | 0;
+        rword = lo & 0x3ffffff;
+        ncarry = ncarry + (lo >>> 26) | 0;
+
+        hncarry += ncarry >>> 26;
+        ncarry &= 0x3ffffff;
+      }
+      out.words[k] = rword;
+      carry = ncarry;
+      ncarry = hncarry;
+    }
+    if (carry !== 0) {
+      out.words[k] = carry;
+    } else {
+      out.length--;
+    }
+
+    return out.strip();
+  }
+
+  function jumboMulTo(self, num, out) {
+    var fftm = new FFTM();
+    return fftm.mulp(self, num, out);
+  }
+
+  BN.prototype.mulTo = function mulTo(num, out) {
+    var res;
+    var len = this.length + num.length;
+    if (this.length === 10 && num.length === 10) {
+      res = comb10MulTo(this, num, out);
+    } else if (len < 63) {
+      res = smallMulTo(this, num, out);
+    } else if (len < 1024) {
+      res = bigMulTo(this, num, out);
+    } else {
+      res = jumboMulTo(this, num, out);
+    }
+
+    return res;
+  };
+
+  // Cooley-Tukey algorithm for FFT
+  // slightly revisited to rely on looping instead of recursion
+
+  function FFTM(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+
+  FFTM.prototype.makeRBT = function makeRBT(N) {
+    var t = new Array(N);
+    var l = BN.prototype._countBits(N) - 1;
+    for (var i = 0; i < N; i++) {
+      t[i] = this.revBin(i, l, N);
+    }
+
+    return t;
+  };
+
+  // Returns binary-reversed representation of `x`
+  FFTM.prototype.revBin = function revBin(x, l, N) {
+    if (x === 0 || x === N - 1) return x;
+
+    var rb = 0;
+    for (var i = 0; i < l; i++) {
+      rb |= (x & 1) << l - i - 1;
+      x >>= 1;
+    }
+
+    return rb;
+  };
+
+  // Performs "tweedling" phase, therefore 'emulating'
+  // behaviour of the recursive algorithm
+  FFTM.prototype.permute = function permute(rbt, rws, iws, rtws, itws, N) {
+    for (var i = 0; i < N; i++) {
+      rtws[i] = rws[rbt[i]];
+      itws[i] = iws[rbt[i]];
+    }
+  };
+
+  FFTM.prototype.transform = function transform(rws, iws, rtws, itws, N, rbt) {
+    this.permute(rbt, rws, iws, rtws, itws, N);
+
+    for (var s = 1; s < N; s <<= 1) {
+      var l = s << 1;
+
+      var rtwdf = Math.cos(2 * Math.PI / l);
+      var itwdf = Math.sin(2 * Math.PI / l);
+
+      for (var p = 0; p < N; p += l) {
+        var rtwdf_ = rtwdf;
+        var itwdf_ = itwdf;
+
+        for (var j = 0; j < s; j++) {
+          var re = rtws[p + j];
+          var ie = itws[p + j];
+
+          var ro = rtws[p + j + s];
+          var io = itws[p + j + s];
+
+          var rx = rtwdf_ * ro - itwdf_ * io;
+
+          io = rtwdf_ * io + itwdf_ * ro;
+          ro = rx;
+
+          rtws[p + j] = re + ro;
+          itws[p + j] = ie + io;
+
+          rtws[p + j + s] = re - ro;
+          itws[p + j + s] = ie - io;
+
+          /* jshint maxdepth : false */
+          if (j !== l) {
+            rx = rtwdf * rtwdf_ - itwdf * itwdf_;
+
+            itwdf_ = rtwdf * itwdf_ + itwdf * rtwdf_;
+            rtwdf_ = rx;
+          }
+        }
+      }
+    }
+  };
+
+  FFTM.prototype.guessLen13b = function guessLen13b(n, m) {
+    var N = Math.max(m, n) | 1;
+    var odd = N & 1;
+    var i = 0;
+    for (N = N / 2 | 0; N; N = N >>> 1) {
+      i++;
+    }
+
+    return 1 << i + 1 + odd;
+  };
+
+  FFTM.prototype.conjugate = function conjugate(rws, iws, N) {
+    if (N <= 1) return;
+
+    for (var i = 0; i < N / 2; i++) {
+      var t = rws[i];
+
+      rws[i] = rws[N - i - 1];
+      rws[N - i - 1] = t;
+
+      t = iws[i];
+
+      iws[i] = -iws[N - i - 1];
+      iws[N - i - 1] = -t;
+    }
+  };
+
+  FFTM.prototype.normalize13b = function normalize13b(ws, N) {
+    var carry = 0;
+    for (var i = 0; i < N / 2; i++) {
+      var w = Math.round(ws[2 * i + 1] / N) * 0x2000 + Math.round(ws[2 * i] / N) + carry;
+
+      ws[i] = w & 0x3ffffff;
+
+      if (w < 0x4000000) {
+        carry = 0;
+      } else {
+        carry = w / 0x4000000 | 0;
+      }
+    }
+
+    return ws;
+  };
+
+  FFTM.prototype.convert13b = function convert13b(ws, len, rws, N) {
+    var carry = 0;
+    for (var i = 0; i < len; i++) {
+      carry = carry + (ws[i] | 0);
+
+      rws[2 * i] = carry & 0x1fff;carry = carry >>> 13;
+      rws[2 * i + 1] = carry & 0x1fff;carry = carry >>> 13;
+    }
+
+    // Pad with zeroes
+    for (i = 2 * len; i < N; ++i) {
+      rws[i] = 0;
+    }
+
+    assert(carry === 0);
+    assert((carry & ~0x1fff) === 0);
+  };
+
+  FFTM.prototype.stub = function stub(N) {
+    var ph = new Array(N);
+    for (var i = 0; i < N; i++) {
+      ph[i] = 0;
+    }
+
+    return ph;
+  };
+
+  FFTM.prototype.mulp = function mulp(x, y, out) {
+    var N = 2 * this.guessLen13b(x.length, y.length);
+
+    var rbt = this.makeRBT(N);
+
+    var _ = this.stub(N);
+
+    var rws = new Array(N);
+    var rwst = new Array(N);
+    var iwst = new Array(N);
+
+    var nrws = new Array(N);
+    var nrwst = new Array(N);
+    var niwst = new Array(N);
+
+    var rmws = out.words;
+    rmws.length = N;
+
+    this.convert13b(x.words, x.length, rws, N);
+    this.convert13b(y.words, y.length, nrws, N);
+
+    this.transform(rws, _, rwst, iwst, N, rbt);
+    this.transform(nrws, _, nrwst, niwst, N, rbt);
+
+    for (var i = 0; i < N; i++) {
+      var rx = rwst[i] * nrwst[i] - iwst[i] * niwst[i];
+      iwst[i] = rwst[i] * niwst[i] + iwst[i] * nrwst[i];
+      rwst[i] = rx;
+    }
+
+    this.conjugate(rwst, iwst, N);
+    this.transform(rwst, iwst, rmws, _, N, rbt);
+    this.conjugate(rmws, _, N);
+    this.normalize13b(rmws, N);
+
+    out.negative = x.negative ^ y.negative;
+    out.length = x.length + y.length;
+    return out.strip();
+  };
+
+  // Multiply `this` by `num`
+  BN.prototype.mul = function mul(num) {
+    var out = new BN(null);
+    out.words = new Array(this.length + num.length);
+    return this.mulTo(num, out);
+  };
+
+  // Multiply employing FFT
+  BN.prototype.mulf = function mulf(num) {
+    var out = new BN(null);
+    out.words = new Array(this.length + num.length);
+    return jumboMulTo(this, num, out);
+  };
+
+  // In-place Multiplication
+  BN.prototype.imul = function imul(num) {
+    return this.clone().mulTo(num, this);
+  };
+
+  BN.prototype.imuln = function imuln(num) {
+    assert(typeof num === 'number');
+    assert(num < 0x4000000);
+
+    // Carry
+    var carry = 0;
+    for (var i = 0; i < this.length; i++) {
+      var w = (this.words[i] | 0) * num;
+      var lo = (w & 0x3ffffff) + (carry & 0x3ffffff);
+      carry >>= 26;
+      carry += w / 0x4000000 | 0;
+      // NOTE: lo is 27bit maximum
+      carry += lo >>> 26;
+      this.words[i] = lo & 0x3ffffff;
+    }
+
+    if (carry !== 0) {
+      this.words[i] = carry;
+      this.length++;
+    }
+
+    return this;
+  };
+
+  BN.prototype.muln = function muln(num) {
+    return this.clone().imuln(num);
+  };
+
+  // `this` * `this`
+  BN.prototype.sqr = function sqr() {
+    return this.mul(this);
+  };
+
+  // `this` * `this` in-place
+  BN.prototype.isqr = function isqr() {
+    return this.imul(this.clone());
+  };
+
+  // Math.pow(`this`, `num`)
+  BN.prototype.pow = function pow(num) {
+    var w = toBitArray(num);
+    if (w.length === 0) return new BN(1);
+
+    // Skip leading zeroes
+    var res = this;
+    for (var i = 0; i < w.length; i++, res = res.sqr()) {
+      if (w[i] !== 0) break;
+    }
+
+    if (++i < w.length) {
+      for (var q = res.sqr(); i < w.length; i++, q = q.sqr()) {
+        if (w[i] === 0) continue;
+
+        res = res.mul(q);
+      }
+    }
+
+    return res;
+  };
+
+  // Shift-left in-place
+  BN.prototype.iushln = function iushln(bits) {
+    assert(typeof bits === 'number' && bits >= 0);
+    var r = bits % 26;
+    var s = (bits - r) / 26;
+    var carryMask = 0x3ffffff >>> 26 - r << 26 - r;
+    var i;
+
+    if (r !== 0) {
+      var carry = 0;
+
+      for (i = 0; i < this.length; i++) {
+        var newCarry = this.words[i] & carryMask;
+        var c = (this.words[i] | 0) - newCarry << r;
+        this.words[i] = c | carry;
+        carry = newCarry >>> 26 - r;
+      }
+
+      if (carry) {
+        this.words[i] = carry;
+        this.length++;
+      }
+    }
+
+    if (s !== 0) {
+      for (i = this.length - 1; i >= 0; i--) {
+        this.words[i + s] = this.words[i];
+      }
+
+      for (i = 0; i < s; i++) {
+        this.words[i] = 0;
+      }
+
+      this.length += s;
+    }
+
+    return this.strip();
+  };
+
+  BN.prototype.ishln = function ishln(bits) {
+    // TODO(indutny): implement me
+    assert(this.negative === 0);
+    return this.iushln(bits);
+  };
+
+  // Shift-right in-place
+  // NOTE: `hint` is a lowest bit before trailing zeroes
+  // NOTE: if `extended` is present - it will be filled with destroyed bits
+  BN.prototype.iushrn = function iushrn(bits, hint, extended) {
+    assert(typeof bits === 'number' && bits >= 0);
+    var h;
+    if (hint) {
+      h = (hint - hint % 26) / 26;
+    } else {
+      h = 0;
+    }
+
+    var r = bits % 26;
+    var s = Math.min((bits - r) / 26, this.length);
+    var mask = 0x3ffffff ^ 0x3ffffff >>> r << r;
+    var maskedWords = extended;
+
+    h -= s;
+    h = Math.max(0, h);
+
+    // Extended mode, copy masked part
+    if (maskedWords) {
+      for (var i = 0; i < s; i++) {
+        maskedWords.words[i] = this.words[i];
+      }
+      maskedWords.length = s;
+    }
+
+    if (s === 0) {
+      // No-op, we should not move anything at all
+    } else if (this.length > s) {
+      this.length -= s;
+      for (i = 0; i < this.length; i++) {
+        this.words[i] = this.words[i + s];
+      }
+    } else {
+      this.words[0] = 0;
+      this.length = 1;
+    }
+
+    var carry = 0;
+    for (i = this.length - 1; i >= 0 && (carry !== 0 || i >= h); i--) {
+      var word = this.words[i] | 0;
+      this.words[i] = carry << 26 - r | word >>> r;
+      carry = word & mask;
+    }
+
+    // Push carried bits as a mask
+    if (maskedWords && carry !== 0) {
+      maskedWords.words[maskedWords.length++] = carry;
+    }
+
+    if (this.length === 0) {
+      this.words[0] = 0;
+      this.length = 1;
+    }
+
+    return this.strip();
+  };
+
+  BN.prototype.ishrn = function ishrn(bits, hint, extended) {
+    // TODO(indutny): implement me
+    assert(this.negative === 0);
+    return this.iushrn(bits, hint, extended);
+  };
+
+  // Shift-left
+  BN.prototype.shln = function shln(bits) {
+    return this.clone().ishln(bits);
+  };
+
+  BN.prototype.ushln = function ushln(bits) {
+    return this.clone().iushln(bits);
+  };
+
+  // Shift-right
+  BN.prototype.shrn = function shrn(bits) {
+    return this.clone().ishrn(bits);
+  };
+
+  BN.prototype.ushrn = function ushrn(bits) {
+    return this.clone().iushrn(bits);
+  };
+
+  // Test if n bit is set
+  BN.prototype.testn = function testn(bit) {
+    assert(typeof bit === 'number' && bit >= 0);
+    var r = bit % 26;
+    var s = (bit - r) / 26;
+    var q = 1 << r;
+
+    // Fast case: bit is much higher than all existing words
+    if (this.length <= s) return false;
+
+    // Check bit and return
+    var w = this.words[s];
+
+    return !!(w & q);
+  };
+
+  // Return only lowers bits of number (in-place)
+  BN.prototype.imaskn = function imaskn(bits) {
+    assert(typeof bits === 'number' && bits >= 0);
+    var r = bits % 26;
+    var s = (bits - r) / 26;
+
+    assert(this.negative === 0, 'imaskn works only with positive numbers');
+
+    if (this.length <= s) {
+      return this;
+    }
+
+    if (r !== 0) {
+      s++;
+    }
+    this.length = Math.min(s, this.length);
+
+    if (r !== 0) {
+      var mask = 0x3ffffff ^ 0x3ffffff >>> r << r;
+      this.words[this.length - 1] &= mask;
+    }
+
+    return this.strip();
+  };
+
+  // Return only lowers bits of number
+  BN.prototype.maskn = function maskn(bits) {
+    return this.clone().imaskn(bits);
+  };
+
+  // Add plain number `num` to `this`
+  BN.prototype.iaddn = function iaddn(num) {
+    assert(typeof num === 'number');
+    assert(num < 0x4000000);
+    if (num < 0) return this.isubn(-num);
+
+    // Possible sign change
+    if (this.negative !== 0) {
+      if (this.length === 1 && (this.words[0] | 0) < num) {
+        this.words[0] = num - (this.words[0] | 0);
+        this.negative = 0;
+        return this;
+      }
+
+      this.negative = 0;
+      this.isubn(num);
+      this.negative = 1;
+      return this;
+    }
+
+    // Add without checks
+    return this._iaddn(num);
+  };
+
+  BN.prototype._iaddn = function _iaddn(num) {
+    this.words[0] += num;
+
+    // Carry
+    for (var i = 0; i < this.length && this.words[i] >= 0x4000000; i++) {
+      this.words[i] -= 0x4000000;
+      if (i === this.length - 1) {
+        this.words[i + 1] = 1;
+      } else {
+        this.words[i + 1]++;
+      }
+    }
+    this.length = Math.max(this.length, i + 1);
+
+    return this;
+  };
+
+  // Subtract plain number `num` from `this`
+  BN.prototype.isubn = function isubn(num) {
+    assert(typeof num === 'number');
+    assert(num < 0x4000000);
+    if (num < 0) return this.iaddn(-num);
+
+    if (this.negative !== 0) {
+      this.negative = 0;
+      this.iaddn(num);
+      this.negative = 1;
+      return this;
+    }
+
+    this.words[0] -= num;
+
+    if (this.length === 1 && this.words[0] < 0) {
+      this.words[0] = -this.words[0];
+      this.negative = 1;
+    } else {
+      // Carry
+      for (var i = 0; i < this.length && this.words[i] < 0; i++) {
+        this.words[i] += 0x4000000;
+        this.words[i + 1] -= 1;
+      }
+    }
+
+    return this.strip();
+  };
+
+  BN.prototype.addn = function addn(num) {
+    return this.clone().iaddn(num);
+  };
+
+  BN.prototype.subn = function subn(num) {
+    return this.clone().isubn(num);
+  };
+
+  BN.prototype.iabs = function iabs() {
+    this.negative = 0;
+
+    return this;
+  };
+
+  BN.prototype.abs = function abs() {
+    return this.clone().iabs();
+  };
+
+  BN.prototype._ishlnsubmul = function _ishlnsubmul(num, mul, shift) {
+    var len = num.length + shift;
+    var i;
+
+    this._expand(len);
+
+    var w;
+    var carry = 0;
+    for (i = 0; i < num.length; i++) {
+      w = (this.words[i + shift] | 0) + carry;
+      var right = (num.words[i] | 0) * mul;
+      w -= right & 0x3ffffff;
+      carry = (w >> 26) - (right / 0x4000000 | 0);
+      this.words[i + shift] = w & 0x3ffffff;
+    }
+    for (; i < this.length - shift; i++) {
+      w = (this.words[i + shift] | 0) + carry;
+      carry = w >> 26;
+      this.words[i + shift] = w & 0x3ffffff;
+    }
+
+    if (carry === 0) return this.strip();
+
+    // Subtraction overflow
+    assert(carry === -1);
+    carry = 0;
+    for (i = 0; i < this.length; i++) {
+      w = -(this.words[i] | 0) + carry;
+      carry = w >> 26;
+      this.words[i] = w & 0x3ffffff;
+    }
+    this.negative = 1;
+
+    return this.strip();
+  };
+
+  BN.prototype._wordDiv = function _wordDiv(num, mode) {
+    var shift = this.length - num.length;
+
+    var a = this.clone();
+    var b = num;
+
+    // Normalize
+    var bhi = b.words[b.length - 1] | 0;
+    var bhiBits = this._countBits(bhi);
+    shift = 26 - bhiBits;
+    if (shift !== 0) {
+      b = b.ushln(shift);
+      a.iushln(shift);
+      bhi = b.words[b.length - 1] | 0;
+    }
+
+    // Initialize quotient
+    var m = a.length - b.length;
+    var q;
+
+    if (mode !== 'mod') {
+      q = new BN(null);
+      q.length = m + 1;
+      q.words = new Array(q.length);
+      for (var i = 0; i < q.length; i++) {
+        q.words[i] = 0;
+      }
+    }
+
+    var diff = a.clone()._ishlnsubmul(b, 1, m);
+    if (diff.negative === 0) {
+      a = diff;
+      if (q) {
+        q.words[m] = 1;
+      }
+    }
+
+    for (var j = m - 1; j >= 0; j--) {
+      var qj = (a.words[b.length + j] | 0) * 0x4000000 + (a.words[b.length + j - 1] | 0);
+
+      // NOTE: (qj / bhi) is (0x3ffffff * 0x4000000 + 0x3ffffff) / 0x2000000 max
+      // (0x7ffffff)
+      qj = Math.min(qj / bhi | 0, 0x3ffffff);
+
+      a._ishlnsubmul(b, qj, j);
+      while (a.negative !== 0) {
+        qj--;
+        a.negative = 0;
+        a._ishlnsubmul(b, 1, j);
+        if (!a.isZero()) {
+          a.negative ^= 1;
+        }
+      }
+      if (q) {
+        q.words[j] = qj;
+      }
+    }
+    if (q) {
+      q.strip();
+    }
+    a.strip();
+
+    // Denormalize
+    if (mode !== 'div' && shift !== 0) {
+      a.iushrn(shift);
+    }
+
+    return {
+      div: q || null,
+      mod: a
+    };
+  };
+
+  // NOTE: 1) `mode` can be set to `mod` to request mod only,
+  //       to `div` to request div only, or be absent to
+  //       request both div & mod
+  //       2) `positive` is true if unsigned mod is requested
+  BN.prototype.divmod = function divmod(num, mode, positive) {
+    assert(!num.isZero());
+
+    if (this.isZero()) {
+      return {
+        div: new BN(0),
+        mod: new BN(0)
+      };
+    }
+
+    var div, mod, res;
+    if (this.negative !== 0 && num.negative === 0) {
+      res = this.neg().divmod(num, mode);
+
+      if (mode !== 'mod') {
+        div = res.div.neg();
+      }
+
+      if (mode !== 'div') {
+        mod = res.mod.neg();
+        if (positive && mod.negative !== 0) {
+          mod.iadd(num);
+        }
+      }
+
+      return {
+        div: div,
+        mod: mod
+      };
+    }
+
+    if (this.negative === 0 && num.negative !== 0) {
+      res = this.divmod(num.neg(), mode);
+
+      if (mode !== 'mod') {
+        div = res.div.neg();
+      }
+
+      return {
+        div: div,
+        mod: res.mod
+      };
+    }
+
+    if ((this.negative & num.negative) !== 0) {
+      res = this.neg().divmod(num.neg(), mode);
+
+      if (mode !== 'div') {
+        mod = res.mod.neg();
+        if (positive && mod.negative !== 0) {
+          mod.isub(num);
+        }
+      }
+
+      return {
+        div: res.div,
+        mod: mod
+      };
+    }
+
+    // Both numbers are positive at this point
+
+    // Strip both numbers to approximate shift value
+    if (num.length > this.length || this.cmp(num) < 0) {
+      return {
+        div: new BN(0),
+        mod: this
+      };
+    }
+
+    // Very short reduction
+    if (num.length === 1) {
+      if (mode === 'div') {
+        return {
+          div: this.divn(num.words[0]),
+          mod: null
+        };
+      }
+
+      if (mode === 'mod') {
+        return {
+          div: null,
+          mod: new BN(this.modn(num.words[0]))
+        };
+      }
+
+      return {
+        div: this.divn(num.words[0]),
+        mod: new BN(this.modn(num.words[0]))
+      };
+    }
+
+    return this._wordDiv(num, mode);
+  };
+
+  // Find `this` / `num`
+  BN.prototype.div = function div(num) {
+    return this.divmod(num, 'div', false).div;
+  };
+
+  // Find `this` % `num`
+  BN.prototype.mod = function mod(num) {
+    return this.divmod(num, 'mod', false).mod;
+  };
+
+  BN.prototype.umod = function umod(num) {
+    return this.divmod(num, 'mod', true).mod;
+  };
+
+  // Find Round(`this` / `num`)
+  BN.prototype.divRound = function divRound(num) {
+    var dm = this.divmod(num);
+
+    // Fast case - exact division
+    if (dm.mod.isZero()) return dm.div;
+
+    var mod = dm.div.negative !== 0 ? dm.mod.isub(num) : dm.mod;
+
+    var half = num.ushrn(1);
+    var r2 = num.andln(1);
+    var cmp = mod.cmp(half);
+
+    // Round down
+    if (cmp < 0 || r2 === 1 && cmp === 0) return dm.div;
+
+    // Round up
+    return dm.div.negative !== 0 ? dm.div.isubn(1) : dm.div.iaddn(1);
+  };
+
+  BN.prototype.modn = function modn(num) {
+    assert(num <= 0x3ffffff);
+    var p = (1 << 26) % num;
+
+    var acc = 0;
+    for (var i = this.length - 1; i >= 0; i--) {
+      acc = (p * acc + (this.words[i] | 0)) % num;
+    }
+
+    return acc;
+  };
+
+  // In-place division by number
+  BN.prototype.idivn = function idivn(num) {
+    assert(num <= 0x3ffffff);
+
+    var carry = 0;
+    for (var i = this.length - 1; i >= 0; i--) {
+      var w = (this.words[i] | 0) + carry * 0x4000000;
+      this.words[i] = w / num | 0;
+      carry = w % num;
+    }
+
+    return this.strip();
+  };
+
+  BN.prototype.divn = function divn(num) {
+    return this.clone().idivn(num);
+  };
+
+  BN.prototype.egcd = function egcd(p) {
+    assert(p.negative === 0);
+    assert(!p.isZero());
+
+    var x = this;
+    var y = p.clone();
+
+    if (x.negative !== 0) {
+      x = x.umod(p);
+    } else {
+      x = x.clone();
+    }
+
+    // A * x + B * y = x
+    var A = new BN(1);
+    var B = new BN(0);
+
+    // C * x + D * y = y
+    var C = new BN(0);
+    var D = new BN(1);
+
+    var g = 0;
+
+    while (x.isEven() && y.isEven()) {
+      x.iushrn(1);
+      y.iushrn(1);
+      ++g;
+    }
+
+    var yp = y.clone();
+    var xp = x.clone();
+
+    while (!x.isZero()) {
+      for (var i = 0, im = 1; (x.words[0] & im) === 0 && i < 26; ++i, im <<= 1);
+      if (i > 0) {
+        x.iushrn(i);
+        while (i-- > 0) {
+          if (A.isOdd() || B.isOdd()) {
+            A.iadd(yp);
+            B.isub(xp);
+          }
+
+          A.iushrn(1);
+          B.iushrn(1);
+        }
+      }
+
+      for (var j = 0, jm = 1; (y.words[0] & jm) === 0 && j < 26; ++j, jm <<= 1);
+      if (j > 0) {
+        y.iushrn(j);
+        while (j-- > 0) {
+          if (C.isOdd() || D.isOdd()) {
+            C.iadd(yp);
+            D.isub(xp);
+          }
+
+          C.iushrn(1);
+          D.iushrn(1);
+        }
+      }
+
+      if (x.cmp(y) >= 0) {
+        x.isub(y);
+        A.isub(C);
+        B.isub(D);
+      } else {
+        y.isub(x);
+        C.isub(A);
+        D.isub(B);
+      }
+    }
+
+    return {
+      a: C,
+      b: D,
+      gcd: y.iushln(g)
+    };
+  };
+
+  // This is reduced incarnation of the binary EEA
+  // above, designated to invert members of the
+  // _prime_ fields F(p) at a maximal speed
+  BN.prototype._invmp = function _invmp(p) {
+    assert(p.negative === 0);
+    assert(!p.isZero());
+
+    var a = this;
+    var b = p.clone();
+
+    if (a.negative !== 0) {
+      a = a.umod(p);
+    } else {
+      a = a.clone();
+    }
+
+    var x1 = new BN(1);
+    var x2 = new BN(0);
+
+    var delta = b.clone();
+
+    while (a.cmpn(1) > 0 && b.cmpn(1) > 0) {
+      for (var i = 0, im = 1; (a.words[0] & im) === 0 && i < 26; ++i, im <<= 1);
+      if (i > 0) {
+        a.iushrn(i);
+        while (i-- > 0) {
+          if (x1.isOdd()) {
+            x1.iadd(delta);
+          }
+
+          x1.iushrn(1);
+        }
+      }
+
+      for (var j = 0, jm = 1; (b.words[0] & jm) === 0 && j < 26; ++j, jm <<= 1);
+      if (j > 0) {
+        b.iushrn(j);
+        while (j-- > 0) {
+          if (x2.isOdd()) {
+            x2.iadd(delta);
+          }
+
+          x2.iushrn(1);
+        }
+      }
+
+      if (a.cmp(b) >= 0) {
+        a.isub(b);
+        x1.isub(x2);
+      } else {
+        b.isub(a);
+        x2.isub(x1);
+      }
+    }
+
+    var res;
+    if (a.cmpn(1) === 0) {
+      res = x1;
+    } else {
+      res = x2;
+    }
+
+    if (res.cmpn(0) < 0) {
+      res.iadd(p);
+    }
+
+    return res;
+  };
+
+  BN.prototype.gcd = function gcd(num) {
+    if (this.isZero()) return num.abs();
+    if (num.isZero()) return this.abs();
+
+    var a = this.clone();
+    var b = num.clone();
+    a.negative = 0;
+    b.negative = 0;
+
+    // Remove common factor of two
+    for (var shift = 0; a.isEven() && b.isEven(); shift++) {
+      a.iushrn(1);
+      b.iushrn(1);
+    }
+
+    do {
+      while (a.isEven()) {
+        a.iushrn(1);
+      }
+      while (b.isEven()) {
+        b.iushrn(1);
+      }
+
+      var r = a.cmp(b);
+      if (r < 0) {
+        // Swap `a` and `b` to make `a` always bigger than `b`
+        var t = a;
+        a = b;
+        b = t;
+      } else if (r === 0 || b.cmpn(1) === 0) {
+        break;
+      }
+
+      a.isub(b);
+    } while (true);
+
+    return b.iushln(shift);
+  };
+
+  // Invert number in the field F(num)
+  BN.prototype.invm = function invm(num) {
+    return this.egcd(num).a.umod(num);
+  };
+
+  BN.prototype.isEven = function isEven() {
+    return (this.words[0] & 1) === 0;
+  };
+
+  BN.prototype.isOdd = function isOdd() {
+    return (this.words[0] & 1) === 1;
+  };
+
+  // And first word and num
+  BN.prototype.andln = function andln(num) {
+    return this.words[0] & num;
+  };
+
+  // Increment at the bit position in-line
+  BN.prototype.bincn = function bincn(bit) {
+    assert(typeof bit === 'number');
+    var r = bit % 26;
+    var s = (bit - r) / 26;
+    var q = 1 << r;
+
+    // Fast case: bit is much higher than all existing words
+    if (this.length <= s) {
+      this._expand(s + 1);
+      this.words[s] |= q;
+      return this;
+    }
+
+    // Add bit and propagate, if needed
+    var carry = q;
+    for (var i = s; carry !== 0 && i < this.length; i++) {
+      var w = this.words[i] | 0;
+      w += carry;
+      carry = w >>> 26;
+      w &= 0x3ffffff;
+      this.words[i] = w;
+    }
+    if (carry !== 0) {
+      this.words[i] = carry;
+      this.length++;
+    }
+    return this;
+  };
+
+  BN.prototype.isZero = function isZero() {
+    return this.length === 1 && this.words[0] === 0;
+  };
+
+  BN.prototype.cmpn = function cmpn(num) {
+    var negative = num < 0;
+
+    if (this.negative !== 0 && !negative) return -1;
+    if (this.negative === 0 && negative) return 1;
+
+    this.strip();
+
+    var res;
+    if (this.length > 1) {
+      res = 1;
+    } else {
+      if (negative) {
+        num = -num;
+      }
+
+      assert(num <= 0x3ffffff, 'Number is too big');
+
+      var w = this.words[0] | 0;
+      res = w === num ? 0 : w < num ? -1 : 1;
+    }
+    if (this.negative !== 0) return -res | 0;
+    return res;
+  };
+
+  // Compare two numbers and return:
+  // 1 - if `this` > `num`
+  // 0 - if `this` == `num`
+  // -1 - if `this` < `num`
+  BN.prototype.cmp = function cmp(num) {
+    if (this.negative !== 0 && num.negative === 0) return -1;
+    if (this.negative === 0 && num.negative !== 0) return 1;
+
+    var res = this.ucmp(num);
+    if (this.negative !== 0) return -res | 0;
+    return res;
+  };
+
+  // Unsigned comparison
+  BN.prototype.ucmp = function ucmp(num) {
+    // At this point both numbers have the same sign
+    if (this.length > num.length) return 1;
+    if (this.length < num.length) return -1;
+
+    var res = 0;
+    for (var i = this.length - 1; i >= 0; i--) {
+      var a = this.words[i] | 0;
+      var b = num.words[i] | 0;
+
+      if (a === b) continue;
+      if (a < b) {
+        res = -1;
+      } else if (a > b) {
+        res = 1;
+      }
+      break;
+    }
+    return res;
+  };
+
+  BN.prototype.gtn = function gtn(num) {
+    return this.cmpn(num) === 1;
+  };
+
+  BN.prototype.gt = function gt(num) {
+    return this.cmp(num) === 1;
+  };
+
+  BN.prototype.gten = function gten(num) {
+    return this.cmpn(num) >= 0;
+  };
+
+  BN.prototype.gte = function gte(num) {
+    return this.cmp(num) >= 0;
+  };
+
+  BN.prototype.ltn = function ltn(num) {
+    return this.cmpn(num) === -1;
+  };
+
+  BN.prototype.lt = function lt(num) {
+    return this.cmp(num) === -1;
+  };
+
+  BN.prototype.lten = function lten(num) {
+    return this.cmpn(num) <= 0;
+  };
+
+  BN.prototype.lte = function lte(num) {
+    return this.cmp(num) <= 0;
+  };
+
+  BN.prototype.eqn = function eqn(num) {
+    return this.cmpn(num) === 0;
+  };
+
+  BN.prototype.eq = function eq(num) {
+    return this.cmp(num) === 0;
+  };
+
+  //
+  // A reduce context, could be using montgomery or something better, depending
+  // on the `m` itself.
+  //
+  BN.red = function red(num) {
+    return new Red(num);
+  };
+
+  BN.prototype.toRed = function toRed(ctx) {
+    assert(!this.red, 'Already a number in reduction context');
+    assert(this.negative === 0, 'red works only with positives');
+    return ctx.convertTo(this)._forceRed(ctx);
+  };
+
+  BN.prototype.fromRed = function fromRed() {
+    assert(this.red, 'fromRed works only with numbers in reduction context');
+    return this.red.convertFrom(this);
+  };
+
+  BN.prototype._forceRed = function _forceRed(ctx) {
+    this.red = ctx;
+    return this;
+  };
+
+  BN.prototype.forceRed = function forceRed(ctx) {
+    assert(!this.red, 'Already a number in reduction context');
+    return this._forceRed(ctx);
+  };
+
+  BN.prototype.redAdd = function redAdd(num) {
+    assert(this.red, 'redAdd works only with red numbers');
+    return this.red.add(this, num);
+  };
+
+  BN.prototype.redIAdd = function redIAdd(num) {
+    assert(this.red, 'redIAdd works only with red numbers');
+    return this.red.iadd(this, num);
+  };
+
+  BN.prototype.redSub = function redSub(num) {
+    assert(this.red, 'redSub works only with red numbers');
+    return this.red.sub(this, num);
+  };
+
+  BN.prototype.redISub = function redISub(num) {
+    assert(this.red, 'redISub works only with red numbers');
+    return this.red.isub(this, num);
+  };
+
+  BN.prototype.redShl = function redShl(num) {
+    assert(this.red, 'redShl works only with red numbers');
+    return this.red.shl(this, num);
+  };
+
+  BN.prototype.redMul = function redMul(num) {
+    assert(this.red, 'redMul works only with red numbers');
+    this.red._verify2(this, num);
+    return this.red.mul(this, num);
+  };
+
+  BN.prototype.redIMul = function redIMul(num) {
+    assert(this.red, 'redMul works only with red numbers');
+    this.red._verify2(this, num);
+    return this.red.imul(this, num);
+  };
+
+  BN.prototype.redSqr = function redSqr() {
+    assert(this.red, 'redSqr works only with red numbers');
+    this.red._verify1(this);
+    return this.red.sqr(this);
+  };
+
+  BN.prototype.redISqr = function redISqr() {
+    assert(this.red, 'redISqr works only with red numbers');
+    this.red._verify1(this);
+    return this.red.isqr(this);
+  };
+
+  // Square root over p
+  BN.prototype.redSqrt = function redSqrt() {
+    assert(this.red, 'redSqrt works only with red numbers');
+    this.red._verify1(this);
+    return this.red.sqrt(this);
+  };
+
+  BN.prototype.redInvm = function redInvm() {
+    assert(this.red, 'redInvm works only with red numbers');
+    this.red._verify1(this);
+    return this.red.invm(this);
+  };
+
+  // Return negative clone of `this` % `red modulo`
+  BN.prototype.redNeg = function redNeg() {
+    assert(this.red, 'redNeg works only with red numbers');
+    this.red._verify1(this);
+    return this.red.neg(this);
+  };
+
+  BN.prototype.redPow = function redPow(num) {
+    assert(this.red && !num.red, 'redPow(normalNum)');
+    this.red._verify1(this);
+    return this.red.pow(this, num);
+  };
+
+  // Prime numbers with efficient reduction
+  var primes = {
+    k256: null,
+    p224: null,
+    p192: null,
+    p25519: null
+  };
+
+  // Pseudo-Mersenne prime
+  function MPrime(name, p) {
+    // P = 2 ^ N - K
+    this.name = name;
+    this.p = new BN(p, 16);
+    this.n = this.p.bitLength();
+    this.k = new BN(1).iushln(this.n).isub(this.p);
+
+    this.tmp = this._tmp();
+  }
+
+  MPrime.prototype._tmp = function _tmp() {
+    var tmp = new BN(null);
+    tmp.words = new Array(Math.ceil(this.n / 13));
+    return tmp;
+  };
+
+  MPrime.prototype.ireduce = function ireduce(num) {
+    // Assumes that `num` is less than `P^2`
+    // num = HI * (2 ^ N - K) + HI * K + LO = HI * K + LO (mod P)
+    var r = num;
+    var rlen;
+
+    do {
+      this.split(r, this.tmp);
+      r = this.imulK(r);
+      r = r.iadd(this.tmp);
+      rlen = r.bitLength();
+    } while (rlen > this.n);
+
+    var cmp = rlen < this.n ? -1 : r.ucmp(this.p);
+    if (cmp === 0) {
+      r.words[0] = 0;
+      r.length = 1;
+    } else if (cmp > 0) {
+      r.isub(this.p);
+    } else {
+      r.strip();
+    }
+
+    return r;
+  };
+
+  MPrime.prototype.split = function split(input, out) {
+    input.iushrn(this.n, 0, out);
+  };
+
+  MPrime.prototype.imulK = function imulK(num) {
+    return num.imul(this.k);
+  };
+
+  function K256() {
+    MPrime.call(this, 'k256', 'ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff fffffffe fffffc2f');
+  }
+  inherits(K256, MPrime);
+
+  K256.prototype.split = function split(input, output) {
+    // 256 = 9 * 26 + 22
+    var mask = 0x3fffff;
+
+    var outLen = Math.min(input.length, 9);
+    for (var i = 0; i < outLen; i++) {
+      output.words[i] = input.words[i];
+    }
+    output.length = outLen;
+
+    if (input.length <= 9) {
+      input.words[0] = 0;
+      input.length = 1;
+      return;
+    }
+
+    // Shift by 9 limbs
+    var prev = input.words[9];
+    output.words[output.length++] = prev & mask;
+
+    for (i = 10; i < input.length; i++) {
+      var next = input.words[i] | 0;
+      input.words[i - 10] = (next & mask) << 4 | prev >>> 22;
+      prev = next;
+    }
+    prev >>>= 22;
+    input.words[i - 10] = prev;
+    if (prev === 0 && input.length > 10) {
+      input.length -= 10;
+    } else {
+      input.length -= 9;
+    }
+  };
+
+  K256.prototype.imulK = function imulK(num) {
+    // K = 0x1000003d1 = [ 0x40, 0x3d1 ]
+    num.words[num.length] = 0;
+    num.words[num.length + 1] = 0;
+    num.length += 2;
+
+    // bounded at: 0x40 * 0x3ffffff + 0x3d0 = 0x100000390
+    var lo = 0;
+    for (var i = 0; i < num.length; i++) {
+      var w = num.words[i] | 0;
+      lo += w * 0x3d1;
+      num.words[i] = lo & 0x3ffffff;
+      lo = w * 0x40 + (lo / 0x4000000 | 0);
+    }
+
+    // Fast length reduction
+    if (num.words[num.length - 1] === 0) {
+      num.length--;
+      if (num.words[num.length - 1] === 0) {
+        num.length--;
+      }
+    }
+    return num;
+  };
+
+  function P224() {
+    MPrime.call(this, 'p224', 'ffffffff ffffffff ffffffff ffffffff 00000000 00000000 00000001');
+  }
+  inherits(P224, MPrime);
+
+  function P192() {
+    MPrime.call(this, 'p192', 'ffffffff ffffffff ffffffff fffffffe ffffffff ffffffff');
+  }
+  inherits(P192, MPrime);
+
+  function P25519() {
+    // 2 ^ 255 - 19
+    MPrime.call(this, '25519', '7fffffffffffffff ffffffffffffffff ffffffffffffffff ffffffffffffffed');
+  }
+  inherits(P25519, MPrime);
+
+  P25519.prototype.imulK = function imulK(num) {
+    // K = 0x13
+    var carry = 0;
+    for (var i = 0; i < num.length; i++) {
+      var hi = (num.words[i] | 0) * 0x13 + carry;
+      var lo = hi & 0x3ffffff;
+      hi >>>= 26;
+
+      num.words[i] = lo;
+      carry = hi;
+    }
+    if (carry !== 0) {
+      num.words[num.length++] = carry;
+    }
+    return num;
+  };
+
+  // Exported mostly for testing purposes, use plain name instead
+  BN._prime = function prime(name) {
+    // Cached version of prime
+    if (primes[name]) return primes[name];
+
+    var prime;
+    if (name === 'k256') {
+      prime = new K256();
+    } else if (name === 'p224') {
+      prime = new P224();
+    } else if (name === 'p192') {
+      prime = new P192();
+    } else if (name === 'p25519') {
+      prime = new P25519();
+    } else {
+      throw new Error('Unknown prime ' + name);
+    }
+    primes[name] = prime;
+
+    return prime;
+  };
+
+  //
+  // Base reduction engine
+  //
+  function Red(m) {
+    if (typeof m === 'string') {
+      var prime = BN._prime(m);
+      this.m = prime.p;
+      this.prime = prime;
+    } else {
+      assert(m.gtn(1), 'modulus must be greater than 1');
+      this.m = m;
+      this.prime = null;
+    }
+  }
+
+  Red.prototype._verify1 = function _verify1(a) {
+    assert(a.negative === 0, 'red works only with positives');
+    assert(a.red, 'red works only with red numbers');
+  };
+
+  Red.prototype._verify2 = function _verify2(a, b) {
+    assert((a.negative | b.negative) === 0, 'red works only with positives');
+    assert(a.red && a.red === b.red, 'red works only with red numbers');
+  };
+
+  Red.prototype.imod = function imod(a) {
+    if (this.prime) return this.prime.ireduce(a)._forceRed(this);
+    return a.umod(this.m)._forceRed(this);
+  };
+
+  Red.prototype.neg = function neg(a) {
+    if (a.isZero()) {
+      return a.clone();
+    }
+
+    return this.m.sub(a)._forceRed(this);
+  };
+
+  Red.prototype.add = function add(a, b) {
+    this._verify2(a, b);
+
+    var res = a.add(b);
+    if (res.cmp(this.m) >= 0) {
+      res.isub(this.m);
+    }
+    return res._forceRed(this);
+  };
+
+  Red.prototype.iadd = function iadd(a, b) {
+    this._verify2(a, b);
+
+    var res = a.iadd(b);
+    if (res.cmp(this.m) >= 0) {
+      res.isub(this.m);
+    }
+    return res;
+  };
+
+  Red.prototype.sub = function sub(a, b) {
+    this._verify2(a, b);
+
+    var res = a.sub(b);
+    if (res.cmpn(0) < 0) {
+      res.iadd(this.m);
+    }
+    return res._forceRed(this);
+  };
+
+  Red.prototype.isub = function isub(a, b) {
+    this._verify2(a, b);
+
+    var res = a.isub(b);
+    if (res.cmpn(0) < 0) {
+      res.iadd(this.m);
+    }
+    return res;
+  };
+
+  Red.prototype.shl = function shl(a, num) {
+    this._verify1(a);
+    return this.imod(a.ushln(num));
+  };
+
+  Red.prototype.imul = function imul(a, b) {
+    this._verify2(a, b);
+    return this.imod(a.imul(b));
+  };
+
+  Red.prototype.mul = function mul(a, b) {
+    this._verify2(a, b);
+    return this.imod(a.mul(b));
+  };
+
+  Red.prototype.isqr = function isqr(a) {
+    return this.imul(a, a.clone());
+  };
+
+  Red.prototype.sqr = function sqr(a) {
+    return this.mul(a, a);
+  };
+
+  Red.prototype.sqrt = function sqrt(a) {
+    if (a.isZero()) return a.clone();
+
+    var mod3 = this.m.andln(3);
+    assert(mod3 % 2 === 1);
+
+    // Fast case
+    if (mod3 === 3) {
+      var pow = this.m.add(new BN(1)).iushrn(2);
+      return this.pow(a, pow);
+    }
+
+    // Tonelli-Shanks algorithm (Totally unoptimized and slow)
+    //
+    // Find Q and S, that Q * 2 ^ S = (P - 1)
+    var q = this.m.subn(1);
+    var s = 0;
+    while (!q.isZero() && q.andln(1) === 0) {
+      s++;
+      q.iushrn(1);
+    }
+    assert(!q.isZero());
+
+    var one = new BN(1).toRed(this);
+    var nOne = one.redNeg();
+
+    // Find quadratic non-residue
+    // NOTE: Max is such because of generalized Riemann hypothesis.
+    var lpow = this.m.subn(1).iushrn(1);
+    var z = this.m.bitLength();
+    z = new BN(2 * z * z).toRed(this);
+
+    while (this.pow(z, lpow).cmp(nOne) !== 0) {
+      z.redIAdd(nOne);
+    }
+
+    var c = this.pow(z, q);
+    var r = this.pow(a, q.addn(1).iushrn(1));
+    var t = this.pow(a, q);
+    var m = s;
+    while (t.cmp(one) !== 0) {
+      var tmp = t;
+      for (var i = 0; tmp.cmp(one) !== 0; i++) {
+        tmp = tmp.redSqr();
+      }
+      assert(i < m);
+      var b = this.pow(c, new BN(1).iushln(m - i - 1));
+
+      r = r.redMul(b);
+      c = b.redSqr();
+      t = t.redMul(c);
+      m = i;
+    }
+
+    return r;
+  };
+
+  Red.prototype.invm = function invm(a) {
+    var inv = a._invmp(this.m);
+    if (inv.negative !== 0) {
+      inv.negative = 0;
+      return this.imod(inv).redNeg();
+    } else {
+      return this.imod(inv);
+    }
+  };
+
+  Red.prototype.pow = function pow(a, num) {
+    if (num.isZero()) return new BN(1);
+    if (num.cmpn(1) === 0) return a.clone();
+
+    var windowSize = 4;
+    var wnd = new Array(1 << windowSize);
+    wnd[0] = new BN(1).toRed(this);
+    wnd[1] = a;
+    for (var i = 2; i < wnd.length; i++) {
+      wnd[i] = this.mul(wnd[i - 1], a);
+    }
+
+    var res = wnd[0];
+    var current = 0;
+    var currentLen = 0;
+    var start = num.bitLength() % 26;
+    if (start === 0) {
+      start = 26;
+    }
+
+    for (i = num.length - 1; i >= 0; i--) {
+      var word = num.words[i];
+      for (var j = start - 1; j >= 0; j--) {
+        var bit = word >> j & 1;
+        if (res !== wnd[0]) {
+          res = this.sqr(res);
+        }
+
+        if (bit === 0 && current === 0) {
+          currentLen = 0;
+          continue;
+        }
+
+        current <<= 1;
+        current |= bit;
+        currentLen++;
+        if (currentLen !== windowSize && (i !== 0 || j !== 0)) continue;
+
+        res = this.mul(res, wnd[current]);
+        currentLen = 0;
+        current = 0;
+      }
+      start = 26;
+    }
+
+    return res;
+  };
+
+  Red.prototype.convertTo = function convertTo(num) {
+    var r = num.umod(this.m);
+
+    return r === num ? r.clone() : r;
+  };
+
+  Red.prototype.convertFrom = function convertFrom(num) {
+    var res = num.clone();
+    res.red = null;
+    return res;
+  };
+
+  //
+  // Montgomery method engine
+  //
+
+  BN.mont = function mont(num) {
+    return new Mont(num);
+  };
+
+  function Mont(m) {
+    Red.call(this, m);
+
+    this.shift = this.m.bitLength();
+    if (this.shift % 26 !== 0) {
+      this.shift += 26 - this.shift % 26;
+    }
+
+    this.r = new BN(1).iushln(this.shift);
+    this.r2 = this.imod(this.r.sqr());
+    this.rinv = this.r._invmp(this.m);
+
+    this.minv = this.rinv.mul(this.r).isubn(1).div(this.m);
+    this.minv = this.minv.umod(this.r);
+    this.minv = this.r.sub(this.minv);
+  }
+  inherits(Mont, Red);
+
+  Mont.prototype.convertTo = function convertTo(num) {
+    return this.imod(num.ushln(this.shift));
+  };
+
+  Mont.prototype.convertFrom = function convertFrom(num) {
+    var r = this.imod(num.mul(this.rinv));
+    r.red = null;
+    return r;
+  };
+
+  Mont.prototype.imul = function imul(a, b) {
+    if (a.isZero() || b.isZero()) {
+      a.words[0] = 0;
+      a.length = 1;
+      return a;
+    }
+
+    var t = a.imul(b);
+    var c = t.maskn(this.shift).mul(this.minv).imaskn(this.shift).mul(this.m);
+    var u = t.isub(c).iushrn(this.shift);
+    var res = u;
+
+    if (u.cmp(this.m) >= 0) {
+      res = u.isub(this.m);
+    } else if (u.cmpn(0) < 0) {
+      res = u.iadd(this.m);
+    }
+
+    return res._forceRed(this);
+  };
+
+  Mont.prototype.mul = function mul(a, b) {
+    if (a.isZero() || b.isZero()) return new BN(0)._forceRed(this);
+
+    var t = a.mul(b);
+    var c = t.maskn(this.shift).mul(this.minv).imaskn(this.shift).mul(this.m);
+    var u = t.isub(c).iushrn(this.shift);
+    var res = u;
+    if (u.cmp(this.m) >= 0) {
+      res = u.isub(this.m);
+    } else if (u.cmpn(0) < 0) {
+      res = u.iadd(this.m);
+    }
+
+    return res._forceRed(this);
+  };
+
+  Mont.prototype.invm = function invm(a) {
+    // (AR)^-1 * R^2 = (A^-1 * R^-1) * R^2 = A^-1 * R
+    var res = this.imod(a._invmp(this.m).mul(this.r2));
+    return res._forceRed(this);
+  };
+})(typeof module === 'undefined' || module, this);
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)(module)))
+
+/***/ }),
+/* 120 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var isHexPrefixed = __webpack_require__(121);
+
+/**
+ * Removes '0x' from a given `String` is present
+ * @param {String} str the string value
+ * @return {String|Optional} a string by pass if necessary
+ */
+module.exports = function stripHexPrefix(str) {
+  if (typeof str !== 'string') {
+    return str;
+  }
+
+  return isHexPrefixed(str) ? str.slice(2) : str;
+};
+
+/***/ }),
+/* 121 */
+/***/ (function(module, exports) {
+
+/**
+ * Returns a `Boolean` on whether or not the a `String` starts with '0x'
+ * @param {String} str the string input value
+ * @return {Boolean} a boolean if it is or is not hex prefixed
+ * @throws if the str input is not a string
+ */
+module.exports = function isHexPrefixed(str) {
+  if (typeof str !== 'string') {
+    throw new Error("[is-hex-prefixed] value must be type 'string', is currently type " + typeof str + ", while checking isHexPrefixed.");
+  }
+
+  return str.slice(0, 2) === '0x';
+};
+
+/***/ }),
+/* 122 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(module, global) {var __WEBPACK_AMD_DEFINE_RESULT__;/*! https://mths.be/utf8js v2.0.0 by @mathias */
+;(function (root) {
+
+	// Detect free variables `exports`
+	var freeExports = typeof exports == 'object' && exports;
+
+	// Detect free variable `module`
+	var freeModule = typeof module == 'object' && module && module.exports == freeExports && module;
+
+	// Detect free variable `global`, from Node.js or Browserified code,
+	// and use it as `root`
+	var freeGlobal = typeof global == 'object' && global;
+	if (freeGlobal.global === freeGlobal || freeGlobal.window === freeGlobal) {
+		root = freeGlobal;
+	}
+
+	/*--------------------------------------------------------------------------*/
+
+	var stringFromCharCode = String.fromCharCode;
+
+	// Taken from https://mths.be/punycode
+	function ucs2decode(string) {
+		var output = [];
+		var counter = 0;
+		var length = string.length;
+		var value;
+		var extra;
+		while (counter < length) {
+			value = string.charCodeAt(counter++);
+			if (value >= 0xD800 && value <= 0xDBFF && counter < length) {
+				// high surrogate, and there is a next character
+				extra = string.charCodeAt(counter++);
+				if ((extra & 0xFC00) == 0xDC00) {
+					// low surrogate
+					output.push(((value & 0x3FF) << 10) + (extra & 0x3FF) + 0x10000);
+				} else {
+					// unmatched surrogate; only append this code unit, in case the next
+					// code unit is the high surrogate of a surrogate pair
+					output.push(value);
+					counter--;
+				}
+			} else {
+				output.push(value);
+			}
+		}
+		return output;
+	}
+
+	// Taken from https://mths.be/punycode
+	function ucs2encode(array) {
+		var length = array.length;
+		var index = -1;
+		var value;
+		var output = '';
+		while (++index < length) {
+			value = array[index];
+			if (value > 0xFFFF) {
+				value -= 0x10000;
+				output += stringFromCharCode(value >>> 10 & 0x3FF | 0xD800);
+				value = 0xDC00 | value & 0x3FF;
+			}
+			output += stringFromCharCode(value);
+		}
+		return output;
+	}
+
+	function checkScalarValue(codePoint) {
+		if (codePoint >= 0xD800 && codePoint <= 0xDFFF) {
+			throw Error('Lone surrogate U+' + codePoint.toString(16).toUpperCase() + ' is not a scalar value');
+		}
+	}
+	/*--------------------------------------------------------------------------*/
+
+	function createByte(codePoint, shift) {
+		return stringFromCharCode(codePoint >> shift & 0x3F | 0x80);
+	}
+
+	function encodeCodePoint(codePoint) {
+		if ((codePoint & 0xFFFFFF80) == 0) {
+			// 1-byte sequence
+			return stringFromCharCode(codePoint);
+		}
+		var symbol = '';
+		if ((codePoint & 0xFFFFF800) == 0) {
+			// 2-byte sequence
+			symbol = stringFromCharCode(codePoint >> 6 & 0x1F | 0xC0);
+		} else if ((codePoint & 0xFFFF0000) == 0) {
+			// 3-byte sequence
+			checkScalarValue(codePoint);
+			symbol = stringFromCharCode(codePoint >> 12 & 0x0F | 0xE0);
+			symbol += createByte(codePoint, 6);
+		} else if ((codePoint & 0xFFE00000) == 0) {
+			// 4-byte sequence
+			symbol = stringFromCharCode(codePoint >> 18 & 0x07 | 0xF0);
+			symbol += createByte(codePoint, 12);
+			symbol += createByte(codePoint, 6);
+		}
+		symbol += stringFromCharCode(codePoint & 0x3F | 0x80);
+		return symbol;
+	}
+
+	function utf8encode(string) {
+		var codePoints = ucs2decode(string);
+		var length = codePoints.length;
+		var index = -1;
+		var codePoint;
+		var byteString = '';
+		while (++index < length) {
+			codePoint = codePoints[index];
+			byteString += encodeCodePoint(codePoint);
+		}
+		return byteString;
+	}
+
+	/*--------------------------------------------------------------------------*/
+
+	function readContinuationByte() {
+		if (byteIndex >= byteCount) {
+			throw Error('Invalid byte index');
+		}
+
+		var continuationByte = byteArray[byteIndex] & 0xFF;
+		byteIndex++;
+
+		if ((continuationByte & 0xC0) == 0x80) {
+			return continuationByte & 0x3F;
+		}
+
+		// If we end up here, it’s not a continuation byte
+		throw Error('Invalid continuation byte');
+	}
+
+	function decodeSymbol() {
+		var byte1;
+		var byte2;
+		var byte3;
+		var byte4;
+		var codePoint;
+
+		if (byteIndex > byteCount) {
+			throw Error('Invalid byte index');
+		}
+
+		if (byteIndex == byteCount) {
+			return false;
+		}
+
+		// Read first byte
+		byte1 = byteArray[byteIndex] & 0xFF;
+		byteIndex++;
+
+		// 1-byte sequence (no continuation bytes)
+		if ((byte1 & 0x80) == 0) {
+			return byte1;
+		}
+
+		// 2-byte sequence
+		if ((byte1 & 0xE0) == 0xC0) {
+			var byte2 = readContinuationByte();
+			codePoint = (byte1 & 0x1F) << 6 | byte2;
+			if (codePoint >= 0x80) {
+				return codePoint;
+			} else {
+				throw Error('Invalid continuation byte');
+			}
+		}
+
+		// 3-byte sequence (may include unpaired surrogates)
+		if ((byte1 & 0xF0) == 0xE0) {
+			byte2 = readContinuationByte();
+			byte3 = readContinuationByte();
+			codePoint = (byte1 & 0x0F) << 12 | byte2 << 6 | byte3;
+			if (codePoint >= 0x0800) {
+				checkScalarValue(codePoint);
+				return codePoint;
+			} else {
+				throw Error('Invalid continuation byte');
+			}
+		}
+
+		// 4-byte sequence
+		if ((byte1 & 0xF8) == 0xF0) {
+			byte2 = readContinuationByte();
+			byte3 = readContinuationByte();
+			byte4 = readContinuationByte();
+			codePoint = (byte1 & 0x0F) << 0x12 | byte2 << 0x0C | byte3 << 0x06 | byte4;
+			if (codePoint >= 0x010000 && codePoint <= 0x10FFFF) {
+				return codePoint;
+			}
+		}
+
+		throw Error('Invalid UTF-8 detected');
+	}
+
+	var byteArray;
+	var byteCount;
+	var byteIndex;
+	function utf8decode(byteString) {
+		byteArray = ucs2decode(byteString);
+		byteCount = byteArray.length;
+		byteIndex = 0;
+		var codePoints = [];
+		var tmp;
+		while ((tmp = decodeSymbol()) !== false) {
+			codePoints.push(tmp);
+		}
+		return ucs2encode(codePoints);
+	}
+
+	/*--------------------------------------------------------------------------*/
+
+	var utf8 = {
+		'version': '2.0.0',
+		'encode': utf8encode,
+		'decode': utf8decode
+	};
+
+	// Some AMD build optimizers, like r.js, check for specific condition patterns
+	// like the following:
+	if (true) {
+		!(__WEBPACK_AMD_DEFINE_RESULT__ = (function () {
+			return utf8;
+		}).call(exports, __webpack_require__, exports, module),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	} else if (freeExports && !freeExports.nodeType) {
+		if (freeModule) {
+			// in Node.js or RingoJS v0.8.0+
+			freeModule.exports = utf8;
+		} else {
+			// in Narwhal or RingoJS v0.7.0-
+			var object = {};
+			var hasOwnProperty = object.hasOwnProperty;
+			for (var key in utf8) {
+				hasOwnProperty.call(utf8, key) && (freeExports[key] = utf8[key]);
+			}
+		}
+	} else {
+		// in Rhino or a web browser
+		root.utf8 = utf8;
+	}
+})(this);
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)(module), __webpack_require__(7)))
+
+/***/ }),
+/* 123 */
+/***/ (function(module, exports) {
+
+// This was ported from https://github.com/emn178/js-sha3, with some minor
+// modifications and pruning. It is licensed under MIT:
+//
+// Copyright 2015-2016 Chen, Yi-Cyuan
+//  
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
+// 
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+var HEX_CHARS = '0123456789abcdef'.split('');
+var KECCAK_PADDING = [1, 256, 65536, 16777216];
+var SHIFT = [0, 8, 16, 24];
+var RC = [1, 0, 32898, 0, 32906, 2147483648, 2147516416, 2147483648, 32907, 0, 2147483649, 0, 2147516545, 2147483648, 32777, 2147483648, 138, 0, 136, 0, 2147516425, 0, 2147483658, 0, 2147516555, 0, 139, 2147483648, 32905, 2147483648, 32771, 2147483648, 32770, 2147483648, 128, 2147483648, 32778, 0, 2147483658, 2147483648, 2147516545, 2147483648, 32896, 2147483648, 2147483649, 0, 2147516424, 2147483648];
+
+var Keccak = function Keccak(bits) {
+  return {
+    blocks: [],
+    reset: true,
+    block: 0,
+    start: 0,
+    blockCount: 1600 - (bits << 1) >> 5,
+    outputBlocks: bits >> 5,
+    s: function (s) {
+      return [].concat(s, s, s, s, s);
+    }([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+  };
+};
+
+var update = function update(state, message) {
+  var length = message.length,
+      blocks = state.blocks,
+      byteCount = state.blockCount << 2,
+      blockCount = state.blockCount,
+      outputBlocks = state.outputBlocks,
+      s = state.s,
+      index = 0,
+      i,
+      code;
+
+  // update
+  while (index < length) {
+    if (state.reset) {
+      state.reset = false;
+      blocks[0] = state.block;
+      for (i = 1; i < blockCount + 1; ++i) {
+        blocks[i] = 0;
+      }
+    }
+    if (typeof message !== "string") {
+      for (i = state.start; index < length && i < byteCount; ++index) {
+        blocks[i >> 2] |= message[index] << SHIFT[i++ & 3];
+      }
+    } else {
+      for (i = state.start; index < length && i < byteCount; ++index) {
+        code = message.charCodeAt(index);
+        if (code < 0x80) {
+          blocks[i >> 2] |= code << SHIFT[i++ & 3];
+        } else if (code < 0x800) {
+          blocks[i >> 2] |= (0xc0 | code >> 6) << SHIFT[i++ & 3];
+          blocks[i >> 2] |= (0x80 | code & 0x3f) << SHIFT[i++ & 3];
+        } else if (code < 0xd800 || code >= 0xe000) {
+          blocks[i >> 2] |= (0xe0 | code >> 12) << SHIFT[i++ & 3];
+          blocks[i >> 2] |= (0x80 | code >> 6 & 0x3f) << SHIFT[i++ & 3];
+          blocks[i >> 2] |= (0x80 | code & 0x3f) << SHIFT[i++ & 3];
+        } else {
+          code = 0x10000 + ((code & 0x3ff) << 10 | message.charCodeAt(++index) & 0x3ff);
+          blocks[i >> 2] |= (0xf0 | code >> 18) << SHIFT[i++ & 3];
+          blocks[i >> 2] |= (0x80 | code >> 12 & 0x3f) << SHIFT[i++ & 3];
+          blocks[i >> 2] |= (0x80 | code >> 6 & 0x3f) << SHIFT[i++ & 3];
+          blocks[i >> 2] |= (0x80 | code & 0x3f) << SHIFT[i++ & 3];
+        }
+      }
+    }
+    state.lastByteIndex = i;
+    if (i >= byteCount) {
+      state.start = i - byteCount;
+      state.block = blocks[blockCount];
+      for (i = 0; i < blockCount; ++i) {
+        s[i] ^= blocks[i];
+      }
+      f(s);
+      state.reset = true;
+    } else {
+      state.start = i;
+    }
+  }
+
+  // finalize
+  i = state.lastByteIndex;
+  blocks[i >> 2] |= KECCAK_PADDING[i & 3];
+  if (state.lastByteIndex === byteCount) {
+    blocks[0] = blocks[blockCount];
+    for (i = 1; i < blockCount + 1; ++i) {
+      blocks[i] = 0;
+    }
+  }
+  blocks[blockCount - 1] |= 0x80000000;
+  for (i = 0; i < blockCount; ++i) {
+    s[i] ^= blocks[i];
+  }
+  f(s);
+
+  // toString
+  var hex = '',
+      i = 0,
+      j = 0,
+      block;
+  while (j < outputBlocks) {
+    for (i = 0; i < blockCount && j < outputBlocks; ++i, ++j) {
+      block = s[i];
+      hex += HEX_CHARS[block >> 4 & 0x0F] + HEX_CHARS[block & 0x0F] + HEX_CHARS[block >> 12 & 0x0F] + HEX_CHARS[block >> 8 & 0x0F] + HEX_CHARS[block >> 20 & 0x0F] + HEX_CHARS[block >> 16 & 0x0F] + HEX_CHARS[block >> 28 & 0x0F] + HEX_CHARS[block >> 24 & 0x0F];
+    }
+    if (j % blockCount === 0) {
+      f(s);
+      i = 0;
+    }
+  }
+  return "0x" + hex;
+};
+
+var f = function f(s) {
+  var h, l, n, c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17, b18, b19, b20, b21, b22, b23, b24, b25, b26, b27, b28, b29, b30, b31, b32, b33, b34, b35, b36, b37, b38, b39, b40, b41, b42, b43, b44, b45, b46, b47, b48, b49;
+
+  for (n = 0; n < 48; n += 2) {
+    c0 = s[0] ^ s[10] ^ s[20] ^ s[30] ^ s[40];
+    c1 = s[1] ^ s[11] ^ s[21] ^ s[31] ^ s[41];
+    c2 = s[2] ^ s[12] ^ s[22] ^ s[32] ^ s[42];
+    c3 = s[3] ^ s[13] ^ s[23] ^ s[33] ^ s[43];
+    c4 = s[4] ^ s[14] ^ s[24] ^ s[34] ^ s[44];
+    c5 = s[5] ^ s[15] ^ s[25] ^ s[35] ^ s[45];
+    c6 = s[6] ^ s[16] ^ s[26] ^ s[36] ^ s[46];
+    c7 = s[7] ^ s[17] ^ s[27] ^ s[37] ^ s[47];
+    c8 = s[8] ^ s[18] ^ s[28] ^ s[38] ^ s[48];
+    c9 = s[9] ^ s[19] ^ s[29] ^ s[39] ^ s[49];
+
+    h = c8 ^ (c2 << 1 | c3 >>> 31);
+    l = c9 ^ (c3 << 1 | c2 >>> 31);
+    s[0] ^= h;
+    s[1] ^= l;
+    s[10] ^= h;
+    s[11] ^= l;
+    s[20] ^= h;
+    s[21] ^= l;
+    s[30] ^= h;
+    s[31] ^= l;
+    s[40] ^= h;
+    s[41] ^= l;
+    h = c0 ^ (c4 << 1 | c5 >>> 31);
+    l = c1 ^ (c5 << 1 | c4 >>> 31);
+    s[2] ^= h;
+    s[3] ^= l;
+    s[12] ^= h;
+    s[13] ^= l;
+    s[22] ^= h;
+    s[23] ^= l;
+    s[32] ^= h;
+    s[33] ^= l;
+    s[42] ^= h;
+    s[43] ^= l;
+    h = c2 ^ (c6 << 1 | c7 >>> 31);
+    l = c3 ^ (c7 << 1 | c6 >>> 31);
+    s[4] ^= h;
+    s[5] ^= l;
+    s[14] ^= h;
+    s[15] ^= l;
+    s[24] ^= h;
+    s[25] ^= l;
+    s[34] ^= h;
+    s[35] ^= l;
+    s[44] ^= h;
+    s[45] ^= l;
+    h = c4 ^ (c8 << 1 | c9 >>> 31);
+    l = c5 ^ (c9 << 1 | c8 >>> 31);
+    s[6] ^= h;
+    s[7] ^= l;
+    s[16] ^= h;
+    s[17] ^= l;
+    s[26] ^= h;
+    s[27] ^= l;
+    s[36] ^= h;
+    s[37] ^= l;
+    s[46] ^= h;
+    s[47] ^= l;
+    h = c6 ^ (c0 << 1 | c1 >>> 31);
+    l = c7 ^ (c1 << 1 | c0 >>> 31);
+    s[8] ^= h;
+    s[9] ^= l;
+    s[18] ^= h;
+    s[19] ^= l;
+    s[28] ^= h;
+    s[29] ^= l;
+    s[38] ^= h;
+    s[39] ^= l;
+    s[48] ^= h;
+    s[49] ^= l;
+
+    b0 = s[0];
+    b1 = s[1];
+    b32 = s[11] << 4 | s[10] >>> 28;
+    b33 = s[10] << 4 | s[11] >>> 28;
+    b14 = s[20] << 3 | s[21] >>> 29;
+    b15 = s[21] << 3 | s[20] >>> 29;
+    b46 = s[31] << 9 | s[30] >>> 23;
+    b47 = s[30] << 9 | s[31] >>> 23;
+    b28 = s[40] << 18 | s[41] >>> 14;
+    b29 = s[41] << 18 | s[40] >>> 14;
+    b20 = s[2] << 1 | s[3] >>> 31;
+    b21 = s[3] << 1 | s[2] >>> 31;
+    b2 = s[13] << 12 | s[12] >>> 20;
+    b3 = s[12] << 12 | s[13] >>> 20;
+    b34 = s[22] << 10 | s[23] >>> 22;
+    b35 = s[23] << 10 | s[22] >>> 22;
+    b16 = s[33] << 13 | s[32] >>> 19;
+    b17 = s[32] << 13 | s[33] >>> 19;
+    b48 = s[42] << 2 | s[43] >>> 30;
+    b49 = s[43] << 2 | s[42] >>> 30;
+    b40 = s[5] << 30 | s[4] >>> 2;
+    b41 = s[4] << 30 | s[5] >>> 2;
+    b22 = s[14] << 6 | s[15] >>> 26;
+    b23 = s[15] << 6 | s[14] >>> 26;
+    b4 = s[25] << 11 | s[24] >>> 21;
+    b5 = s[24] << 11 | s[25] >>> 21;
+    b36 = s[34] << 15 | s[35] >>> 17;
+    b37 = s[35] << 15 | s[34] >>> 17;
+    b18 = s[45] << 29 | s[44] >>> 3;
+    b19 = s[44] << 29 | s[45] >>> 3;
+    b10 = s[6] << 28 | s[7] >>> 4;
+    b11 = s[7] << 28 | s[6] >>> 4;
+    b42 = s[17] << 23 | s[16] >>> 9;
+    b43 = s[16] << 23 | s[17] >>> 9;
+    b24 = s[26] << 25 | s[27] >>> 7;
+    b25 = s[27] << 25 | s[26] >>> 7;
+    b6 = s[36] << 21 | s[37] >>> 11;
+    b7 = s[37] << 21 | s[36] >>> 11;
+    b38 = s[47] << 24 | s[46] >>> 8;
+    b39 = s[46] << 24 | s[47] >>> 8;
+    b30 = s[8] << 27 | s[9] >>> 5;
+    b31 = s[9] << 27 | s[8] >>> 5;
+    b12 = s[18] << 20 | s[19] >>> 12;
+    b13 = s[19] << 20 | s[18] >>> 12;
+    b44 = s[29] << 7 | s[28] >>> 25;
+    b45 = s[28] << 7 | s[29] >>> 25;
+    b26 = s[38] << 8 | s[39] >>> 24;
+    b27 = s[39] << 8 | s[38] >>> 24;
+    b8 = s[48] << 14 | s[49] >>> 18;
+    b9 = s[49] << 14 | s[48] >>> 18;
+
+    s[0] = b0 ^ ~b2 & b4;
+    s[1] = b1 ^ ~b3 & b5;
+    s[10] = b10 ^ ~b12 & b14;
+    s[11] = b11 ^ ~b13 & b15;
+    s[20] = b20 ^ ~b22 & b24;
+    s[21] = b21 ^ ~b23 & b25;
+    s[30] = b30 ^ ~b32 & b34;
+    s[31] = b31 ^ ~b33 & b35;
+    s[40] = b40 ^ ~b42 & b44;
+    s[41] = b41 ^ ~b43 & b45;
+    s[2] = b2 ^ ~b4 & b6;
+    s[3] = b3 ^ ~b5 & b7;
+    s[12] = b12 ^ ~b14 & b16;
+    s[13] = b13 ^ ~b15 & b17;
+    s[22] = b22 ^ ~b24 & b26;
+    s[23] = b23 ^ ~b25 & b27;
+    s[32] = b32 ^ ~b34 & b36;
+    s[33] = b33 ^ ~b35 & b37;
+    s[42] = b42 ^ ~b44 & b46;
+    s[43] = b43 ^ ~b45 & b47;
+    s[4] = b4 ^ ~b6 & b8;
+    s[5] = b5 ^ ~b7 & b9;
+    s[14] = b14 ^ ~b16 & b18;
+    s[15] = b15 ^ ~b17 & b19;
+    s[24] = b24 ^ ~b26 & b28;
+    s[25] = b25 ^ ~b27 & b29;
+    s[34] = b34 ^ ~b36 & b38;
+    s[35] = b35 ^ ~b37 & b39;
+    s[44] = b44 ^ ~b46 & b48;
+    s[45] = b45 ^ ~b47 & b49;
+    s[6] = b6 ^ ~b8 & b0;
+    s[7] = b7 ^ ~b9 & b1;
+    s[16] = b16 ^ ~b18 & b10;
+    s[17] = b17 ^ ~b19 & b11;
+    s[26] = b26 ^ ~b28 & b20;
+    s[27] = b27 ^ ~b29 & b21;
+    s[36] = b36 ^ ~b38 & b30;
+    s[37] = b37 ^ ~b39 & b31;
+    s[46] = b46 ^ ~b48 & b40;
+    s[47] = b47 ^ ~b49 & b41;
+    s[8] = b8 ^ ~b0 & b2;
+    s[9] = b9 ^ ~b1 & b3;
+    s[18] = b18 ^ ~b10 & b12;
+    s[19] = b19 ^ ~b11 & b13;
+    s[28] = b28 ^ ~b20 & b22;
+    s[29] = b29 ^ ~b21 & b23;
+    s[38] = b38 ^ ~b30 & b32;
+    s[39] = b39 ^ ~b31 & b33;
+    s[48] = b48 ^ ~b40 & b42;
+    s[49] = b49 ^ ~b41 & b43;
+
+    s[0] ^= RC[n];
+    s[1] ^= RC[n + 1];
+  }
+};
+
+var keccak = function keccak(bits) {
+  return function (str) {
+    var msg;
+    if (str.slice(0, 2) === "0x") {
+      msg = [];
+      for (var i = 2, l = str.length; i < l; i += 2) {
+        msg.push(parseInt(str.slice(i, i + 2), 16));
+      }
+    } else {
+      msg = str;
+    }
+    return update(Keccak(bits, bits), msg);
+  };
+};
+
+module.exports = {
+  keccak256: keccak(256),
+  keccak512: keccak(512),
+  keccak256s: keccak(256),
+  keccak512s: keccak(512)
+};
+
+/***/ }),
+/* 124 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+ This file is part of web3.js.
+
+ web3.js is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ web3.js is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public License
+ along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/**
+ * @file soliditySha3.js
+ * @author Fabian Vogelsteller <fabian@ethereum.org>
+ * @date 2017
+ */
+
+var _ = __webpack_require__(26);
+var BN = __webpack_require__(36);
+var utils = __webpack_require__(35);
+
+var _elementaryName = function (name) {
+    /*jshint maxcomplexity:false */
+
+    if (name.startsWith('int[')) {
+        return 'int256' + name.slice(3);
+    } else if (name === 'int') {
+        return 'int256';
+    } else if (name.startsWith('uint[')) {
+        return 'uint256' + name.slice(4);
+    } else if (name === 'uint') {
+        return 'uint256';
+    } else if (name.startsWith('fixed[')) {
+        return 'fixed128x128' + name.slice(5);
+    } else if (name === 'fixed') {
+        return 'fixed128x128';
+    } else if (name.startsWith('ufixed[')) {
+        return 'ufixed128x128' + name.slice(6);
+    } else if (name === 'ufixed') {
+        return 'ufixed128x128';
+    }
+    return name;
+};
+
+// Parse N from type<N>
+var _parseTypeN = function (type) {
+    var typesize = /^\D+(\d+).*$/.exec(type);
+    return typesize ? parseInt(typesize[1], 10) : null;
+};
+
+// Parse N from type[<N>]
+var _parseTypeNArray = function (type) {
+    var arraySize = /^\D+\d*\[(\d+)\]$/.exec(type);
+    return arraySize ? parseInt(arraySize[1], 10) : null;
+};
+
+var _parseNumber = function (arg) {
+    var type = typeof arg;
+    if (type === 'string') {
+        if (utils.isHexStrict(arg)) {
+            return new BN(arg.replace(/0x/i, ''), 16);
+        } else {
+            return new BN(arg, 10);
+        }
+    } else if (type === 'number') {
+        return new BN(arg);
+    } else if (utils.isBigNumber(arg)) {
+        return new BN(arg.toString(10));
+    } else if (utils.isBN(arg)) {
+        return arg;
+    } else {
+        throw new Error(arg + ' is not a number');
+    }
+};
+
+var _solidityPack = function (type, value, arraySize) {
+    /*jshint maxcomplexity:false */
+
+    var size, num;
+    type = _elementaryName(type);
+
+    if (type === 'bytes') {
+
+        if (value.replace(/^0x/i, '').length % 2 !== 0) {
+            throw new Error('Invalid bytes characters ' + value.length);
+        }
+
+        return value;
+    } else if (type === 'string') {
+        return utils.utf8ToHex(value);
+    } else if (type === 'bool') {
+        return value ? '01' : '00';
+    } else if (type.startsWith('address')) {
+        if (arraySize) {
+            size = 64;
+        } else {
+            size = 40;
+        }
+
+        if (!utils.isAddress(value)) {
+            throw new Error(value + ' is not a valid address, or the checksum is invalid.');
+        }
+
+        return utils.leftPad(value.toLowerCase(), size);
+    }
+
+    size = _parseTypeN(type);
+
+    if (type.startsWith('bytes')) {
+
+        if (!size) {
+            throw new Error('bytes[] not yet supported in solidity');
+        }
+
+        // must be 32 byte slices when in an array
+        if (arraySize) {
+            size = 32;
+        }
+
+        if (size < 1 || size > 32 || size < value.replace(/^0x/i, '').length / 2) {
+            throw new Error('Invalid bytes' + size + ' for ' + value);
+        }
+
+        return utils.rightPad(value, size * 2);
+    } else if (type.startsWith('uint')) {
+
+        if (size % 8 || size < 8 || size > 256) {
+            throw new Error('Invalid uint' + size + ' size');
+        }
+
+        num = _parseNumber(value);
+        if (num.bitLength() > size) {
+            throw new Error('Supplied uint exceeds width: ' + size + ' vs ' + num.bitLength());
+        }
+
+        if (num.lt(new BN(0))) {
+            throw new Error('Supplied uint ' + num.toString() + ' is negative');
+        }
+
+        return size ? utils.leftPad(num.toString('hex'), size / 8 * 2) : num;
+    } else if (type.startsWith('int')) {
+
+        if (size % 8 || size < 8 || size > 256) {
+            throw new Error('Invalid int' + size + ' size');
+        }
+
+        num = _parseNumber(value);
+        if (num.bitLength() > size) {
+            throw new Error('Supplied int exceeds width: ' + size + ' vs ' + num.bitLength());
+        }
+
+        if (num.lt(new BN(0))) {
+            return num.toTwos(size).toString('hex');
+        } else {
+            return size ? utils.leftPad(num.toString('hex'), size / 8 * 2) : num;
+        }
+    } else {
+        // FIXME: support all other types
+        throw new Error('Unsupported or invalid type: ' + type);
+    }
+};
+
+var _processSoliditySha3Args = function (arg) {
+    /*jshint maxcomplexity:false */
+
+    if (_.isArray(arg)) {
+        throw new Error('Autodetection of array types is not supported.');
+    }
+
+    var type,
+        value = '';
+    var hexArg, arraySize;
+
+    // if type is given
+    if (_.isObject(arg) && (arg.hasOwnProperty('v') || arg.hasOwnProperty('t') || arg.hasOwnProperty('value') || arg.hasOwnProperty('type'))) {
+        type = arg.t || arg.type;
+        value = arg.v || arg.value;
+
+        // otherwise try to guess the type
+    } else {
+
+        type = utils.toHex(arg, true);
+        value = utils.toHex(arg);
+
+        if (!type.startsWith('int') && !type.startsWith('uint')) {
+            type = 'bytes';
+        }
+    }
+
+    if ((type.startsWith('int') || type.startsWith('uint')) && typeof value === 'string' && !/^(-)?0x/i.test(value)) {
+        value = new BN(value);
+    }
+
+    // get the array size
+    if (_.isArray(value)) {
+        arraySize = _parseTypeNArray(type);
+        if (arraySize && value.length !== arraySize) {
+            throw new Error(type + ' is not matching the given array ' + JSON.stringify(value));
+        } else {
+            arraySize = value.length;
+        }
+    }
+
+    if (_.isArray(value)) {
+        hexArg = value.map(function (val) {
+            return _solidityPack(type, val, arraySize).toString('hex').replace('0x', '');
+        });
+        return hexArg.join('');
+    } else {
+        hexArg = _solidityPack(type, value, arraySize);
+        return hexArg.toString('hex').replace('0x', '');
+    }
+};
+
+/**
+ * Hashes solidity values to a sha3 hash using keccak 256
+ *
+ * @method soliditySha3
+ * @return {Object} the sha3
+ */
+var soliditySha3 = function () {
+    /*jshint maxcomplexity:false */
+
+    var args = Array.prototype.slice.call(arguments);
+
+    var hexArgs = _.map(args, _processSoliditySha3Args);
+
+    // console.log(args, hexArgs);
+    // console.log('0x'+ hexArgs.join(''));
+
+    return utils.sha3('0x' + hexArgs.join(''));
+};
+
+module.exports = soliditySha3;
+
+/***/ }),
+/* 125 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var randomHex = function (size, callback) {
+    var crypto = __webpack_require__(126);
+    var isCallback = typeof callback === 'function';
+
+    if (size > 65536) {
+        if (isCallback) {
+            callback(new Error('Requested too many random bytes.'));
+        } else {
+            throw new Error('Requested too many random bytes.');
+        }
+    };
+
+    // is node
+    if (typeof crypto !== 'undefined' && crypto.randomBytes) {
+
+        if (isCallback) {
+            crypto.randomBytes(size, function (err, result) {
+                if (!err) {
+                    callback(null, '0x' + result.toString('hex'));
+                } else {
+                    callback(error);
+                }
+            });
+        } else {
+            return '0x' + crypto.randomBytes(size).toString('hex');
+        }
+
+        // is browser
+    } else {
+        var cryptoLib;
+
+        if (typeof crypto !== 'undefined') {
+            cryptoLib = crypto;
+        } else if (typeof msCrypto !== 'undefined') {
+            cryptoLib = msCrypto;
+        }
+
+        if (cryptoLib && cryptoLib.getRandomValues) {
+            var randomBytes = cryptoLib.getRandomValues(new Uint8Array(size));
+            var returnValue = '0x' + Array.from(randomBytes).map(function (arr) {
+                return arr.toString(16);
+            }).join('');
+
+            if (isCallback) {
+                callback(null, returnValue);
+            } else {
+                return returnValue;
+            }
+
+            // not crypto object
+        } else {
+            var error = new Error('No "crypto" object available. This Browser doesn\'t support generating secure random bytes.');
+
+            if (isCallback) {
+                callback(error);
+            } else {
+                throw error;
+            }
+        }
+    }
+};
+
+module.exports = randomHex;
+
+/***/ }),
+/* 126 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(127);
+
+/***/ }),
+/* 127 */
+/***/ (function(module, exports) {
+
+module.exports = window.crypto;
+
+/***/ }),
+/* 128 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+
+const $ = __webpack_require__(6);
+
+class HomeDashboard {
+
+  init(ethHelper, web3, dashboardRenderer) {
+    setInterval(function () {
+      console.log("updating contract data");
+
+      ethHelper.connectToContract(web3, dashboardRenderer, function (contractData) {
+
+        dashboardRenderer.update(contractData);
+      });
+    }, 30 * 1000);
+
+    ethHelper.connectToContract(web3, dashboardRenderer, function (contractData) {
+
+      dashboardRenderer.init(contractData);
+    });
+  }
+
+}
+/* unused harmony export default */
+
+
+/***/ }),
+/* 129 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(14);
+
+const $ = __webpack_require__(6);
+
+
+
+var balanceText;
+var accountAddress;
+
+class WalletDashboard {
+
+  async init(alertRenderer, ethHelper) {
+    this.alertRenderer = alertRenderer;
+    this.ethHelper = ethHelper;
+
+    $(".transfer-form-fields").hide();
+
+    this.web3 = this.detectInjectedWeb3();
+
+    await this.updateWalletRender();
+
+    console.log(accountAddress);
+
+    var app = new __WEBPACK_IMPORTED_MODULE_0_vue__["a" /* default */]({
+      el: '#wallet-titlebar',
+      data: { account: accountAddress,
+        balance: balanceText,
+        errorMessage: alertRenderer.alertMessage },
+
+      methods: {
+        update: function () {}
+      }
+    });
+
+    var transfer = new __WEBPACK_IMPORTED_MODULE_0_vue__["a" /* default */]({
+      el: '#transfer-form',
+      data: { amount: 0,
+        recipient_address: null },
+
+      methods: {
+        update: function () {}
+      }
+    });
+
+    if (this.web3 != null) {
+      $(".transfer-form-fields").show();
+
+      var self = this;
+
+      $(".start-transfer-button").on('click', function () {
+
+        self.startTransfer(transfer.amount, transfer.recipient_address, function (error, response) {
+
+          console.log(response);
+        });
+      });
+    }
+  }
+
+  detectInjectedWeb3() {
+
+    console.log('detect');
+    if (typeof web3 !== 'undefined') {
+      web3 = new Web3(web3.currentProvider);
+
+      console.log(web3);
+
+      if (typeof web3.eth !== 'undefined' && typeof web3.eth.accounts[0] !== 'undefined') {
+
+        return web3;
+      } else {
+
+        console.log(web3.eth);
+        console.log(web3.eth.accounts[0]);
+
+        this.alertRenderer.renderError("No Web3 interface found.  Please login to Metamask or an Ethereum enabled browser.");
+      }
+    } else {
+      // set the provider you want from Web3.providers
+      //web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+      this.alertRenderer.renderError("No Web3 interface found.  Please install Metamask or use an Ethereum enabled browser.");
+    }
+
+    return null;
+  }
+
+  async updateWalletRender() {
+    if (this.web3 != null) {
+      console.log('loading wallet data ');
+
+      var activeAccount = web3.eth.accounts[0];
+
+      accountAddress = activeAccount;
+
+      console.log(accountAddress);
+
+      var contract = this.ethHelper.getWeb3ContractInstance(this.web3);
+
+      let getDecimals = new Promise(resolve => {
+        contract.decimals(function (error, response) {
+          resolve(response.toNumber());
+        });
+      });
+
+      let getTokenBalance = new Promise(resolve => {
+        contract.balanceOf(activeAccount, function (error, response) {
+          resolve(response.toNumber());
+        });
+      });
+
+      var decimals = await getDecimals;
+      var tokenBalance = await getTokenBalance;
+
+      balanceText = tokenBalance / Math.pow(10, decimals);
+    }
+  }
+
+  async startTransfer(amountRaw, recipient, callback) {
+
+    var contract = this.ethHelper.getWeb3ContractInstance(this.web3);
+
+    let getDecimals = new Promise(resolve => {
+      contract.decimals(function (error, response) {
+        resolve(response.toNumber());
+      });
+    });
+
+    var decimals = await getDecimals;
+
+    var amount = amountRaw * Math.pow(10, decimals);
+
+    console.log('start transfer', amount, recipient);
+
+    contract.transfer.sendTransaction(recipient, amount, callback);
+  }
+
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = WalletDashboard;
+
+
+/***/ }),
+/* 130 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
