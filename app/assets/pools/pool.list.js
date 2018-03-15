@@ -12,6 +12,11 @@ var list =  {pools:[
    {name:"0xBrute" ,
     url: "http://0xbrute.com",
      image: "/app/assets/img/0xbrute.png"
+   },
+
+   {name:"Pizza Pool" ,
+    url: "http://gpu.pizza",
+     image: "/app/assets/img/pizza.png"
     }
 
  ]}
