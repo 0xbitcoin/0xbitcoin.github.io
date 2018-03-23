@@ -5,10 +5,10 @@ import logo from '../img/0xbitcoin.png'
 import githubLogo from '../img/GitHub-Mark-64px.png'
 import redditLogo from '../img/reddit-mark-64px.png'
 
-import brutePool from '../img/0xbrute.png'
+import brutePool from '../img/0xbtcpool.png'
 import TokenMiningPool from '../img/tokenminingpool.png'
-import _0xPool from '../img/0xpool.png'
- 
+import _0xPool from '../img/mikers.png'
+import PizzaPool from '../img/pizza.png'
 
 
 import Vue from 'vue'
