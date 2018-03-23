@@ -4,14 +4,14 @@ var list =  {pools:[
   image: "/app/assets/img/tokenminingpool.png"
   },
 
-   {name:"0xPool" ,
-    url: "http://0xpool.io",
-     image: "/app/assets/img/0xpool.png"
+   {name:"Mikers Pool" ,
+    url: "http://mike.rs:3000/",
+     image: "/app/assets/img/mikers.png"
    },
 
-   {name:"0xBrute" ,
-    url: "http://0xbrute.com",
-     image: "/app/assets/img/0xbrute.png"
+   {name:"0xBTC Pool" ,
+    url: "http://0xbtcpool.com",
+     image: "/app/assets/img/0xbtcpool.png"
    },
 
    {name:"Pizza Pool" ,
