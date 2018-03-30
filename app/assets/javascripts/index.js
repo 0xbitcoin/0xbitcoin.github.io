@@ -2,6 +2,7 @@
 const $ = require('jquery');
 
 import logo from '../img/0xbitcoin.png'
+import titleLogo from '../img/logo-dark.png'
 import githubLogo from '../img/GitHub-Mark-64px.png'
 import redditLogo from '../img/reddit-mark-64px.png'
 
@@ -32,7 +33,7 @@ var wallet = new WalletDashboard();
 var navbar = new Vue({
   el: '#navbar',
   data: {
-    brandImageUrl: logo,
+    titleLogo: titleLogo,
     githubLogo: githubLogo,
     redditLogo: redditLogo
   }

@@ -2,15 +2,6 @@ $(document).ready(function ($) {
     'use strict';
 
 
-/* ---------------------------------------------
-     page  Prealoader
- --------------------------------------------- */
-    $(window).on('load', function () {
-        $("#loading-center-page").fadeOut();
-        $("#loading-page").delay(400).fadeOut("slow");
-    });
-
-
 });
 
 /* ---------------------------------------------
@@ -93,14 +84,6 @@ $('.popup-image').magnificPopup({
  --------------------------------------------- */
 
 
-$.scrollUp({
-    scrollText: '<i class="icon-arrow-up"></i>',
-    easingType: 'linear',
-    scrollSpeed: 900,
-    animation: 'fade'
-});
-
-
 /* ---------------------------------------------
  WoW plugin
  --------------------------------------------- */
@@ -113,41 +96,7 @@ new WOW().init({
  Smooth scroll
  --------------------------------------------- */
 
-  $('a.section-scroll[href*="#"]:not([href="#"])').on('click', function (event) {
-    if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '')
-        || location.hostname == this.hostname) {
-
-        var target = $(this.hash);
-        target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
-        if (target.length) {
-            // Only prevent default if animation is actually gonna happen
-        event.preventDefault();
-            $('html,body').animate({
-                scrollTop: target.offset().top
-            }, 750);
-            return false;
-        }
-    }
-});
-
-
 /*----------------------------------------
  Newsletter Subscribe
  --------------------------------------*/
-
-
-    $(".subscribe-mail").ajaxChimp({
-        callback: mailchimpCallRep,
-        url: "mailchimp-post-url" //Replace this with your own mailchimp post URL. Just paste the url inside "".
-    });
-
-function mailchimpCallRep(resp)
-{
-    if (resp.result === "success") {
-        $(".sucess-message").html(resp.msg).fadeIn(1000);
-        $(".error-message").fadeOut(500);
-    } else if (resp.result === "error") {
-        $(".error-message").html(resp.msg).fadeIn(1000);
-    }
-}
-
+ 

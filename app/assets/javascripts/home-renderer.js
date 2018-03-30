@@ -45,31 +45,8 @@ export default class HomeRenderer {
 
 
 
-      $(window).on('load', function () {
-          $("#loading-center-page").fadeOut();
-          $("#loading-page").delay(400).fadeOut("slow");
-      });
 
 
-
-      var options = {
-          strings: [
-           '',
-          'node index.js^1000\n `Welcome to 0xBitcoin Miner!` ^100\n `Version 1.5.21` ^100\n `Type a command to get started..` ^2000\n `mine` ^200\n `Selected mining account:` ^100\n `0x430d92dfb5caa11347F26eE741910Dee6eed3208` ^100\n `New challenge number: 0xd7ba815` ^2000\n `Hash rate: 6318 kH/s` ^2000\n `Hash rate: 6121 kH/s` ^2000\n `Hash rate: 6188 kH/s`  '
-        //'hello'
-         ],
-          typeSpeed: 40,
-           loop: true,
-           backSpeed: 0,
-        }
-
-
-
-        var typed = new Typed(".code-terminal", options);
-
-
-
-      
 
 
   /*
@@ -184,8 +161,6 @@ export default class HomeRenderer {
 
       console.log('init home')
 
-      $("#loading-center-page").fadeOut();
-      $("#loading-page").delay(400).fadeOut("slow");
     }
 
      update( )
