@@ -7,6 +7,8 @@ import githubLogo from '../img/GitHub-Mark-64px.png'
 import redditLogo from '../img/reddit-mark-64px.png'
 import contractQR from '../img/0xbitcoinContractQR.png'
 
+import whiteLogo from '../img/logo.png'
+
 
 
 
