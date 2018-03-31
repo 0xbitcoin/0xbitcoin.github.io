@@ -17,7 +17,7 @@ a
 
 .page-container
 {
-  width: 940px;
+  max-width: 940px;
   margin: auto;
 
 }
@@ -99,12 +99,18 @@ a
 {
   text-align: left;
   font-size: 1.5em;
+  line-height: 1.5;
 
 
-    li
-    {
-      margin-bottom:20px;
-    }
+
+  @media only screen and (max-width: 768px) {
+    font-size: 1.0em;
+  }
+
+  li
+  {
+    margin-bottom:20px;
+  }
 }
 
 
@@ -115,7 +121,17 @@ a
   a
   {
     color: #eee;
-        text-decoration: underline;
+    text-decoration: underline;
+  }
+
+
+  .navbar
+  {
+    a
+    {
+      color:  #000;
+      text-decoration: none;
+    }
   }
 
   .section-white-theme
@@ -206,7 +222,7 @@ position: relative;
 
   height:380px;
   padding: 15px;
-      padding-top: 40px;
+  padding-top: 40px;
   text-align:center;
 
   background-color: #21252b;
@@ -215,7 +231,7 @@ position: relative;
 
   margin-left: 20px;
   margin-right: 20px;
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 
   .pool-title
   {
@@ -259,6 +275,16 @@ position: relative;
   opacity:0;
 }
 
+.navbar-collapse-mobile
+{
+  font-size: 1.8em;
+
+  .navbar-item
+  {
+    font-size: 1.5em;
+    margin-top: 10px;
+  }
+}
 
 .footer
 {

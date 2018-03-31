@@ -14,6 +14,12 @@
   display: flex;
 }
 
+.navbar-start
+{
+      margin-right: 50px;
+
+}
+
 .navbar-end
 {
     margin-left:50px;
@@ -26,6 +32,18 @@
     display: none;
   }
 
+}
+
+
+.youtube-mining-tutorial
+{
+    @media screen and (max-width: 720px) {
+      iframe
+      {
+        width:320px;
+        height:220px;
+      }
+    }
 }
 
 
