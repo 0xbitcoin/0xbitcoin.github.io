@@ -29,7 +29,7 @@ export default class HomeRenderer {
 
          } );
 
-      },3000);
+      },30 * 1000);
 
 
 
@@ -80,6 +80,32 @@ export default class HomeRenderer {
               });
 
             }
+
+
+            var $activeDropdown = $('.dropdown-button') ;
+
+            if ($activeDropdown.length > 0) {
+              $.each($activeDropdown,function () {
+                $(this).on('click',function (){
+                    var parent = $(this).parent();
+                    var dropdownContent = $(parent).find('.navbar-dropdown').first();
+
+                    var visible = $(dropdownContent).css('display') == 'block';
+
+                    if(visible)
+                    {
+                        $(dropdownContent).css('display','none');
+                    }else{
+                        $(dropdownContent).css('display','block');
+                    }
+
+                });
+              });
+
+            }
+
+
+
 
 
 

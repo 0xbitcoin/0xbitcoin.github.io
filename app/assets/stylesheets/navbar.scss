@@ -19,6 +19,22 @@
     margin-left:50px;
 }
 
+.has-dropdown.is-active
+{
+  .navbar-dropdown
+  {
+    display: none;
+  }
+
+}
+
+
+.acts-as-links
+{
+  cursor:pointer;
+}
+
+
 .navbar-brand
 {
 
