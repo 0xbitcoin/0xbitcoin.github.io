@@ -259,9 +259,7 @@ Navigation
     background-color: transparent;
 }
 .navbar-brand{
-    float: left;
-    margin-left: 0!important;
-    padding: 3px  30px 0 30px;
+      
 
 }
 .navbar-default .navbar-nav>.active>a{

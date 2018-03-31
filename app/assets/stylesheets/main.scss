@@ -75,6 +75,13 @@ a
   display: inline-block;
 }
 
+.button-strong
+{
+  font-weight: bold;
+  font-size:22px;
+  padding:10px 15px;
+}
+
 .navbar-item
 {
   padding: 2px;
@@ -87,6 +94,19 @@ a
     font-size: 10px;
   }
 }
+
+.list-strong
+{
+  text-align: left;
+  font-size: 1.5em;
+
+
+    li
+    {
+      margin-bottom:20px;
+    }
+}
+
 
 .orange-theme
 {

@@ -1,17 +1,35 @@
+.navbar-padded
+{
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+
 .navbar-container
 {
   max-width: 1000px;
   margin: 0 auto;
-      display: block;
+
+  align-items: stretch;
+  display: flex;
+}
+
+.navbar-end
+{
+    margin-left:50px;
 }
 
 .navbar-brand
 {
-  float:none;
-  display: inline-block;
+
 }
 
 .navbar-menu
 {
-  display: inline-block;
+
+}
+
+.navbar-item
+{
+
 }
