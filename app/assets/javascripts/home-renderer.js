@@ -41,7 +41,6 @@ export default class HomeRenderer {
         } );
 
 
-        console.log('meep')
 
 
           // Get all "navbar-burger" elements
@@ -68,6 +67,19 @@ export default class HomeRenderer {
           }
 
 
+
+          var $fadedin = $('.faded-in') ;
+              console.log('meep');
+
+            if ($fadedin.length > 0) {
+              $.each($fadedin,function () {
+                var fadeTime = $(this).data('fade-time');
+                console.log($(this));
+                console.log(fadeTime);
+               $(this).delay(fadeTime).animate({ opacity: 1 }, fadeTime)
+              });
+
+            }
 
 
 

@@ -58,15 +58,13 @@
 
                  <ul class="list-strong color-primary">
 
-                   <li><i class="fas fa-file-alt"></i>  Autonomous decentralized currency</li>
+                   <li class="faded-in" data-fade-time=200><i class="icon icon-control-play"  ></i>  Autonomous decentralized currency</li>
 
-                   <li><i class="fas fa-database"></i>   Fixed supply at 21,000,000</li>
+                   <li class="faded-in" data-fade-time=1500><i class="icon icon-control-play" ></i> SHA256 proof of work algorithm</li>
 
-                   <li><i class="fas fa-database"></i> SHA256 proof of work algorithm</li>
+                   <li class="faded-in" data-fade-time=3000><i class="icon icon-control-play" ></i>  Automatic difficulty adjustment</li>
 
-                   <li><i class="fas fa-chart-line"></i>  Automatic difficulty adjustment</li>
- 
-                   <li><i class="fas fa-terminal"></i> Works with Ethereum Smart Contracts</li>
+                   <li class="faded-in" data-fade-time=5000><i class="icon icon-control-play" ></i> Works with Ethereum Smart Contracts</li>
                  </ul>
 
               </div>
@@ -80,6 +78,32 @@
           </div>
         </div>
       </section>
+
+
+
+      <div id="dashboard" class="box  has-small-text-mobile" style="overflow-x:auto; min-height:480px;">
+        <div class='subtitle'>    <i class="icon-chart color-primary" style="font-size:48px" ></i>  </div>
+        <table class='table' style='margin: 0 auto'>
+
+        <tbody>
+          <tr> <td> Network: MAINNET </td> </tr>
+          <tr> <td> Address: <a :href='contractUrl' target="_blank"> {{ contractAddress }} </a>  </td> </tr>
+          <tr> <td> Total Supply:  {{ totalSupply }} </td> </tr>
+          <tr> <td> Amount Mined:  {{ amountMined }}</td></tr>
+        <tr> <td> Mining Difficulty:  {{ difficulty }}</td></tr>
+        <tr> <td> Hashrate Estimate:  {{ hashrateEstimate }}</td></tr>
+        <tr> <td> Mining Challenge:  {{ challenge_number }}</td></tr>
+
+        <tr> <td> Last Reward To:  {{ lastRewardTo }}</td></tr>
+        <tr> <td> Last Reward Amount:  {{ lastRewardAmount }}</td></tr>
+        <tr> <td> Last Reward EthBlock#:  {{ lastRewardEthBlockNumber }}</td></tr>
+       </tbody>
+        </table>
+
+      </div>
+
+
+
 
 
 
@@ -142,26 +166,6 @@
 
 
 
-      <div id="dashboard" class="box  has-small-text-mobile" style="overflow-x:auto; min-height:480px;">
-        <div class='subtitle'>    <i class="icon-chart color-primary" style="font-size:48px" ></i>  </div>
-        <table class='table' style='margin: 0 auto'>
-
-        <tbody>
-          <tr> <td> Network: MAINNET </td> </tr>
-          <tr> <td> Address: <a :href='contractUrl' target="_blank"> {{ contractAddress }} </a>  </td> </tr>
-          <tr> <td> Total Supply:  {{ totalSupply }} </td> </tr>
-          <tr> <td> Amount Mined:  {{ amountMined }}</td></tr>
-        <tr> <td> Mining Difficulty:  {{ difficulty }}</td></tr>
-        <tr> <td> Hashrate Estimate:  {{ hashrateEstimate }}</td></tr>
-        <tr> <td> Mining Challenge:  {{ challenge_number }}</td></tr>
-
-        <tr> <td> Last Reward To:  {{ lastRewardTo }}</td></tr>
-        <tr> <td> Last Reward Amount:  {{ lastRewardAmount }}</td></tr>
-        <tr> <td> Last Reward EthBlock#:  {{ lastRewardEthBlockNumber }}</td></tr>
-       </tbody>
-        </table>
-
-      </div>
 
 
 
