@@ -11,63 +11,261 @@
   <link href="/assets/main.css" rel="stylesheet"></head>
 
 
+  <nav class="navbar " id="navbar">
+  <div class="navbar-container"  >
 
-  <body  data-spy="scroll" id="home" >
+
+  <div class="navbar-brand">
+    <a class="navbar-item" href="/">
+      <img :src="titleLogo" height="28" width="112" />
+
+    </a>
+
+  </div>
 
 
 
-    <!-- Page Preloader -->
 
-    <div id="loading-page">
-        <div id="loading-center-page">
-            <div id="loading-center-absolute">
 
-                <div class="loader"></div>
+  <div class="navbar-burger" data-target="navMenu">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+
+
+
+
+  <div  class="navbar-menu">
+    <div class="navbar-start">
+      <div class="navbar-item has-dropdown is-active">
+        <div class="navbar-link  is-active acts-as-link dropdown-button"  >
+          Docs
+        </div>
+        <div class="navbar-dropdown ">
+
+          <a class="navbar-item" target="blank" href="https://0x1d00ffff.github.io/0xBTC-Stats/?page=stats">
+            0xBTC Stats
+          </a>
+          <a class="navbar-item "  target="blank" href="https://github.com/0xbitcoin/white-paper">
+            White Paper
+          </a>
+          <a class="navbar-item "  target="blank" href="https://etherscan.io/address/0xb6ed7644c69416d67b522e20bc294a9a9b405b31#code">
+            Smart Contract
+          </a>
+
+          <!--
+          <a class="navbar-item "  target="blank" href="https://github.com/0xbitcoin/active-projects">
+            Active Projects
+          </a>
+          -->
+
+
+
+
+          <hr class="navbar-divider">
+          <div class="navbar-image">
+            <div class="has-text-centered">
+              <img :src="contractQR" height="72" width="72" style="max-height:72px"/>
+
+
             </div>
+          </div>
+        </div>
+      </div>
+      <div class="navbar-item has-dropdown is-active  ">
+        <div class="navbar-link acts-as-link dropdown-button">
+          Community
+        </div>
+        <div class="navbar-dropdown ">
+
+          <a class="navbar-item "  target="blank" href="https://discord.gg/JGEqqmS">
+            Discord
+          </a>
+          <a class="navbar-item "  target="blank" href="https://reddit.com/r/0xbitcoin">
+            Subreddit
+          </a>
+          <a class="navbar-item" target="blank" href="https://github.com/0xbitcoin">
+            Github
+          </a>
+
+
+        </div>
+      </div>
+
+      <div class="navbar-item has-dropdown is-active  ">
+        <div class="navbar-link acts-as-link dropdown-button">
+          Pools
+        </div>
+        <div class="navbar-dropdown ">
+          <a class="navbar-item " target="blank" href="http://tokenminingpool.com">
+            Token Mining Pool
+          </a>
+          <a class="navbar-item " target="blank" href="http://mike.rs:3000/">
+            Mike.rs Mining Pool
+          </a>
+          <a class="navbar-item " target="blank" href="http://0xbtcpool.com:3000/">
+            0xBTC Pool
+          </a>
+          <a class="navbar-item " target="blank" href="http://gpu.pizza">
+            Pizza Pool
+          </a>
+
+
+
+        </div>
+      </div>
+    </div>
+
+    <div class="navbar-menu">
+      <div class="navbar-end" style="padding:5px;">
+
+        <div class="navbar-item">
+           <a href="https://reddit.com/r/0xbitcoin" target="_blank">
+             <img :src="redditLogo" height="28" width="28" target="_blank"/>
+           </a>
+         </div>
+
+       <div class="navbar-item">
+          <a href="https://github.com/0xbitcoin/0xbitcoin-token" target="_blank">
+            <img :src="githubLogo" height="28" width="28" target="_blank"/>
+          </a>
         </div>
 
+      </div>
     </div>
 
 
 
-
-  <nav id="navbar" class="navbar" role="navigation" aria-label="main navigation">
-       <div class="navbar-brand" style="padding-left:10px;">
-         <a class="navbar-item" href="/">
-           <img :src="brandImageUrl" height="28" width="28" />
-         </a>
+  </div>
 
 
 
-       </div>
+</div>
 
-       <div class="navbar-menu">
-         <div class="navbar-end" style="padding:5px;">
 
-           <div class="navbar-item">
-              <a href="https://reddit.com/r/0xbitcoin" target="_blank">
-                <img :src="redditLogo" height="28" width="28" target="_blank"/>
-              </a>
-            </div>
+<div class="navbar-menu is-hidden-desktop" id="navMenu">
+  <!-- navbar-start, navbar-end... -->
 
-          <div class="navbar-item">
-             <a href="https://github.com/0xbitcoin/0xbitcoin-token" target="_blank">
-               <img :src="githubLogo" height="28" width="28" target="_blank"/>
-             </a>
-           </div>
 
-         </div>
-       </div>
+<div class="navbar-start has-text-centered navbar-collapse-mobile" >
+
+
+    <hr>
+
+  <div class="navbar-item has-dropdown is-active">
+    <div class="navbar-link  is-active acts-as-link dropdown-button"  >
+      Docs
+    </div>
+    <div class="navbar-dropdown ">
+
+      <a class="navbar-item" target="blank" href="https://0x1d00ffff.github.io/0xBTC-Stats/?page=stats">
+        0xBTC Stats
+      </a>
+      <a class="navbar-item "  target="blank" href="https://github.com/0xbitcoin/white-paper">
+        White Paper
+      </a>
+      <a class="navbar-item "  target="blank" href="https://etherscan.io/address/0xb6ed7644c69416d67b522e20bc294a9a9b405b31#code">
+        Smart Contract
+      </a>
+
+      <!--
+      <a class="navbar-item "  target="blank" href="https://github.com/0xbitcoin/active-projects">
+        Active Projects
+      </a>
+      -->
+
+
+
+      <div class="whitespace-md"></div>
+
+
+      <hr class="navbar-divider">
+
+      <div class="navbar-image">
+        <div class="has-text-centered">
+
+          <img :src="contractQR" height="128" width="128" style="max-height:128px"/>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+    <hr>
+
+  <div class="navbar-item has-dropdown is-active  ">
+    <div class="navbar-link acts-as-link dropdown-button">
+      Community
+    </div>
+    <div class="navbar-dropdown ">
+
+      <a class="navbar-item "  target="blank" href="https://discord.gg/JGEqqmS">
+        Discord
+      </a>
+      <a class="navbar-item "  target="blank" href="https://reddit.com/r/0xbitcoin">
+        Subreddit
+      </a>
+      <a class="navbar-item" target="blank" href="https://github.com/0xbitcoin">
+        Github
+      </a>
+
+
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="navbar-item has-dropdown is-active  ">
+    <div class="navbar-link acts-as-link dropdown-button">
+      Pools
+    </div>
+    <div class="navbar-dropdown ">
+      <a class="navbar-item " target="blank" href="http://tokenminingpool.com">
+        Token Mining Pool
+      </a>
+      <a class="navbar-item " target="blank" href="http://mike.rs:3000/">
+        Mike.rs Mining Pool
+      </a>
+      <a class="navbar-item " target="blank" href="http://0xbtcpool.com:3000/">
+        0xBTC Pool
+      </a>
+      <a class="navbar-item " target="blank" href="http://gpu.pizza">
+        Pizza Pool
+      </a>
+
+
+    </div>
+    </div>
+  </div>
+
+
+
+
+</div>
 </nav>
+
 
 
 
 <div class="page-container" id="home">
 
 
+      <div class=" ">
+
+
+        <div class="title has-text-centered is-hidden-mobile">The mined bitcoin-like token for Ethereum</div>
+
+        <div class="whitespace-sm"></div>
+
+      </div>
+
       <section class="hero orange-theme ">
         <div class="hero-body">
-          <div class="container has-text-centered">
+          <div class="  has-text-centered">
 
 
             <div class="columns">
@@ -82,8 +280,7 @@
 
 
                 <h1 class="title font-primary-title color-primary">
-                   Decentralized Mineable Token for <a href="https://www.ethereum.org/" target="_blank">Ethereum</a>
-                </h1>
+                 </h1>
 
 
 
@@ -92,15 +289,16 @@
 
                  </p>
 
-                 <div class="whitespace-sm"></div>
+                 <ul class="list-strong color-primary">
 
-                   <i class="icon-wallet color-primary" style="font-size:48px;"></i>
+                   <li class="faded-in" data-fade-time=200><i class="icon icon-control-play"  ></i> <span> Autonomous decentralized currency </span> </li>
 
-                   <div class="whitespace-sm"></div>
+                   <li class="faded-in" data-fade-time=1500><i class="icon icon-control-play" ></i> <span> SHA256 proof of work algorithm </span></li>
 
-                 <a href="/wallet" target="_blank">
-                   <div class='button-bubble button-secondary'>Open the Wallet</div>
-                 </a>
+                   <li class="faded-in" data-fade-time=3000><i class="icon icon-control-play" ></i>  <span> Automatic difficulty adjustment </span></li>
+
+                   <li class="faded-in" data-fade-time=5000><i class="icon icon-control-play" ></i> <span> Works with Ethereum Smart Contracts </span></li>
+                 </ul>
 
               </div>
 
@@ -115,35 +313,6 @@
       </section>
 
 
-
-      <div id="guide" class="box has-text-centered">
-
-        <div class="columns">
-
-              <div class="column">
-                     <div class="whitespace-md"></div>
-
-                    <div class='title'> Start Mining 0xBitcoin </div>
-                    <div class='subtitle '> Download the Token Miner from Github </div>
-
-                    <a href="https://github.com/0xbitcoin/0xbitcoin-miner/blob/master/RELEASES.md" target="_blank">
-                      <div class='button-bubble button-primary'>Download the Token Miner</div>
-                    </a>
-
-              </div>
-
-
-              <div class="column">
-                  <div class="code-terminal-container">
-                    <span class="code-terminal">
-                    </span>
-                  </div>
-              </div>
-
-
-          </div>
-
-      </div>
 
       <div id="dashboard" class="box  has-small-text-mobile" style="overflow-x:auto; min-height:480px;">
         <div class='subtitle'>    <i class="icon-chart color-primary" style="font-size:48px" ></i>  </div>
@@ -168,48 +337,84 @@
 
 
 
-      <div id="pools" class="box mining-pools-section orange-theme white-title" style="overflow-x:auto; min-height:480px;">
-        <div class='subtitle color-primary'>  <i class="icon-share color-primary" style="font-size:48px" ></i> </div>
 
 
-      <!--   <img src="app/assets/img/pool_mining.png" width="80" height="80"></img> -->
-      <div class="pools-feature-container">
-        <div class="pools-feature" id="pooltiles">
 
+      <div id="guide" class="box has-text-centered">
 
-          <div v-for="(item, index) in pools.poolList.pools"  v-bind:class="item.htmlClass">
-            <div class="pool-tile-container  color-primary">
+        <div class="columns">
 
-              <div class='pool-title'> {{ item.name  }}  </div>
+              <div class="column">
+                     <div class="whitespace-md"></div>
 
-              <div class='pool-address'>
-                <a v-bind:href="item.url" target="_blank">
-                  {{ item.url  }}
-                </a>
+                    <div class='title'> Start Mining 0xBitcoin </div>
+                    <div class='subtitle '>   </div>
+                    <div class="whitespace-md"></div>
+
+                    <a href="https://github.com/0xbitcoin/0xbitcoin-miner/blob/master/RELEASES.md" target="_blank">
+                      <div class='button-bubble button-primary'>Download the Token Miner</div>
+                    </a>
+
               </div>
 
-              <div class='pool-image'>
-                  <a v-bind:href="item.url" target="_blank">
-                    <img v-bind:src="item.image"><img>
-                   </a>
+
+              <div class="column">
+                <div class="youtube-mining-tutorial">
+                  <iframe width="560" height="315" src="https://www.youtube.com/embed/jNtNw-YsqQU" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
                 </div>
+              </div>
+
+
+          </div>
+
+      </div>
+
+
+
+      <div id="sending" class="box has-text-centered orange-theme ">
+
+        <div class="columns">
+
+              <div class="column is-hidden-mobile">
+                <iframe src="https://discordapp.com/widget?id=412477591778492427&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0"></iframe>
+
+              </div>
+              <div class="column">
+
+                      <div class="whitespace-lg is-hidden-mobile"></div>
+                      <div class="whitespace-md"></div>
+
+                        <p class="subtitle color-primary" style=" font-size: 1.5em;   max-width: 15em;   margin: auto;">
+                          Send 0xBitcoin around the world fast using the Ethereum network.
+                        </p>
+
+                          <div class="whitespace-sm"></div>
+
+                        <i class="icon-wallet color-primary" style="font-size:48px;"></i>
+
+                        <div class="whitespace-sm"></div>
+
+                      <a href="/wallet" target="_blank">
+                        <div class='button-bubble button-secondary button-strong'>Web Wallet</div>
+                      </a>
+
+                      <div class="whitespace-sm"></div>
 
 
 
             </div>
+      </div>
 
-          </div>
-
-
-        </div>
     </div>
 
 
-      </div>
+
+
+
 
       <div id="about" class="box has-text-centered">
 
-        <div class='title'> The only bitcoin-like token for Ethereum. </div>
+        <div class='title'>   </div>
 
      <div class='subtitle '> 0xBitcoin is an Ethereum token distributed using Proof of Work </div>
 
@@ -221,12 +426,12 @@
 
           <p> Use 0xBitcoin with: </p>
           <ul>
-               <li> <a href="https://forkdelta.github.io/#!/trade/0xBTC-ETH"> Forkdelta </a> </li>
-              <li> <a href="https://etherscan.io/address/0xb6ed7644c69416d67b522e20bc294a9a9b405b31"> Etherscan </a></li>
-              <li> <a href="https://www.ledgerwallet.com/"> Ledger Nano </a> </li>
-              <li> <a href="https://parity.io">  Parity </a>  </li>
-              <li> <a href="https://metamask.io"> Metamask </a></li>
-              <li> <a href="https://https://www.cipherbrowser.com/">  Cipher Mobile Wallet </a> </li>
+               <li> <a href="https://forkdelta.github.io/#!/trade/0xBTC-ETH" target="_blank"> Forkdelta </a> </li>
+              <li> <a href="https://etherscan.io/address/0xb6ed7644c69416d67b522e20bc294a9a9b405b31" target="_blank"> Etherscan </a></li>
+              <li> <a href="https://www.ledgerwallet.com/" target="_blank"> Ledger Nano </a> </li>
+              <li> <a href="https://parity.io" target="_blank">  Parity </a>  </li>
+              <li> <a href="https://metamask.io" target="_blank"> Metamask </a></li>
+              <li> <a href="https://trustwalletapp.com/" target="_blank">  Trust Mobile Wallet </a> </li>
 
           </ul>
 
@@ -234,14 +439,13 @@
         </div>
 
 
-                        <div class="whitespace-md"></div>
+          <div class="whitespace-md"></div>
 
 
         <div class="">
-          <p> Why? <a href="https://medium.com/@admazzola/decentralized-ethereum-payments-9c80cd76a65a"> Read more on Medium </a></p>
+          <p> Why? <a href="https://medium.com/@admazzola/the-case-for-the-mineable-erc20-token-78cbb4c34331"> Read more on Medium </a></p>
 
-          <p> Read more detail at <a href="https://github.com/0xbitcoin/0xbitcoin-token" target="_blank"> Github </a> </p>
-
+          <p> Read more detail at <a href="https://github.com/0xbitcoin" target="_blank"> Github </a> </p>
 
           <p> Join the community on <a href="https://reddit.com/r/0xbitcoin" target="_blank"> Reddit </a> </p
 
@@ -254,10 +458,10 @@
 
 
       <footer class="footer">
-   <div class="container">
+   <div class=" ">
      <div class="content has-text-centered">
        <p>
-         <strong>0xBitcoin</strong> The only Bitcoin-like token for Ethereum. 
+         <strong>0xBitcoin</strong> The only Bitcoin-like token for Ethereum.
 
           <br>
           The source code is licensed
