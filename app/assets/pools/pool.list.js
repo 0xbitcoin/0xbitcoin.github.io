@@ -13,6 +13,12 @@ var list =  {pools:[
     url: "http://0xbtcpool.com",
      image: "/app/assets/img/0xbtcpool.png"
    },
+   
+   {name:"Mine0xBTC Pool" ,
+    url: "http://mine0xbtc.eu/",
+     image: "/app/assets/img/0xbtcpool.png"
+   },
+  
 
    {name:"Pizza Pool" ,
     url: "http://gpu.pizza",
