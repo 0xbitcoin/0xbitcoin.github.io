@@ -86,15 +86,8 @@ export default class EthHelper {
        var seconds_per_reward = seconds_since_readjustment / rewards_since_readjustment;
 
 
-        console.log(seconds_since_readjustment) //240
-
-        console.log(rewards_since_readjustment) ///273
-       console.log('sec per', seconds_per_reward) //should be like 200 .. ?
-
-
        var hashrateEstimate = this.estimateHashrateFromDifficulty(  difficulty, seconds_per_reward  )
-
-
+ 
 
       var decimals = Math.pow(10,8);
        var renderData = {
