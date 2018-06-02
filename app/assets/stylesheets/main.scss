@@ -15,6 +15,9 @@ a
   color: #ff7209;
 }
 
+
+[v-cloak] { display:none; }
+
 .page-container
 {
   max-width: 940px;
@@ -277,7 +280,7 @@ position: relative;
 
 .one-third
 {
-  width:33%; 
+  width:33%;
 }
 
 
