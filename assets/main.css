@@ -13285,6 +13285,9 @@ a {
 .faded-in {
   opacity: 0; }
 
+.one-third {
+  width: 33%; }
+
 .navbar-collapse-mobile {
   font-size: 1.8em; }
   .navbar-collapse-mobile .navbar-item {
