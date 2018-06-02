@@ -1,22 +1,18 @@
 var list =  {pools:[
    {name:"Token Mining Pool",
-   url: "http://tokenminingpool.com",
-  image: "/app/assets/img/tokenminingpool.png"
+   url: "http://tokenminingpool.com"
   },
 
    {name:"Mikers Pool" ,
-    url: "http://mike.rs:3000/",
-     image: "/app/assets/img/mikers.png"
+    url: "http://mike.rs:3000/"
    },
 
-   {name:"0xBTC Pool" ,
-    url: "http://0xbtcpool.com",
-     image: "/app/assets/img/0xbtcpool.png"
+   {name:"Wolf Pool" ,
+    url: "http://wolfpool.io/"
    },
 
-   {name:"Pizza Pool" ,
-    url: "http://gpu.pizza",
-     image: "/app/assets/img/pizza.png"
+   {name:"Tosti Pool" ,
+    url: "http://http://tosti.ro/"
     }
 
  ]}

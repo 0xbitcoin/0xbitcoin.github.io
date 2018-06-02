@@ -8,6 +8,8 @@ var embeddedWeb3 = require('web3')
 
 var web3utils = require('web3-utils')
 
+const _IDEAL_BLOCK_TIME_SECONDS = 900;
+const _BLOCKS_PER_READJUSTMENT = 1024;
 
 export default class EthHelper {
 
@@ -48,6 +50,8 @@ export default class EthHelper {
 
        console.log(tokenContract)
 
+
+
        var contractAddress = this.getContractAddress() ;
 
        var difficulty = await tokenContract.getMiningDifficulty().toNumber() ;
@@ -66,7 +70,22 @@ export default class EthHelper {
 
        var lastRewardEthBlockNumber = await tokenContract.lastRewardEthBlockNumber()
 
-       var hashrateEstimate = this.estimateHashrateFromDifficulty(  difficulty  )
+       //0x1d00ffff code
+
+        var epoch_count = await tokenContract.epochCount()
+
+       var rewards_since_readjustment = epoch_count % _BLOCKS_PER_READJUSTMENT ;
+
+
+       var current_eth_block = web3.eth.blockNumber;
+
+       var eth_blocks_since_last_difficulty_period = current_eth_block - lastRewardEthBlockNumber;
+       var seconds_since_readjustment = eth_blocks_since_last_difficulty_period * 15;
+
+       
+       var seconds_per_reward = seconds_since_readjustment / rewards_since_readjustment;
+
+       var hashrateEstimate = this.estimateHashrateFromDifficulty(  difficulty, seconds_per_reward  )
 
 
 
@@ -93,8 +112,9 @@ export default class EthHelper {
 
     }
 
-    estimateHashrateFromDifficulty(difficulty){
+    estimateHashrateFromDifficulty(difficulty, seconds_per_reward){
 
+      //hashrate *= (_IDEAL_BLOCK_TIME_SECONDS / seconds_per_reward)
 
        var timeToSolveABlock =  10*60;  //seconds.. ten minutes
 
@@ -102,6 +122,8 @@ export default class EthHelper {
               .mul( web3utils.toBN(2)
               .pow(  web3utils.toBN(22) ))
               .div( web3utils.toBN(timeToSolveABlock ))
+
+      hashrate *= (_IDEAL_BLOCK_TIME_SECONDS / seconds_per_reward)
 
       var gigHashes = hashrate / ( parseFloat( web3utils.toBN(10).pow( web3utils.toBN(9) )) )
 
