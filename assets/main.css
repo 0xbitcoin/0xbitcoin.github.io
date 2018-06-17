@@ -13137,11 +13137,17 @@ footer p.sucess-message {
 .acts-as-links {
   cursor: pointer; }
 
+.shadow {
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.16), 2px 3px 10px rgba(0, 0, 0, 0.23); }
+
 html {
   font-family: "Arial, Helvetica, sans-serif"; }
 
 a {
   color: #ff7209; }
+
+[v-cloak] {
+  display: none; }
 
 .page-container {
   max-width: 940px;
@@ -13284,6 +13290,9 @@ a {
 
 .faded-in {
   opacity: 0; }
+
+.one-third {
+  width: 33%; }
 
 .navbar-collapse-mobile {
   font-size: 1.8em; }
