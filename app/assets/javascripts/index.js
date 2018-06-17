@@ -5,6 +5,9 @@ import logo from '../img/0xbitcoin.png'
 import titleLogo from '../img/logo-dark.png'
 import githubLogo from '../img/GitHub-Mark-64px.png'
 import redditLogo from '../img/reddit-mark-64px.png'
+import englishLogo from '../img/english.png'
+import russianLogo from '../img/russian.png'
+import chineseLogo from '../img/chinese.png'
 import contractQR from '../img/0xbitcoinContractQR.png'
 
 import whiteLogo from '../img/logo.png'
@@ -43,6 +46,9 @@ var navbar = new Vue({
     titleLogo: titleLogo,
     githubLogo: githubLogo,
     redditLogo: redditLogo,
+    englishLogo: englishLogo,
+    russianLogo: russianLogo,
+    chineseLogo: chineseLogo,
     contractQR: contractQR
   }
 })
