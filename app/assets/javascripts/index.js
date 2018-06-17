@@ -15,6 +15,16 @@ import whiteLogo from '../img/logo.png'
 
 
 
+import mercatoxLogo from '../img/mercatox.png'
+import idexLogo from '../img/idex.png'
+import enclavesLogo from '../img/enclaves.png'
+import forkdeltaLogo from '../img/forkdelta.png'
+
+import ledgerLogo from '../img/ledger.png'
+import metamaskLogo from '../img/metamask.png'
+import lavaLogo from '../img/lavalogo.png'
+import trustLogo from '../img/trust.png'
+
 
 import brutePool from '../img/0xbtcpool.png'
 import TokenMiningPool from '../img/tokenminingpool.png'
