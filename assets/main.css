@@ -13115,16 +13115,18 @@ footer p.sucess-message {
   padding-bottom: 20px; }
 
 .navbar-container {
-  max-width: 1000px;
   margin: 0 auto;
   align-items: stretch;
   display: flex; }
+  @media screen and (min-width: 1000px) {
+    .navbar-container {
+      width: 940px; } }
 
 .navbar-start {
   margin-right: 50px; }
 
 .navbar-end {
-  margin-left: 50px; }
+  margin-left: auto; }
 
 .has-dropdown.is-active .navbar-dropdown {
   display: none; }
