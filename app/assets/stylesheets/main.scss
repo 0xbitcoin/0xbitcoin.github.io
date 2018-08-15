@@ -27,6 +27,13 @@ a
 
 }
 
+.hover-effects:hover
+{
+  box-shadow: 2px 2px 10px rgb(0,0,0), 2px 3px 10px rgba(0, 0, 0, 0.5);
+  background-color: #000;
+  opacity: 0.5;
+}
+
 .orange-gradient
 {
       background: radial-gradient(ellipse at bottom left, #e48951 60%, #ff7209 62%);

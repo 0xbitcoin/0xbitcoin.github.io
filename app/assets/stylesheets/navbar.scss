@@ -7,7 +7,11 @@
 
 .navbar-container
 {
-  max-width: 1000px;
+  @media screen and (min-width:1000px) {
+    width: 940px;
+  }
+
+
   margin: 0 auto;
 
   align-items: stretch;
@@ -22,7 +26,7 @@
 
 .navbar-end
 {
-    margin-left:50px;
+        margin-left: auto;
 }
 
 .has-dropdown.is-active
