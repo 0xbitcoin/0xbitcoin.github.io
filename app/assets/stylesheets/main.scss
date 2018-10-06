@@ -94,6 +94,15 @@ a
   padding:10px 15px;
 }
 
+
+.button-fat
+{
+  font-weight: bold;
+  font-size:22px;
+  padding:10px 35px;
+}
+
+
 .navbar-item
 {
   padding: 2px;
@@ -292,17 +301,6 @@ position: relative;
   width:33%;
 }
 
-
-.navbar-collapse-mobile
-{
-  font-size: 1.8em;
-
-  .navbar-item
-  {
-    font-size: 1.5em;
-    margin-top: 10px;
-  }
-}
 
 .footer
 {

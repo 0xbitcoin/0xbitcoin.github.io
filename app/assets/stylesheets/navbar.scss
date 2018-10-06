@@ -1,3 +1,10 @@
+
+$white-primary: #FFF;
+
+$white-secondary: #EEE;
+
+
+
 .navbar-padded
 {
   padding-top: 20px;
@@ -7,6 +14,7 @@
 
 .navbar-container
 {
+  color: $white-primary;
   @media screen and (min-width:1000px) {
     width: 940px;
   }
@@ -18,15 +26,47 @@
   display: flex;
 }
 
+
+
+
+.navbar-collapse-mobile
+{
+  font-size: 1.8em;
+  background-color: $white-primary;
+
+  .navbar-item
+  {
+    font-size: 1.5em;
+     //margin-top: 10px;
+     padding-top: 10px;
+     padding-bottom:10px;
+  }
+
+
+
+  hr
+  {
+    padding: 0;
+    margin: 0;
+  }
+}
+
 .navbar-start
 {
-      margin-right: 50px;
-
+      margin-right: 0px;
 }
 
 .navbar-end
 {
         margin-left: auto;
+        .navbar-item
+        {
+          color: inherit;
+        }
+        .navbar-link
+        {
+          color: inherit;
+        }
 }
 
 .has-dropdown.is-active

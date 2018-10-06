@@ -12,20 +12,15 @@
   </head>
 
 
-  <%= require('html-loader!./assets/html/navbar.html') %>
+<div class="orange-theme">
 
+<%= require('html-loader!./assets/html/navbar.html') %>
 
 
 <div class="page-container" id="home">
 
 
-      <div class=" ">
 
-
-
-        <div class="whitespace-sm"></div>
-
-      </div>
 
       <section class="hero orange-theme ">
         <div class="hero-body">
@@ -35,34 +30,20 @@
             <div class="columns">
 
               <div class="column">
-                <img src="app/assets/img/logo.png"></img>
+
+                <canvas class="hero-canvas mining-canvas">
+                <canvas>
+
+
               </div>
 
               <div class="column">
 
-                <div class="whitespace-md"></div>
-
-
-                <h1 class="title font-primary-title color-primary">
-                 </h1>
+                <canvas class="hero-canvas ethereum-canvas">
+                <canvas>
 
 
 
-
-                <p class="color-primary" style="max-width:60%;margin: 0 auto;">
-
-                 </p>
-
-                 <ul class="list-strong color-primary">
-
-                   <li class="faded-in" data-fade-time=200><i class="icon icon-control-play"  ></i> <span> Autonomous decentralized currency </span> </li>
-
-                   <li class="faded-in" data-fade-time=1500><i class="icon icon-control-play" ></i> <span> SoliditySHA3 proof of work algorithm </span></li>
-
-                   <li class="faded-in" data-fade-time=3000><i class="icon icon-control-play" ></i>  <span> Automatic difficulty adjustment </span></li>
-
-                   <li class="faded-in" data-fade-time=5000><i class="icon icon-control-play" ></i> <span> Works with Ethereum Smart Contracts </span></li>
-                 </ul>
 
               </div>
 
@@ -73,65 +54,71 @@
 
 
           </div>
+
+
+          <div class="whitespace-sm"></div>
+
+          <div class="has-text-centered">
+            <a href="https://0x1d00ffff.github.io/0xBTC-Stats/" target="_blank">
+              <div class='button-bubble button-primary'>View 0xBTC Stats</div>
+            </a>
+          </div>
+
+
         </div>
       </section>
 
 
 
+  </div>
+</div> <!-- orange theme -->
+
+  <div class="page-container" >
+
+
       <div id="dashboard" class="box  has-small-text-mobile" style="overflow-x:auto; min-height:480px;">
-        <div class='subtitle'>    <i class="icon-chart color-primary" style="font-size:48px" ></i>  </div>
-        <table class='table' style='margin: 0 auto'>
 
-        <tbody>
-          <tr> <td> Network: MAINNET </td> </tr>
-          <tr> <td> Address: <a :href='contractUrl' target="_blank"> {{ contractAddress }} </a>  </td> </tr>
-          <tr> <td> Total Supply:  {{ totalSupply }} </td> </tr>
-          <tr> <td> Amount Mined:  {{ amountMined }}</td></tr>
-        <tr> <td> Mining Difficulty:  {{ difficulty }}</td></tr>
-        <tr> <td> Hashrate Estimate:  {{ hashrateEstimate }}</td></tr>
-        <tr> <td> Mining Challenge:  {{ challenge_number }}</td></tr>
+        <div class="has-text-centered">
+          <iframe width="760" height="455" src="https://www.youtube.com/embed/BK68jbXOIWY" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
 
-        <tr> <td> Last Reward To:  {{ lastRewardTo }}</td></tr>
-        <tr> <td> Last Reward Amount:  {{ lastRewardAmount }}</td></tr>
-        <tr> <td> Last Reward EthBlock#:  {{ lastRewardEthBlockNumber }}</td></tr>
-       </tbody>
-        </table>
 
       </div>
 
 
 
 
+      <div id="currency" class="box has-text-centered">
 
-      <div id="guide" class="box has-text-centered">
 
-        <div class="columns">
+      <div class='title'> The Pure Mined ERC20 Currency for </div>
+      <div class="whitespace-sm"></div>
 
-              <div class="column">
-                     <div class="whitespace-md"></div>
+      <div class="columns" >
 
-                    <div class='title'> Start Mining 0xBitcoin </div>
-                    <div class='subtitle '>   </div>
-                    <div class="whitespace-md"></div>
-
-                    <a href="https://github.com/0xbitcoin/0xbitcoin-miner/blob/master/RELEASES.md" target="_blank">
-                      <div class='button-bubble button-primary'>Download the Token Miner</div>
-                    </a>
-
+            <div class="column">
+            <a href="https://metamask.io" target="_blank">
+              <img src="app/assets/img/metamask.png" class="shadow hover-effects" style="border-radius: 50% " height="125" width="125"></img>
+              <div class='subtitle '>Metamask</div>
+            </div>
+            <div class="column">
+              <a href="https://0xbitcoin.org/wallet" target="_blank">
+              <img src="app/assets/img/logo_diamond.png" class="shadow hover-effects" style="border-radius: 50% " height="125" width="125"></img>
+              <div class='subtitle '>Web Wallet</div>
+            </div>
+            <div class="column">
+              <a href="https://trustwalletapp.com/" target="_blank">
+              <img src="app/assets/img/trust.png" class="shadow hover-effects" style="border-radius: 50% " height="125" width="125"></img>
+              <div class='subtitle '>Trust Mobile Wallet</div>
+            </div>
+            <div class="column">
+              <a href="https://www.ledgerwallet.com/products/ledger-nano-s" target="_blank">
+                <img src="app/assets/img/ledger.png"  class="shadow hover-effects" style="border-radius: 50% " height="125" width="125"></img></a>
+                <div class='subtitle '>Ledger Nano</div>
               </div>
-
-
-              <div class="column">
-                <div class="youtube-mining-tutorial">
-                  <iframe width="560" height="315" src="https://www.youtube.com/embed/jNtNw-YsqQU" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-                </div>
-              </div>
-
-
-          </div>
-
       </div>
 
+    </div>
 
 
       <div id="sending" class="box has-text-centered orange-theme ">
@@ -148,31 +135,73 @@
                       <div class="whitespace-md"></div>
 
                         <p class="subtitle color-primary" style=" font-size: 1.5em;   max-width: 15em;   margin: auto;">
-                          Send 0xBitcoin around the world quickly using the Ethereum network.
+                          Join 0xBTC Communities
                         </p>
 
-                          <div class="whitespace-sm"></div>
+                       <div class="whitespace-sm"></div>
 
-                        <i class="icon-wallet color-primary" style="font-size:48px;"></i>
+                       <a href="http://reddit.com/r/0xbitcoin" target="_blank">
+                         <div class='button button-bubble is-light button-fat'>Subreddit</div>
+                        </a>
 
                         <div class="whitespace-sm"></div>
 
-                      <a href="/wallet" target="_blank">
-                        <div class='button-bubble button-secondary button-strong'>Web Wallet</div>
-                      </a>
+                        <a href="https://discord.gg/xAPwaDC" target="_blank">
+                        <div class='button button-bubble is-light button-fat'>Discord</div>
+                       </a>
 
                       <div class="whitespace-sm"></div>
+
+                      <a href="http://forum.0xbtc.io" target="_blank">
+                      <div class='button button-bubble is-light button-fat'>Forums</div>
+                     </a>
 
             </div>
       </div>
 
     </div>
 
+
+      <div id="guide" class="box has-text-centered">
+
+        <div class="columns">
+
+              <div class="column">
+                     <div class="whitespace-md"></div>
+
+                    <div class='title'> Start Mining 0xBTC </div>
+                    <div class='subtitle '>   </div>
+                    <div class="whitespace-md"></div>
+
+                    <a href="https://medium.com/@admazzola/0xbitcoin-mining-101-9605b7108b9e" target="_blank">
+                      <div class='button-bubble button-primary'>Mining Tutorial</div>
+                    </a>
+
+              </div>
+
+
+              <div class="column">
+                <div class="youtube-mining-tutorial">
+
+                  <iframe width="560" height="315" src="https://www.youtube.com/embed/_uEczwlFBbE" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+
+                </div>
+              </div>
+
+
+          </div>
+
+      </div>
+
+
+
+
+
       <div id="about" class="box has-text-centered">
 
         <div class="">
 
-          <div class='title'> Trade 0xBitcoin  </div>
+          <div class='title'> Trade 0xBTC  </div>
           <div class="whitespace-sm"></div>
 
 
@@ -200,36 +229,7 @@
           </div>
         </div>
       </div>
-          <div id="about" class="box has-text-centered">
 
-
-          <div class='title'> Store 0xBitcoin  </div>
-          <div class="whitespace-sm"></div>
-
-          <div class="columns" >
-            <div class="column">
-              <a href="https://www.ledgerwallet.com/products/ledger-nano-s" target="_blank">
-                <img src="app/assets/img/ledger.png"  class="shadow hover-effects" style="border-radius: 50% " height="125" width="125"></img></a>
-                <div class='subtitle '>Ledger Nano</div>
-              </div>
-              <div class="column">
-                <a href="https://metamask.io" target="_blank">
-                  <img src="app/assets/img/metamask.png" class="shadow hover-effects" style="border-radius: 50% " height="125" width="125"></img>
-                  <div class='subtitle '>Metamask</div>
-                </div>
-                <div class="column">
-                  <a href="http://lavawallet.io" target="_blank">
-                  <img src="app/assets/img/lavalogo.png" class="shadow hover-effects" style="border-radius: 50% " height="125" width="125"></img>
-                  <div class='subtitle '>LavaWallet</div>
-                </div>
-                <div class="column">
-                  <a href="https://trustwalletapp.com/" target="_blank">
-                  <img src="app/assets/img/trust.png" class="shadow hover-effects" style="border-radius: 50% " height="125" width="125"></img>
-                  <div class='subtitle '>Trust Mobile Wallet</div>
-                </div>
-          </div>
-
-        </div>
 
 
 
