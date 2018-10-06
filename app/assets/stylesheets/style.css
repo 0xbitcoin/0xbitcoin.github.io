@@ -21,14 +21,14 @@ Table of content
 General Styles
 ----------------------------------------*/
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Titillium Web', sans-serif;
     font-size: 15px;
     line-height: 24px;
     color: #777777;
 }
 
 h1, h2, h3, h4, h5, h6{
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Titillium Web', sans-serif;
     margin-bottom: 10px;
     line-height: 24px;
     font-weight: 700;
@@ -259,7 +259,7 @@ Navigation
     background-color: transparent;
 }
 .navbar-brand{
-      
+
 
 }
 .navbar-default .navbar-nav>.active>a{

@@ -7,7 +7,7 @@ html
 {
   //color: white;
   //background-color: pink;
-  font-family: "Arial, Helvetica, sans-serif";
+//  font-family: "Arial, Helvetica, sans-serif";
 
 
 }
@@ -19,6 +19,13 @@ a
 
 
 [v-cloak] { display:none; }
+
+
+.font-hyper
+{
+    font-family: 'Titillium Web', sans-serif;
+}
+
 
 .page-container
 {
@@ -39,6 +46,22 @@ a
       background: radial-gradient(ellipse at bottom left, #e48951 60%, #ff7209 62%);
 }
 
+.navbar-dropdown
+{
+  color: #4a4a4a !important;
+}
+
+
+.pad-15
+{
+  padding:15px;
+}
+
+.has-round-corners
+{
+  border-radius:5px;
+}
+
 .font-primary-title
 {
 
@@ -49,6 +72,12 @@ a
 }
 
 
+.button-white
+{
+     border: none;
+     background: linear-gradient(#fff, #f6f6f6);
+     color: #ff7209;
+}
 
 .color-primary
 {
@@ -66,6 +95,8 @@ a
 {
   background: linear-gradient(#ee7209, #ee6206);
 }
+
+
 
 .button-secondary
 {

@@ -21,8 +21,8 @@ export default class DashboardRenderer {
       });
 
 
+      console.log('dashboard data', dashboardData)
 
- 
 
       this.show();
 

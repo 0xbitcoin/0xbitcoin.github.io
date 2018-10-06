@@ -4,11 +4,9 @@
     <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
     <title><%= htmlWebpackPlugin.options.title %></title>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-      <link rel="shortcut icon" type="image/png" href="/app/assets/img/logo.png"/>
-
+      <%= require('html-loader!./assets/html/head.html') %>
   </head>
 
 
@@ -64,7 +62,7 @@
 
           <div class="has-text-centered">
             <a href="https://0x1d00ffff.github.io/0xBTC-Stats/" target="_blank">
-              <div class='button-bubble button-primary'>View 0xBTC Stats</div>
+              <div class='button button-white button-fat'>View Mining Stats</div>
             </a>
           </div>
 
@@ -80,7 +78,7 @@
   <div class="page-container" >
 
 
-      <div id="dashboard" class="box  has-small-text-mobile" style="overflow-x:auto; min-height:480px;">
+      <div   class="box  has-small-text-mobile" style="overflow-x:auto; min-height:480px;">
 
         <div class="has-text-centered">
           <iframe width="760" height="455" src="https://www.youtube.com/embed/BK68jbXOIWY" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
@@ -92,11 +90,11 @@
 
 
 
-      <div id="currency" class="box has-text-centered">
+      <div id="currency" class=" pad-15 has-text-centered">
 
 
       <div class='title'> The Pure Mined ERC20 Currency for </div>
-      <div class="whitespace-sm"></div>
+      <div class="whitespace-md"></div>
 
       <div class="columns" >
 
@@ -122,10 +120,12 @@
               </div>
       </div>
 
+      <div class="whitespace-md"></div>
+
     </div>
 
 
-      <div id="sending" class="box has-text-centered orange-theme ">
+      <div id="sending" class=" pad-15 has-text-centered  ">
 
         <div class="columns">
 
@@ -133,7 +133,7 @@
                 <iframe src="https://discordapp.com/widget?id=412477591778492427&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0"></iframe>
 
               </div>
-              <div class="column">
+              <div class="column orange-theme has-round-corners">
 
                       <div class="whitespace-lg is-hidden-mobile"></div>
                       <div class="whitespace-md"></div>
@@ -163,10 +163,13 @@
             </div>
       </div>
 
+
+
+            <div class="whitespace-md"></div>
     </div>
 
 
-      <div id="guide" class="box has-text-centered">
+      <div id="guide" class="pad-15 has-text-centered">
 
         <div class="columns">
 
@@ -180,6 +183,7 @@
                     <a href="https://medium.com/@admazzola/0xbitcoin-mining-101-9605b7108b9e" target="_blank">
                       <div class='button-bubble button-primary'>Mining Tutorial</div>
                     </a>
+
 
               </div>
 
@@ -195,58 +199,39 @@
 
           </div>
 
-      </div>
 
+          <hr>
+          <div id="dashboard" class="has-small-text-mobile  " style="">
+            <div class="columns">
+              <div class="column"  v-cloak>
+                  <div class="is-size-3"> {{ amountMined }} / {{ totalSupply }} </div>
 
-
-
-
-      <div id="about" class="box has-text-centered">
-
-        <div class="">
-
-          <div class='title'> Trade 0xBTC  </div>
-          <div class="whitespace-sm"></div>
-
-
-          <div class="columns" >
-            <div class="column">
-              <a href="https://enclaves.io/trade/0xBTC" target="_blank">
-                <img src="app/assets/img/enclaves.png" href="https://enclaves.io/trade/0xBTC" class="shadow hover-effects" style="border-radius: 50% " height="125" width="125"></img></a>
-                <div class='subtitle '>Enclaves</div>
+                  <div class="is-size-5"> Coins Mined </div>
               </div>
-              <div class="column">
-                <a href="https://mercatox.com/exchange/0xBTC/ETH" target="_blank">
-                  <img src="app/assets/img/mercatox.png" class="shadow hover-effects" style="border-radius: 50% " height="125" width="125"></img>
-                  <div class='subtitle '>Mercatox</div>
-                </div>
-                <div class="column">
-                  <a href="https://idex.market/eth/0xbtc" target="_blank">
-                  <img src="app/assets/img/idex.png" class="shadow hover-effects" style="border-radius: 50% " height="125" width="125"></img>
-                  <div class='subtitle '>IDEX</div>
-                </div>
-                <div class="column">
-                  <a href="https://forkdelta.github.io/#!/trade/0xBTC-ETH" target="_blank">
-                  <img src="app/assets/img/forkdelta.png" class="shadow hover-effects" style="border-radius: 50% " height="125" width="125"></img>
-                  <div class='subtitle '>ForkDelta</div>
-                </div>
+
+              <div class="column"  v-cloak>
+                <div class="is-size-3"> {{ hashrateEstimate }} </div>
+
+                <div class="is-size-5"> Est. Hashrate </div>
+              </div>
+            </div>
+
+
+
           </div>
-        </div>
+
       </div>
 
 
 
 
-      <div id="about" class="box has-text-centered orange-theme">
-        <div class="">
-          <p> Why? <a href="https://medium.com/@admazzola/the-case-for-the-mineable-erc20-token-78cbb4c34331"> Read more on Medium </a></p>
 
-          <p> Read more detail at <a href="https://github.com/0xbitcoin" target="_blank"> Github </a> </p>
 
-          <p> Join the community on <a href="https://reddit.com/r/0xbitcoin" target="_blank"> Reddit </a> </p>
 
-        </div>
-      </div>
+
+
+
+
 <div class="whitespace-sm"></div>
 
   </div>
