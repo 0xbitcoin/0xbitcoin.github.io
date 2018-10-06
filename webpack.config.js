@@ -5,31 +5,42 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var HtmlWebpackIncludeAssetsPlugin = require('html-webpack-include-assets-plugin');
 
+var CleanWebpackPlugin = require('clean-webpack-plugin')
+
+
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 var environment = process.env.NODE_ENV || 'development';
 
-/*
-var htmlPlugin = new HtmlWebpackPlugin({
-      title: '0xBitcoin',
-     filename: 'index.html',
-      template: 'app/index.html',
-});
-*/
+
+
+let pathsToClean = [
+  'public'
+]
+
+// the clean options to use
+let cleanOptions = {
+  verbose:  true,
+  dry:      false
+}
+
+
 var extractPlugin = new ExtractTextPlugin({
-   filename: 'assets/main.css'
+   filename: 'assets/main.[hash].css'
 });
 
 
 var webpackPlugins = [
+  new CleanWebpackPlugin(pathsToClean, cleanOptions),
     extractPlugin,
     new webpack.DefinePlugin({
         'process.env': {
           NODE_ENV: '"production"'
         }
       }),
+
       new CopyWebpackPlugin([
-            {from:'app/assets/img',to:'public/app/assets/img'}
+            {from:'app/assets/img',to:'app/assets/img'  }
         ])
 ]
 
@@ -65,7 +76,8 @@ module.exports = {
     entry: ['./app/assets/javascripts/index', './app/assets/stylesheets/application.scss' ],
     output: {
         path: path.resolve(__dirname, 'public'),
-        filename: 'bundle.js',
+      //  filename: 'bundle.js',
+        filename: '[name].[hash].js',
         publicPath: '/'
     },
     module: {
