@@ -37031,7 +37031,7 @@ class CanvasAnim {
       // drawing code here
       var pickimage = document.getElementById('miningpick');
 
-      var imgCoordinates = { x: 50, y: 10 };
+      var imgCoordinates = { x: miningCanvas.width / 2 - 20, y: -40 };
 
       var particleimage = document.getElementById('minedtoken');
       var particleData = [];
@@ -37053,7 +37053,7 @@ class CanvasAnim {
     // update
     var time = new Date().getTime() - startTime;
 
-    var rotateSpeed = 200;
+    var rotateSpeed = 150;
     // pixels / second
     var rotateDegrees = Math.abs(30 - rotateSpeed * time / 1000 % 60);
 
@@ -37061,7 +37061,7 @@ class CanvasAnim {
     context.clearRect(0, 0, canvas.width, canvas.height);
     //context.rotate(0*Math.PI/180);
 
-    var rotateOffsets = { x: imgCoordinates.x + img.width / 2, y: imgCoordinates.y + img.height / 2
+    var rotateOffsets = { x: img.width / 2, y: img.height / 2
       //context.translate( -rotateOffsets.x,-rotateOffsets.y );
     };context.rotate(rotateDegrees * Math.PI / 180);
 
@@ -37083,11 +37083,11 @@ class CanvasAnim {
 
   renderParticles(particleData, particleimage, imgCoordinates, canvas, context, time) {
 
-    var floatSpeed = 1;
+    var floatSpeed = Math.random() * 2;
 
-    if (time / 2000 > particleData.length && particleData.length < 3) {
+    if (time / 2000 > particleData.length && particleData.length < 8) {
       //create new particle
-      particleData.push({ x: 25 + Math.random() * 40, y: 90 });
+      particleData.push({ x: 25 + Math.random() * 60, y: canvas.height - 20 });
     }
 
     for (var i = 0; i < particleData.length; i++) {
@@ -37096,7 +37096,7 @@ class CanvasAnim {
 
       particleData[i].y -= floatSpeed;
 
-      if (particleData[i].y <= 0) particleData[i].y = 90;
+      if (particleData[i].y <= 0) particleData[i].y = canvas.height - 20;
     }
   }
 
