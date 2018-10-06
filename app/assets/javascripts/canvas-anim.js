@@ -28,14 +28,15 @@ export default class CanvasAnim {
           // drawing code here
         var pickimage = document.getElementById('miningpick');
 
-      //  ctx.drawImage(pickimage, 11, 12);
+        var imgCoordinates = {x:50, y:10};
 
-
+        var particleimage = document.getElementById('minedtoken');
+        var particleData = [];
 
       // wait one second before starting animation
       setTimeout(function() {
         var startTime = (new Date()).getTime();
-        self.animate(pickimage, miningCanvas, context, startTime);
+        self.animateMining(pickimage, imgCoordinates, particleimage, particleData, miningCanvas, context, startTime);
       }, 1000);
 
 
@@ -51,49 +52,68 @@ export default class CanvasAnim {
 
 
 
-     animate(img, canvas, context, startTime) {
+     animateMining(img, imgCoordinates, particleimage, particleData, canvas, context, startTime) {
        var self = this;
-       console.log('anim', img.borderWidth)
 
 
         // update
         var time = (new Date()).getTime() - startTime;
 
-        var linearSpeed = 100;
+        var rotateSpeed = 200;
         // pixels / second
-        var newX = linearSpeed * time / 1000;
+        var rotateDegrees = Math.abs(30 - ( rotateSpeed * time /1000 ) % 60 );
 
-        if(newX < canvas.width - img.width - img.borderWidth / 2) {
-          img.x = newX;
-        }
 
         // clear
         context.clearRect(0, 0, canvas.width, canvas.height);
+        //context.rotate(0*Math.PI/180);
 
+        var rotateOffsets = {x: imgCoordinates.x+img.width/2, y: imgCoordinates.y+img.height/2}
+        //context.translate( -rotateOffsets.x,-rotateOffsets.y );
+        context.rotate(rotateDegrees*Math.PI/180);
 
-        context.drawImage(img, newX, 12);
+        context.drawImage(img, imgCoordinates.x, imgCoordinates.y, img.width, img.height );
+        context.translate( rotateOffsets.x,rotateOffsets.y );
 
+         context.restore();
+         context.resetTransform();
+
+         self.renderParticles(particleData,particleimage,imgCoordinates,canvas,context,time)
 
 
       //  drawRectangle(myRectangle, context);
 
         // request new frame .. loop forever
         requestAnimFrame(function() {
-          self.animate(img, canvas, context, startTime);
+          self.animateMining(img, imgCoordinates, particleimage, particleData, canvas, context, startTime);
         });
       }
 
 
-    /*  var myRectangle = {
-        x: 0,
-        y: 75,
-        width: 100,
-        height: 50,
-        borderWidth: 5
-      };
+      renderParticles(particleData,particleimage,imgCoordinates,canvas,context,time){
 
-      drawRectangle(myRectangle, context);*/
+          var floatSpeed = 1;
 
-      // wait one second before starting animat
+          if((time / 2000) > particleData.length   && particleData.length < 3)
+          {
+            //create new particle
+            particleData.push({x: 25+ Math.random() * 40, y: 90})
+          }
+
+          for(var i=0;i<particleData.length;i++)
+          {
+           
+            context.drawImage(particleimage, imgCoordinates.x+particleData[i].x,imgCoordinates.y+particleData[i].y,20,20 );
+
+            particleData[i].y -= floatSpeed;
+
+            if( particleData[i].y <= 0 ) particleData[i].y = 90;
+          }
+
+
+
+      }
+
+
 
 }
