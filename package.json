@@ -1,9 +1,7 @@
 {
   "name": "0xbitcointokenweb",
- 
   "version": "0.1.2",
   "description": "Official website for 0xbitcoin",
-
   "main": "index.js",
   "scripts": {
     "webpack": "webpack",
@@ -33,11 +31,12 @@
     "typed.js": "^2.0.6",
     "vue": "^2.5.13",
     "web3": "^0.14.0",
-    "web3-utils": "^1.0.0-beta.30",
+    "web3-utils": "^1.0.0-beta.36",
     "webpack": "^3.10.0",
     "worker-loader": "^1.1.0"
   },
   "devDependencies": {
+    "copy-webpack-plugin": "^4.5.2",
     "css-loader": "^0.28.9",
     "file-loader": "^1.1.6",
     "html-webpack-include-assets-plugin": "^1.0.2",
