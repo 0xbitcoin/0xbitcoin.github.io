@@ -24,15 +24,13 @@ import ledgerLogo from '../img/ledger.png'
 import metamaskLogo from '../img/metamask.png'
 import lavaLogo from '../img/lavalogo.png'
 import trustLogo from '../img/trust.png'
-
-
-import brutePool from '../img/0xbtcpool.png'
-import TokenMiningPool from '../img/tokenminingpool.png'
-import _0xPool from '../img/mikers.png'
-import PizzaPool from '../img/pizza.png'
+ 
 
 
 import Vue from 'vue'
+
+
+import CanvasAnim from './canvas-anim'
 
 import AlertRenderer from './alert-renderer'
 import HomeRenderer from './home-renderer'
@@ -42,6 +40,10 @@ import EthHelper from './ethhelper'
 import HomeDashboard from './home-dashboard'
 import WalletDashboard from './wallet-dashboard'
 
+
+
+
+var canvasAnim = new CanvasAnim();
 
 var homeRenderer= new HomeRenderer()
 
@@ -69,9 +71,13 @@ $(document).ready(function(){
 
 
     if($("#home").length > 0){
+
+      canvasAnim.init();
+
       var web3 = ethHelper.init( alertRenderer);
 
       homeRenderer.init(ethHelper);
+
     }
 
 
