@@ -26,7 +26,7 @@ let cleanOptions = {
 
 
 var extractPlugin = new ExtractTextPlugin({
-   filename: 'assets/main.[hash].css'
+   filename: 'app/assets/main.[hash].css'
 });
 
 

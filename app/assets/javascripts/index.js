@@ -24,7 +24,7 @@ import ledgerLogo from '../img/ledger.png'
 import metamaskLogo from '../img/metamask.png'
 import lavaLogo from '../img/lavalogo.png'
 import trustLogo from '../img/trust.png'
- 
+
 
 
 import Vue from 'vue'
@@ -66,7 +66,7 @@ var navbar = new Vue({
 })
 
 
-$(document).ready(function(){
+$(document).ready(async function(){
 
 
 
@@ -74,7 +74,7 @@ $(document).ready(function(){
 
       canvasAnim.init();
 
-      var web3 = ethHelper.init( alertRenderer);
+      var web3 = await ethHelper.init( alertRenderer);
 
       homeRenderer.init(ethHelper);
 

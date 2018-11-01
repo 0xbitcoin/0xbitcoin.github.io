@@ -14,11 +14,13 @@ const _BLOCKS_PER_READJUSTMENT = 1024;
 export default class EthHelper {
 
 
-    init( alertRenderer ){
+    async init( alertRenderer ){
         this.alertRenderer = alertRenderer;
 
+       var web3 = this.connectWeb3(new embeddedWeb3())
 
-        return this.connectWeb3(new embeddedWeb3());
+
+         return web3;
     }
 
     connectWeb3(web3){
@@ -36,6 +38,55 @@ export default class EthHelper {
           //window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 
       }
+    }
+
+
+    static async  detectInjectedWeb3( alertRenderer )
+    {
+
+
+    //  await new Promise(resolve => async function() {
+        return new Promise(async function(resolve, reject) {
+
+
+          //  window.addEventListener('load', async () => {
+                  // Modern dapp browsers...
+                  if (window.ethereum) {
+
+                      window.web3 = new Web3(ethereum);
+                      try {
+                          // Request account access if needed
+                            ethereum.enable();
+                          resolve( window.web3 );
+                          // Acccounts now exposed
+                      //    web3.eth.sendTransaction({/* ... */});
+                      } catch (error) {
+                          // User denied account access...
+                      }
+                  }
+                  // Legacy dapp browsers...
+                  else if (window.web3) {
+
+                      window.web3 = new Web3(web3.currentProvider);
+                        resolve( window.web3 );
+                      // Acccounts always exposed
+                    //  web3.eth.sendTransaction({/* ... */});
+                  }
+                  // Non-dapp browsers...
+                  else {
+                    if(alertRenderer)
+                    {
+                      alertRenderer.renderError('No web3? You should consider using MetaMask!')
+                    }
+
+                      console.log('Non-Ethereum browser detected. You should consider using MetaMask!');
+                        resolve();
+                  }
+            //  });
+
+        });
+
+
     }
 
 
@@ -87,7 +138,7 @@ export default class EthHelper {
 
 
        var hashrateEstimate = this.estimateHashrateFromDifficulty(  difficulty, seconds_per_reward  )
- 
+
 
       var decimals = Math.pow(10,8);
        var renderData = {

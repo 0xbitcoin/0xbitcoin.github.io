@@ -4,6 +4,10 @@ const $ = require('jquery');
 import Vue from 'vue'
 
 
+import EthHelper from './ethhelper'
+
+
+
 var balanceText;
 var accountAddress;
 
@@ -23,9 +27,9 @@ export default class WalletDashboard {
 
 
 
-     this.web3 = this.detectInjectedWeb3();
+     this.web3 = await EthHelper.detectInjectedWeb3(alertRenderer);
 
-
+        console.log( 'web3', this.web3 )
      await this.updateWalletRender();
 
      console.log(accountAddress)
@@ -34,7 +38,7 @@ export default class WalletDashboard {
        el: '#wallet-titlebar',
        data: {account: accountAddress,
                   balance: balanceText,
-                errorMessage: alertRenderer.alertMessage},
+                  errorMessage: alertRenderer.alertMessage},
 
        methods: {
           update: function () {
@@ -75,7 +79,7 @@ export default class WalletDashboard {
 
   }
 
-
+/*
   detectInjectedWeb3()
   {
 
@@ -108,7 +112,7 @@ export default class WalletDashboard {
 
 
     return null;
-  }
+  }*/
 
   async updateWalletRender()
   {
@@ -126,7 +130,7 @@ export default class WalletDashboard {
 
 
       var contract = this.ethHelper.getWeb3ContractInstance(this.web3  );
-     
+
 
       let getDecimals = new Promise(resolve => {
         contract.decimals( function(error,response){
