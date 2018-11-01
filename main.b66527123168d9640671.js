@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 37);
+/******/ 	return __webpack_require__(__webpack_require__.s = 38);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -2255,7 +2255,7 @@ module.exports = {
 var BigNumber = __webpack_require__(15);
 var utils = __webpack_require__(1);
 var c = __webpack_require__(16);
-var SolidityParam = __webpack_require__(29);
+var SolidityParam = __webpack_require__(30);
 
 /**
  * Formats input value to byte representation of int
@@ -2484,7 +2484,7 @@ module.exports = {
 /***/ (function(module, exports, __webpack_require__) {
 
 var f = __webpack_require__(3);
-var SolidityParam = __webpack_require__(29);
+var SolidityParam = __webpack_require__(30);
 
 /**
  * SolidityType prototype is used to encode/decode solidity params of certain type
@@ -23513,7 +23513,7 @@ function getOuterHTML(el) {
 Vue$3.compile = compileToFunctions;
 
 /* harmony default export */ __webpack_exports__["a"] = (Vue$3);
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(7), __webpack_require__(56).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(7), __webpack_require__(57).setImmediate))
 
 /***/ }),
 /* 15 */
@@ -26658,7 +26658,7 @@ module.exports = Property;
  */
 
 var CryptoJS = __webpack_require__(83);
-var sha3 = __webpack_require__(33);
+var sha3 = __webpack_require__(34);
 
 module.exports = function (value, options) {
     if (options && options.encoding === 'hex') {
@@ -31172,6 +31172,185 @@ function isnan(val) {
 
 /***/ }),
 /* 28 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+var INFURA_ROPSTEN_URL = 'https://ropsten.infura.io/gmXEVo5luMPUGPqg6mhy';
+var INFURA_MAINNET_URL = 'https://mainnet.infura.io/gmXEVo5luMPUGPqg6mhy';
+
+var deployedContractInfo = __webpack_require__(66);
+var _0xBitcoinContract = __webpack_require__(67);
+
+var embeddedWeb3 = __webpack_require__(68);
+
+var web3utils = __webpack_require__(124);
+
+const _IDEAL_BLOCK_TIME_SECONDS = 900;
+const _BLOCKS_PER_READJUSTMENT = 1024;
+
+class EthHelper {
+
+  async init(alertRenderer) {
+    this.alertRenderer = alertRenderer;
+
+    var web3 = this.connectWeb3(new embeddedWeb3());
+
+    return web3;
+  }
+
+  connectWeb3(web3) {
+    if (typeof web3 !== 'undefined') {
+
+      window.web3 = new Web3(new Web3.providers.HttpProvider(INFURA_MAINNET_URL));
+      console.log('connected to web3!');
+      return window.web3;
+    } else {
+
+      this.alertRenderer.renderError('No web3? You should consider trying MetaMask!');
+      return {};
+      // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
+      //window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+    }
+  }
+
+  static async detectInjectedWeb3(alertRenderer) {
+
+    //  await new Promise(resolve => async function() {
+    return new Promise(async function (resolve, reject) {
+
+      //  window.addEventListener('load', async () => {
+      // Modern dapp browsers...
+      if (window.ethereum) {
+
+        window.web3 = new Web3(ethereum);
+        try {
+          // Request account access if needed
+          ethereum.enable();
+          resolve(window.web3);
+          // Acccounts now exposed
+          //    web3.eth.sendTransaction({/* ... */});
+        } catch (error) {
+          // User denied account access...
+        }
+      }
+      // Legacy dapp browsers...
+      else if (window.web3) {
+
+          window.web3 = new Web3(web3.currentProvider);
+          resolve(window.web3);
+          // Acccounts always exposed
+          //  web3.eth.sendTransaction({/* ... */});
+        }
+        // Non-dapp browsers...
+        else {
+            if (alertRenderer) {
+              alertRenderer.renderError('No web3? You should consider using MetaMask!');
+            }
+
+            console.log('Non-Ethereum browser detected. You should consider using MetaMask!');
+            resolve();
+          }
+      //  });
+    });
+  }
+
+  async connectToContract(web3, dashboardRenderer, callback) {
+    var tokenContract = this.getWeb3ContractInstance(web3, this.getContractAddress(), this.getContractABI());
+
+    console.log(tokenContract);
+
+    var contractAddress = this.getContractAddress();
+
+    var difficulty = await tokenContract.getMiningDifficulty().toNumber();
+
+    var challenge_number = await tokenContract.getChallengeNumber();
+
+    var amountMined = await tokenContract.tokensMinted();
+
+    var totalSupply = await tokenContract._totalSupply();
+
+    var lastRewardAmount = await tokenContract.lastRewardAmount();
+
+    var lastRewardTo = await tokenContract.lastRewardTo();
+
+    var lastRewardEthBlockNumber = await tokenContract.lastRewardEthBlockNumber();
+    var latestDifficultyPeriodStarted = await tokenContract.latestDifficultyPeriodStarted();
+    //0x1d00ffff code
+
+    var epoch_count = await tokenContract.epochCount();
+
+    var rewards_since_readjustment = epoch_count % _BLOCKS_PER_READJUSTMENT;
+
+    var current_eth_block = web3.eth.blockNumber;
+
+    var eth_blocks_since_last_difficulty_period = current_eth_block - latestDifficultyPeriodStarted;
+    var seconds_since_readjustment = eth_blocks_since_last_difficulty_period * 15;
+
+    var seconds_per_reward = seconds_since_readjustment / rewards_since_readjustment;
+
+    var hashrateEstimate = this.estimateHashrateFromDifficulty(difficulty, seconds_per_reward);
+
+    var decimals = Math.pow(10, 8);
+    var renderData = {
+      contractUrl: 'https://etherscan.io/address/' + contractAddress,
+      contractAddress: contractAddress,
+      difficulty: difficulty,
+      challenge_number: challenge_number,
+      amountMined: parseInt(amountMined) / decimals,
+      totalSupply: parseInt(totalSupply) / decimals,
+      hashrateEstimate: hashrateEstimate,
+      lastRewardTo: lastRewardTo,
+      lastRewardAmount: parseInt(lastRewardAmount) / decimals,
+      lastRewardEthBlockNumber: lastRewardEthBlockNumber
+
+      //dashboardRenderer.renderContractData(renderData);
+
+
+    };callback(renderData);
+  }
+
+  estimateHashrateFromDifficulty(difficulty, seconds_per_reward) {
+
+    //hashrate *= (_IDEAL_BLOCK_TIME_SECONDS / seconds_per_reward)
+
+
+    var hashrate = web3utils.toBN(difficulty).mul(web3utils.toBN(2).pow(web3utils.toBN(22))).div(web3utils.toBN(_IDEAL_BLOCK_TIME_SECONDS));
+
+    //???
+    hashrate *= _IDEAL_BLOCK_TIME_SECONDS / seconds_per_reward;
+
+    var gigHashes = hashrate / parseFloat(web3utils.toBN(10).pow(web3utils.toBN(9)));
+
+    console.log('hashrate is ', hashrate);
+    return gigHashes.toFixed(2).toString() + " GH/s";
+  }
+
+  getWeb3ContractInstance(web3, contract_address, contract_abi) {
+    if (contract_address == null) {
+      contract_address = this.getContractAddress();
+    }
+
+    if (contract_abi == null) {
+      contract_abi = this.getContractABI();
+    }
+
+    return web3.eth.contract(contract_abi).at(contract_address);
+  }
+
+  getContractAddress() {
+    return deployedContractInfo.contracts._0xbitcointoken.blockchain_address;
+  }
+
+  getContractABI() {
+    return _0xBitcoinContract.abi;
+  }
+
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = EthHelper;
+
+
+/***/ }),
+/* 29 */
 /***/ (function(module, exports) {
 
 /*
@@ -31261,7 +31440,7 @@ Jsonrpc.prototype.toBatchPayload = function (messages) {
 module.exports = Jsonrpc;
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -31415,7 +31594,7 @@ SolidityParam.encodeList = function (params) {
 module.exports = SolidityParam;
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -31628,7 +31807,7 @@ SolidityEvent.prototype.attachToContract = function (contract) {
 module.exports = SolidityEvent;
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory) {
@@ -31824,7 +32003,7 @@ module.exports = SolidityEvent;
 });
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
@@ -32102,7 +32281,7 @@ module.exports = SolidityEvent;
 });
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 ;(function (root, factory, undef) {
@@ -32416,7 +32595,7 @@ module.exports = SolidityEvent;
 });
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var BN = __webpack_require__(130);
@@ -32457,7 +32636,7 @@ module.exports = function numberToBN(arg) {
 };
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -32483,8 +32662,8 @@ module.exports = function numberToBN(arg) {
  */
 
 var _ = __webpack_require__(26);
-var BN = __webpack_require__(36);
-var numberToBN = __webpack_require__(34);
+var BN = __webpack_require__(37);
+var numberToBN = __webpack_require__(35);
 var utf8 = __webpack_require__(133);
 var Hash = __webpack_require__(134);
 
@@ -32913,7 +33092,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(module) {(function (module, exports) {
@@ -36278,58 +36457,58 @@ module.exports = {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)(module)))
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(38);
+__webpack_require__(39);
 module.exports = __webpack_require__(141);
 
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__img_0xbitcoin_png__ = __webpack_require__(39);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__img_0xbitcoin_png__ = __webpack_require__(40);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__img_0xbitcoin_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__img_0xbitcoin_png__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__img_logo_light_png__ = __webpack_require__(40);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__img_logo_light_png__ = __webpack_require__(41);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__img_logo_light_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__img_logo_light_png__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__img_GitHub_Mark_64px_png__ = __webpack_require__(41);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__img_GitHub_Mark_64px_png__ = __webpack_require__(42);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__img_GitHub_Mark_64px_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__img_GitHub_Mark_64px_png__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__img_reddit_mark_64px_png__ = __webpack_require__(42);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__img_reddit_mark_64px_png__ = __webpack_require__(43);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__img_reddit_mark_64px_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__img_reddit_mark_64px_png__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__img_english_png__ = __webpack_require__(43);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__img_english_png__ = __webpack_require__(44);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__img_english_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__img_english_png__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__img_russian_png__ = __webpack_require__(44);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__img_russian_png__ = __webpack_require__(45);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__img_russian_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__img_russian_png__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__img_chinese_png__ = __webpack_require__(45);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__img_chinese_png__ = __webpack_require__(46);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__img_chinese_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__img_chinese_png__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__img_0xbitcoinContractQR_png__ = __webpack_require__(46);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__img_0xbitcoinContractQR_png__ = __webpack_require__(47);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__img_0xbitcoinContractQR_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7__img_0xbitcoinContractQR_png__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__img_logo_png__ = __webpack_require__(47);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__img_logo_png__ = __webpack_require__(48);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__img_logo_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8__img_logo_png__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__img_mercatox_png__ = __webpack_require__(48);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__img_mercatox_png__ = __webpack_require__(49);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__img_mercatox_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9__img_mercatox_png__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__img_idex_png__ = __webpack_require__(49);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__img_idex_png__ = __webpack_require__(50);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__img_idex_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_10__img_idex_png__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__img_enclaves_png__ = __webpack_require__(50);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__img_enclaves_png__ = __webpack_require__(51);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__img_enclaves_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_11__img_enclaves_png__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__img_forkdelta_png__ = __webpack_require__(51);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__img_forkdelta_png__ = __webpack_require__(52);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__img_forkdelta_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_12__img_forkdelta_png__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__img_ledger_png__ = __webpack_require__(52);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__img_ledger_png__ = __webpack_require__(53);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__img_ledger_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_13__img_ledger_png__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__img_metamask_png__ = __webpack_require__(53);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__img_metamask_png__ = __webpack_require__(54);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__img_metamask_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_14__img_metamask_png__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__img_lavalogo_png__ = __webpack_require__(54);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__img_lavalogo_png__ = __webpack_require__(55);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__img_lavalogo_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_15__img_lavalogo_png__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__img_trust_png__ = __webpack_require__(55);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__img_trust_png__ = __webpack_require__(56);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__img_trust_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_16__img_trust_png__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_17_vue__ = __webpack_require__(14);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__canvas_anim__ = __webpack_require__(59);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__alert_renderer__ = __webpack_require__(60);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__home_renderer__ = __webpack_require__(61);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__ethhelper__ = __webpack_require__(65);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__canvas_anim__ = __webpack_require__(60);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__alert_renderer__ = __webpack_require__(61);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__home_renderer__ = __webpack_require__(62);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__ethhelper__ = __webpack_require__(28);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_22__home_dashboard__ = __webpack_require__(139);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_23__wallet_dashboard__ = __webpack_require__(140);
 
@@ -36390,13 +36569,13 @@ var navbar = new __WEBPACK_IMPORTED_MODULE_17_vue__["a" /* default */]({
   }
 });
 
-$(document).ready(function () {
+$(document).ready(async function () {
 
   if ($("#home").length > 0) {
 
     canvasAnim.init();
 
-    var web3 = ethHelper.init(alertRenderer);
+    var web3 = await ethHelper.init(alertRenderer);
 
     homeRenderer.init(ethHelper);
   }
@@ -36466,109 +36645,109 @@ $(document).ready(function () {
 //dashboardRenderer.hide();
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports) {
 
 module.exports = "/app/assets/img/0xbitcoin.png";
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports) {
 
 module.exports = "/app/assets/img/logo-light.png";
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports) {
 
 module.exports = "/app/assets/img/GitHub-Mark-64px.png";
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports) {
 
 module.exports = "/app/assets/img/reddit-mark-64px.png";
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports) {
 
 module.exports = "/app/assets/img/english.png";
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports) {
 
 module.exports = "/app/assets/img/russian.png";
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports) {
 
 module.exports = "/app/assets/img/chinese.png";
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, exports) {
 
 module.exports = "/app/assets/img/0xbitcoinContractQR.png";
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ (function(module, exports) {
 
 module.exports = "/app/assets/img/logo.png";
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, exports) {
 
 module.exports = "/app/assets/img/mercatox.png";
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, exports) {
 
 module.exports = "/app/assets/img/idex.png";
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (function(module, exports) {
 
 module.exports = "/app/assets/img/enclaves.png";
 
 /***/ }),
-/* 51 */
+/* 52 */
 /***/ (function(module, exports) {
 
 module.exports = "/app/assets/img/forkdelta.png";
 
 /***/ }),
-/* 52 */
+/* 53 */
 /***/ (function(module, exports) {
 
 module.exports = "/app/assets/img/ledger.png";
 
 /***/ }),
-/* 53 */
+/* 54 */
 /***/ (function(module, exports) {
 
 module.exports = "/app/assets/img/metamask.png";
 
 /***/ }),
-/* 54 */
+/* 55 */
 /***/ (function(module, exports) {
 
 module.exports = "/app/assets/img/lavalogo.png";
 
 /***/ }),
-/* 55 */
+/* 56 */
 /***/ (function(module, exports) {
 
 module.exports = "/app/assets/img/trust.png";
 
 /***/ }),
-/* 56 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var apply = Function.prototype.apply;
@@ -36619,7 +36798,7 @@ exports._unrefActive = exports.active = function (item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(57);
+__webpack_require__(58);
 // On some exotic environments, it's not clear which object `setimmeidate` was
 // able to install onto.  Search each possibility in the same order as the
 // `setimmediate` library.
@@ -36628,7 +36807,7 @@ exports.clearImmediate = typeof self !== "undefined" && self.clearImmediate || t
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
 
 /***/ }),
-/* 57 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -36813,10 +36992,10 @@ exports.clearImmediate = typeof self !== "undefined" && self.clearImmediate || t
     attachTo.setImmediate = setImmediate;
     attachTo.clearImmediate = clearImmediate;
 })(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7), __webpack_require__(58)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7), __webpack_require__(59)))
 
 /***/ }),
-/* 58 */
+/* 59 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -37006,7 +37185,7 @@ process.umask = function () {
 };
 
 /***/ }),
-/* 59 */
+/* 60 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -37105,7 +37284,7 @@ class CanvasAnim {
 
 
 /***/ }),
-/* 60 */
+/* 61 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -37130,16 +37309,16 @@ class AlertRenderer {
 
 
 /***/ }),
-/* 61 */
+/* 62 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(14);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_typed_js__ = __webpack_require__(62);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_typed_js__ = __webpack_require__(63);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_typed_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_typed_js__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_slick_carousel__ = __webpack_require__(63);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_slick_carousel__ = __webpack_require__(64);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_slick_carousel___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_slick_carousel__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__dashboard_renderer__ = __webpack_require__(64);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__dashboard_renderer__ = __webpack_require__(65);
 
 const $ = __webpack_require__(6);
 
@@ -37276,7 +37455,7 @@ class HomeRenderer {
 
 
 /***/ }),
-/* 62 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*!
@@ -38363,7 +38542,7 @@ class HomeRenderer {
 ;
 
 /***/ }),
-/* 63 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -41124,7 +41303,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 });
 
 /***/ }),
-/* 64 */
+/* 65 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -41173,142 +41352,6 @@ class DashboardRenderer {
 
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = DashboardRenderer;
-
-
-/***/ }),
-/* 65 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-var INFURA_ROPSTEN_URL = 'https://ropsten.infura.io/gmXEVo5luMPUGPqg6mhy';
-var INFURA_MAINNET_URL = 'https://mainnet.infura.io/gmXEVo5luMPUGPqg6mhy';
-
-var deployedContractInfo = __webpack_require__(66);
-var _0xBitcoinContract = __webpack_require__(67);
-
-var embeddedWeb3 = __webpack_require__(68);
-
-var web3utils = __webpack_require__(124);
-
-const _IDEAL_BLOCK_TIME_SECONDS = 900;
-const _BLOCKS_PER_READJUSTMENT = 1024;
-
-class EthHelper {
-
-  init(alertRenderer) {
-    this.alertRenderer = alertRenderer;
-
-    return this.connectWeb3(new embeddedWeb3());
-  }
-
-  connectWeb3(web3) {
-    if (typeof web3 !== 'undefined') {
-
-      window.web3 = new Web3(new Web3.providers.HttpProvider(INFURA_MAINNET_URL));
-      console.log('connected to web3!');
-      return window.web3;
-    } else {
-
-      this.alertRenderer.renderError('No web3? You should consider trying MetaMask!');
-      return {};
-      // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
-      //window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-    }
-  }
-
-  async connectToContract(web3, dashboardRenderer, callback) {
-    var tokenContract = this.getWeb3ContractInstance(web3, this.getContractAddress(), this.getContractABI());
-
-    console.log(tokenContract);
-
-    var contractAddress = this.getContractAddress();
-
-    var difficulty = await tokenContract.getMiningDifficulty().toNumber();
-
-    var challenge_number = await tokenContract.getChallengeNumber();
-
-    var amountMined = await tokenContract.tokensMinted();
-
-    var totalSupply = await tokenContract._totalSupply();
-
-    var lastRewardAmount = await tokenContract.lastRewardAmount();
-
-    var lastRewardTo = await tokenContract.lastRewardTo();
-
-    var lastRewardEthBlockNumber = await tokenContract.lastRewardEthBlockNumber();
-    var latestDifficultyPeriodStarted = await tokenContract.latestDifficultyPeriodStarted();
-    //0x1d00ffff code
-
-    var epoch_count = await tokenContract.epochCount();
-
-    var rewards_since_readjustment = epoch_count % _BLOCKS_PER_READJUSTMENT;
-
-    var current_eth_block = web3.eth.blockNumber;
-
-    var eth_blocks_since_last_difficulty_period = current_eth_block - latestDifficultyPeriodStarted;
-    var seconds_since_readjustment = eth_blocks_since_last_difficulty_period * 15;
-
-    var seconds_per_reward = seconds_since_readjustment / rewards_since_readjustment;
-
-    var hashrateEstimate = this.estimateHashrateFromDifficulty(difficulty, seconds_per_reward);
-
-    var decimals = Math.pow(10, 8);
-    var renderData = {
-      contractUrl: 'https://etherscan.io/address/' + contractAddress,
-      contractAddress: contractAddress,
-      difficulty: difficulty,
-      challenge_number: challenge_number,
-      amountMined: parseInt(amountMined) / decimals,
-      totalSupply: parseInt(totalSupply) / decimals,
-      hashrateEstimate: hashrateEstimate,
-      lastRewardTo: lastRewardTo,
-      lastRewardAmount: parseInt(lastRewardAmount) / decimals,
-      lastRewardEthBlockNumber: lastRewardEthBlockNumber
-
-      //dashboardRenderer.renderContractData(renderData);
-
-
-    };callback(renderData);
-  }
-
-  estimateHashrateFromDifficulty(difficulty, seconds_per_reward) {
-
-    //hashrate *= (_IDEAL_BLOCK_TIME_SECONDS / seconds_per_reward)
-
-
-    var hashrate = web3utils.toBN(difficulty).mul(web3utils.toBN(2).pow(web3utils.toBN(22))).div(web3utils.toBN(_IDEAL_BLOCK_TIME_SECONDS));
-
-    //???
-    hashrate *= _IDEAL_BLOCK_TIME_SECONDS / seconds_per_reward;
-
-    var gigHashes = hashrate / parseFloat(web3utils.toBN(10).pow(web3utils.toBN(9)));
-
-    console.log('hashrate is ', hashrate);
-    return gigHashes.toFixed(2).toString() + " GH/s";
-  }
-
-  getWeb3ContractInstance(web3, contract_address, contract_abi) {
-    if (contract_address == null) {
-      contract_address = this.getContractAddress();
-    }
-
-    if (contract_abi == null) {
-      contract_abi = this.getContractABI();
-    }
-
-    return web3.eth.contract(contract_abi).at(contract_address);
-  }
-
-  getContractAddress() {
-    return deployedContractInfo.contracts._0xbitcointoken.blockchain_address;
-  }
-
-  getContractABI() {
-    return _0xBitcoinContract.abi;
-  }
-
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = EthHelper;
 
 
 /***/ }),
@@ -41501,7 +41544,7 @@ module.exports = Web3;
  * @date 2014
  */
 
-var Jsonrpc = __webpack_require__(28);
+var Jsonrpc = __webpack_require__(29);
 var utils = __webpack_require__(1);
 var c = __webpack_require__(16);
 var errors = __webpack_require__(12);
@@ -42315,7 +42358,7 @@ module.exports = Eth;
 
 var utils = __webpack_require__(1);
 var coder = __webpack_require__(23);
-var SolidityEvent = __webpack_require__(30);
+var SolidityEvent = __webpack_require__(31);
 var SolidityFunction = __webpack_require__(106);
 var AllEvents = __webpack_require__(107);
 
@@ -42896,7 +42939,7 @@ module.exports = SolidityTypeBytes;
 ;(function (root, factory, undef) {
 	if (true) {
 		// CommonJS
-		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(20), __webpack_require__(84), __webpack_require__(85), __webpack_require__(8), __webpack_require__(9), __webpack_require__(24), __webpack_require__(31), __webpack_require__(86), __webpack_require__(32), __webpack_require__(87), __webpack_require__(33), __webpack_require__(88), __webpack_require__(25), __webpack_require__(89), __webpack_require__(10), __webpack_require__(2), __webpack_require__(90), __webpack_require__(91), __webpack_require__(92), __webpack_require__(93), __webpack_require__(94), __webpack_require__(95), __webpack_require__(96), __webpack_require__(97), __webpack_require__(98), __webpack_require__(99), __webpack_require__(100), __webpack_require__(101), __webpack_require__(102), __webpack_require__(103), __webpack_require__(104), __webpack_require__(105));
+		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(20), __webpack_require__(84), __webpack_require__(85), __webpack_require__(8), __webpack_require__(9), __webpack_require__(24), __webpack_require__(32), __webpack_require__(86), __webpack_require__(33), __webpack_require__(87), __webpack_require__(34), __webpack_require__(88), __webpack_require__(25), __webpack_require__(89), __webpack_require__(10), __webpack_require__(2), __webpack_require__(90), __webpack_require__(91), __webpack_require__(92), __webpack_require__(93), __webpack_require__(94), __webpack_require__(95), __webpack_require__(96), __webpack_require__(97), __webpack_require__(98), __webpack_require__(99), __webpack_require__(100), __webpack_require__(101), __webpack_require__(102), __webpack_require__(103), __webpack_require__(104), __webpack_require__(105));
 	} else if (typeof define === "function" && define.amd) {
 		// AMD
 		define(["./core", "./x64-core", "./lib-typedarrays", "./enc-utf16", "./enc-base64", "./md5", "./sha1", "./sha256", "./sha224", "./sha512", "./sha384", "./sha3", "./ripemd160", "./hmac", "./pbkdf2", "./evpkdf", "./cipher-core", "./mode-cfb", "./mode-ctr", "./mode-ctr-gladman", "./mode-ofb", "./mode-ecb", "./pad-ansix923", "./pad-iso10126", "./pad-iso97971", "./pad-zeropadding", "./pad-nopadding", "./format-hex", "./aes", "./tripledes", "./rc4", "./rabbit", "./rabbit-legacy"], factory);
@@ -43134,7 +43177,7 @@ module.exports = SolidityTypeBytes;
 ;(function (root, factory, undef) {
 	if (true) {
 		// CommonJS
-		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(31));
+		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(32));
 	} else if (typeof define === "function" && define.amd) {
 		// AMD
 		define(["./core", "./sha256"], factory);
@@ -43212,7 +43255,7 @@ module.exports = SolidityTypeBytes;
 ;(function (root, factory, undef) {
 	if (true) {
 		// CommonJS
-		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(20), __webpack_require__(32));
+		module.exports = exports = factory(__webpack_require__(0), __webpack_require__(20), __webpack_require__(33));
 	} else if (typeof define === "function" && define.amd) {
 		// AMD
 		define(["./core", "./x64-core", "./sha512"], factory);
@@ -46023,7 +46066,7 @@ module.exports = SolidityFunction;
  */
 
 var sha3 = __webpack_require__(19);
-var SolidityEvent = __webpack_require__(30);
+var SolidityEvent = __webpack_require__(31);
 var formatters = __webpack_require__(5);
 var utils = __webpack_require__(1);
 var Filter = __webpack_require__(21);
@@ -46640,7 +46683,7 @@ module.exports = extend;
  * @date 2015
  */
 
-var Jsonrpc = __webpack_require__(28);
+var Jsonrpc = __webpack_require__(29);
 var errors = __webpack_require__(12);
 
 var Batch = function (web3) {
@@ -47078,7 +47121,7 @@ module.exports = IpcProvider;
 
 var _ = __webpack_require__(26);
 var ethjsUnit = __webpack_require__(125);
-var utils = __webpack_require__(35);
+var utils = __webpack_require__(36);
 var soliditySha3 = __webpack_require__(135);
 var randomHex = __webpack_require__(136);
 
@@ -47406,7 +47449,7 @@ module.exports = {
 
 
 var BN = __webpack_require__(126);
-var numberToBN = __webpack_require__(34);
+var numberToBN = __webpack_require__(35);
 
 var zero = new BN(0);
 var negative1 = new BN(-1);
@@ -50958,8 +51001,6 @@ for (var i = 0, len = code.length; i < len; ++i) {
   revLookup[code.charCodeAt(i)] = i;
 }
 
-// Support decoding URL-safe base64 strings, as Node.js does.
-// See: https://en.wikipedia.org/wiki/Base64#URL_applications
 revLookup['-'.charCodeAt(0)] = 62;
 revLookup['_'.charCodeAt(0)] = 63;
 
@@ -51021,7 +51062,7 @@ function encodeChunk(uint8, start, end) {
   var tmp;
   var output = [];
   for (var i = start; i < end; i += 3) {
-    tmp = (uint8[i] << 16 & 0xFF0000) + (uint8[i + 1] << 8 & 0xFF00) + (uint8[i + 2] & 0xFF);
+    tmp = (uint8[i] << 16) + (uint8[i + 1] << 8) + uint8[i + 2];
     output.push(tripletToBase64(tmp));
   }
   return output.join('');
@@ -55178,8 +55219,8 @@ module.exports = {
  */
 
 var _ = __webpack_require__(26);
-var BN = __webpack_require__(36);
-var utils = __webpack_require__(35);
+var BN = __webpack_require__(37);
+var utils = __webpack_require__(36);
 
 var _elementaryName = function (name) {
     /*jshint maxcomplexity:false */
@@ -55511,8 +55552,11 @@ class HomeDashboard {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ethhelper__ = __webpack_require__(28);
 
 const $ = __webpack_require__(6);
+
+
 
 
 
@@ -55527,8 +55571,9 @@ class WalletDashboard {
 
     $(".transfer-form-fields").hide();
 
-    this.web3 = this.detectInjectedWeb3();
+    this.web3 = await __WEBPACK_IMPORTED_MODULE_1__ethhelper__["a" /* default */].detectInjectedWeb3(alertRenderer);
 
+    console.log('web3', this.web3);
     await this.updateWalletRender();
 
     console.log(accountAddress);
@@ -55569,32 +55614,40 @@ class WalletDashboard {
     }
   }
 
-  detectInjectedWeb3() {
-
-    console.log('detect');
-    if (typeof web3 !== 'undefined') {
-      web3 = new Web3(web3.currentProvider);
-
-      console.log(web3);
-
-      if (typeof web3.eth !== 'undefined' && typeof web3.eth.accounts[0] !== 'undefined') {
-
-        return web3;
+  /*
+    detectInjectedWeb3()
+    {
+  
+      console.log('detect')
+      if (typeof web3 !== 'undefined') {
+        web3 = new Web3(web3.currentProvider);
+  
+          console.log(web3)
+  
+        if(typeof web3.eth !== 'undefined' && typeof web3.eth.accounts[0] !== 'undefined')
+        {
+  
+          return web3;
+  
+        }else{
+  
+            console.log(web3.eth)
+              console.log(web3.eth.accounts[0])
+  
+  
+          this.alertRenderer.renderError("No Web3 interface found.  Please login to Metamask or an Ethereum enabled browser.")
+        }
+  
       } else {
-
-        console.log(web3.eth);
-        console.log(web3.eth.accounts[0]);
-
-        this.alertRenderer.renderError("No Web3 interface found.  Please login to Metamask or an Ethereum enabled browser.");
+        // set the provider you want from Web3.providers
+        //web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+        this.alertRenderer.renderError("No Web3 interface found.  Please install Metamask or use an Ethereum enabled browser.")
+  
       }
-    } else {
-      // set the provider you want from Web3.providers
-      //web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-      this.alertRenderer.renderError("No Web3 interface found.  Please install Metamask or use an Ethereum enabled browser.");
-    }
-
-    return null;
-  }
+  
+  
+      return null;
+    }*/
 
   async updateWalletRender() {
     if (this.web3 != null) {
