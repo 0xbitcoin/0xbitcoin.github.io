@@ -31193,6 +31193,8 @@ class EthHelper {
   async init(alertRenderer) {
     this.alertRenderer = alertRenderer;
 
+    console.log('connect web3 ');
+
     var web3 = this.connectWeb3(new embeddedWeb3());
 
     return web3;
@@ -31225,7 +31227,7 @@ class EthHelper {
         window.web3 = new Web3(ethereum);
         try {
           // Request account access if needed
-          ethereum.enable();
+          await ethereum.enable();
           resolve(window.web3);
           // Acccounts now exposed
           //    web3.eth.sendTransaction({/* ... */});
@@ -36570,6 +36572,8 @@ var navbar = new __WEBPACK_IMPORTED_MODULE_17_vue__["a" /* default */]({
 });
 
 $(document).ready(async function () {
+
+  console.log('document ready');
 
   if ($("#home").length > 0) {
 
@@ -55657,7 +55661,9 @@ class WalletDashboard {
 
       accountAddress = activeAccount;
 
-      console.log(accountAddress);
+      console.log('account address', accountAddress);
+
+      if (typeof accountAddress == 'undefined') return;
 
       var contract = this.ethHelper.getWeb3ContractInstance(this.web3);
 
