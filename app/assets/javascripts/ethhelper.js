@@ -17,6 +17,8 @@ export default class EthHelper {
     async init( alertRenderer ){
         this.alertRenderer = alertRenderer;
 
+          console.log('connect web3 ')
+
        var web3 = this.connectWeb3(new embeddedWeb3())
 
 
@@ -56,7 +58,7 @@ export default class EthHelper {
                       window.web3 = new Web3(ethereum);
                       try {
                           // Request account access if needed
-                            ethereum.enable();
+                          await  ethereum.enable();
                           resolve( window.web3 );
                           // Acccounts now exposed
                       //    web3.eth.sendTransaction({/* ... */});

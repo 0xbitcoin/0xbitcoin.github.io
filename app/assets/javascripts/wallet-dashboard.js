@@ -125,8 +125,10 @@ export default class WalletDashboard {
 
       accountAddress = activeAccount;
 
-      console.log(accountAddress)
 
+      console.log('account address', accountAddress)
+
+      if(typeof accountAddress == 'undefined') return;
 
 
       var contract = this.ethHelper.getWeb3ContractInstance(this.web3  );

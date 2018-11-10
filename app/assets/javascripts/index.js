@@ -68,7 +68,7 @@ var navbar = new Vue({
 
 $(document).ready(async function(){
 
-
+  console.log('document ready')
 
     if($("#home").length > 0){
 
