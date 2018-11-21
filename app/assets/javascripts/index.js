@@ -30,8 +30,6 @@ import trustLogo from '../img/trust.png'
 import Vue from 'vue'
 
 
-import CanvasAnim from './canvas-anim'
-
 import AlertRenderer from './alert-renderer'
 import HomeRenderer from './home-renderer'
 
@@ -43,7 +41,6 @@ import WalletDashboard from './wallet-dashboard'
 
 
 
-var canvasAnim = new CanvasAnim();
 
 var homeRenderer= new HomeRenderer()
 
@@ -72,7 +69,7 @@ $(document).ready(async function(){
 
     if($("#home").length > 0){
 
-      canvasAnim.init();
+
 
       var web3 = await ethHelper.init( alertRenderer);
 
