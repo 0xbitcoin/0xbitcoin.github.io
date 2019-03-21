@@ -31175,8 +31175,8 @@ function isnan(val) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-var INFURA_ROPSTEN_URL = 'https://ropsten.infura.io/gmXEVo5luMPUGPqg6mhy';
-var INFURA_MAINNET_URL = 'https://mainnet.infura.io/gmXEVo5luMPUGPqg6mhy';
+var INFURA_ROPSTEN_URL = 'https://ropsten.infura.io/v3/204e0b86b7cd4ce3966992af25070682';
+var INFURA_MAINNET_URL = 'https://mainnet.infura.io/v3/204e0b86b7cd4ce3966992af25070682';
 
 var deployedContractInfo = __webpack_require__(65);
 var _0xBitcoinContract = __webpack_require__(66);
