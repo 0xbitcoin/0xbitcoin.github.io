@@ -2246,7 +2246,7 @@ module.exports = {
     You should have received a copy of the GNU Lesser General Public License
     along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
 */
-/** 
+/**
  * @file formatters.js
  * @author Marek Kotewicz <marek@ethdev.com>
  * @date 2015
@@ -2518,13 +2518,13 @@ SolidityType.prototype.staticPartLength = function (name) {
 
 /**
  * Should be used to determine if type is dynamic array
- * eg: 
+ * eg:
  * "type[]" => true
  * "type[4]" => false
  *
  * @method isDynamicArray
  * @param {String} name
- * @return {Bool} true if the type is dynamic array 
+ * @return {Bool} true if the type is dynamic array
  */
 SolidityType.prototype.isDynamicArray = function (name) {
     var nestedTypes = this.nestedTypes(name);
@@ -2533,13 +2533,13 @@ SolidityType.prototype.isDynamicArray = function (name) {
 
 /**
  * Should be used to determine if type is static array
- * eg: 
+ * eg:
  * "type[]" => false
  * "type[4]" => true
  *
  * @method isStaticArray
  * @param {String} name
- * @return {Bool} true if the type is static array 
+ * @return {Bool} true if the type is static array
  */
 SolidityType.prototype.isStaticArray = function (name) {
     var nestedTypes = this.nestedTypes(name);
@@ -2548,7 +2548,7 @@ SolidityType.prototype.isStaticArray = function (name) {
 
 /**
  * Should return length of static array
- * eg. 
+ * eg.
  * "int[32]" => 32
  * "int256[14]" => 14
  * "int[2][3]" => 3
@@ -2623,7 +2623,7 @@ SolidityType.prototype.nestedTypes = function (name) {
  * Should be used to encode the value
  *
  * @method encode
- * @param {Object} value 
+ * @param {Object} value
  * @param {String} name
  * @return {String} encoded value
  */
@@ -2746,7 +2746,7 @@ module.exports = SolidityType;
     You should have received a copy of the GNU Lesser General Public License
     along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
 */
-/** 
+/**
  * @file formatters.js
  * @author Marek Kotewicz <marek@ethdev.com>
  * @author Fabian Vogelsteller <fabian@ethdev.com>
@@ -2845,7 +2845,7 @@ var inputTransactionFormatter = function (options) {
 
 /**
  * Formats the output of a transaction to its proper values
- * 
+ *
  * @method outputTransactionFormatter
  * @param {Object} tx
  * @returns {Object}
@@ -2862,7 +2862,7 @@ var outputTransactionFormatter = function (tx) {
 
 /**
  * Formats the output of a transaction receipt to its proper values
- * 
+ *
  * @method outputTransactionReceiptFormatter
  * @param {Object} receipt
  * @returns {Object}
@@ -2886,7 +2886,7 @@ var outputTransactionReceiptFormatter = function (receipt) {
  * Formats the output of a block to its proper values
  *
  * @method outputBlockFormatter
- * @param {Object} block 
+ * @param {Object} block
  * @returns {Object}
 */
 var outputBlockFormatter = function (block) {
@@ -2912,7 +2912,7 @@ var outputBlockFormatter = function (block) {
 
 /**
  * Formats the output of a log
- * 
+ *
  * @method outputLogFormatter
  * @param {Object} log object
  * @returns {Object} log
@@ -13539,7 +13539,7 @@ module.exports = function (module) {
     You should have received a copy of the GNU Lesser General Public License
     along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
 */
-/** 
+/**
  * @file errors.js
  * @author Marek Kotewicz <marek@ethdev.com>
  * @date 2015
@@ -13629,7 +13629,7 @@ Method.prototype.extractCallback = function (args) {
 
 /**
  * Should be called to check if the number of arguments is correct
- * 
+ *
  * @method validateArgs
  * @param {Array} arguments
  * @throws {Error} if it is not
@@ -13642,7 +13642,7 @@ Method.prototype.validateArgs = function (args) {
 
 /**
  * Should be called to format input args of method
- * 
+ *
  * @method formatInput
  * @param {Array}
  * @return {Array}
@@ -26228,13 +26228,13 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/*! bignumber.js v2.0.7 https://github.com/Mik
 
 /**
  * Utils
- * 
+ *
  * @module utils
  */
 
 /**
  * Utility functions
- * 
+ *
  * @class [utils] config
  * @constructor
  */
@@ -26274,7 +26274,7 @@ module.exports = {
     You should have received a copy of the GNU Lesser General Public License
     along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
 */
-/** 
+/**
  * @file iban.js
  * @author Marek Kotewicz <marek@ethdev.com>
  * @date 2015
@@ -26529,7 +26529,7 @@ Property.prototype.setRequestManager = function (rm) {
 
 /**
  * Should be called to format input args of method
- * 
+ *
  * @method formatInput
  * @param {Array}
  * @return {Array}
@@ -26564,7 +26564,7 @@ Property.prototype.extractCallback = function (args) {
 
 /**
  * Should attach function to method
- * 
+ *
  * @method attachToObject
  * @param {Object}
  * @param {Function}
@@ -26651,7 +26651,7 @@ module.exports = Property;
     You should have received a copy of the GNU Lesser General Public License
     along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
 */
-/** 
+/**
  * @file sha3.js
  * @author Marek Kotewicz <marek@ethdev.com>
  * @date 2015
@@ -27058,7 +27058,7 @@ Adds the callback and sets up the methods, to iterate over the results.
 
 @method getLogsAtStart
 @param {Object} self
-@param {funciton} 
+@param {funciton}
 */
 var getLogsAtStart = function (self, callback) {
     // call getFilterLogs for the first watch callback start
@@ -27334,7 +27334,7 @@ module.exports = {
     You should have received a copy of the GNU Lesser General Public License
     along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
 */
-/** 
+/**
  * @file coder.js
  * @author Marek Kotewicz <marek@ethdev.com>
  * @date 2015
@@ -27364,7 +27364,7 @@ var SolidityCoder = function (types) {
  *
  * @method _requireType
  * @param {String} type
- * @returns {SolidityType} 
+ * @returns {SolidityType}
  * @throws {Error} throws if no matching type is found
  */
 SolidityCoder.prototype._requireType = function (type) {
@@ -31175,8 +31175,8 @@ function isnan(val) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-var INFURA_ROPSTEN_URL = 'https://ropsten.infura.io/v3/204e0b86b7cd4ce3966992af25070682';
-var INFURA_MAINNET_URL = 'https://mainnet.infura.io/v3/204e0b86b7cd4ce3966992af25070682';
+var INFURA_ROPSTEN_URL = 'https://ropsten.infura.io/v3/281f12e524a54b5ca0b1571a340e950b';
+var INFURA_MAINNET_URL = 'https://mainnet.infura.io/v3/281f12e524a54b5ca0b1571a340e950b';
 
 var deployedContractInfo = __webpack_require__(65);
 var _0xBitcoinContract = __webpack_require__(66);
@@ -31461,7 +31461,7 @@ module.exports = Jsonrpc;
     You should have received a copy of the GNU Lesser General Public License
     along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
 */
-/** 
+/**
  * @file param.js
  * @author Marek Kotewicz <marek@ethdev.com>
  * @date 2015
@@ -31480,7 +31480,7 @@ var SolidityParam = function (value, offset) {
 
 /**
  * This method should be used to get length of params's dynamic part
- * 
+ *
  * @method dynamicPartLength
  * @returns {Number} length of dynamic part (in bytes)
  */
@@ -31615,7 +31615,7 @@ module.exports = SolidityParam;
     You should have received a copy of the GNU Lesser General Public License
     along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
 */
-/** 
+/**
  * @file event.js
  * @author Marek Kotewicz <marek@ethdev.com>
  * @date 2014
@@ -31686,7 +31686,7 @@ SolidityEvent.prototype.signature = function () {
 
 /**
  * Should be used to encode indexed params and options to one final object
- * 
+ *
  * @method encode
  * @param {Object} indexed
  * @param {Object} options
@@ -37252,7 +37252,7 @@ class HomeRenderer {
               dots: true,
               speed: 500
             });
-        
+
              $('.screenshot_slider').owlCarousel({
                 loop: true,
                 responsiveClass: true,
@@ -37312,7 +37312,7 @@ class HomeRenderer {
                     }
                 }
             });
-        
+
             $.scrollUp({
                 scrollText: '<i class="icon-arrow-up"></i>',
                 easingType: 'linear',
@@ -37357,13 +37357,13 @@ class HomeRenderer {
 /***/ (function(module, exports, __webpack_require__) {
 
 /*!
- * 
+ *
  *   typed.js - A JavaScript Typing Animation Library
  *   Author: Matt Boldt <me@mattboldt.com>
  *   Version: v2.0.6
  *   Url: https://github.com/mattboldt/typed.js
  *   License(s): MIT
- * 
+ *
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if (true) module.exports = factory();else if (typeof define === 'function' && define.amd) define([], factory);else if (typeof exports === 'object') exports["Typed"] = factory();else root["Typed"] = factory();
@@ -41297,7 +41297,7 @@ module.exports = Web3;
     You should have received a copy of the GNU Lesser General Public License
     along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
 */
-/** 
+/**
  * @file web3.js
  * @authors:
  *   Jeffrey Wilcke <jeff@ethdev.com>
@@ -41432,7 +41432,7 @@ module.exports = Web3;
     You should have received a copy of the GNU Lesser General Public License
     along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
 */
-/** 
+/**
  * @file requestmanager.js
  * @author Jeffrey Wilcke <jeff@ethdev.com>
  * @author Marek Kotewicz <marek@ethdev.com>
@@ -42248,7 +42248,7 @@ module.exports = Eth;
     You should have received a copy of the GNU Lesser General Public License
     along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
 */
-/** 
+/**
  * @file contract.js
  * @author Marek Kotewicz <marek@ethdev.com>
  * @date 2014
@@ -42402,7 +42402,7 @@ var ContractFactory = function (web3, abi) {
 
 /**
  * Should be called to create new contract on a blockchain
- * 
+ *
  * @method new
  * @param {Any} contract constructor param1 (optional)
  * @param {Any} contract constructor param2 (optional)
@@ -42468,7 +42468,7 @@ ContractFactory.prototype.new = function () {
 ContractFactory.prototype.at = function (address, callback) {
     var contract = new Contract(this.web3, this.abi, address);
 
-    // this functions are not part of prototype, 
+    // this functions are not part of prototype,
     // because we dont want to spoil the interface
     addFunctionsToContract(contract);
     addEventsToContract(contract);
@@ -45957,7 +45957,7 @@ module.exports = SolidityFunction;
     You should have received a copy of the GNU Lesser General Public License
     along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
 */
-/** 
+/**
  * @file allevents.js
  * @author Marek Kotewicz <marek@ethdev.com>
  * @date 2014
@@ -46143,7 +46143,7 @@ module.exports = IsSyncing;
     You should have received a copy of the GNU Lesser General Public License
     along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
 */
-/** 
+/**
  * @file namereg.js
  * @author Marek Kotewicz <marek@ethdev.com>
  * @date 2015
@@ -46198,7 +46198,7 @@ module.exports = [{"constant":true,"inputs":[{"name":"_name","type":"bytes32"}],
     You should have received a copy of the GNU Lesser General Public License
     along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
 */
-/** 
+/**
  * @file transfer.js
  * @author Marek Kotewicz <marek@ethdev.com>
  * @date 2015
@@ -46575,7 +46575,7 @@ module.exports = extend;
     You should have received a copy of the GNU Lesser General Public License
     along with web3.js.  If not, see <http://www.gnu.org/licenses/>.
 */
-/** 
+/**
  * @file batch.js
  * @author Marek Kotewicz <marek@ethdev.com>
  * @date 2015
@@ -54756,7 +54756,7 @@ module.exports = function isHexPrefixed(str) {
 // modifications and pruning. It is licensed under MIT:
 //
 // Copyright 2015-2016 Chen, Yi-Cyuan
-//  
+//
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -54764,10 +54764,10 @@ module.exports = function isHexPrefixed(str) {
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -55517,35 +55517,35 @@ class WalletDashboard {
   /*
     detectInjectedWeb3()
     {
-  
+
       console.log('detect')
       if (typeof web3 !== 'undefined') {
         web3 = new Web3(web3.currentProvider);
-  
+
           console.log(web3)
-  
+
         if(typeof web3.eth !== 'undefined' && typeof web3.eth.accounts[0] !== 'undefined')
         {
-  
+
           return web3;
-  
+
         }else{
-  
+
             console.log(web3.eth)
               console.log(web3.eth.accounts[0])
-  
-  
+
+
           this.alertRenderer.renderError("No Web3 interface found.  Please login to Metamask or an Ethereum enabled browser.")
         }
-  
+
       } else {
         // set the provider you want from Web3.providers
         //web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
         this.alertRenderer.renderError("No Web3 interface found.  Please install Metamask or use an Ethereum enabled browser.")
-  
+
       }
-  
-  
+
+
       return null;
     }*/
 
