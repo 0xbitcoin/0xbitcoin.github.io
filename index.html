@@ -1,604 +1,267 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
-    <title>0xBitcoin</title>
-
-
-
-      <link href="https://fonts.googleapis.com/css?family=Titillium+Web" rel="stylesheet">
-
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-
-  <link rel="shortcut icon" type="image/png" href="/app/assets/img/front/0xbtc_logo_white_small.png"/>
-
-  <link href="/app/assets/main.cbd295af91ae46634d36.css" rel="stylesheet"></head>
-
-
-<div class="orange-theme">
-
-<nav class="navbar " id="navbar">
-  <div class="navbar-container"  >
-
-
-  <div class="navbar-brand">
-    <a class="navbar-item" href="/">
-      <img :src="titleLogo" height="28" width="112" />
-
-    </a>
-
-  </div>
-
-
-
-
-
-  <div class="navbar-burger" data-target="navMenu">
-    <span></span>
-    <span></span>
-    <span></span>
-  </div>
-
-
-
-
-
-  <div  class="navbar-menu">
-    <div class="navbar-start">
-
-      </div>
-    </div>
-
-    <div class="navbar-menu">
-      <div class="navbar-end" style="padding:5px;">
-
-
-        <div class="navbar-item has-dropdown is-active">
-          <div class="navbar-link  is-active acts-as-link dropdown-button"  >
-            Docs
-          </div>
-          <div class="navbar-dropdown ">
-
-            <a class="navbar-item" target="blank" href="https://0x1d00ffff.github.io/0xBTC-Stats/?page=stats">
-              0xBTC Stats
-            </a>
-            <a class="navbar-item "  target="blank" href="https://github.com/0xbitcoin/white-paper">
-              White Paper
-            </a>
-            <a class="navbar-item "  target="blank" href="https://etherscan.io/address/0xb6ed7644c69416d67b522e20bc294a9a9b405b31#code">
-              Smart Contract
-            </a>
-
-
-
-          </div>
-        </div>
-        <div class="navbar-item has-dropdown is-active  ">
-          <div class="navbar-link acts-as-link dropdown-button">
-            Community
-          </div>
-          <div class="navbar-dropdown ">
-
-            <a class="navbar-item "  target="blank" href="https://discord.gg/JGEqqmS">
-              Discord
-            </a>
-            <a class="navbar-item "  target="blank" href="https://reddit.com/r/0xbitcoin">
-              Subreddit
-            </a>
-            <a class="navbar-item "  target="blank" href="http://forum.0xbtc.io">
-              Forums
-            </a>
-              <hr class="navbar-divider">
-            <a class="navbar-item "  target="blank" href="http://explorer.0xbtc.io">
-              Block Explorer
-            </a>
-            <a class="navbar-item" target="blank" href="https://github.com/0xbitcoin">
-              Github
-            </a>
-
-
-          </div>
-        </div>
-
-        <div class="navbar-item has-dropdown is-active  ">
-          <div class="navbar-link acts-as-link dropdown-button">
-            Pools
-          </div>
-          <div class="navbar-dropdown ">
-
-            <a class="navbar-item " target="blank" href="http://mike.rs/">
-              Mike.rs Pool
-            </a>
-
-            <a class="navbar-item " target="blank" href="http:///tosti.ro/">
-              Tosti Pool
-            </a>
-
-            <a class="navbar-item " target="blank" href="http://tokenminingpool.com">
-              Token Mining Pool
-            </a>
-
-            <a class="navbar-item " target="blank" href="http://0xbtc.pool.nocroom.com/">
-              NOCROOM Pool
-            </a>
-
-
-
-
-          </div>
-
-      </div>
-
-
-      <div class="navbar-item has-dropdown is-active  ">
-        <div class="navbar-link acts-as-link dropdown-button">
-          Exchanges
-        </div>
-        <div class="navbar-dropdown ">
-
-          <span class="navbar-item color-black is-size-7">Centralized</span>
-          <a class="navbar-item " target="blank" href="https://mercatox.com/exchange/0xBTC/ETH">
-            Mercatox
-          </a>
-
-            <hr class="navbar-divider">
-
-            <span class="navbar-item color-black is-size-7">Decentralized</span>
-
-           <a class="navbar-item " target="blank" href="https://dex.0xchange.org">
-          0xChange
-        </a>
-        
-        <a class="navbar-item " target="blank" href="https://merklex.io/">
-          Merklex
-        </a>
-          
-          <a class="navbar-item " target="blank" href="https://www.bitcratic.com/#!/trade/0xBTC-ETH/">
-           Bitcratic
-         </a>
-          
-
-        <a class="navbar-item " target="blank" href="https://idex.market/eth/0xbtc">
-          IDEX
-        </a>
-
-        <a class="navbar-item " target="blank" href="https://forkdelta.github.io/#!/trade/0xBTC-ETH">
-          Forkdelta
-        </a>
-
-
-
-        </div>
-
-      </div>
-
-
-
-
-
-    </div>
-
-
-
-  </div>
-
-
-
-</div>
-
-
-<div class="navbar-menu is-hidden-desktop" id="navMenu">
-  <!-- navbar-start, navbar-end... -->
-
-
-<div class="navbar-start has-text-centered navbar-collapse-mobile" >
-
-
-    <hr>
-
-  <div class="navbar-item has-dropdown is-active">
-    <div class="navbar-link  is-active acts-as-link dropdown-button"  >
-      Docs
-    </div>
-    <div class="navbar-dropdown ">
-
-      <a class="navbar-item" target="blank" href="https://0x1d00ffff.github.io/0xBTC-Stats/?page=stats">
-        0xBTC Stats
-      </a>
-      <a class="navbar-item "  target="blank" href="https://github.com/0xbitcoin/white-paper">
-        White Paper
-      </a>
-      <a class="navbar-item "  target="blank" href="https://etherscan.io/address/0xb6ed7644c69416d67b522e20bc294a9a9b405b31#code">
-        Smart Contract
-      </a>
-
-      <!--
-      <a class="navbar-item "  target="blank" href="https://github.com/0xbitcoin/active-projects">
-        Active Projects
-      </a>
-      -->
-
-
-
-      <div class="whitespace-md"></div>
-
-
-      <hr class="navbar-divider">
-
-      <div class="navbar-image">
-        <div class="has-text-centered">
-
-          <img :src="contractQR" height="128" width="128" style="max-height:128px"/>
-
-
-        </div>
+<!--  This site was created in Webflow. http://www.webflow.com  -->
+<!--  Last Published: Mon Oct 28 2019 13:57:33 GMT+0000 (UTC)  -->
+<html data-wf-page="5d6a0dc8e54b1e4b355dc418" data-wf-site="5d6a0dc8e54b1e2eec5dc417">
+<head>
+  <meta charset="utf-8">
+  <title>0xBitcoin</title>
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <meta content="Webflow" name="generator">
+  <link href="css/normalize.css" rel="stylesheet" type="text/css">
+  <link href="css/webflow.css" rel="stylesheet" type="text/css">
+  <link href="css/0xbtc.webflow.css" rel="stylesheet" type="text/css">
+  <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js" type="text/javascript"></script>
+  <script type="text/javascript">WebFont.load({  google: {    families: ["Inconsolata:400,700"]  }});</script>
+  <!-- [if lt IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js" type="text/javascript"></script><![endif] -->
+  <script type="text/javascript">!function(o,c){var n=c.documentElement,t=" w-mod-";n.className+=t+"js",("ontouchstart"in o||o.DocumentTouch&&c instanceof DocumentTouch)&&(n.className+=t+"touch")}(window,document);</script>
+  <link href="images/favicon.ico" rel="shortcut icon" type="image/x-icon">
+  <link href="images/webclip.png" rel="apple-touch-icon">
+</head>
+<body class="body">
+  <div class="lightbox-bg">
+    <div class="w-clearfix"><img src="images/close.svg" width="30" alt="" class="x-close" data-ix="hide-lightbox"></div>
+    <div class="video-container">
+      <div class="html-embed w-embed w-iframe">
+        <style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style>
+        <div class="embed-container"><iframe src="https://www.youtube.com/embed/lWMyal5r7bY" frameborder="0" allowfullscreen=""></iframe></div>
       </div>
     </div>
   </div>
-
-
-    <hr>
-
-  <div class="navbar-item has-dropdown is-active  ">
-    <div class="navbar-link acts-as-link dropdown-button">
-      Community
-    </div>
-    <div class="navbar-dropdown ">
-
-      <a class="navbar-item "  target="blank" href="https://discord.gg/JGEqqmS">
-        Discord
-      </a>
-      <a class="navbar-item "  target="blank" href="https://reddit.com/r/0xbitcoin">
-        Subreddit
-      </a>
-      <a class="navbar-item "  target="blank" href="http://forum.0xbtc.io">
-        Forums
-      </a>
-      <a class="navbar-item "  target="blank" href="http://explorer.0xbtc.io">
-        Block Explorer
-      </a>
-      <a class="navbar-item" target="blank" href="https://github.com/0xbitcoin">
-        Github
-      </a>
-
-
-    </div>
-  </div>
-
-  <hr>
-
-  <div class="navbar-item has-dropdown is-active  ">
-    <div class="navbar-link acts-as-link dropdown-button">
-      Pools
-    </div>
-    <div class="navbar-dropdown ">
-      <a class="navbar-item " target="blank" href="http://mike.rs/">
-        Mike.rs Pool
-      </a>
-
-      <a class="navbar-item " target="blank" href="http:///tosti.ro/">
-        Tosti Pool
-      </a>
-
-      <a class="navbar-item " target="blank" href="http://tokenminingpool.com">
-        Token Mining Pool
-      </a>
-
-      <a class="navbar-item " target="blank" href="http://0xbtc.pool.nocroom.com/">
-        NOCROOM Pool
-      </a>
-
-    </div>
-    </div>
-
-
-    <hr>
-
-    <div class="navbar-item has-dropdown is-active  ">
-      <div class="navbar-link acts-as-link dropdown-button">
-        Exchanges
-      </div>
-      <div class="navbar-dropdown ">
-
-        <span class="navbar-item color-black is-size-7">Centralized</span>
-        <a class="navbar-item " target="blank" href="https://mercatox.com/exchange/0xBTC/ETH">
-          Mercatox
-        </a>
-
-          <hr class="navbar-divider">
-
-          <span class="navbar-item color-black is-size-7">Decentralized</span>
-
-        <a class="navbar-item " target="blank" href="https://enclaves.io/trade/0xBTC">
-          Enclaves
-        </a>
-
-        <a class="navbar-item " target="blank" href="https://idex.market/eth/0xbtc">
-          IDEX
-        </a>
-
-        <a class="navbar-item " target="blank" href="https://forkdelta.github.io/#!/trade/0xBTC-ETH">
-          Forkdelta
-        </a>
-
-        <a class="navbar-item " target="blank" href="https://ethex.market/#0xbtc">
-          Ethex
-        </a>
-
-
-
-
-      </div>
-
-    </div>
-
-
-
-
-
-
-
-
-  </div>
-
-
-
-
-</div>
-</nav>
-
-
-
-<div class="page-container" id="home">
-
-
-
-
-      <section class="hero orange-theme ">
-        <div class="hero-body">
-          <div class="  has-text-centered">
-
-
-            <div class="columns">
-
-              <div class="column">
-                  <img class="mining-gif" src="app/assets/img/mine.gif"/> 
+  <div class="section hero">
+    <div data-collapse="small" data-animation="default" data-duration="400" class="navbar w-nav">
+      <div class="container w-container">
+        <div class="div-block-12 w-clearfix"><a href="index.html" class="brand w-nav-brand w--current"><img src="images/logo.png" height="35" srcset="images/logo-p-500.png 500w, images/logo.png 936w" sizes="35px" alt="" class="image-6"><div class="text-block-10">0xBitcoin</div></a>
+          <nav role="navigation" class="nav-menu w-nav-menu">
+            <div data-delay="0" class="w-dropdown">
+              <div class="nav-link w-dropdown-toggle">
+                <div class="w-icon-dropdown-toggle"></div>
+                <div>Docs</div>
               </div>
-
-              <div class="column color-white">
-
-
-                          <div class="whitespace-sm"></div>
-
-                    <div class="is-size-2" style='line-height:1.5em'> Pure Mined Currency </div>
-
-                      <div class="whitespace-sm"></div>
-
-                    <div class="is-size-4"> For Ethereum Applications </div>
-
-
-              </div>
-
+              <nav class="dropdown-list w-dropdown-list"><a href="https://github.com/0xbitcoin/white-paper" target="_blank" class="dropdown-link w-dropdown-link">White Paper</a><a href="https://etherscan.io/address/0xb6ed7644c69416d67b522e20bc294a9a9b405b31#code" target="_blank" class="dropdown-link w-dropdown-link">Smart Contract</a><a href="https://github.com/EthereumCommonwealth/Auditing/issues/102" target="_blank" class="dropdown-link w-dropdown-link">Contract Audit</a><a href="https://0x1d00ffff.github.io/0xBTC-Stats/?page=stats" class="dropdown-link w-dropdown-link">0xBTC Stats</a><a href="https://0xbtc.info/" target="_blank" class="dropdown-link w-dropdown-link">Block Explorer</a></nav>
             </div>
-
-
-          </div>
-
-
-          <div class="whitespace-sm"></div>
-
-          <div class="has-text-centered">
-            <a href="https://0x1d00ffff.github.io/0xBTC-Stats/" target="_blank">
-              <div class='button button-white button-fat'>View Mining Stats</div>
-            </a>
-          </div>
-
-
+            <div data-delay="0" class="w-dropdown">
+              <div class="nav-link w-dropdown-toggle">
+                <div class="w-icon-dropdown-toggle"></div>
+                <div>Trade 0xBTC</div>
+              </div>
+              <nav class="dropdown-list w-dropdown-list">
+                <div class="text-block-5">Centralized</div><a href="https://mercatox.com/exchange/0xBTC/ETH" target="_blank" class="dropdown-link w-dropdown-link">Mercatox</a>
+                <div class="text-block-5">DeCentralized</div><a href="https://dex.0xchange.org/#/erc20" target="_blank" class="dropdown-link w-dropdown-link">0xChange</a><a href="https://merklex.io/" target="_blank" class="dropdown-link w-dropdown-link">Merklex</a><a href="https://www.bitcratic.com/#!/trade/0xBTC-ETH" target="_blank" class="dropdown-link w-dropdown-link">Bitcratic</a><a href="https://idex.market/eth/0xbtc" target="_blank" class="dropdown-link w-dropdown-link">IDEX</a><a href="https://forkdelta.app/#!/trade/0xBTC-ETH" target="_blank" class="dropdown-link w-dropdown-link">Forkdelta</a><a href="https://0xbitcoin.trade/swap" target="_blank" class="dropdown-link w-dropdown-link">Uniswap</a></nav>
+            </div>
+            <div data-delay="0" class="w-dropdown">
+              <div class="nav-link w-dropdown-toggle">
+                <div class="w-icon-dropdown-toggle"></div>
+                <div>Mining pools</div>
+              </div>
+              <nav class="dropdown-list w-dropdown-list"><a href="http://mike.rs/" target="_blank" class="dropdown-link w-dropdown-link">Mike.rs Pool</a><a href="http://0xbtc.tosti.ro/" target="_blank" class="dropdown-link w-dropdown-link">Tosti Pool</a><a href="http://tokenminingpool.com/" target="_blank" class="dropdown-link w-dropdown-link">Token Mining Pool</a><a href="http://mvis.ca/" target="_blank" class="dropdown-link w-dropdown-link">MVIS Pool</a></nav>
+            </div>
+            <div data-delay="0" class="w-dropdown">
+              <div class="nav-link w-dropdown-toggle">
+                <div class="w-icon-dropdown-toggle"></div>
+                <div>Community</div>
+              </div>
+              <nav class="dropdown-list w-dropdown-list"><a href="https://discordapp.com/invite/JGEqqmS" target="_blank" class="dropdown-link w-dropdown-link">Discord</a><a href="https://www.reddit.com/r/0xbitcoin/" target="_blank" class="dropdown-link w-dropdown-link">Subreddit</a><a href="https://forums.0xbtc.io/" class="dropdown-link w-dropdown-link">OxBTC Forums</a><a href="https://github.com/0xbitcoin" target="_blank" class="dropdown-link w-dropdown-link">Github</a></nav>
+            </div>
+          </nav>
+        </div><img src="images/language-icon.svg" width="23" alt="" class="language-icon">
+        <div class="menu-button w-nav-button">
+          <div class="w-icon-nav-menu"></div>
         </div>
-      </section>
-
-
-
+      </div>
+    </div>
+    <div class="w-container">
+      <div class="hero-text w-row">
+        <div class="w-col w-col-6">
+          <h1 class="heading">0xBitcoin</h1>
+          <div class="text-block-11">Built for Ethereum, Inspired by Bitcoin</div>
+        </div>
+        <div class="w-col w-col-6">
+          <p class="paragraph">0xBTC is pure mined currency for Ethereum applications, inspired by the best aspects of Bitcoin and Ether</p>
+          <div class="video-button-div"><img src="images/playbutton.svg" width="50" data-w-id="e729e32a-0026-1e30-256c-bf4f7e0c44f9" alt="" class="image-7" data-ix="show-lightbox"><a href="#" class="link">Watch the Video</a></div>
+        </div>
+      </div>
+      <div class="div-block">
+        <a href="https://github.com/0xbitcoin/white-paper" target="_blank" class="button1-base w-inline-block">
+          <div class="text-block-12">Read White Paper </div>
+        </a>
+        <a href="https://etherscan.io/address/0xb6ed7644c69416d67b522e20bc294a9a9b405b31#code" target="_blank" class="button1-base w-inline-block">
+          <div>Verified Contract Code</div>
+        </a>
+        <a href="https://github.com/EthereumCommonwealth/Auditing/issues/102" target="_blank" class="button1-base w-inline-block">
+          <div>Smart Contract Audit</div>
+        </a>
+        <a href="https://0xbtc.info/" target="_blank" class="button1-base w-inline-block">
+          <div>0xBTC Block Explorer</div>
+        </a>
+      </div>
+    </div>
   </div>
-</div> <!-- orange theme -->
-
-  <div class="page-container" >
-
-
-      <div   class="box  has-small-text-mobile" style="overflow-x:auto;  ">
-
-        <div class="has-text-centered">
-          <iframe width="100%" height="400px"  src="https://www.youtube.com/embed/lWMyal5r7bY" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+  <div class="section autospacing">
+    <div class="w-container">
+      <div class="w-row">
+        <div class="w-col w-col-6">
+          <div class="intro-list">
+            <div class="list-item">▸ Launched Feb 2018</div>
+            <div class="list-item">▸ No Premine</div>
+            <div class="list-item">▸ No ICO</div>
+            <div class="list-item">▸ First fully decentralized, purely mined, ERC20 token</div>
+            <div class="list-item">▸ Token issuance only happens in exchange for PoW, like Bitcoin</div>
+            <div class="list-item">▸ Token issuance according Bitcoin&#x27;s rules enforced by an immutable, trustless smart contract. No one has any greater authority or control over it than anyone else</div>
+            <div class="list-item">▸ Resistant to 51% attacks</div>
+          </div>
         </div>
-
-          <div class="whitespace-sm"></div>
+        <div class="w-col w-col-6">
+          <p class="paragraph-2">0xBTC is a faithful implementation of Bitcoin as a trustless, immutable Ethereum smart contract. It is not a fork. It combines the Bitcoin properties of block rewards, proof-of-work issuance, and a 21 million coin cap with the Ethereum properties of speed, DApps, and DEX trading. </p>
+          <p class="paragraph-8">0xBitcoin is not affiliated with either Bitcoin or Ethereum. It is an independent project with a decentralized development community.</p>
+        </div>
       </div>
-
-
-
-
-      <div id="currency" class=" pad-15 has-text-centered">
-
-
-      <div class='title'> The Pure Mined ERC20 Currency for </div>
-      <div class="whitespace-md"></div>
-
-      <div class="columns" >
-
-            <div class="column">
-            <a href="https://metamask.io" target="_blank">
-              <img src="app/assets/img/metamask.png" class="shadow hover-effects" style="border-radius: 50% " height="125" width="125"></img>
-              <div class='subtitle '>Metamask</div>
-            </div>
-            <div class="column">
-              <a href="https://0xbitcoin.org/wallet" target="_blank">
-              <img src="app/assets/img/logo_diamond.png" class="shadow hover-effects" style="border-radius: 50% " height="125" width="125"></img>
-              <div class='subtitle '>Web Wallet</div>
-            </div>
-            <div class="column">
-              <a href="https://trustwalletapp.com/" target="_blank">
-              <img src="app/assets/img/trust.png" class="shadow hover-effects" style="border-radius: 50% " height="125" width="125"></img>
-              <div class='subtitle '>Trust Mobile Wallet</div>
-            </div>
-            <div class="column">
-              <a href="https://www.ledgerwallet.com/products/ledger-nano-s" target="_blank">
-                <img src="app/assets/img/ledger.png"  class="shadow hover-effects" style="border-radius: 50% " height="125" width="125"></img></a>
-                <div class='subtitle '>Ledger Nano</div>
-              </div>
-      </div>
-
-      <div class="whitespace-md"></div>
-
     </div>
-
-
-      <div id="sending" class=" pad-15 has-text-centered  ">
-
-        <div class="columns">
-
-              <div class="column is-hidden-mobile">
-                <iframe src="https://discordapp.com/widget?id=412477591778492427&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0"></iframe>
-
-              </div>
-              <div class="column orange-theme has-round-corners">
-
-                      <div class="whitespace-lg is-hidden-mobile"></div>
-                      <div class="whitespace-md"></div>
-
-                        <p class="subtitle color-primary" style=" font-size: 1.5em;   max-width: 15em;   margin: auto;">
-                          Join 0xBTC Communities
-                        </p>
-
-                       <div class="whitespace-sm"></div>
-
-                       <a href="http://reddit.com/r/0xbitcoin" target="_blank">
-                         <div class='button button-bubble is-light button-fat'>Subreddit</div>
-                        </a>
-
-                        <div class="whitespace-sm"></div>
-
-                        <a href="https://discord.gg/xAPwaDC" target="_blank">
-                        <div class='button button-bubble is-light button-fat'>Discord</div>
-                       </a>
-
-                      <div class="whitespace-sm"></div>
-
-                      <a href="http://forum.0xbtc.io" target="_blank">
-                      <div class='button button-bubble is-light button-fat'>Forums</div>
-                     </a>
-
+  </div>
+  <div class="section">
+    <div data-delay="5000" data-animation="slide" data-autoplay="1" data-duration="500" data-infinite="1" class="slider w-slider">
+      <div class="mask maskedit w-slider-mask">
+        <div class="slide w-slide">
+          <div class="container-2 w-container">
+            <div class="div-block-10"><img src="images/venn-diagram.svg" width="300" alt="" class="venn-diagram-image">
+              <p class="paragraph-3"><strong class="bold-text-9">0xBTC was the first token created to fill the need for an everyday cryptocurrency that is integratable, fast, and made to last.</strong></p>
             </div>
-      </div>
-
-
-
-            <div class="whitespace-md"></div>
-    </div>
-
-
-      <div id="guide" class="pad-15 has-text-centered">
-
-        <div class="columns">
-
-              <div class="column">
-                     <div class="whitespace-md"></div>
-
-                    <div class='title'> Start Mining 0xBTC </div>
-                    <div class='subtitle '>   </div>
-                    <div class="whitespace-md"></div>
-
-                    <a href="https://medium.com/@admazzola/0xbitcoin-mining-101-9605b7108b9e" target="_blank">
-                      <div class='button-bubble button-primary'>Mining Tutorial</div>
-                    </a>
-
-
-              </div>
-
-
-              <div class="column">
-                <div class="youtube-mining-tutorial">
-
-                  <iframe width="560" height="315" src="https://www.youtube.com/embed/_uEczwlFBbE" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-
+          </div>
+        </div>
+        <div class="slide-2 w-slide">
+          <div class="w-container">
+            <h2 class="slider-statement">0xBitcoin stands on the shoulders of giants, and tries to reach further</h2>
+            <div>
+              <div class="w-row">
+                <div class="w-col w-col-4 w-col-small-4">
+                  <div class="text-block-6">Ether</div>
+                  <div class="pro-con-group w-clearfix"><img src="images/plus-green.svg" height="20" alt="" class="pro-con-icon">
+                    <p class="paragraph-5"><strong class="pro-con-text">Ideal for its original intended purpose: running gas (miner fees) for smart contracts on the Ethereum network</strong></p>
+                  </div>
+                  <div class="pro-con-group w-clearfix"><img src="images/plus-green.svg" height="20" alt="" class="pro-con-icon">
+                    <p><strong class="pro-con-text">Like Bitcoin, has attained worldwide adoption and paved the way for widespread use of digital currency</strong></p>
+                  </div>
+                  <div class="pro-con-group w-clearfix"><img src="images/minus-red.svg" height="20" width="20" alt="" class="pro-con-icon">
+                    <p class="pro-con-text">No POW or coin cap means no inbuilt inflation protection. The money supply is vulnerable to tampering, undermining long-term trust in the system</p>
+                  </div>
+                </div>
+                <div class="column-8 w-col w-col-4 w-col-small-4"><img src="images/giants3.svg" height="250" alt="" class="image-8"></div>
+                <div class="w-col w-col-4 w-col-small-4">
+                  <div class="text-block-6">Bitcoin</div>
+                  <div class="pro-con-group w-clearfix"><img src="images/plus-green.svg" height="20" alt="" class="pro-con-icon">
+                    <p><strong class="pro-con-text">The original, revolutionary and respected block chain technology, and the guiding light for the 0xBTC project&#x27;s ethos</strong></p>
+                  </div>
+                  <div class="pro-con-group w-clearfix"><img src="images/plus-green.svg" height="20" alt="" class="pro-con-icon">
+                    <p><strong class="pro-con-text">Ideal as ‘digital gold’</strong></p>
+                  </div>
+                  <div class="pro-con-group w-clearfix"><img src="images/minus-red.svg" width="20" height="20" alt="" class="pro-con-icon">
+                    <p class="pro-con-text">Suffers from slow transaction times that can make it difficult to use for services that require speed</p>
+                  </div>
+                  <div class="pro-con-group w-clearfix"><img src="images/minus-red.svg" width="20" height="20" alt="" class="pro-con-icon">
+                    <p><strong class="pro-con-text">No inbuilt ability to interact with smart contracts limits potential as distributed apps become more common</strong></p>
+                  </div>
                 </div>
               </div>
-
-
+            </div>
           </div>
-
-
-          <hr>
-          <div id="dashboard" class="has-small-text-mobile  " style="">
-            <div class="columns">
-              <div class="column"  v-cloak>
-                  <div class="is-size-3"> {{ amountMined }} / {{ totalSupply }} </div>
-
-                  <div class="is-size-5"> Tokens Mined </div>
+        </div>
+        <div class="slide-3 w-slide">
+          <div class="w-container">
+            <h1 class="slider-statement">0xBitcoin&#x27;s principles matter in today&#x27;s world</h1>
+            <div class="w-row">
+              <div class="column-9 w-col w-col-4 w-col-small-small-stack"><img src="images/decentralized.svg" height="70" alt="decentralized by Javad from the Noun Project" class="principle-icon">
+                <h2 class="carousel values">Decentralized</h2>
+                <p class="slider-paragraph">Decentralization aligns network participants together toward a common goal. It encourages a robust infrastructure and resists censorship.</p>
               </div>
-
-              <div class="column"  v-cloak>
-                <div class="is-size-3"> {{ hashrateEstimate }} </div>
-
-                <div class="is-size-5"> Est. Hashrate </div>
+              <div class="column-10 w-col w-col-4 w-col-small-small-stack"><img src="images/smart-contract.svg" height="70" alt="smart contract by James Fok from the Noun Project" class="principle-icon">
+                <h2 class="carousel values">Contract Compatible</h2>
+                <p class="slider-paragraph">DApps are here, and they will only become more prominent. Smart Contract compatibility means that 0xBTC can be used quickly and easily around the world.</p>
+              </div>
+              <div class="column-11 w-col w-col-4 w-col-small-small-stack"><img src="images/coins.svg" height="70" alt="Coins by Viktor Fedyuk (Tim P) from the Noun Project" class="principle-icon">
+                <h2 class="carousel values">Finite Coin Cap</h2>
+                <p class="slider-paragraph">When governments, groups and companies can create currency on a whim, they whittle away the value of your money and leave you poorer for it. A coin cap is fundamentally a statement of respect for you, the money holder. Only the market will ever determine what your coin is worth.  </p>
               </div>
             </div>
-
-
-
           </div>
-
+        </div>
       </div>
-
-
-
-
-
-
-
-
-
-
-
-<div class="whitespace-sm"></div>
-
-  </div>
-
-
-
-      <footer class="footer">
-
-  <div id="about" class="  has-text-centered  ">
-    <div class="">
-      <p> Why? <a href="https://medium.com/@admazzola/the-case-for-the-mineable-erc20-token-78cbb4c34331"> Read more on Medium </a></p>
-
-      <p> Read more detail at <a href="https://github.com/0xbitcoin" target="_blank"> Github </a> </p>
-
-      <p> Join the community on <a href="https://reddit.com/r/0xbitcoin" target="_blank"> Reddit </a> </p>
-
+      <div class="left-arrow w-slider-arrow-left">
+        <div class="icon-2 w-icon-slider-left"></div>
+      </div>
+      <div class="right-arrow w-slider-arrow-right">
+        <div class="icon w-icon-slider-right"></div>
+      </div>
+      <div class="slide-nav w-slider-nav w-slider-nav-invert"></div>
     </div>
   </div>
-
-
-  <div class="whitespace-sm"></div>
-
-   <div class=" ">
-     <div class="content has-text-centered">
-       <p>
-         <strong>0xBitcoin</strong> Pure-mined ERC20 currency.
-
-          <br>
-          The source code is licensed
-         <a href="http://opensource.org/licenses/mit-license.php">MIT</a>. The website content
-         is licensed <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY NC SA 4.0</a>.
-       </p>
-     </div>
-   </div>
-</footer>
-
-
-
-      <a id="scrollUp" href="#top" style="position: fixed; z-index: 2147483647;"><i class="icon-arrow-up"></i></a>
-
-  <script type="text/javascript" src="/main.cbd295af91ae46634d36.js"></script></body>
+  <div class="section ctas">
+    <div class="autospacing w-container">
+      <div class="w-row">
+        <div class="column-4 w-col w-col-6"><img src="images/join3.svg" height="125" alt="">
+          <h2 class="cta heading">Join Our Community</h2>
+          <div class="div-block-3"><a href="https://www.reddit.com/r/0xbitcoin/" target="_blank" class="button2-base w-inline-block"><img src="images/reddit-icon.svg" height="20" alt="" class="button2image"><div class="text-block-7">Reddit</div></a><a href="https://discordapp.com/invite/JGEqqmS" target="_blank" class="button2-base w-inline-block"><img src="images/discord-icon.svg" height="20" alt="" class="button2image"><div class="text-block-8">Discord</div></a><a href="https://github.com/0xbitcoin" target="_blank" class="button2-base w-inline-block"><img src="images/github-icon.svg" height="20" alt="" class="button2image"><div class="text-block-9">Github</div></a></div>
+        </div>
+        <div class="column-3 w-col w-col-6"><img src="images/mining-iso2.svg" height="125" alt="">
+          <h2 class="cta heading">Mine 0xBTC</h2>
+          <div class="div-block-4">
+            <a href="https://www.youtube.com/watch?v=_uEczwlFBbE" target="_blank" class="button2-base w-inline-block">
+              <div>Watch the Tutorial</div>
+            </a>
+            <a href="https://0x1d00ffff.github.io/0xBTC-Stats/?page=stats" target="_blank" class="button2-base w-inline-block">
+              <div>View Mining Stats</div>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="w-row">
+        <div class="column w-col w-col-6"><img src="images/market.svg" height="125" alt="">
+          <h2 class="cta heading">Buy &amp; Sell 0xBTC</h2>
+          <div class="div-block-5"><a href="https://mercatox.com/exchange/0xBTC/ETH" target="_blank" class="cta-image-link w-inline-block"><img src="images/Mercatox.svg" height="40" alt="mercatox logo" class="cta-image"><div class="cta-link">Mercatox</div></a><a href="https://dex.0xchange.org/#/erc20" target="_blank" class="cta-image-link w-inline-block"><img src="images/0xchange.svg" height="40" alt="0xchange logo" class="cta-image"><div class="cta-link">0xchange</div></a><a href="https://merklex.io/" target="_blank" class="cta-image-link w-inline-block"><img src="images/merklex.svg" height="40" alt="0xchange logo" class="cta-image"><div class="cta-link">Merklex</div></a><a href="https://www.bitcratic.com/#!/trade/0xBTC-ETH" target="_blank" class="cta-image-link w-inline-block"><img src="images/bitcratic.png" height="40" alt="bitcratic logo" class="cta-image"><div class="cta-link">Bitcratic</div></a><a href="https://idex.market/eth/0xbtc" target="_blank" class="cta-image-link w-inline-block"><img src="images/idex-1.svg" height="40" alt="Idex logo" class="cta-image"><div class="cta-link">IDEX</div></a><a href="https://forkdelta.app/#!/trade/0xBTC-ETH" target="_blank" class="cta-image-link w-inline-block"><img src="images/forkdelta-1.svg" height="40" alt="Forkdelta logo" class="cta-image"><div class="cta-link">Forkdelta</div></a></div>
+        </div>
+        <div class="column-2 w-col w-col-6"><img src="images/wallet4.svg" height="125" alt="">
+          <h2 class="cta heading">Compatible Wallets</h2>
+          <div class="div-block-6"><a href="https://metamask.io/" target="_blank" class="cta-image-link w-inline-block"><img src="images/metamask.svg" height="40" alt="Metamask" class="cta-image"><div class="cta-link">Metamask</div></a><a href="https://trustwallet.com/" target="_blank" class="cta-image-link w-inline-block"><img src="images/trust-white-logo.svg" height="40" alt="Trust Wallet" class="cta-image"><div class="cta-link">Trust</div></a><a href="https://0xbitcoin.org/wallet/" target="_blank" class="cta-image-link w-inline-block"><img src="images/logo.png" alt="Web Wallet" height="40" srcset="images/logo-p-500.png 500w, images/logo.png 936w" sizes="(max-width: 991px) 35px, 40px" class="cta-image"><div class="cta-link">Web Wallet</div></a><a href="https://www.ledger.com/" target="_blank" class="cta-image-link w-inline-block"><img src="images/ledgerwhite.svg" height="40" alt="" class="cta-image"><div class="cta-link">Ledger</div></a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="section autospacing corkboard">
+    <div class="w-container">
+      <div class="w-row">
+        <div class="column-12 w-col w-col-6">
+          <div class="div-block-7">
+            <h2 class="heading-2">Community Corkboard</h2>
+            <div class="text-block-2">See projects, tips and tools built by 0xBTC open-source developers</div>
+            <a href="https://github.com/0xBrian/awesome-0xbitcoin" target="_blank" class="button1-base community w-inline-block">
+              <div class="text-block-3">Awesome-0xBTC Repo ▷</div>
+            </a>
+          </div>
+        </div>
+        <div class="column-13 w-col w-col-6"><img src="images/noticeboard-2.svg" height="200" alt="" class="notice-board-image"></div>
+      </div>
+    </div>
+  </div>
+  <div class="section autospacing testimonial">
+    <div class="w-container">
+      <div class="quote">
+        <p class="paragraph-4">&quot;... I was pleased to find that this ... was one of the most interesting and unique small projects I&#x27;ve had the pleasure to research ...&quot;</p>
+        <div class="text-block-4">- Nik Patel, Altcoin Trader&#x27;s Handbook - <a href="https://www.altcointradershandbook.com/coin-report-0xbitcoin/" target="_blank" class="text-link">Read his full report</a></div>
+      </div>
+    </div>
+  </div>
+  <div class="section footer">
+    <div class="container-3 w-container">
+      <div class="w-row">
+        <div class="column-5 w-col w-col-4 w-col-small-4">
+          <h3 class="heading-3 footer">Documentation</h3><a href="https://github.com/0xbitcoin/white-paper" target="_blank" class="footer-link">White Paper</a><a href="https://etherscan.io/address/0xb6ed7644c69416d67b522e20bc294a9a9b405b31#code" target="_blank" class="footer-link">Contract Code</a><a href="https://github.com/EthereumCommonwealth/Auditing/issues/102" target="_blank" class="footer-link">Smart Contract Audit</a><a href="https://0xbtc.info/" target="_blank" class="footer-link">0xBTC Block Explorer</a></div>
+        <div class="column-6 w-col w-col-4 w-col-small-4">
+          <h3 class="heading-3 footer">Community &amp; Social</h3><a href="https://github.com/0xbitcoin" target="_blank" class="footer-link">0xBTC Github</a><a href="https://lavatoken.com/" target="_blank" class="footer-link">Lava Token</a><a href="https://discordapp.com/invite/JGEqqmS" target="_blank" class="footer-link">Discord</a><a href="https://twitter.com/0xbitcoin_erc20" target="_blank" class="footer-link">Twitter</a><a href="https://www.reddit.com/r/0xbitcoin/" target="_blank" class="footer-link">Reddit</a></div>
+        <div class="column-7 w-col w-col-4 w-col-small-4">
+          <h3 class="heading-3 footer">Fun &amp; Learning</h3><a href="https://meoau.itch.io/zero-chan-learns-crypto" target="_blank" class="footer-link">Play Trav&#x27;s 0xBTC Game</a></div>
+      </div>
+    </div>
+  </div>
+  <script src="https://d3e54v103j8qbb.cloudfront.net/js/jquery-3.4.1.min.220afd743d.js" type="text/javascript" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script src="js/webflow.js" type="text/javascript"></script>
+  <!-- [if lte IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/placeholders/3.0.2/placeholders.min.js"></script><![endif] -->
+</body>
 </html>
