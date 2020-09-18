@@ -9,12 +9,14 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.14.0",
     "@maticnetwork/maticjs": "2.0.6-beta.0",
     "core-js": "^2.6.5",
     "portal-vue": "^2.1.0",
     "tailwindcss": "^1.0.0-beta.4",
     "vue": "^2.6.6",
     "vue-router": "^3.0.1",
+    "vue-tailwind": "^1.2.6",
     "web3": "^1.2.11"
   },
   "devDependencies": {

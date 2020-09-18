@@ -4,52 +4,21 @@
     <div class="lightbox-bg">
      <div class="w-clearfix"><img src="@/assets/images/close.svg" width="30" alt="" class="x-close" data-ix="hide-lightbox"></div>
      <div class="video-container">
-       <div class="html-embed w-embed w-iframe">
-          <div class="embed-container"><iframe src="https://www.youtube.com/embed/lWMyal5r7bY" frameborder="0" allowfullscreen=""></iframe></div>
-       </div>
+
      </div>
    </div>
+
    <div class="section hero">
      <div data-collapse="small" data-animation="default" data-duration="400" class="navbar w-nav">
        <div class="container w-container">
          <div class="div-block-12 w-clearfix">
-           <a href="index.html" class="brand w-nav-brand w--current">
+           <a href="/" class="brand w-nav-brand w--current">
              <img src="@/assets/images/logo.png" height="35"  alt="" class="w-6 m-2">
              <div class="text-block-10">0xBitcoin</div>
           </a>
 
-           <nav role="navigation" class="nav-menu w-nav-menu">
-             <div data-delay="0" class="w-dropdown">
-               <div class="nav-link w-dropdown-toggle">
-                 <div class="w-icon-dropdown-toggle"></div>
-                 <div>Docs</div>
-               </div>
-               <nav class="dropdown-list w-dropdown-list"><a href="https://github.com/0xbitcoin/white-paper" target="_blank" class="dropdown-link w-dropdown-link">White Paper</a><a href="https://etherscan.io/address/0xb6ed7644c69416d67b522e20bc294a9a9b405b31#code" target="_blank" class="dropdown-link w-dropdown-link">Smart Contract</a><a href="https://github.com/EthereumCommonwealth/Auditing/issues/102" target="_blank" class="dropdown-link w-dropdown-link">Contract Audit</a><a href="https://0x1d00ffff.github.io/0xBTC-Stats/?page=stats" class="dropdown-link w-dropdown-link">0xBTC Stats</a><a href="https://0xbtc.info/" target="_blank" class="dropdown-link w-dropdown-link">Block Explorer</a></nav>
-             </div>
-             <div data-delay="0" class="w-dropdown">
-               <div class="nav-link w-dropdown-toggle">
-                 <div class="w-icon-dropdown-toggle"></div>
-                 <div>Trade 0xBTC</div>
-               </div>
-               <nav class="dropdown-list w-dropdown-list">
-                 <div class="text-block-5">Centralized</div><a href="https://mercatox.com/exchange/0xBTC/ETH" target="_blank" class="dropdown-link w-dropdown-link">Mercatox</a>
-                 <div class="text-block-5">DeCentralized</div><a href="https://uniswap.exchange/swap" target="_blank" class="dropdown-link w-dropdown-link">Uniswap</a><a href="https://dex.0xchange.org/#/erc20" target="_blank" class="dropdown-link w-dropdown-link">0xChange</a><a href="https://www.bitcratic.com/#!/trade/0xBTC-ETH" target="_blank" class="dropdown-link w-dropdown-link">Bitcratic</a><a href="https://forkdelta.app/#!/trade/0xBTC-ETH" target="_blank" class="dropdown-link w-dropdown-link">Forkdelta</a></nav>
-             </div>
-             <div data-delay="0" class="w-dropdown">
-               <div class="nav-link w-dropdown-toggle">
-                 <div class="w-icon-dropdown-toggle"></div>
-                 <div>Mining pools</div>
-               </div>
-               <nav class="dropdown-list w-dropdown-list"><a href="http://mike.rs/" target="_blank" class="dropdown-link w-dropdown-link">Mike.rs Pool</a><a href="http://0xbtc.tosti.ro/" target="_blank" class="dropdown-link w-dropdown-link">Tosti Pool</a><a href="http://tokenminingpool.com/" target="_blank" class="dropdown-link w-dropdown-link">Token Mining Pool</a><a href="http://mvis.ca/" target="_blank" class="dropdown-link w-dropdown-link">MVIS Pool</a></nav>
-             </div>
-             <div data-delay="0" class="w-dropdown">
-               <div class="nav-link w-dropdown-toggle">
-                 <div class="w-icon-dropdown-toggle"></div>
-                 <div>Community</div>
-               </div>
-               <nav class="dropdown-list w-dropdown-list"><a href="https://discordapp.com/invite/JGEqqmS" target="_blank" class="dropdown-link w-dropdown-link">Discord</a><a href="https://www.reddit.com/r/0xbitcoin/" target="_blank" class="dropdown-link w-dropdown-link">Subreddit</a><a href="https://forums.0xbtc.io/" class="dropdown-link w-dropdown-link">OxBTC Forums</a><a href="https://github.com/0xbitcoin" target="_blank" class="dropdown-link w-dropdown-link">Github</a></nav>
-             </div>
-           </nav>
+          <UpperNav />
+
          </div><img src="images/language-icon.svg" width="23" alt="" class="language-icon">
          <div class="menu-button w-nav-button">
            <div class="w-icon-nav-menu"></div>
@@ -81,6 +50,7 @@
        </div>
      </div>
    </div>
+
    <div class="section autospacing">
      <div class="w-container">
        <div class="w-row">
@@ -255,10 +225,12 @@
 
 
 <script>
+import UpperNav from './components/UpperNav.vue';
 
 export default {
   name: 'Home',
   props: [],
+  components: {UpperNav},
   data() {
     return {
 
