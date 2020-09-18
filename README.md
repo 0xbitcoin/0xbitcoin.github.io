@@ -22,3 +22,4 @@ npm run server
 
 * Fork this project and edit the files inside of /public/documents  
 * Add new wiki documentation and when complete, issue a pull request
+* Syntax: https://markdown-it.github.io/

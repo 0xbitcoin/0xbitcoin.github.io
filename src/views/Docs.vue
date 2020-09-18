@@ -30,7 +30,7 @@
 
     		</div>
 
-        <div class="w-full" v-if="docNavOpen">
+        <div class="w-full " v-if="docNavOpen">
 
           <DocumentationNav
 
@@ -58,36 +58,12 @@
         <div class="w-full lg:w-2/3 bg-gray-300  ">
           <div class="m-6 p-4 bg-gray-100">
 
-            <div v-html="rawContent">
-                aaa
+            <div class="markdown markdown-body" v-html="rawContent">
+                ---
             </div>
 
-            <div v-if="activeContent == 'purpose'">
-              <h3 class="text-lg"> 0xBTC Matic Wallet </h3>
-              <br>
 
-              <p> The purpose of this application ('The Dapp') is to provide a simple front-end user experience that allows users to transfer ERC20 tokens from the Ethereum Mainnet blockchain to the Matic blockchain, a 'Layer 2' network with lower transacting fees and higher bandwidth.  These tokens can also be moved back from the Matic chain back to Ethereum. </p>
 
-            </div>
-
-            <div v-if="activeContent == 'connecting'">
-              <h3 class="text-lg"> Getting Connected </h3>
-              <br>
-
-              <p> To connect to this Dapp, you will need a Web3 compatible browser or extension such as Metamask. (<a href="https://metamask.io" target="_blank" >https://metamask.io</a>)    </p>
-              <br>
-              <p> Once you have installed Metamask, you will need to add a Custom RPC for the Matic Network so that you will be able to digitally sign transactions for the Matic Network.   To do this, click on the 'Networks' dropdown at the very top of Metamask and change it from 'Main Ethereum Network' to 'Custom RPC' and use the following information: </p>
-                <br>
-                <ul>
-                  <li> Network Name: "Matic Network"</li>
-                  <li> New RPC URL: "https://rpc-mainnet.matic.network"</li>
-                  <li> Chain ID: "137" </li>
-                  <li> Symbol: "M" </li>
-                  <li> Block Explorer URL: "https://explorer.matic.network" </li>
-                </ul>
-                <br>
-                <p> Once you have added the Matic Network information to Metamask, switch Metamask back to 'Ethereum Mainnet Network'.  During the use of the Dapp, you may be asked to switch over to the 'Matic Mainnet Network' when you intend to digitally sign transactions for the Matic Network and now you are prepared to do so.  </p>
-            </div>
 
 
 
@@ -95,7 +71,7 @@
         </div>
       </div>
 
-
+  <Footer/>
 
   </div>
 </template>
@@ -104,14 +80,16 @@
 <script>
  import  MarkdownIt  from 'markdown-it';
 import * as http from 'http';
+import hljs from 'highlight.js'
 
 import Navbar from './components/Navbar.vue';
 import DocumentationNav from './components/DocumentationNav.vue';
+import Footer from './components/Footer.vue'
 
 export default {
   name: 'Docs',
   props: [],
-  components: {Navbar,DocumentationNav},
+  components: {Navbar,DocumentationNav,Footer},
   data() {
     return {
       docNavOpen: false,
@@ -132,7 +110,17 @@ export default {
         path: '/documents/'+contentName+'.md'
       };
 
-      var md = new MarkdownIt();
+      var md = new MarkdownIt({
+        highlight: function (str, lang) {
+          if (lang && hljs.getLanguage(lang)) {
+            try {
+              return hljs.highlight(lang, str).value;
+            } catch (__) {}
+          }
+
+          return ''; // use external default escaping
+        }
+      });
 
       http.get(options, function(res) {
 
@@ -145,7 +133,7 @@ export default {
 
         // The whole response has been received. Print out the result.
         res.on('end', () => {
-             
+
 
                var result = md.render(data);
                console.log( result )
