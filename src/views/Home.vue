@@ -2,7 +2,7 @@
 
 <div>
     <div class="lightbox-bg">
-     <div class="w-clearfix"><img src="images/close.svg" width="30" alt="" class="x-close" data-ix="hide-lightbox"></div>
+     <div class="w-clearfix"><img src="@/assets/images/close.svg" width="30" alt="" class="x-close" data-ix="hide-lightbox"></div>
      <div class="video-container">
        <div class="html-embed w-embed w-iframe">
           <div class="embed-container"><iframe src="https://www.youtube.com/embed/lWMyal5r7bY" frameborder="0" allowfullscreen=""></iframe></div>
@@ -12,7 +12,12 @@
    <div class="section hero">
      <div data-collapse="small" data-animation="default" data-duration="400" class="navbar w-nav">
        <div class="container w-container">
-         <div class="div-block-12 w-clearfix"><a href="index.html" class="brand w-nav-brand w--current"><img src="images/logo.png" height="35" srcset="images/logo-p-500.png 500w, images/logo.png 936w" sizes="35px" alt="" class="image-6"><div class="text-block-10">0xBitcoin</div></a>
+         <div class="div-block-12 w-clearfix">
+           <a href="index.html" class="brand w-nav-brand w--current">
+             <img src="@/assets/images/logo.png" height="35"  alt="" class="w-6 m-2">
+             <div class="text-block-10">0xBitcoin</div>
+          </a>
+
            <nav role="navigation" class="nav-menu w-nav-menu">
              <div data-delay="0" class="w-dropdown">
                <div class="nav-link w-dropdown-toggle">
@@ -61,11 +66,11 @@
          </div>
        </div>
        <div class="div-block">
-         <a href="https://github.com/0xbitcoin/white-paper" target="_blank" class="button1-base w-inline-block">
-           <div class="text-block-12">Read White Paper </div>
+         <a href="https://www.youtube.com/embed/lWMyal5r7bY" target="_blank" class="button1-base w-inline-block">
+           <div class="text-block-12">Community Video </div>
          </a>
          <a href="https://etherscan.io/address/0xb6ed7644c69416d67b522e20bc294a9a9b405b31#code" target="_blank" class="button1-base w-inline-block">
-           <div>Verified Contract Code</div>
+           <div>Etherscan Contract Code</div>
          </a>
          <a href="https://github.com/EthereumCommonwealth/Auditing/issues/102" target="_blank" class="button1-base w-inline-block">
            <div>Smart Contract Audit</div>

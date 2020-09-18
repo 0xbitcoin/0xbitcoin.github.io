@@ -35,7 +35,7 @@
   margin-right: 0.5em;
   margin-left: 0.5em;
   padding: 1em;
-  background-color: #d53d50;
+  background-color: #dc8300;
   color: #fff;
   text-decoration: none;
   text-transform: uppercase;
@@ -51,7 +51,7 @@
   margin-left: 0em;
 }
 
-.body {
+body {
   font-family: Inconsolata, monospace;
   color: #000;
   font-size: 16px;
