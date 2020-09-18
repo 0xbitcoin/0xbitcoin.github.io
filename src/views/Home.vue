@@ -1,48 +1,13 @@
 <template>
 
 <div>
-    <div class="lightbox-bg">
-     <div class="w-clearfix"><img src="@/assets/images/close.svg" width="30" alt="" class="x-close" data-ix="hide-lightbox"></div>
-     <div class="video-container">
-
-     </div>
-   </div>
 
    <div class="section bg-world px-0 lg:px-1">
-     <div data-collapse="small" data-animation="default" data-duration="400" class="navbar w-nav">
-       <div class="bg-gray-900 lg:bg-transparent">
-       <div class="container w-container">
-         <div class="w-full w-clearfix">
-           <a href="/" class="brand w-nav-brand w--current">
-             <img src="@/assets/images/logo.png" height="35"  alt="" class="w-6 m-2">
-             <div class=" text-block-10">0xBitcoin</div>
-          </a>
 
-          <div class="hidden lg:inline-block  ">
-            <UpperNav />
-          </div>
-
-
-          <div class="inline-block lg:hidden float-right p-4">
-
-            <button @click="showResponsiveMenu=!showResponsiveMenu" class="flex items-center px-3 py-2 border rounded text-teal-200 border-teal-400 hover:text-white hover:border-white">
-             <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
-           </button>
-
-           <div v-if="showResponsiveMenu" class="w-full absolute left-0 block flex-grow lg:flex lg:items-center lg:w-auto bg-gray-800">
-             <div class="text-sm lg:flex-grow">
-                <AccordionNav />
-             </div>
-
-           </div>
-
-          </div>
-
-         </div>
-
-       </div>
-       </div>
+     <div class="mb-8">
+       <Navbar />
      </div>
+
      <div class="w-container">
        <div class="hero-text w-row">
          <div class="w-col w-col-6">
@@ -93,7 +58,7 @@
    <div class="section">
 
 
-    <Carousel/>
+    <Carousel />
 
 
 
@@ -197,24 +162,20 @@
 
 
 <script>
-import UpperNav from './components/UpperNav.vue';
-import AccordionNav from './components/AccordionNav.vue';
+import Navbar from './components/Navbar.vue';
 import Carousel from './components/Carousel.vue';
 
 export default {
   name: 'Home',
   props: [],
-  components: {UpperNav,AccordionNav,Carousel},
+  components: {Navbar,Carousel},
   data() {
     return {
-      showResponsiveMenu: false
+
     }
   },
   methods: {
 
-    setContent (contentName) {
-
-    }
   }
 }
 </script>

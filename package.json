@@ -13,6 +13,8 @@
     "@fortawesome/fontawesome-free": "^5.14.0",
     "@maticnetwork/maticjs": "2.0.6-beta.0",
     "core-js": "^2.6.5",
+    "gray-matter": "^4.0.2",
+    "markdown-it": "^11.0.1",
     "portal-vue": "^2.1.0",
     "tailwindcss": "^1.0.0-beta.4",
     "vue": "^2.6.6",
