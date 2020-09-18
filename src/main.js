@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueTailwind from 'vue-tailwind'
-import PortalVue from 'portal-vue'
 import App from './App.vue'
 import router from './router'
 
@@ -12,7 +11,7 @@ import './css/0xbtc.webflow.css'
 
 Vue.config.productionTip = false
 
-Vue.use(VueTailwind,PortalVue)
+Vue.use(VueTailwind)
 
 new Vue({
   router,

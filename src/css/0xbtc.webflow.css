@@ -2,6 +2,11 @@
   background-color: #393b4a;
 }
 
+.slider
+{
+  min-height:500px;
+}
+
 .nav-link {
   border-top: 6px solid transparent;
   color: #fff;
@@ -711,6 +716,12 @@ body {
   .paragraph {
     font-size: 1.25em;
   }
+
+  .slider
+  {
+    min-height:760px;
+  }
+
   .slide-2 {
     padding-right: 1em;
     padding-left: 1em;
