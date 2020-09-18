@@ -8,28 +8,46 @@
      </div>
    </div>
 
-   <div class="section hero">
+   <div class="section bg-world px-0 lg:px-1">
      <div data-collapse="small" data-animation="default" data-duration="400" class="navbar w-nav">
+       <div class="bg-gray-900 lg:bg-transparent">
        <div class="container w-container">
-         <div class="div-block-12 w-clearfix">
+         <div class="w-full w-clearfix">
            <a href="/" class="brand w-nav-brand w--current">
              <img src="@/assets/images/logo.png" height="35"  alt="" class="w-6 m-2">
-             <div class="text-block-10">0xBitcoin</div>
+             <div class=" text-block-10">0xBitcoin</div>
           </a>
 
-          <UpperNav />
+          <div class="hidden lg:inline-block  ">
+            <UpperNav />
+          </div>
 
-         </div><img src="images/language-icon.svg" width="23" alt="" class="language-icon">
-         <div class="menu-button w-nav-button">
-           <div class="w-icon-nav-menu"></div>
+
+          <div class="inline-block lg:hidden float-right p-4">
+
+            <button @click="showResponsiveMenu=!showResponsiveMenu" class="flex items-center px-3 py-2 border rounded text-teal-200 border-teal-400 hover:text-white hover:border-white">
+             <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+           </button>
+
+           <div v-if="showResponsiveMenu" class="w-full absolute left-0 block flex-grow lg:flex lg:items-center lg:w-auto bg-gray-800">
+             <div class="text-sm lg:flex-grow">
+                <AccordionNav />
+             </div>
+
+           </div>
+
+          </div>
+
          </div>
+
+       </div>
        </div>
      </div>
      <div class="w-container">
        <div class="hero-text w-row">
          <div class="w-col w-col-6">
-           <h1 class="heading">0xBitcoin</h1>
-           <div class="text-block-11">PoW Mined ERC20 Currency</div>
+           <h1 class="heading hidden lg:block">0xBitcoin</h1>
+           <div class="text-block-11 mt-20 lg:mt-0">PoW Mined ERC20 Currency</div>
          </div>
          <div class="w-col w-col-6">
          </div>
@@ -123,15 +141,15 @@
            <div class="w-container">
              <h1 class="slider-statement">0xBitcoin&#x27;s principles matter in today&#x27;s world</h1>
              <div class="w-row">
-               <div class="column-9 w-col w-col-4 w-col-small-small-stack"><img src="images/decentralized.svg" height="70" alt="decentralized by Javad from the Noun Project" class="principle-icon">
+               <div class="column-9 w-col w-col-4 w-col-small-small-stack"><img src="@/assets/images/decentralized.svg" height="70" alt="decentralized by Javad from the Noun Project" class="principle-icon">
                  <h2 class="carousel values">Decentralized</h2>
                  <p class="slider-paragraph">Decentralization aligns network participants together toward a common goal. It encourages a robust infrastructure and resists censorship.</p>
                </div>
-               <div class="column-10 w-col w-col-4 w-col-small-small-stack"><img src="images/smart-contract.svg" height="70" alt="smart contract by James Fok from the Noun Project" class="principle-icon">
+               <div class="column-10 w-col w-col-4 w-col-small-small-stack"><img src="@/assets/images/smart-contract.svg" height="70" alt="smart contract by James Fok from the Noun Project" class="principle-icon">
                  <h2 class="carousel values">Contract Compatible</h2>
                  <p class="slider-paragraph">DApps are here, and they will only become more prominent. Smart Contract compatibility means that 0xBTC can be used quickly and easily around the world.</p>
                </div>
-               <div class="column-11 w-col w-col-4 w-col-small-small-stack"><img src="images/coins.svg" height="70" alt="Coins by Viktor Fedyuk (Tim P) from the Noun Project" class="principle-icon">
+               <div class="column-11 w-col w-col-4 w-col-small-small-stack"><img src="@/assets/images/coins.svg" height="70" alt="Coins by Viktor Fedyuk (Tim P) from the Noun Project" class="principle-icon">
                  <h2 class="carousel values">Finite Coin Cap</h2>
                  <p class="slider-paragraph">When governments, groups and companies can create currency on a whim, they whittle away the value of your money and leave you poorer for it. A coin cap is fundamentally a statement of respect for you, the money holder. Only the market will ever determine what your coin is worth.  </p>
                </div>
@@ -151,11 +169,11 @@
    <div class="section ctas">
      <div class="autospacing w-container">
        <div class="w-row">
-         <div class="column-4 w-col w-col-6"><img src="images/join3.svg" height="125" alt="">
-           <h2 class="cta heading">Join Our Community</h2>
+         <div class="column-4 w-col w-col-6"><img src="@/assets/images/join3.svg" width="125" height="125" alt="">
+           <h2 class="cta heading">Join the Community</h2>
            <div class="div-block-3"><a href="https://www.reddit.com/r/0xbitcoin/" target="_blank" class="button2-base w-inline-block"><img src="images/reddit-icon.svg" height="20" alt="" class="button2image"><div class="text-block-7">Reddit</div></a><a href="https://discordapp.com/invite/JGEqqmS" target="_blank" class="button2-base w-inline-block"><img src="images/discord-icon.svg" height="20" alt="" class="button2image"><div class="text-block-8">Discord</div></a><a href="https://github.com/0xbitcoin" target="_blank" class="button2-base w-inline-block"><img src="images/github-icon.svg" height="20" alt="" class="button2image"><div class="text-block-9">Github</div></a></div>
          </div>
-         <div class="column-3 w-col w-col-6"><img src="images/mining-iso2.svg" height="125" alt="">
+         <div class="column-3 w-col w-col-6"><img src="@/assets/images/mining-iso2.svg" width="170" height="170" alt="">
            <h2 class="cta heading">Mine 0xBTC</h2>
            <div class="div-block-4">
              <a href="https://www.youtube.com/watch?v=_uEczwlFBbE" target="_blank" class="button2-base w-inline-block">
@@ -168,18 +186,40 @@
          </div>
        </div>
        <div class="w-row">
-         <div class="column w-col w-col-6"><img src="images/market.svg" height="125" alt="">
+         <div class="column w-col w-col-6"><img src="@/assets/images/market.svg" width="125" height="125" alt="">
            <h2 class="cta heading">Buy &amp; Sell 0xBTC</h2>
 
 
 
-            <div class="div-block-5"><a href="https://mercatox.com/exchange/0xBTC/ETH" target="_blank" class="cta-image-link w-inline-block"><img src="images/Mercatox.svg" height="40" alt="mercatox logo" class="cta-image"><div class="cta-link">Mercatox</div></a><a href="https://dex.0xchange.org/#/erc20" target="_blank" class="cta-image-link w-inline-block"><img src="images/0xchange.svg" height="40" alt="0xchange logo" class="cta-image"><div class="cta-link">0xchange</div></a><a href="https://merklex.io/" target="_blank" class="cta-image-link w-inline-block"><img src="images/merklex.svg" height="40" alt="0xchange logo" class="cta-image"><div class="cta-link">Merklex</div></a><a href="https://www.bitcratic.com/#!/trade/0xBTC-ETH" target="_blank" class="cta-image-link w-inline-block"><img src="images/bitcratic.png" height="40" alt="bitcratic logo" class="cta-image"><div class="cta-link">Bitcratic</div></a><a href="https://forkdelta.app/#!/trade/0xBTC-ETH" target="_blank" class="cta-image-link w-inline-block"><img src="images/forkdelta-1.svg" height="40" alt="Forkdelta logo" class="cta-image"><div class="cta-link">Forkdelta</div></a></div>
+            <div class="div-block-5"><a href="https://mercatox.com/exchange/0xBTC/ETH" target="_blank" class="cta-image-link w-inline-block">
+              <img src="@/assets/images/Mercatox.svg" width="40" height="40" alt="mercatox logo" class="cta-image"><div class="cta-link">Mercatox</div></a>
+              <a href="https://dex.0xchange.org/#/erc20" target="_blank" class="cta-image-link w-inline-block">
+                <img src="@/assets/images/0xchange.svg" width="40" height="40" alt="0xchange logo" class="cta-image"><div class="cta-link">0xchange</div></a>
+                <a href="https://merklex.io/" target="_blank" class="cta-image-link w-inline-block">
+                  <img src="@/assets/images/merklex.svg" width="40" height="40" alt="0xchange logo" class="cta-image"><div class="cta-link">Merklex</div></a>
+                  <a href="https://www.bitcratic.com/#!/trade/0xBTC-ETH" target="_blank" class="cta-image-link w-inline-block">
+                    <img src="@/assets/images/bitcratic.png" width="40" height="40" alt="bitcratic logo" class="cta-image"><div class="cta-link">Bitcratic</div></a>
+                    <a href="https://forkdelta.app/#!/trade/0xBTC-ETH" target="_blank" class="cta-image-link w-inline-block">
+                      <img src="@/assets/images/forkdelta-1.svg" width="40" height="40" alt="Forkdelta logo" class="cta-image"><div class="cta-link">Forkdelta</div></a>
+                    </div>
 
 
          </div>
-         <div class="column-2 w-col w-col-6"><img src="images/wallet4.svg" height="125" alt="">
+         <div class="column-2 w-col w-col-6"><img src="@/assets/images/wallet4.svg" width="125" height="125" alt="">
            <h2 class="cta heading">Compatible Wallets</h2>
-           <div class="div-block-6"><a href="https://metamask.io/" target="_blank" class="cta-image-link w-inline-block"><img src="images/metamask.svg" height="40" alt="Metamask" class="cta-image"><div class="cta-link">Metamask</div></a><a href="https://trustwallet.com/" target="_blank" class="cta-image-link w-inline-block"><img src="images/trust-white-logo.svg" height="40" alt="Trust Wallet" class="cta-image"><div class="cta-link">Trust</div></a><a href="https://wallet.coinbase.com/" target="_blank" class="cta-image-link w-inline-block"><img src="images/coinbase-wallet.svg" height="40" alt="" class="cta-image"><div class="cta-link">Coinbase Wallet</div></a><a href="https://www.ledger.com/" target="_blank" class="cta-image-link w-inline-block"><img src="images/ledgerwhite.svg" height="40" alt="" class="cta-image"><div class="cta-link">Ledger</div></a></div>
+           <div class="div-block-6">
+             <a href="https://metamask.io/" target="_blank" class="cta-image-link w-inline-block">
+             <img src="@/assets/images/metamask.svg" width="40" height="40" alt="Metamask" class="cta-image">
+             <div class="cta-link">Metamask</div></a>
+             <a href="https://trustwallet.com/" target="_blank" class="cta-image-link w-inline-block">
+               <img src="@/assets/images/trust-white-logo.svg" width="40" height="40" alt="Trust Wallet" class="cta-image">
+               <div class="cta-link">Trust</div></a>
+               <a href="https://wallet.coinbase.com/" target="_blank" class="cta-image-link w-inline-block">
+                 <img src="@/assets/images/coinbase-wallet.svg" width="40" height="40" alt="" class="cta-image">
+                 <div class="cta-link">Coinbase Wallet</div></a>
+                 <a href="https://www.ledger.com/" target="_blank" class="cta-image-link w-inline-block">
+                   <img src="@/assets/images/ledgerwhite.svg" width="40" height="40" alt="" class="cta-image">
+                   <div class="cta-link">Ledger</div></a></div>
          </div>
        </div>
      </div>
@@ -196,7 +236,7 @@
              </a>
            </div>
          </div>
-         <div class="column-13 w-col w-col-6"><img src="images/noticeboard-2.svg" height="200" alt="" class="notice-board-image"></div>
+         <div class="column-13 w-col w-col-6"><img src="@/assets/images/noticeboard-2.svg" width="200" height="200" alt="" class="notice-board-image"></div>
        </div>
      </div>
    </div>
@@ -226,14 +266,15 @@
 
 <script>
 import UpperNav from './components/UpperNav.vue';
+import AccordionNav from './components/AccordionNav.vue';
 
 export default {
   name: 'Home',
   props: [],
-  components: {UpperNav},
+  components: {UpperNav,AccordionNav},
   data() {
     return {
-
+      showResponsiveMenu: false
     }
   },
   methods: {

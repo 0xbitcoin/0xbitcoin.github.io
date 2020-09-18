@@ -1,7 +1,7 @@
 <template>
-  <nav role="navigation" class="m-2 p-2 inline-block">
-
-    <t-dropdown v-for="item in navConfig.dropdowns" :key="item.title">
+  <nav role="navigation" class="w-full m-2 p-2 inline-block">
+    <div class="w-full lg:w-auto block lg:inline-block" v-for="item in navConfig.dropdowns" :key="item.title">
+    <t-dropdown  class="w-full" >
       <div
         slot="trigger"
         slot-scope="{
@@ -44,8 +44,8 @@
 
       </div>
     </t-dropdown>
+  </div>
 
- 
 </nav>
 </template>
 
@@ -63,7 +63,7 @@ export default {
     }
   },
   created(){
-    console.log('meep',Config)
+     
     this.navConfig = Config;
   },
   methods: {
