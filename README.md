@@ -1,21 +1,19 @@
-# 0xBTC Matic Wallet
+# 0xBitcoin Tailwind-Vue Website
 
-A web3 wallet for 0xBTC that works with the Matic and Ethereum networks.
-
-This dapp is deployed at Https://wallet.0xbtc.io
+Deployed at https://0xbitcoin.org
 
 
 
-## Project setup
 
+
+### Development commands
 ```
 npm install
-npm run serve
+npm run dev
 ```
 
-
-## Development Checklist
-
-* Refine the method for reclaiming 0xbtc back to the Eth network (requires checkpointing)
-* Add more tokens 
-* Add a simple transfer form button 
+### Packaging commands
+```
+npm run build
+npm run server
+```
