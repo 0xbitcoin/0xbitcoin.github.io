@@ -1,25 +1,21 @@
+# 0xBTC Matic Wallet
+
+A web3 wallet for 0xBTC that works with the Matic and Ethereum networks.
+
+This dapp is deployed at Https://wallet.0xbtc.io
 
 
 
-BASIC SETUP (needs Node8)
+## Project setup
 
-npm install -g node-gyp 1.1. sudo apt-get install build-essential
-You may need to do.. 1.2.sudo apt-get install python2.7 1.3.npm config set python python2.7
-
+```
 npm install
+npm run serve
+```
 
-yarn install
 
-npm run webpack #(to build the website files)
+## Development Checklist
 
-# 0xBitcoin Web
-
-The uncompiled code for 0xbitcoin.org, 0xbitcoin.github.io
-
-### Commands
-
-npm run dev
-    Starts a local dev server to serve the website as a test
-
-npm run webpack
-     Compiles the website and outputs the static files in  /public
+* Refine the method for reclaiming 0xbtc back to the Eth network (requires checkpointing)
+* Add more tokens 
+* Add a simple transfer form button 
