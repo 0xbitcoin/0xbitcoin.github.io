@@ -26,7 +26,7 @@
 
 <script>
 
-import Config from '../config/DocumentationNav.js'
+import Config from '../../../public/documents/config/DocumentationNav.js'
 
 export default {
   name: 'DocumentationNav',
