@@ -23,10 +23,8 @@
     "express": "^4.16.2",
     "extract-text-webpack-plugin": "^3.0.2",
     "html-loader": "^0.5.5",
-    "jquery": "^3.3.1",
-    "js-sha3": "^0.7.0",
+    "jquery": "^3.5.1",
     "owl.carousel": "^2.2.0",
-    "sha3": "^1.2.0",
     "slick-carousel": "^1.8.1",
     "typed.js": "^2.0.6",
     "vue": "^2.5.13",
@@ -42,10 +40,10 @@
     "file-loader": "^1.1.6",
     "html-webpack-include-assets-plugin": "^1.0.2",
     "html-webpack-plugin": "^2.30.1",
-    "node-sass": "^4.7.2",
+    "node-sass": "^4.14.1",
     "sass-loader": "^6.0.6",
     "static-site-generator-webpack-plugin": "^3.4.1",
     "style-loader": "^0.20.1",
-    "webpack-dev-server": "^2.11.1"
+    "webpack-dev-server": "^2.11.5"
   }
 }
