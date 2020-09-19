@@ -2,7 +2,7 @@ const config={
 
   "dropdowns":[
     {"title":"DOCS","rows":[
-      {"title":"0xBitcoin API Wiki","url":"/docs"},
+      {"title":"0xBitcoin API Wiki","url":"/#/docs"},
       {"title":"White Paper","url":"https://github.com/0xbitcoin/white-paper"},
       {"title":"Smart Contract","url":"https://etherscan.io/address/0xb6ed7644c69416d67b522e20bc294a9a9b405b31#code"},
       {"title":"0xBTC Explorer","url":"https://0xbtc.info/"}
