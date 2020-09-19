@@ -12,13 +12,13 @@ export default new Router({
   base: process.env.BASE_URL,
   routes: [
     {
-      path: '/',
+      path: process.env.PUBLIC_URL + '/',
       name: 'home',
       component: Home
     },
 
     {
-      path: '/docs',
+      path: process.env.PUBLIC_URL + '/docs',
       name: 'docs',
       component: Docs,
     },
