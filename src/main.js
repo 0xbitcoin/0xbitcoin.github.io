@@ -8,7 +8,6 @@ import './css/main.css'
 import './css/normalize.css'
 import './css/webflow.css'
 import './css/0xbtc.webflow.css'
-import './css/github-markdown.css'
 
 Vue.config.productionTip = false
 

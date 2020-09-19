@@ -4,7 +4,8 @@
       <div class="w-row">
         <div class="column-5 w-col w-col-4 w-col-small-4">
           <h3 class="heading-3 footer">Documentation</h3>
-          <a href="/docs" target="_blank" class="footer-link">0xBitcoin API Wiki</a>
+         
+          <router-link :to="{name: 'docs'}" class="footer-link">0xBitcoin API Wiki</router-link>
           <a href="https://github.com/0xbitcoin/white-paper" target="_blank" class="footer-link">White Paper</a>
           <a href="https://etherscan.io/address/0xb6ed7644c69416d67b522e20bc294a9a9b405b31#code" target="_blank" class="footer-link">Contract Code</a>
           <a href="https://github.com/EthereumCommonwealth/Auditing/issues/102" target="_blank" class="footer-link">Smart Contract Audit</a>
