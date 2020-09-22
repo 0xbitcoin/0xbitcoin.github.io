@@ -24,6 +24,11 @@ const config={
       {"title":"Forums","url":"https://forums.0xbtc.io/"},
       {"title":"Github","url":"https://github.com/0xbitcoin"},
       {"title":"Gitter","url":"https://gitter.im/0xbtc-official/development"}
+    ]},
+    {"title":"DAPPS","rows":[
+      {"title":"0xBTC-Matic Bridge","url":"https://wallet.0xbtc.io"},
+      {"title":"ALIEN Yield Farm","url":"https://invader.finance"},
+      {"title":"Tipjar","url":"https://tipjar.0xbtc.io/"}    
     ]}
   ]
 
