@@ -15,7 +15,7 @@ const config={
     ]},
     {"title":"MINING POOLS","rows":[
       {"title":"Mike.rs Pool","url":"http://mike.rs/"},
-      {"title":"MVI's Pool","url":"http://mvis.ca/"},
+      {"title":"MVIS Pool","url":"http://mvis.ca/"},
       {"title":"Token Mining Pool","url":"http://tokenminingpool.com/"},
     ]},
     {"title":"COMMUNITY","rows":[
@@ -28,7 +28,7 @@ const config={
     {"title":"DAPPS","rows":[
       {"title":"0xBTC-Matic Bridge","url":"https://wallet.0xbtc.io"},
       {"title":"ALIEN Yield Farm","url":"https://invader.finance"},
-      {"title":"Tipjar","url":"https://tipjar.0xbtc.io/"}    
+      {"title":"Tipjar","url":"https://tipjar.0xbtc.io/"}
     ]}
   ]
 
