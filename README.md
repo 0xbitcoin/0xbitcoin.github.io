@@ -9,4 +9,4 @@ Deployed at https://0xbitcoin.org
 
 ADVISORY: DO NOT issue pull requests to this repo, they will be ignored!
 
-Issue pull requests to https://github.com/0xbitcoin/0xbitcoin-web
+Issue pull requests to https://github.com/0xbitcoin/0xbitcoin.github.io
