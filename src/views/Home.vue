@@ -43,7 +43,7 @@
              <div class="list-item">▸ No Premine</div>
              <div class="list-item">▸ No ICO</div>
              <div class="list-item">▸ Tokens are created in exchange for SHA3 Proof-of-Work submitted to the contract</div>
-             <div class="list-item">▸ The contract auto-adjusts difficuly with no oracles or human control.</div>
+             <div class="list-item">▸ The contract auto-adjusts difficulty with no oracles or human control.</div>
              <div class="list-item">▸ Immune from 51% attacks</div>
              <div class="list-item">▸ Trustless with Zero Human Authority</div>
            </div>
