@@ -8,8 +8,7 @@ const config={
       {"title":"0xBTC Explorer","url":"https://0xbtc.info/"}
     ]},
     {"title":"EXCHANGES","rows":[
-      {"title":"Uniswap","url":"https://uniswap.exchange/swap"},
-      {"title":"0xChange","url":"https://dex.0xchange.org/#/erc20"},
+      {"title":"Uniswap","url":"https://app.uniswap.org/#/swap?outputCurrency=0xb6ed7644c69416d67b522e20bc294a9a9b405b31"},
       {"title":"Forkdelta","url":"https://forkdelta.app/#!/trade/0xBTC-ETH"},
       {"title":"Mercatox","url":"https://mercatox.com/exchange/0xBTC/ETH"}
     ]},

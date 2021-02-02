@@ -88,17 +88,15 @@
 
 
 
-            <div class="div-block-5"><a href="https://mercatox.com/exchange/0xBTC/ETH" target="_blank" class="cta-image-link w-inline-block">
+            <div class="div-block-5">
+              <a href="https://app.uniswap.org/#/swap?outputCurrency=0xb6ed7644c69416d67b522e20bc294a9a9b405b31" target="_blank" class="cta-image-link w-inline-block">
+                <img src="@/assets/images/uniswap.png" width="40" height="40" alt="0xchange logo" class="cta-image"><div class="cta-link">UniswapV2</div></a>
+
+              <a href="https://mercatox.com/exchange/0xBTC/ETH" target="_blank" class="cta-image-link w-inline-block">
               <img src="@/assets/images/Mercatox.svg" width="40" height="40" alt="mercatox logo" class="cta-image"><div class="cta-link">Mercatox</div></a>
-              <a href="https://dex.0xchange.org/#/erc20" target="_blank" class="cta-image-link w-inline-block">
-                <img src="@/assets/images/0xchange.svg" width="40" height="40" alt="0xchange logo" class="cta-image"><div class="cta-link">0xchange</div></a>
-                <a href="https://merklex.io/" target="_blank" class="cta-image-link w-inline-block">
-                  <img src="@/assets/images/merklex.svg" width="40" height="40" alt="0xchange logo" class="cta-image"><div class="cta-link">Merklex</div></a>
-                  <a href="https://www.bitcratic.com/#!/trade/0xBTC-ETH" target="_blank" class="cta-image-link w-inline-block">
-                    <img src="@/assets/images/bitcratic.png" width="40" height="40" alt="bitcratic logo" class="cta-image"><div class="cta-link">Bitcratic</div></a>
-                    <a href="https://forkdelta.app/#!/trade/0xBTC-ETH" target="_blank" class="cta-image-link w-inline-block">
-                      <img src="@/assets/images/forkdelta-1.svg" width="40" height="40" alt="Forkdelta logo" class="cta-image"><div class="cta-link">Forkdelta</div></a>
-                    </div>
+               <a href="https://forkdelta.app/#!/trade/0xBTC-ETH" target="_blank" class="cta-image-link w-inline-block">
+                <img src="@/assets/images/forkdelta-1.svg" width="40" height="40" alt="Forkdelta logo" class="cta-image"><div class="cta-link">Forkdelta</div></a>
+          </div>
 
 
          </div>
