@@ -18,7 +18,7 @@
          </div>
        </div>
        <div class="div-block">
-         <a href="https://www.youtube.com/embed/lWMyal5r7bY" target="_blank" class="button1-base w-inline-block">
+         <a href="https://www.youtube.com/embed/P_W6aHQ6qW4" target="_blank" class="button1-base w-inline-block">
            <div class="text-block-12">Community Video </div>
          </a>
          <a href="https://etherscan.io/address/0xb6ed7644c69416d67b522e20bc294a9a9b405b31#code" target="_blank" class="button1-base w-inline-block">
