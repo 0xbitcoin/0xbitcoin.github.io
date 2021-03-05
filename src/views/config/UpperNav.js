@@ -26,6 +26,7 @@ const config={
     ]},
     {"title":"DAPPS","rows":[
       {"title":"0xBTC-Matic Bridge","url":"https://wallet.0xbtc.io"},
+      {"title":"Bank of 0xBTC","url":"https://bank.0xbtc.io"},
       {"title":"0xBitcoin Memes","url":"https://opensea.io/collection/0xbitcoinmemes"},
       {"title":"Farm.MineableTokens","url":"https://farm.mineabletokens.com"},
       {"title":"Tipjar","url":"https://tipjar.0xbtc.io/"}
