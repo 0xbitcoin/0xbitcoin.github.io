@@ -19,7 +19,7 @@
         <div class="column-7 w-col w-col-4 w-col-small-4">
           <h3 class="heading-3 footer">Fun &amp; Learning</h3>
           <a href="https://meoau.itch.io/zero-chan-learns-crypto" target="_blank" class="footer-link">Play Trav&#x27;s 0xBTC Game</a>
-            <a href="/#/docs" target="_blank" class="footer-link">0xBTC Wiki</a> 
+            <a href="https://docs.0xbitcoin.org" target="_blank" class="footer-link">0xBTC Wiki</a> 
 
         </div>
 
