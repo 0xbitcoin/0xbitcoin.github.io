@@ -55,6 +55,32 @@
        </div>
      </div>
    </div>
+
+
+    <div class="section bg-gray-700">
+
+
+     <div class="w-container">
+       <div class="w-row py-8">
+          <div class="w-col w-col-4">
+             
+         </div>
+         <div class="w-col w-col-4">
+           <a href="https://discord.0xbtc.io" target="_blank">
+            <div class="bg-purple-600 hover:bg-purple-700 text-white p-4 rounded"> <img src="@/assets/images/discord-icon.svg" width="40" height="40" alt=""> <div class="text-md text-white inline pl-8">Join us in Discord</div></div>
+          </a>
+          </div>
+         <div class="w-col w-col-4">
+            
+         </div>
+       </div>
+     </div>
+
+
+
+   </div>
+
+
    <div class="section">
 
 
@@ -90,12 +116,9 @@
 
             <div class="div-block-5">
               <a href="https://app.uniswap.org/#/swap?outputCurrency=0xb6ed7644c69416d67b522e20bc294a9a9b405b31" target="_blank" class="cta-image-link w-inline-block">
-                <img src="@/assets/images/uniswap.png" width="40" height="40" alt="0xchange logo" class="cta-image"><div class="cta-link">UniswapV2</div></a>
+                <img src="@/assets/images/uniswap.png" width="40" height="40" alt="0xchange logo" class="cta-image"><div class="cta-link">Uniswap</div></a>
 
-              <a href="https://mercatox.com/exchange/0xBTC/ETH" target="_blank" class="cta-image-link w-inline-block">
-              <img src="@/assets/images/Mercatox.svg" width="40" height="40" alt="mercatox logo" class="cta-image"><div class="cta-link">Mercatox</div></a>
-               <a href="https://forkdelta.app/#!/trade/0xBTC-ETH" target="_blank" class="cta-image-link w-inline-block">
-                <img src="@/assets/images/forkdelta-1.svg" width="40" height="40" alt="Forkdelta logo" class="cta-image"><div class="cta-link">Forkdelta</div></a>
+             
           </div>
 
 
@@ -106,9 +129,7 @@
              <a href="https://metamask.io/" target="_blank" class="cta-image-link w-inline-block">
              <img src="@/assets/images/metamask.svg" width="40" height="40" alt="Metamask" class="cta-image">
              <div class="cta-link">Metamask</div></a>
-             <a href="https://trustwallet.com/" target="_blank" class="cta-image-link w-inline-block">
-               <img src="@/assets/images/trust-white-logo.svg" width="40" height="40" alt="Trust Wallet" class="cta-image">
-               <div class="cta-link">Trust</div></a>
+             
                <a href="https://wallet.coinbase.com/" target="_blank" class="cta-image-link w-inline-block">
                  <img src="@/assets/images/coinbase-wallet.svg" width="40" height="40" alt="" class="cta-image">
                  <div class="cta-link">Coinbase Wallet</div></a>

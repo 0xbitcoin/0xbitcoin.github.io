@@ -11,7 +11,7 @@ const config={
     {"title":"EXCHANGES","rows":[
       {"title":"Uniswap","url":"https://app.uniswap.org/#/swap?outputCurrency=0xb6ed7644c69416d67b522e20bc294a9a9b405b31"},
       {"title":"Forkdelta","url":"https://forkdelta.app/#!/trade/0xBTC-ETH"},
-      {"title":"Mercatox","url":"https://mercatox.com/exchange/0xBTC/ETH"}
+      {"title":"Sushiswap (Polygon)","url":"https://analytics-polygon.sushi.com/pairs/0xbef1666f1a3849bcc6b314f8eb83ba2e16df38d6"}
     ]},
     {"title":"MINING POOLS","rows":[
       {"title":"Mike.rs Pool","url":"http://mike.rs/"},
