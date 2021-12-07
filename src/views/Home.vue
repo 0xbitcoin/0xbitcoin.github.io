@@ -33,6 +33,25 @@
        </div>
      </div>
    </div>
+   
+    <div class="section bg-gray-700">
+
+
+     <div class="w-container">
+       <div class="w-row py-8">
+          <div class="w-col w-col-4">
+             
+         </div>
+         <div class="w-col w-col-4">
+           <a href="https://discord.0xbtc.io" target="_blank">
+            <div class="bg-purple-600 hover:bg-purple-700 text-white p-4 rounded"> <img src="@/assets/images/discord-icon.svg" width="40" height="40" alt=""> <div class="text-md text-white inline pl-8">Join us in Discord</div></div>
+          </a>
+          </div>
+         <div class="w-col w-col-4">
+            
+         </div>
+       </div>
+     </div>
 
    <div class="section autospacing">
      <div class="w-container">
@@ -57,24 +76,7 @@
    </div>
 
 
-    <div class="section bg-gray-700">
 
-
-     <div class="w-container">
-       <div class="w-row py-8">
-          <div class="w-col w-col-4">
-             
-         </div>
-         <div class="w-col w-col-4">
-           <a href="https://discord.0xbtc.io" target="_blank">
-            <div class="bg-purple-600 hover:bg-purple-700 text-white p-4 rounded"> <img src="@/assets/images/discord-icon.svg" width="40" height="40" alt=""> <div class="text-md text-white inline pl-8">Join us in Discord</div></div>
-          </a>
-          </div>
-         <div class="w-col w-col-4">
-            
-         </div>
-       </div>
-     </div>
 
 
 
