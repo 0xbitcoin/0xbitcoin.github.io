@@ -1,12 +1,12 @@
 {
-  "name": "matic-0xbtc-wallet",
-  "description": "Web wallet for 0xBTC for the Ethereum and Matic Networks",
+  "name": "0xbtc-website",
+  "description": "Frontend website for mineable token 0xbtc",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "deploy": "node deploy.js",
+    "deploy": "vue-cli-service build && node deploy.js",
     "server": "node express.js",
     "lint": "vue-cli-service lint"
   },
