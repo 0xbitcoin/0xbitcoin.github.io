@@ -17,6 +17,7 @@ const config={
       {"title":"Mike.rs Pool","url":"http://mike.rs/"},
       {"title":"MVIS Pool","url":"http://mvis.ca/"},
       {"title":"Token Mining Pool","url":"http://tokenminingpool.com/"},
+      {"title":"0xPool","url":"https://0xpool.me/"},      
     ]},
     {"title":"COMMUNITY","rows":[
       {"title":"Discord","url":"https://discordapp.com/invite/JGEqqmS"},
