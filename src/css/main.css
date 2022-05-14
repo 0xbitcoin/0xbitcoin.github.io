@@ -1,5 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap');
 
+
+
+ 
+@font-face {
+  font-family: TitilliumLight;
+  src: url(../assets/fonts/TitilliumWeb-Light.ttf);
+}
+
+
+@font-face {
+  font-family: YanoneKaffesatz;
+  src: url(../assets/fonts/YanoneKaffeesatz-Regular.ttf);;
+}
+
+
 .loader {
   border: 3px solid #f3f3f3; /* Light grey */
   border-top: 3px solid #3498db; /* Blue */
@@ -20,6 +35,19 @@
  text-decoration: underline;
  font-weight: bold;
 }
+
+
+ 
+ 
+
+.font-sharp {
+  font-family: TitilliumLight;
+} 
+
+.font-sleek {
+  font-family: YanoneKaffesatz;
+} 
+
 
 
 

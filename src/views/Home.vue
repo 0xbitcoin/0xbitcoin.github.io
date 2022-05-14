@@ -8,18 +8,18 @@
        <Navbar />
      </div>
 
-     <div class="w-container">
+     <div class=" ">
        <div class="hero-text w-row">
-         <div class="w-col w-col-6">
-           <h1 class="heading hidden lg:block">0xBitcoin</h1>
-           <div class="text-block-11 mt-20 lg:mt-0">PoW Mined ERC20 Currency</div>
+         <div class="w-col w-col-6 font-sharp">
+           <h1 class="heading hidden lg:block text-orange-500">0xBitcoin</h1>
+           <div class="text-block-11 mt-20 lg:mt-0">Pure Mined ● Native ERC20</div>
          </div>
          <div class="w-col w-col-6">
          </div>
        </div>
        <div class="div-block">
-         <a href="https://www.youtube.com/embed/P_W6aHQ6qW4" target="_blank" class="button1-base w-inline-block">
-           <div class="text-block-12">Community Video </div>
+         <a href="https://docs.0xbitcoin.org" target="_blank" class="button1-base w-inline-block">
+           <div class="text-block-12">Documentation</div>
          </a>
          <a href="https://etherscan.io/address/0xb6ed7644c69416d67b522e20bc294a9a9b405b31#code" target="_blank" class="button1-base w-inline-block">
            <div>Etherscan Contract Code</div>
@@ -27,9 +27,7 @@
          <a href="https://github.com/EthereumCommonwealth/Auditing/issues/102" target="_blank" class="button1-base w-inline-block">
            <div>Smart Contract Audit</div>
          </a>
-         <a href="https://0xbtc.info/" target="_blank" class="button1-base w-inline-block">
-           <div>0xBTC Block Explorer</div>
-         </a>
+         
        </div>
      </div>
    </div>
@@ -49,7 +47,7 @@
            </div>
          </div>
          <div class="w-col w-col-6">
-           <p class="paragraph-2">The Ethereum community's faithful implementation of 'Bitcoin' in a trustless, immutable Ethereum smart contract.  </p>
+           <p class="paragraph-2">The faithful implementation of 'Bitcoin' in a trustless, immutable Ethereum smart contract.  </p>
            <img src="@/assets/images/mine.gif"></img>
          </div>
        </div>
@@ -67,7 +65,7 @@
          </div>
          <div class="w-col w-col-4">
            <a href="https://discord.0xbtc.io" target="_blank">
-            <div class="bg-purple-600 hover:bg-purple-700 text-white p-4 rounded"> <img src="@/assets/images/discord-icon.svg" width="40" height="40" alt=""> <div class="text-md text-white inline pl-8">Join us in Discord</div></div>
+            <div class="bg-purple-600 hover:bg-purple-700 text-white p-4 rounded"> <img src="@/assets/images/discord-icon.svg" width="40" height="40" alt=""> <div class="text-md text-white inline pl-8">  <img src="@/assets/images/logo.png" height="35"  alt="" class="w-6 m-2"> Discord</div></div>
           </a>
           </div>
          <div class="w-col w-col-4">

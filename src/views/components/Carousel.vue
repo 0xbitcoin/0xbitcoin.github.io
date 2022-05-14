@@ -69,19 +69,23 @@
       </div>
 
     </div>
-    <div class="left-arrow w-slider-arrow-left">
+
+
+    <div class="left-arrow w-slider-arrow-left" @click="decrementSlideIndex()">
       <div class="icon-2 w-icon-slider-left"></div>
     </div>
-    <div class="right-arrow w-slider-arrow-right">
+    <div class="right-arrow w-slider-arrow-right" @click="incrementSlideIndex()">
       <div class="icon w-icon-slider-right"></div>
     </div>
     <div class="slide-nav w-slider-nav w-slider-nav-invert"></div>
   </div>
+  
 </template>
 
 
 <script>
 
+const MAX_SLIDE = 1 
 
 export default {
   name: 'Carousel',
@@ -98,7 +102,12 @@ export default {
     incrementSlideIndex()
     {
       this.slideIndex++;
-      if(this.slideIndex>1) this.slideIndex=0;
+      if(this.slideIndex>MAX_SLIDE) this.slideIndex=0;
+    },
+      decrementSlideIndex()
+    {
+      this.slideIndex--;
+      if(this.slideIndex<0) this.slideIndex=MAX_SLIDE;
     }
   }
 }
