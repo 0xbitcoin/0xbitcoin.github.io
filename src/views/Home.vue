@@ -15,6 +15,12 @@
            <div class="text-block-11 mt-20 lg:mt-0">Pure Mined ● Native ERC20</div>
          </div>
          <div class="w-col w-col-6">
+           <div v-if="latestBlockData" class="border-2 border-black m-8 p-4 inline" style="background: #666d">
+
+             Current Hashpower ⛏️: {{getCurrentHashrate()}} TH/s
+
+            </div>
+
          </div>
        </div>
        <div class="div-block">
@@ -174,17 +180,45 @@ import Navbar from './components/Navbar.vue';
 import Carousel from './components/Carousel.vue';
 import Footer from './components/Footer.vue';
 
+import {resolveRestQuery} from '../js/rest-api-helper'
+
 export default {
   name: 'Home',
   props: [],
   components: {Navbar,Carousel,Footer},
   data() {
     return {
-
+      latestBlockData: null
     }
   },
-  methods: {
 
-  }
+  created(){
+
+    this.fetchLatestBlockData()
+
+    setInterval( this.fetchLatestBlockData().bind(this) , 60 * 1000 )
+  },
+  methods: {
+    async fetchLatestBlockData(){
+
+      let baseURI = 'https://api.0xbtc.io/api/v1/'
+      let result = await resolveRestQuery(`${baseURI}`,{requestType: "ERC20_mints",input:{contractAddress:"0xb6ed7644c69416d67b522e20bc294a9a9b405b31"}})
+        
+
+      if(result && result.success){
+        this.latestBlockData = result.output[0]
+      }
+
+    },
+
+    getCurrentHashrate(){
+
+      let rawHashrate = this.latestBlockData.hashrate_avg8mint
+
+      return ( rawHashrate / 1000000000000 ).toFixed(2)
+    }
+  },
+
+
 }
 </script>
