@@ -14,8 +14,8 @@
            <h1 class="heading hidden lg:block text-orange-500">0xBitcoin</h1>
            <div class="text-block-11 mt-20 lg:mt-0">Pure Mined ● Native ERC20</div>
          </div>
-         <div class="w-col w-col-6">
-           <div v-if="latestBlockData" class="border-2 border-black m-8 p-4 inline" style="background: #666d">
+         <div class="w-col w-col-6 p-8 text-center">
+           <div v-if="latestBlockData" class="border-2 border-black  p-4 inline" style="background: #666d">
 
              Current Hashpower ⛏️: {{getCurrentHashrate()}} TH/s
 
@@ -201,8 +201,8 @@ export default {
   methods: {
     async fetchLatestBlockData(){
 
-      let baseURI = 'https://api.0xbtc.io/api/v1/'
-      let result = await resolveRestQuery(`${baseURI}`,{requestType: "ERC20_mints",input:{contractAddress:"0xb6ed7644c69416d67b522e20bc294a9a9b405b31"}})
+      let baseURI = 'https://api.0xbtc.io/api/mints'
+      let result = await resolveRestQuery(`${baseURI}`,{contractAddress:"0xb6ed7644c69416d67b522e20bc294a9a9b405b31"})
         
 
       if(result && result.success){
