@@ -2,7 +2,7 @@ const config={
 
   "columns":[
     {"title":"Documentation","rows":[
-      {"title":"0xBitcoin Docs","url":"https://docs.0xbitcoin.org"},
+      {"title":"0xBitcoin Docs","url":"https://info.0xbitcoin.org"},
       {"title":"Contract Code","url":"https://etherscan.io/address/0xb6ed7644c69416d67b522e20bc294a9a9b405b31#code"},
       {"title":"Smart Contract Audit","url":"https://github.com/EthereumCommonwealth/Auditing/issues/102"},
       {"title":"White Paper","url":"https://github.com/0xbitcoin/white-paper"}
