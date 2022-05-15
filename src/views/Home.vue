@@ -196,7 +196,7 @@ export default {
 
     this.fetchLatestBlockData()
 
-    setInterval( this.fetchLatestBlockData().bind(this) , 60 * 1000 )
+    setInterval( this.fetchLatestBlockData.bind(this) , 60 * 1000 )
   },
   methods: {
     async fetchLatestBlockData(){
