@@ -5,7 +5,7 @@
       <div class="  w-slide" v-if="slideIndex==0">
         <div class="container-2 w-container">
           <div class="div-block-10"><img src="@/assets/images/venn-diagram.svg" width="300" alt="" class="venn-diagram-image">
-            <p class="paragraph-3"><strong class="bold-text-9">0xBTC is a native & trustless ERC20 cryptocurrency without dependencies. It is extensible, immutable, and designed to stand the test of time.</strong></p>
+            <p class="paragraph-3"><strong class="bold-text-9">0xBTC is a native & trustless ERC20 cryptocurrency without dependencies. It is extensible, immutable, and designed, primarily, to withstand the test of time.</strong></p>
           </div>
         </div>
       </div>
@@ -54,15 +54,15 @@
           <div class="w-row">
             <div class="column-9 w-col w-col-4 w-col-small-small-stack"><img src="@/assets/images/decentralized.svg" width="70" height="70" alt="decentralized by Javad from the Noun Project" class="principle-icon">
               <h2 class="carousel values">Decentralized</h2>
-              <p class="slider-paragraph">Decentralization aligns network participants together toward a common goal. It encourages a robust infrastructure that resists censorship, dependencies, and central control.</p>
+              <p class="slider-paragraph">As an ownerless neutral smart contract on Ethereum, users can self-validate all attributes of 0xBitcoin.  Since 0xBTC is a native token smart contract, no bridges or IOUs are needed so your crypto is in your keys alone.</p>
             </div>
             <div class="column-10 w-col w-col-4 w-col-small-small-stack"><img src="@/assets/images/smart-contract.svg" width="70" height="70" alt="smart contract by James Fok from the Noun Project" class="principle-icon">
               <h2 class="carousel values">Contract Compatible</h2>
-              <p class="slider-paragraph">DApps are here, and they will only become more prominent. Smart Contract compatibility means that 0xBTC is future proofed and will always work with the most powerful decentralized applications.</p>
+              <p class="slider-paragraph">0xBitcoin is an extensible ERC20 smart contract. Smart Contract compatibility means that 0xBTC is future proofed and will always work with the most powerful decentralized applications on any and all chains that connect or bridge with Ethereum Mainnet.</p>
             </div>
             <div class="column-11 w-col w-col-4 w-col-small-small-stack"><img src="@/assets/images/coins.svg" width="70" height="70" alt="Coins by Viktor Fedyuk (Tim P) from the Noun Project" class="principle-icon">
               <h2 class="carousel values">Neutral Money</h2>
-              <p class="slider-paragraph">When ICO groups or companies create currency on a whim, it is often manipulated and dependent on the success of a centralized entity or service. 0xBTC is mathematically verifiably neutral.  It is a commodity forged from energy by the broad community in a neutral manner.   </p>
+              <p class="slider-paragraph">All 0xBitcoins are mined using Proof of Work and the proof is submitted and store on-chain for a self-verifying historical reference to the neutrality of the currency.  This means that 0xBTC is mathematically verifiably neutral.  It is a commodity forged from energy for the DeFi community to use how they see fit.   </p>
             </div>
           </div>
         </div>
