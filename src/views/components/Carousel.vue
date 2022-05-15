@@ -62,7 +62,7 @@
             </div>
             <div class="column-11 w-col w-col-4 w-col-small-small-stack"><img src="@/assets/images/coins.svg" width="70" height="70" alt="Coins by Viktor Fedyuk (Tim P) from the Noun Project" class="principle-icon">
               <h2 class="carousel values">Neutral Money</h2>
-              <p class="slider-paragraph">All 0xBitcoins are mined using Proof of Work and the proof is submitted and store on-chain for a self-verifying historical reference to the neutrality of the currency.  This means that 0xBTC is mathematically verifiably neutral.  It is a commodity forged from energy for the DeFi community to use how they see fit.   </p>
+              <p class="slider-paragraph">All 0xBitcoins are mined using Proof of Work. The proofs are submitted and stored on-chain for a self-verifying historical reference to the neutrality of the currency.  This means that 0xBTC is mathematically verifiably neutral.  It is a commodity forged from energy for the DeFi community to use how they see fit.   </p>
             </div>
           </div>
         </div>
