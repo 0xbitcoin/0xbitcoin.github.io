@@ -19,6 +19,7 @@ const config={
       {"title":"Github","url":"https://github.com/0xbitcoin"} 
     ]},
     {"title":"DAPPS","rows":[
+      {"title":"0xBitcoin XYZ","url":"https://0xbitcoin.xyz/"},
       {"title":"Miners Guild","url":"https://guild.0xbtc.io"},
       {"title":"Bank of 0xBTC","url":"https://bank.0xbtc.io"},
       {"title":"0xBitcoin Memes","url":"https://opensea.io/collection/0xbitcoinmemes"} 
