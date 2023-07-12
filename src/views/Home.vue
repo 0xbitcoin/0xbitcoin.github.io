@@ -39,8 +39,7 @@
              <div class="list-item">▸ The contract auto-adjusts difficulty with no oracles or human control.</div>
              <div class="list-item">▸ Immune from 51% attacks</div>
              <div class="list-item">▸ Trustless with Zero Human Authority</div>
-
-              <div class="list-item">▸ PoW mining concluded on </div>
+              <div class="list-item">▸ PoW mining concluded in 2023 </div>
            </div>
          </div>
          <div class="w-col w-col-6">
