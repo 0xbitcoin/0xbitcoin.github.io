@@ -6,12 +6,7 @@ const config={
       {"title":"Forkdelta","url":"https://forkdelta.app/#!/trade/0xBTC-ETH"},
       {"title":"Sushiswap (Polygon)","url":"https://analytics-polygon.sushi.com/pairs/0xbef1666f1a3849bcc6b314f8eb83ba2e16df38d6"}
     ]},
-    {"title":"MINING POOLS","rows":[
-      {"title":"Mike.rs Pool","url":"http://mike.rs/"},
-      {"title":"MVIS Pool","url":"http://mvis.ca/"},
-      {"title":"Token Mining Pool","url":"http://tokenminingpool.com/"},
-      {"title":"0xPool","url":"https://0xpool.me/"},      
-    ]},
+   
     {"title":"COMMUNITY","rows":[
       {"title":"Discord","url":"https://discordapp.com/invite/JGEqqmS"},
       {"title":"Reddit","url":"https://www.reddit.com/r/0xbitcoin/"},

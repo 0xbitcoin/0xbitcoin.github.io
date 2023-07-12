@@ -14,14 +14,6 @@
            <h1 class="heading hidden lg:block text-orange-500">0xBitcoin</h1>
            <div class="text-block-11 mt-20 lg:mt-0">Pure Mined ● Native ERC20</div>
          </div>
-         <div class="w-col w-col-6 p-8 text-center">
-           <div v-if="latestBlockData" class="border-2 border-black  p-4 inline" style="background: #666d">
-
-             Current Hashpower ⛏️: {{getCurrentHashrate()}} TH/s
-
-            </div>
-
-         </div>
        </div>
        <div class="div-block">
          <a href="https://info.0xbitcoin.org" target="_blank" class="button1-base w-inline-block">
@@ -30,9 +22,7 @@
          <a href="https://etherscan.io/address/0xb6ed7644c69416d67b522e20bc294a9a9b405b31#code" target="_blank" class="button1-base w-inline-block">
            <div>Etherscan Contract Code</div>
          </a>
-         <a href="https://github.com/EthereumCommonwealth/Auditing/issues/102" target="_blank" class="button1-base w-inline-block">
-           <div>Smart Contract Audit</div>
-         </a>
+        
          
        </div>
      </div>
@@ -44,12 +34,13 @@
          <div class="w-col w-col-6 mt-4">
            <div class="intro-list">
              <div class="list-item">▸ Launched Feb 2018</div>
-             <div class="list-item">▸ No Premine</div>
-             <div class="list-item">▸ No ICO</div>
-             <div class="list-item">▸ Tokens are created in exchange for SHA3 Proof-of-Work submitted to the contract</div>
+             <div class="list-item">▸ Tokens created only from SHA3 Proof-of-Work submitted to the contract</div>
+             <div class="list-item">▸ No Premine or ICO</div>
              <div class="list-item">▸ The contract auto-adjusts difficulty with no oracles or human control.</div>
              <div class="list-item">▸ Immune from 51% attacks</div>
              <div class="list-item">▸ Trustless with Zero Human Authority</div>
+
+              <div class="list-item">▸ PoW mining concluded on </div>
            </div>
          </div>
          <div class="w-col w-col-6">
