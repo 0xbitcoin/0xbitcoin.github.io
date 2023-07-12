@@ -33,13 +33,14 @@
        <div class="w-row">
          <div class="w-col w-col-6 mt-4">
            <div class="intro-list">
-             <div class="list-item">▸ Launched Feb 2018</div>
+             <div class="list-item">▸ Decentralized currency launched Feb 2018</div>
+             <div class="list-item">▸ PoW mining concluded in 2023 </div>
              <div class="list-item">▸ Tokens created only from SHA3 Proof-of-Work submitted to the contract</div>
              <div class="list-item">▸ No Premine or ICO</div>
              <div class="list-item">▸ The contract auto-adjusts difficulty with no oracles or human control.</div>
              <div class="list-item">▸ Immune from 51% attacks</div>
              <div class="list-item">▸ Trustless with Zero Human Authority</div>
-              <div class="list-item">▸ PoW mining concluded in 2023 </div>
+             
            </div>
          </div>
          <div class="w-col w-col-6">
